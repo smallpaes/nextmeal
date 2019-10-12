@@ -1,9 +1,19 @@
-# Nextmeal: Front-End
+# Nextmeal
 Nextmeal is an online platform for you to readily access to awesome food around with reasonable price. 
 
 <p>&nbsp;</p>
 
-## Project setup
+## Installation
+The following instructions will get you a copy of the project and all the setting needed to run it on your local machine.
+
+
+### Prerequisites
+
+- [npm](https://www.npmjs.com/get-npm)
+- [Node.js v10.16.0](https://nodejs.org/en/download/)
+
+<p>&nbsp;</p>
+
 ### Clone
 
 Clone this repository to your local machine
@@ -14,11 +24,13 @@ $ git clone https://github.com/smallpaes/nextmeal.git
 
 <p>&nbsp;</p>
 
+
 ### Setup App
+
 **1. Enter the project folder**
 
 ```
-$ cd nextmeal/client
+$ cd nextmeal
 ```
 
 **2. Install packages via npm**
@@ -27,17 +39,20 @@ $ cd nextmeal/client
 $ npm install
 ```
 
-**3. Compiles and hot-reloads for development**
+**3. Activate the server**
+
 ```
-$ npm run serve
+$ npm run dev
 ```
+
+**8. Find the message for successful activation**
+
+```
+> App is listening on port 3000!
+```
+You may visit the application on browser with the URL: http://localhost:3000
 
 <p>&nbsp;</p>
-
-### Compiles and minifies for production
-```
-$ npm run build
-```
 
 ___
 
