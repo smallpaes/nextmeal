@@ -1,0 +1,10 @@
+$colors: (
+  primary: rgb(24, 125, 207),
+  secondary: #ffe,
+  tertiary: #37693b,
+  quaternary: #f5b149
+);
+
+@function color($color-name) {
+  @return map-get($colors, $color-name);
+}
