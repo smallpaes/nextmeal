@@ -6,15 +6,26 @@
   "scripts": {
     "start": "node server/app.js",
     "dev": "nodemon server/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha server/test --exit --recursive --timeout 6000"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "chai": "^4.2.0",
     "cors": "^2.8.5",
+    "cross-env": "^6.0.3",
     "express": "^4.17.1",
-    "nodemon": "^1.19.3"
+    "faker": "^4.1.0",
+    "mocha": "^6.2.1",
+    "mysql2": "^1.7.0",
+    "nodemon": "^1.19.3",
+    "sequelize": "^5.19.6",
+    "sequelize-cli": "^5.5.1",
+    "sequelize-test-helpers": "^1.1.2",
+    "sinon": "^7.5.0",
+    "sinon-chai": "^3.3.0",
+    "supertest": "^4.0.2"
   }
 }
