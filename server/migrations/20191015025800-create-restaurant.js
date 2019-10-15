@@ -42,10 +42,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       opening_hour: {
-        type: Sequelize.DATE
+        type: Sequelize.TIME
       },
       closing_hour: {
-        type: Sequelize.DATE
+        type: Sequelize.TIME
       },
       createdAt: {
         allowNull: false,

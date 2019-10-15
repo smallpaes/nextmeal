@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     latitude: DataTypes.STRING,
     longitude: DataTypes.STRING,
-    opening_hour: DataTypes.DATE,
-    closing_hour: DataTypes.DATE,
+    opening_hour: DataTypes.TIME,
+    closing_hour: DataTypes.TIME,
     UserId: DataTypes.INTEGER
   }, {});
   Restaurant.associate = function (models) {
