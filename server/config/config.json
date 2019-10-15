@@ -9,7 +9,7 @@
   },
   "test": {
     "username": "travis",
-    "database": "nextmeal_test",
+    "database": "nextMeal_test",
     "host": "127.0.0.1",
     "dialect": "mysql",
     "logging": false,
