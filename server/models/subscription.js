@@ -10,8 +10,10 @@ module.exports = (sequelize, DataTypes) => {
     payment_status: DataTypes.STRING,
     sub_balance: DataTypes.FLOAT
   }, {});
-  Subscription.associate = function(models) {
+  Subscription.associate = function (models) {
     // associations can be defined here
+    Subscription.belongsTo(models.User)
+    Subscription.hasMany(models.Payment)
   };
   return Subscription;
 };

@@ -11,10 +11,17 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     latitude: DataTypes.STRING,
     longitude: DataTypes.STRING,
+    opening_hour: DataTypes.Date,
+    closing_hour: DataTypes.Date,
     UserId: DataTypes.INTEGER
   }, {});
-  Restaurant.associate = function(models) {
+  Restaurant.associate = function (models) {
     // associations can be defined here
+    Restaurant.hasMany(models.Like, { onDelete: 'cascade', hooks: true })
+    Restaurant.hasMany(models.Meal, { onDelete: 'cascade', hooks: true })
+    Restaurant.hasMany(models.Comment, { onDelete: 'cascade', hooks: true })
+    Restaurant.belongsTo(models.Category)
+    Restaurant.belongsTo(models.User)
   };
   return Restaurant;
 };

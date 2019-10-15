@@ -14,8 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     latitude: DataTypes.STRING,
     longitude: DataTypes.STRING
   }, {});
-  User.associate = function(models) {
+  User.associate = function (models) {
     // associations can be defined here
+    User.hasMany(models.Like, { onDelete: 'cascade', hooks: true })
+    User.hasMany(models.Comment, { onDelete: 'cascade', hooks: true })
+    User.hasMany(models.Subscription, { onDelete: 'cascade', hooks: true })
+    User.hasMany(models.Order)
+    User.hasOne(models.Restaurant)
   };
   return User;
 };

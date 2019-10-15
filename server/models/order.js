@@ -6,8 +6,17 @@ module.exports = (sequelize, DataTypes) => {
     require_date: DataTypes.STRING,
     order_status: DataTypes.STRING
   }, {});
-  Order.associate = function(models) {
+  Order.associate = function (models) {
     // associations can be defined here
+    Order.belongsTo(models.User)
+    Order.belongsToMany(models.Meal, {
+      as: "meals",
+      through: {
+        model: models.OrderItem,
+        unique: false
+      },
+      foreignKey: "OrderId"
+    })
   };
   return Order;
 };

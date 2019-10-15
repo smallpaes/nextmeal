@@ -6,8 +6,9 @@ module.exports = (sequelize, DataTypes) => {
     amount: DataTypes.INTEGER,
     paidAt: DataTypes.DATE
   }, {});
-  Payment.associate = function(models) {
+  Payment.associate = function (models) {
     // associations can be defined here
+    Payment.belongsTo(models.Subscription)
   };
   return Payment;
 };
