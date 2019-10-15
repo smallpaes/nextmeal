@@ -41,6 +41,12 @@ module.exports = {
       UserId: {
         type: Sequelize.INTEGER
       },
+      opening_hour: {
+        type: Sequelize.DATE
+      },
+      closing_hour: {
+        type: Sequelize.DATE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
