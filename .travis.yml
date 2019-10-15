@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - "10"
+
+services:
+  - mysql
+
+# 設定參數(Travis CI 會按照參數分別執行)
+env:
+  - NODE_ENV=test
+
+# 在 install 前執行的指令
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS nextMeal_test default character set utf8mb4 collate utf8mb4_unicode_ci;'
+  - npm install sequelize-cli -g
+
+# 在執行測試之前的指令
+before_script:
+  - cd server
+  - sequelize db:migrate
+
+script:
+  - npm test
