@@ -87,10 +87,10 @@ let restController = {
 
   getRestaurant: async (req, res) => {
     try {      
-      let pageNum = (Number(req.query.page) < 1 || req.query.page === '') ? 1 : Number(req.query.page)
+      let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
       if (req.params.restaurant_id) {
         // 個別餐廳評論近來就算第一頁
-        if (pageNum === 1) {
+        if (page === 1) {
           let restaurant = await Restaurant.findByPk(req.params.restaurant_id, {
             include: [{ model: Category, attributes: ['name'] }],
             attributes: [
@@ -107,19 +107,22 @@ let restController = {
             where: { RestaurantId: req.params.restaurant_id },
             include: [{model: User, attributes: ['id', 'name', 'avatar']}], //使用者名稱、照片、評分、評論內容
             attributes: ['id', 'user_text', 'res_text', 'rating', 'createdAt'],
-            offset: (pageNum - 1) * commentLimit,
+            offset: (page - 1) * commentLimit,
             limit: commentLimit
           })
           comments.pages = Math.ceil((comments.count) / commentLimit)
-          return res.status(202).json({ status: 'success', restaurant, comments, district, districts, message: 'Successfully get restaurant information.'})
+          return res.status(202).json({
+            status: 'success', restaurant, comments, district, districts,
+            message: 'Successfully get restaurant information.'
+          })
         }
         let comments = await Comment.findAndCountAll({
           where: { RestaurantId: req.params.restaurant_id },
-          offset: (pageNum) * commentLimit,
+          offset: (page) * commentLimit,
           limit: commentLimit
         })
         comments.pages = Math.ceil((comments.count) / commentLimit)
-        return res.status(202).json({ status: 'success', comments,message: 'Successfully get more comments.'})
+        return res.status(202).json({ status: 'success', comments, message: 'Successfully get more comments.'})
       }
     } catch (error) {
       console.log(error)
