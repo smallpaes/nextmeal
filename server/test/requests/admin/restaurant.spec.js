@@ -7,46 +7,19 @@ var expect = chai.expect;
 var app = require('../../../app')
 var helpers = require('../../../_helpers');
 const db = require('../../../models')
-const defaultUser1 = {
-  name: "Danny",
+
+const defaultRestaurant1 = {
+  name: "Danny的小餐館",
+  rating: 4.8,
   location: "大安區",
-  payment_status: true,
   address: "台北市大安區臥龍街289號",
-  prefer: '美式料理',
   latitude: '25.017186',
-  longitude: '121.558462',
-  role: 'Admin',
-  order_num: 20
+  longitude: '121.558462'
 }
 
-const defaultUser2 = {
-  name: "Tao",
-  location: "大安區",
-  payment_status: true,
-  address: "台北市大安區臥龍街289號",
-  prefer: '素食料理',
-  latitude: '25.017186',
-  longitude: '121.558462',
-  role: 'Admin',
-  order_num: 45
-}
+describe('# Admin::Restaurant request', () => {
 
-const defaultUser3 = {
-  name: "Mike",
-  location: "大安區",
-  payment_status: false,
-  address: "台北市大安區臥龍街289號",
-  prefer: '日式料理',
-  latitude: '25.017186',
-  longitude: '121.558462',
-  role: 'Admin',
-  order_num: 18
-}
-
-
-describe('# Admin::User request', () => {
-
-  context('go to admin user page', () => {
+  context('go to admin restaurant page', () => {
 
     describe('if user not log in', () => {
 
@@ -55,7 +28,7 @@ describe('# Admin::User request', () => {
       })
       it('should get Unauthorized', (done) => {
         request(app)
-          .get('/api/admin/users')
+          .get('/api/admin/restaurants')
           .expect(401)
           .end((err, res) => {
             if (err) { return done(err) }
@@ -78,7 +51,7 @@ describe('# Admin::User request', () => {
       })
       it('should get error message', (done) => {
         request(app)
-          .get('/api/admin/users')
+          .get('/api/admin/restaurants')
           .expect(401)
           .expect({ status: 'error', message: 'Permission denied' }, done)
       })
@@ -100,79 +73,74 @@ describe('# Admin::User request', () => {
           helpers, 'getUser'
         ).returns({ id: 1, role: 'Admin' });
         await db.User.destroy({ where: {}, truncate: true })
-        await db.User.create(defaultUser1)
-        await db.User.create(defaultUser2)
-        await db.User.create(defaultUser3)
-        await db.Subscription.create({ UserId: 1 })
+        await db.Restaurant.destroy({ where: {}, truncate: true })
+        await db.Restaurant.create(defaultRestaurant1)
+
 
       })
 
-      it('should see all users desc by order_num', (done) => {
+      it('should see all restaurants desc by order_num and limit 10', (done) => {
         request(app)
-          .get('/api/admin/users')
+          .get('/api/admin/restaurants')
           .expect(200)
           .then(response => {
-            expect(response.body).to.have.property('users')
-            // expect(response.body.users[0].name).to.be.equal('Tao')
+            expect(response.body).to.have.property('restaurants')
             done()
           }).catch(err => console.log(err))
       })
 
-      it('should be able to filter user by payment_status', (done) => {
-        request(app)
-          .get('/api/admin/users?payment_status=true')
-          .expect(200)
-          .end(async (err, res) => {
-            const users = await db.User.findAll({
-              include: {
-                model: db.Subscription
-              }
-            })
-            expect(users[0].Subscriptions.length).to.be.equal(1)
-            return done()
-          })
-      })
+      // it('should be able to filter restaurants by location', (done) => {
+      //   request(app)
+      //     .get('/api/admin/users?dist=')
+      //     .expect(200)
+      //     .end(async (err, res) => {
+      //       const users = await db.User.findAll()
+      //       expect(users.length).to.be.equal(3)
+      //       return done()
+      //     })
+      // })
 
-      it('should see specific user info', (done) => {
+      it('should see specific restaurant info', (done) => {
         request(app)
-          .get('/api/admin/users/1')
+          .get('/api/admin/restaurants/1')
           .expect(200)
           .then(response => {
             expect(response.body).to.have.property('name')
             expect(response.body).to.have.property('location')
+            expect(response.body).to.have.property('rating')
             done()
           })
 
       })
 
-      it('fail to get specific user info', (done) => {
+      it('fail to get specific restaurant info', (done) => {
         request(app)
-          .get('/api/admin/users/U100')
+          .get('/api/admin/restaurants/U001')
           .expect(400)
-          .expect({ status: "error", message: "user does not exist" }, done)
+          .expect({ status: "error", message: "restaurant does not exist" }, done)
 
       })
 
-      it('should be able to update specific user info', (done) => {
+      it('should be able to update specific restaurant info', (done) => {
         request(app)
-          .put('/api/admin/users/1')
+          .put('/api/admin/restaurants/1')
           .send('name=john')
           .expect(200)
           .end(async (err, res) => {
-            const user = await db.User.findByPk(1)
-            expect(user.name).to.be.equal('john')
+            const restaurant = await db.Restaurant.findByPk(1)
+            expect(restaurant.name).to.be.equal('john')
             return done()
           })
 
       })
 
-      it('should be able to delete specific user info', (done) => {
+      it('should be able to delete specific restaurant info', (done) => {
         request(app)
-          .delete('/api/admin/users/1')
+          .delete('/api/admin/restaurants/1')
           .expect(200)
           .end((err, res) => {
-            db.User.findByPk(1).then(user => {
-              expect(user).to.be.null
+            db.Restaurant.findByPk(1).then(restaurant => {
+              expect(restaurant).to.be.null
               return done()
             })
           })
@@ -186,6 +154,7 @@ describe('# Admin::User request', () => {
         this.ensureAuthenticated.restore();
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true })
+        await db.Restaurant.destroy({ where: {}, truncate: true })
       })
     })
 
