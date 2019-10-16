@@ -10,7 +10,7 @@ $colors: (
 }
 
 $font-size: (
-  xl: 3.75rem,
+  xl: 4.5rem,
   lg: 2rem,
   md: 1.5rem,
   sm: 1rem,
@@ -19,4 +19,14 @@ $font-size: (
 
 @function size($size) {
   @return map-get($font-size, $size)
+};
+
+$font-weight: (
+  normal: 400,
+  bold: 700,
+  bolder: 900
+);
+
+@function weight($weight) {
+  @return map-get($font-weight, $weight);
 };
