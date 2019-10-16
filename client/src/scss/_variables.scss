@@ -1,10 +1,22 @@
 $colors: (
-  primary: rgb(24, 125, 207),
-  secondary: #ffe,
-  tertiary: #37693b,
-  quaternary: #f5b149
+  primary: #EF4B4D,
+  secondary: rgb(51, 51, 51),
+  tertiary: rgb(0, 195, 173),
+  quaternary: rgb(255, 255, 255),
 );
 
 @function color($color-name) {
   @return map-get($colors, $color-name);
 }
+
+$font-size: (
+  xl: 3.75rem,
+  lg: 2rem,
+  md: 1.5rem,
+  sm: 1rem,
+  xs: 0.75rem
+);
+
+@function size($size) {
+  @return map-get($font-size, $size)
+};
