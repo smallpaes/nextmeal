@@ -26,7 +26,7 @@ module.exports = {
       password: bcrypt.hashSync('12345678', 10),
       avatar: faker.image.avatar(),
       role: 'user',
-      address: '台北市大安區羅斯福路四段113巷台北市大安區民族國民中學',
+      address: '台北市大安區羅斯福路四段113巷',
       latitude: '25.011280',
       longitude: '121.538819',
       createdAt: new Date(),
@@ -94,6 +94,9 @@ module.exports = {
           location: locations[Math.floor(Math.random() * 3) + 1],
           createdAt: new Date(),
           updatedAt: new Date(),
+          rating: parseFloat(Math.random() * 5).toFixed(1),
+          latitude: faker.address.latitude(),
+          longitude: faker.address.longitude(),
           CategoryId: Math.floor(Math.random() * 5) + 1,
           UserId: index + 3
         })
