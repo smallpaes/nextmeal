@@ -4,6 +4,10 @@
   font-family: 'Noto Sans TC', sans-serif;
 }
 
+a:hover {
+    text-decoration: none;
+}
+
 button {
     &:focus {
         outline: none;

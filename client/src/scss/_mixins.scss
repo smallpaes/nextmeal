@@ -78,3 +78,17 @@
         }
     }
 }
+
+@mixin arrowStyling($content) {
+    &-icon {
+        position: relative;
+        background-image: none;
+        &::before {
+            content: $content;
+            position: absolute;
+            top: 0%;
+            color: color(secondary);
+            font-size: size(lg);
+        }
+    }
+}
