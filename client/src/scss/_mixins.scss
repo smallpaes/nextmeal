@@ -103,3 +103,15 @@
         background-color: transparentize(color(secondary), $amount: 0.8);
     }
 }
+
+@mixin brand {
+    &-brand {
+        font-family: 'Pacifico', cursive;
+        color: color(primary);
+        font-size: size(md);
+
+        &:hover {
+            @extend .footer-brand;
+        }
+    }
+}

@@ -32,6 +32,7 @@
       </div>
     </section>
     <Questions />
+    <Footer />
   </section>
 </template>
 
@@ -42,6 +43,7 @@ import OrderProcess from '../components/OrderProcess'
 import RestaurantCarousel from '../components/RestaurantCarousel'
 import Districts from '../components/Districts'
 import Questions from '../components/Questions'
+import Footer from '../components/Footer'
 
 const dummyRestaurantAndDistrict = {
   popular_restaurants: [
@@ -122,7 +124,8 @@ export default {
     OrderProcess,
     RestaurantCarousel,
     Districts,
-    Questions
+    Questions,
+    Footer
   },
   data () {
     return {
