@@ -25,7 +25,7 @@ let restController = {
           where: wherequery,
           include: [{ model: Category, attributes: ['name', 'image'] }],
           attributes: [
-            'id', 'image', 'name', 'rating',
+            'id', 'image', 'name', 'rating','description',
             [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
             'CategoryId'
           ],
@@ -44,7 +44,7 @@ let restController = {
         where: wherequery,
         include: [{ model: Category, attributes: ['name', 'image'] }],
         attributes: [
-          'id', 'image', 'name', 'rating',
+          'id', 'image', 'name', 'rating', 'description',
           [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
           'CategoryId'
         ],
@@ -78,9 +78,7 @@ let restController = {
         more_restaurants, map, districts,
         message: 'Successfully get all restaurants page info'
       })
-
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -88,10 +86,11 @@ let restController = {
   getRestaurant: async (req, res) => {
     try {      
       let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
+      let restaurant, district
       if (req.params.restaurant_id) {
         // 個別餐廳評論近來就算第一頁
         if (page === 1) {
-          let restaurant = await Restaurant.findByPk(req.params.restaurant_id, {
+          restaurant = await Restaurant.findByPk(req.params.restaurant_id, {
             include: [{ model: Category, attributes: ['name'] }],
             attributes: [
               'id', 'image', 'name', 'rating',
@@ -102,30 +101,26 @@ let restController = {
             ]
           })
           // 餐廳行政區資訊
-          const district = districts.find(dist => { return dist.chinese_name === restaurant.location })
-          let comments = await Comment.findAndCountAll({
-            where: { RestaurantId: req.params.restaurant_id },
-            include: [{model: User, attributes: ['id', 'name', 'avatar']}], //使用者名稱、照片、評分、評論內容
-            attributes: ['id', 'user_text', 'res_text', 'rating', 'createdAt'],
-            offset: (page - 1) * commentLimit,
-            limit: commentLimit
-          })
-          comments.pages = Math.ceil((comments.count) / commentLimit)
-          return res.status(202).json({
-            status: 'success', restaurant, comments, district, districts,
-            message: 'Successfully get restaurant information.'
-          })
+          district = districts.find(dist => { return dist.chinese_name === restaurant.location })
         }
         let comments = await Comment.findAndCountAll({
           where: { RestaurantId: req.params.restaurant_id },
-          offset: (page) * commentLimit,
+          include: [{model: User, attributes: ['id', 'name', 'avatar']}], //使用者名稱、照片、評分、評論內容
+          attributes: ['id', 'user_text', 'res_text', 'rating', 'createdAt'],
+          offset: (page - 1) * commentLimit,
           limit: commentLimit
         })
         comments.pages = Math.ceil((comments.count) / commentLimit)
-        return res.status(202).json({ status: 'success', comments, message: 'Successfully get more comments.'})
+        return res.status(202).json({
+          status: 'success',
+          restaurant,
+          comments,
+          district,
+          districts,
+          message: 'Successfully get more comments.'
+        })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }

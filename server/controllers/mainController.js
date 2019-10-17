@@ -13,7 +13,7 @@ let mainController = {
       let popular_restaurants = await Restaurant.findAll({
         include: [ {model: Category, attributes: ['name', 'image']} ],
         attributes: [
-          'id', 'image', 'name', 'rating',
+          'id', 'image', 'name', 'rating','description',
           [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
           'CategoryId'
         ],
