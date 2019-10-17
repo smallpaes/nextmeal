@@ -31,6 +31,7 @@
         <Districts :districts="districts" />
       </div>
     </section>
+    <Questions />
   </section>
 </template>
 
@@ -40,6 +41,7 @@ import HomeBanner from '../components/HomeBanner'
 import OrderProcess from '../components/OrderProcess'
 import RestaurantCarousel from '../components/RestaurantCarousel'
 import Districts from '../components/Districts'
+import Questions from '../components/Questions'
 
 const dummyRestaurantAndDistrict = {
   popular_restaurants: [
@@ -119,7 +121,8 @@ export default {
     HomeBanner,
     OrderProcess,
     RestaurantCarousel,
-    Districts
+    Districts,
+    Questions
   },
   data () {
     return {

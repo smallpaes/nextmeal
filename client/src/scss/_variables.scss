@@ -3,6 +3,7 @@ $colors: (
   secondary: #5d5a58,
   tertiary: rgb(0, 195, 173),
   quaternary: rgb(255, 255, 255),
+  quinary: #F4F7F8
 );
 
 @function color($color-name) {
