@@ -1,0 +1,117 @@
+@mixin buttonAnimation {
+    position: relative;
+    text-decoration: none;
+        &:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            border-bottom: 2px solid color(primary);
+            transition: all .2s linear;
+        }
+        &:hover {
+            &:after {
+                width: 100%;
+            }
+        }
+}
+
+@mixin positionCenter {
+    &-container {
+        position: relative;
+    }
+
+    &-content {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@mixin setBackground($imageUrl, $height) {
+    background-image: url($imageUrl);
+    width: 100%;
+    height: $height;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+@mixin solidButton {
+    background-color: color(primary);
+    width: 200px;
+    color: color(quaternary);
+    border-radius: 1rem;
+
+    &:hover {
+        background-color: darken(color(primary), 20%);
+    }
+}
+
+@mixin buttonOutline {
+    background-color: color(quaternary);
+    width: 200px;
+    color: color(primary);
+    border-radius: 1rem;
+    border: 1px solid color(primary);
+
+    &:hover {
+        background-color: color(primary);
+        color: color(quaternary)
+    }
+}
+
+@mixin headingStyling {
+    &-heading {
+        text-align: center;
+        padding: 1.5rem 0;
+        &-title {
+            font-size: size(lg);
+        }
+
+        &-description{
+            font-size: size(sm);
+            color: lighten(color(secondary), 10%);
+        }
+    }
+}
+
+@mixin arrowStyling($content) {
+    &-icon {
+        position: relative;
+        background-image: none;
+        &::before {
+            content: $content;
+            position: absolute;
+            top: 0%;
+            color: color(secondary);
+            font-size: size(lg);
+        }
+    }
+}
+
+@mixin imgOverlay {
+    &-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: transparentize(color(secondary), $amount: 0.8);
+    }
+}
+
+@mixin brand {
+    &-brand {
+        font-family: 'Pacifico', cursive;
+        color: color(primary);
+        font-size: size(md);
+
+        &:hover {
+            @extend .footer-brand;
+        }
+    }
+}
