@@ -7,6 +7,50 @@
         :current-district="currentDistrict"
       />
     </header>
+    <section class="popular">
+      <div class="container pt-3 pb-5">
+        <div class="popular-heading">
+          <h1 class="popular-heading-title">
+            熱門餐廳
+          </h1>
+          <p class="popular-heading-description">
+            嘗試最受歡迎的餐廳
+          </p>
+        </div>
+        <RestaurantCarousel :popular-restaurants="popular_restaurants" />
+      </div>
+    </section>
+    <section class="restaurants">
+      <div class="container pt-3 pb-5">
+        <div class="restaurants-heading">
+          <h1 class="restaurants-heading-title">
+            更多選擇
+          </h1>
+          <p class="restaurants-heading-description">
+            探索更多在地餐廳
+          </p>
+        </div>
+        <div class="card-wrapper row">
+          <div
+            v-for="restaurant in more_restaurants.rows"
+            :key="restaurant.id"
+            class="col-12 col-md-6 col-lg-4 p-2"
+          >
+            <RestaurantCard :restaurant="restaurant" />
+          </div>
+        </div>
+        <div class="btn-container">
+          <button
+            v-if="currentPage !== totalPage"
+            class="btn mt-3"
+            href="#"
+            @click="fetchRestaurants(currentDistrict, currentPage + 1)"
+          >
+            瀏覽更多
+          </button>
+        </div>
+      </div>
+    </section>
     <Footer />
   </section>
 </template>
@@ -15,6 +59,8 @@
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import RestaurantBanner from '../components/RestaurantBanner'
+import RestaurantCarousel from '../components/RestaurantCarousel'
+import RestaurantCard from '../components/RestaurantCard'
 
 const dummyRestaurantAndDistrict = {
   popular_restaurants: [
@@ -57,39 +103,39 @@ const dummyRestaurantAndDistrict = {
   ],
   more_restaurants: {
     count: 16,
-    page: 3,
+    pages: 3,
     rows: [
-      { id: 1,
+      { id: 7,
         image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_1280.jpg',
         name: '餐廳一號',
         rating: 3.4,
         category: '美式料理'
       },
-      { id: 2,
+      { id: 8,
         image: 'https://cdn.pixabay.com/photo/2017/03/30/15/47/churros-2188871_1280.jpg',
         name: '餐廳二號',
         rating: 4.9,
         category: '韓式料理'
       },
-      { id: 3,
+      { id: 9,
         image: 'https://cdn.pixabay.com/photo/2016/10/03/23/15/ice-1713160_1280.jpg',
         name: '餐廳三號',
         rating: 4.4,
         category: '美式料理'
       },
-      { id: 4,
+      { id: 10,
         image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
         name: '餐廳四號',
         rating: 2.3,
         category: '中東料理'
       },
-      { id: 5,
+      { id: 11,
         image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
         name: '餐廳五號',
         rating: 5.4,
         category: '中東料理'
       },
-      { id: 6,
+      { id: 12,
         image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
         name: '餐廳六號',
         rating: 3.4,
@@ -167,30 +213,67 @@ export default {
   components: {
     Navbar,
     Footer,
-    RestaurantBanner
+    RestaurantBanner,
+    RestaurantCarousel,
+    RestaurantCard
   },
   data () {
     return {
       popular_restaurants: [],
-      more_restaurants: {},
+      more_restaurants: {
+        rows: []
+      },
       map: {},
       districts: [],
-      currentDistrict: ''
+      currentDistrict: '',
+      currentPage: 0,
+      totalPage: null
     }
   },
   created () {
     const { dist } = this.$route.query
-    this.currentDistrict = dist
-    this.fetchRestaurants(dist)
+    this.currentDistrict = dist || '信義區'
+    this.fetchRestaurants(dist, this.currentPage + 1)
   },
   methods: {
-    fetchRestaurants (dist) {
+    fetchRestaurants (dist, page) {
       // fetch data from api
-      this.popular_restaurants = dummyRestaurantAndDistrict.popular_restaurants
-      this.more_restaurants = dummyRestaurantAndDistrict.more_restaurants
-      this.map = dummyRestaurantAndDistrict.map
-      this.districts = dummyRestaurantAndDistrict.districts
+      this.popular_restaurants = dummyRestaurantAndDistrict.popular_restaurants || this.popular_restaurants
+      this.more_restaurants.rows = [
+        ...this.more_restaurants.rows,
+        ...dummyRestaurantAndDistrict.more_restaurants.rows
+      ]
+      this.totalPage = this.more_restaurants.pages
+      this.map = dummyRestaurantAndDistrict.map || this.map
+      this.districts = dummyRestaurantAndDistrict.districts || this.districts
+      // update current page number
+      this.currentPage += 1
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.popular {
+    @include headingStyling;
+
+    &-heading {
+      text-align: center;
+    }
+}
+
+.restaurants {
+    @include headingStyling;
+
+    &-heading {
+      text-align: center;
+    }
+}
+
+.btn-container {
+    text-align: center;
+    .btn {
+        @include buttonOutline;
+    }
+}
+</style>
