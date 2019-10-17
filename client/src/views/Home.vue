@@ -15,56 +15,7 @@
             嘗試最受歡迎的餐廳
           </p>
         </div>
-        <div
-          id="popularCarousel"
-          class="carousel slide"
-          data-ride="carousel"
-        >
-          <div class="carousel-inner">
-            <div class="carousel-item active px-2">
-              <div class="row justify-content-around">
-                <RestaurantCard
-                  v-for="restaurant in popular_restaurants.slice(0,3)"
-                  :key="restaurant.id"
-                  :restaurant="restaurant"
-                />
-              </div>
-            </div>
-            <div class="carousel-item px-2">
-              <div class="row justify-content-around">
-                <RestaurantCard
-                  v-for="restaurant in popular_restaurants.slice(3,6)"
-                  :key="restaurant.id"
-                  :restaurant="restaurant"
-                />
-              </div>
-            </div>
-          </div>
-          <a
-            class="carousel-control-prev"
-            href="#popularCarousel"
-            role="button"
-            data-slide="prev"
-          >
-            <span
-              class="carousel-control-prev-icon"
-              aria-hidden="true"
-            />
-            <span class="sr-only">Previous</span>
-          </a>
-          <a
-            class="carousel-control-next"
-            href="#popularCarousel"
-            role="button"
-            data-slide="next"
-          >
-            <span
-              class="carousel-control-next-icon"
-              aria-hidden="true"
-            />
-            <span class="sr-only">Next</span>
-          </a>
-        </div>
+        <RestaurantCarousel :popular-restaurants="popular_restaurants" />
       </div>
     </section>
   </section>
@@ -74,7 +25,7 @@
 import Navbar from '../components/Navbar'
 import HomeBanner from '../components/HomeBanner'
 import OrderProcess from '../components/OrderProcess'
-import RestaurantCard from '../components/RestaurantCard'
+import RestaurantCarousel from '../components/RestaurantCarousel'
 
 const dummyRestaurantAndDistrict = {
   popular_restaurants: [
@@ -124,7 +75,7 @@ export default {
     Navbar,
     HomeBanner,
     OrderProcess,
-    RestaurantCard
+    RestaurantCarousel
   },
   data () {
     return {
@@ -152,24 +103,5 @@ export default {
     &-heading {
       text-align: center;
     }
-}
-
-.carousel-control {
-  &-prev {
-    @include arrowStyling("\2039");
-    left: -85px;
-
-    &-icon {
-      position: relative;
-      background-image: none;
-
-    }
-  }
-
-  &-next {
-    @include arrowStyling("\203A");
-    right: -75px;
-    background-image: none;
-  }
 }
 </style>
