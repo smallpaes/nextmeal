@@ -20,11 +20,11 @@
     </section>
     <section class="districts">
       <div class="container pt-3 pb-5">
-        <div class="popular-heading">
-          <h1 class="popular-heading-title">
+        <div class="districts-heading">
+          <h1 class="districts-heading-title">
             熱門地區
           </h1>
-          <p class="popular-heading-description">
+          <p class="districts-heading-description">
             探索各地區熱門美食
           </p>
         </div>
@@ -149,6 +149,14 @@ export default {
 <style lang="scss" scoped>
 .popular {
     @include headingStyling;
+
+    &-heading {
+      text-align: center;
+    }
+}
+
+.districts {
+  @include headingStyling;
 
     &-heading {
       text-align: center;
