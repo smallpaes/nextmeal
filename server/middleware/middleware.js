@@ -6,8 +6,6 @@ let middleware = {
       .not().isEmpty().withMessage('name should be not empty'),
     check('description')
       .not().isEmpty().withMessage('description should be not empty'),
-    check('image')
-      .not().isEmpty().withMessage('image should be not empty'),
     check('tel')
       .not().isEmpty().withMessage('phone should be not empty'),
     check('address')
