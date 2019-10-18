@@ -2,6 +2,7 @@ const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const Restaurant = db.Restaurant
+const Meal = db.Meal
 const { validationResult } = require('express-validator');
 
 let ownerController = {
@@ -121,6 +122,25 @@ let ownerController = {
       res.status(500).json({ status: 'error', message: error })
     }
   },
+
+  getDishes: async (req, res) => {
+    try {
+      let restaurant = await Restaurant.findAll({
+        where: { UserId: req.user.id },
+        include:[ Meal ],
+        attributes: ['id']
+      })
+      if(restaurant[0].dataValues.Meals.length === 0 || restaurant.length === 0) {
+        res.status(200).json({status: 'error', message: 'You haven\'t setting restaurant or meal yet.'})
+      }
+      let meals = restaurant.map(rest => rest.dataValues.Meals)
+      meals = meals[0].map(meal => meal.dataValues)
+      res.status(200).json({status: 'success', meals, message: 'Successfully get the dish information.'})
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  }
 }
 
 module.exports = ownerController
