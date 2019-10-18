@@ -11,7 +11,7 @@ let ownerController = {
   getRestaurant: async (req, res) => {
     try {
       const restaurant = await Restaurant.findAll({
-        where: { UserId: req.user.id }
+        where: { UserId: 5 }
       })
       if (restaurant.length === 0) {
         return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
@@ -243,9 +243,41 @@ let ownerController = {
     try {
       let meal = await Meal.findByPk(req.params.dish_id)
       if (!meal) return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
-      
+
       await meal.destroy()
-      res.status(200).json({ status: 'success', message: 'was successfully destroyed.' })
+      res.status(200).json({ status: 'success', message: 'meal was successfully destroyed.' })
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getMenu: async (req, res) => {
+    try {
+      const restaurant = await Restaurant.findOne({
+        where: { UserId: 3 }, attributes: ['id'], include: [{ model: Meal, attributes: ['id', 'name'] }]
+      })
+      let whereQuery = {}
+      let message = ''
+      if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
+        return res.status(422).json({ status: 'error', message: 'must query for this week or next week' })
+      }
+
+      if (req.query.ran === 'thisWeek') {
+        whereQuery = { RestaurantId: restaurant.id, isServing: true }
+        message = 'the meals for this week'
+      }
+      if (req.query.ran === 'nextWeek'){
+        whereQuery = { RestaurantId: restaurant.id, nextServing: true }
+        message = 'the meals for next week'
+      }
+
+      let meals = await Meal.findAll({ where: whereQuery })
+      return res.status(200).json({ 
+        status: 'success',
+        meals,
+        options: (req.query.ran === 'nextWeek') ? restaurant.Meals : undefined,
+        message: message
+      })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
