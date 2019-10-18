@@ -9,27 +9,27 @@
     </header>
     <section class="popular">
       <div class="container pt-3 pb-5">
-        <div class="popular-heading">
-          <h1 class="popular-heading-title">
+        <Header>
+          <template v-slot:title>
             熱門餐廳
-          </h1>
-          <p class="popular-heading-description">
+          </template>
+          <template v-slot:description>
             嘗試最受歡迎的餐廳
-          </p>
-        </div>
+          </template>
+        </Header>
         <RestaurantCarousel :popular-restaurants="popular_restaurants" />
       </div>
     </section>
     <section class="restaurants">
       <div class="container pt-3 pb-5">
-        <div class="restaurants-heading">
-          <h1 class="restaurants-heading-title">
+        <Header>
+          <template v-slot:title>
             更多選擇
-          </h1>
-          <p class="restaurants-heading-description">
+          </template>
+          <template v-slot:description>
             探索更多在地餐廳
-          </p>
-        </div>
+          </template>
+        </Header>
         <div class="card-wrapper row">
           <div
             v-for="restaurant in more_restaurants.rows"
@@ -295,29 +295,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.popular {
-    @include headingStyling;
-
-    &-heading {
-      text-align: center;
-    }
-}
-
-.restaurants {
-    @include headingStyling;
-
-    &-heading {
-      text-align: center;
-    }
-}
-
-.btn-container {
-    text-align: center;
-    .btn {
-        @include buttonOutline;
-    }
-}
-
 .google-map {
   width: 100%;
   height: 400px;
