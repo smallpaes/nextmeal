@@ -39,6 +39,10 @@ export default {
     .rating {
         color: color(primary);
     }
+
+    &-description {
+      font-size: size(xs);
+    }
 }
 
 .divider {

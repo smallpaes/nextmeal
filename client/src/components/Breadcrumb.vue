@@ -41,6 +41,8 @@ export default {
 <style lang="scss" scoped>
 .breadcrumb {
     &-item {
+        font-size: size(sm);
+
         &:not(:first-child):before {
             content: '\203A';
             color: color(tertiary);
