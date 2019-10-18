@@ -9,7 +9,7 @@ const Comment = db.Comment
 const Order = db.Order
 const Meal = db.Meal
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
-const { validationResult } = require('express-validator');
+const { validMessage } = require('../middleware/middleware')
 
 // const pageLimit = 10
 
@@ -71,10 +71,7 @@ let adminController = {
   // admin 修改餐廳資訊
   putRestaurant: async (req, res) => {
     try {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 'error', errors: errors.array(), message: 'restautant information should be filled' });
-      }
+      validMessage(req, res)
       let restaurant = await Restaurant.findByPk(req.params.restaurant_id)
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
