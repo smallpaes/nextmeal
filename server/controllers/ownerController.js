@@ -259,7 +259,7 @@ let ownerController = {
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
-        return res.status(422).json({ status: 'error', message: 'must query for this week or next week' })
+        return res.status(400).json({ status: 'error', message: 'must query for this week or next week' })
       }
 
       if (req.query.ran === 'thisWeek') {
@@ -278,6 +278,33 @@ let ownerController = {
         options: (req.query.ran === 'nextWeek') ? restaurant.Meals : undefined,
         message: message
       })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  putMenu: async (req, res) => {
+    try {
+      validMessage(req, res) //驗證表格
+      // 找出要修改的 meal
+      let meal = await Meal.findByPk(req.body.id)
+      const today = new Date().getDay()
+      // 修改 nextServing 為真，而且可以更改數量
+      if (Number(req.body.quantity) < 1) {
+        res.status(400).json({status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week'})
+      }
+      if (today >= 6) {
+        res.status(400).json({status: 'error', message: 'Today can not edit next week\'s menu.'})
+      }
+      if (!meal || Number(req.body.quantity) > 0) {
+        await meal.update({
+          name: req.body.name || meal.name,
+          quantity: req.body.quantity || meal.quantity,
+          nextServing: 1
+        })
+        res.status(200).json({ status: 'success', message: 'Successfully setting menu for next week' })
+      }
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
