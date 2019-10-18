@@ -5,6 +5,8 @@ const Restaurant = db.Restaurant
 const Meal = db.Meal
 const { validMessage } = require('../middleware/middleware')
 
+const mealQuantities = 50
+
 let ownerController = {
   getRestaurant: async (req, res) => {
     try {
@@ -157,6 +159,7 @@ let ownerController = {
               ...req.body,
               image: file ? img.data.link : 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
               RestaurantId: restaurant.id,
+              quantity: mealQuantities,
               modifiedAt: null,
               isServing: 1,
               nextServing: false
@@ -166,6 +169,7 @@ let ownerController = {
               ...req.body,
               image: file ? img.data.link : 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
               RestaurantId: restaurant.id,
+              quantity: mealQuantities,
               modifiedAt: null,
               isServing: 0,
               nextServing: 0
@@ -182,6 +186,7 @@ let ownerController = {
             ...req.body,
             image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
             RestaurantId: restaurant.id,
+            quantity: mealQuantities,
             modifiedAt: null,
             isServing: 1,
             nextServing: 0
@@ -191,12 +196,43 @@ let ownerController = {
             ...req.body,
             image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
             RestaurantId: restaurant.id,
+            quantity: mealQuantities,
             modifiedAt: null,
             isServing: 0,
             nextServing: 0
           })
         }
         res.status(200).json({ status: 'success', message: 'Successfully create a meal.' })
+      }
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  putDish: async (req, res) => {
+    try {
+      let meal = await Meal.findByPk(req.params.dish_id)
+      if (!meal) {
+        res.status(422).json({ status: 'error', message: 'meal is not exist.' })
+      }
+      validMessage(req, res) //驗證表格
+      const { file } = req
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        imgur.upload(file.path, async (err, img) => {
+          await meal.update({
+            ...req.body,
+            image: file ? img.data.link : meal.image,
+          })
+          return res.status(200).json({
+            status: 'success',
+            message: 'Successfully update a meal with image.'
+          })
+        })
+      } else {
+        await meal.update(req.body)
+        res.status(200).json({ status: 'success', message: 'Successfully update a meal.' })
       }
     } catch (error) {
       console.log(error)
