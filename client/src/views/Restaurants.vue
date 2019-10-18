@@ -299,4 +299,11 @@ export default {
   width: 100%;
   height: 400px;
 }
+
+.btn-container {
+    text-align: center;
+    .btn {
+        @include buttonOutline;
+    }
+}
 </style>
