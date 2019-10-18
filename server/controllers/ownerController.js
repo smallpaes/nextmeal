@@ -3,33 +3,29 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const Restaurant = db.Restaurant
 const Meal = db.Meal
-const { validationResult } = require('express-validator');
+const { validMessage } = require('../middleware/middleware')
 
 let ownerController = {
   getRestaurant: async (req, res) => {
     try {
       const restaurant = await Restaurant.findAll({
-        where: {UserId: req.user.id}
+        where: { UserId: req.user.id }
       })
       if (restaurant.length === 0) {
-        return res.status(200).json({status: 'success',  message: 'You have not restaurant yet.'})
+        return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
       }
-      res.status(200).json({status: 'success', restaurant, message: 'Successfully get the restaurant information.'})
+      res.status(200).json({ status: 'success', restaurant, message: 'Successfully get the restaurant information.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
   },
-  
-  postRestaurant: async (req, res) => {
-    try{
-      const errors = validationResult(req)
-      let restaurant = await Restaurant.findAll({where: {UserId: 1}})
-      if (restaurant) return res.status(422).json({ status: 'error', message: 'You already have a restaurant.' });
 
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 'error', errors: errors.array(), message: 'restautant information should be filled' });
-      }
+  postRestaurant: async (req, res) => {
+    try {
+      let restaurant = await Restaurant.findAll({ where: { UserId: 1 } })
+      if (restaurant) return res.status(422).json({ status: 'error', message: 'You already have a restaurant.' });
       const { file } = req
+      validMessage(req, res)
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
         imgur.upload(file.path, async (err, img) => {
@@ -82,16 +78,12 @@ let ownerController = {
 
   putRestaurant: async (req, res) => {
     try {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 'error', errors: errors.array(), message: 'restautant information should be filled' });
-      }
-      let restaurant = await Restaurant.findOne({where: {UserId: 1}})
-      
+      let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
       }
-      const { file } = req      
+      validMessage(req, res)
+      const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
         imgur.upload(file.path, async (err, img) => {
@@ -127,15 +119,85 @@ let ownerController = {
     try {
       let restaurant = await Restaurant.findAll({
         where: { UserId: req.user.id },
-        include:[ Meal ],
+        include: [Meal],
         attributes: ['id']
       })
-      if(restaurant[0].dataValues.Meals.length === 0 || restaurant.length === 0) {
-        res.status(200).json({status: 'error', message: 'You haven\'t setting restaurant or meal yet.'})
+      if (restaurant[0].dataValues.Meals.length === 0 || restaurant.length === 0) {
+        res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant or meal yet.' })
       }
       let meals = restaurant.map(rest => rest.dataValues.Meals)
       meals = meals[0].map(meal => meal.dataValues)
-      res.status(200).json({status: 'success', meals, message: 'Successfully get the dish information.'})
+      res.status(200).json({ status: 'success', meals, message: 'Successfully get the dish information.' })
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  postDish: async (req, res) => {
+    try {
+      let restaurant = await Restaurant.findOne({
+        where: { UserId: req.user.id },
+        include: [Meal],
+        attributes: ['id']
+      })
+      let mealServeing = restaurant.dataValues.Meals.map(rest => rest.dataValues.isServing).includes(true)
+      if (restaurant.length === 0) {
+        res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant yet.' })
+      }
+      // if (restaurant[0].dataValues.Meals.length > 0) {
+      //   res.status(422).json({status: 'error', message: 'the multiple meals of feature is not available for the moment.'})
+      // }
+      validMessage(req, res) //驗證表格
+      const { file } = req
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        imgur.upload(file.path, async (err, img) => {
+          if (!mealServeing) {
+            await Meal.create({
+              ...req.body,
+              image: file ? img.data.link : 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
+              RestaurantId: restaurant.id,
+              modifiedAt: null,
+              isServing: 1,
+              nextServing: false
+            })
+          } else {
+            await Meal.create({
+              ...req.body,
+              image: file ? img.data.link : 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
+              RestaurantId: restaurant.id,
+              modifiedAt: null,
+              isServing: 0,
+              nextServing: 0
+            })
+          }
+          return res.status(200).json({
+            status: 'success',
+            message: 'Successfully create a meal with image.'
+          })
+        })
+      } else {
+        if (!mealServeing) {
+          await Meal.create({
+            ...req.body,
+            image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
+            RestaurantId: restaurant.id,
+            modifiedAt: null,
+            isServing: 1,
+            nextServing: 0
+          })
+        } else {
+          await Meal.create({
+            ...req.body,
+            image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
+            RestaurantId: restaurant.id,
+            modifiedAt: null,
+            isServing: 0,
+            nextServing: 0
+          })
+        }
+        res.status(200).json({ status: 'success', message: 'Successfully create a meal.' })
+      }
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
