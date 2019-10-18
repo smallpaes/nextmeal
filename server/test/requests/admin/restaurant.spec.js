@@ -74,8 +74,9 @@ describe('# Admin::Restaurant request', () => {
         ).returns({ id: 1, role: 'Admin' });
         await db.User.destroy({ where: {}, truncate: true })
         await db.Restaurant.destroy({ where: {}, truncate: true })
+        await db.Order.destroy({ where: {}, truncate: true })
         await db.Restaurant.create(defaultRestaurant1)
-
+        await db.Order.create({ UserId: 1, order_date: new Date() })
 
       })
 
@@ -147,6 +148,55 @@ describe('# Admin::Restaurant request', () => {
 
       })
 
+      it('should see all orders', (done) => {
+        request(app)
+          .get('/api/admin/orders')
+          .expect(200)
+          .end((err, res) => {
+            res.body.orders.map(item => {
+              expect(item).to.have.property('user_name')
+              expect(item).to.have.property('restaurant_name')
+              expect(item).to.have.property('require_date')
+              expect(item).to.have.property('require_time')
+            })
+            return done()
+          })
+      })
+
+      it('should see specific order info', (done) => {
+        request(app)
+          .get('/api/admin/orders/1')
+          .expect(200)
+          .end(async (err, res) => {
+            const order = await db.Order.findByPk(1)
+            expect(order).not.to.be.null
+            return done()
+          })
+      })
+
+      it('should be able to  update  specific order info', (done) => {
+        request(app)
+          .put('/api/admin/orders/1')
+          .send('order_status=done')
+          .expect(200)
+          .end(async (err, res) => {
+            const order = await db.Order.findByPk(1)
+            expect(order.order_status).to.be.equal('done')
+            return done()
+          })
+      })
+
+      it('should be able to delete specific order info', (done) => {
+        request(app)
+          .delete('/api/admin/orders/1')
+          .expect(200)
+          .end(async (err, res) => {
+            const order = await db.Order.findByPk(1)
+            expect(order).to.be.null
+            return done()
+          })
+      })
+
 
 
       after(async () => {
@@ -155,6 +205,7 @@ describe('# Admin::Restaurant request', () => {
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true })
         await db.Restaurant.destroy({ where: {}, truncate: true })
+        await db.Order.destroy({ where: {}, truncate: true })
       })
     })
 
