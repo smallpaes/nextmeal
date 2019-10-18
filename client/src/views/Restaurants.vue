@@ -262,6 +262,18 @@ export default {
     this.currentDistrict = dist || '信義區'
     this.fetchRestaurants(dist, this.currentPage + 1)
   },
+  beforeRouteUpdate (to, from, next) {
+    // Reset current page
+    this.currentPage = 0
+    // Clear existing restaurants
+    this.more_restaurants.rows = []
+    // Get the district name
+    const { dist } = to.query
+    this.currentDistrict = dist || '信義區'
+    // Refetch the restaurant data
+    this.fetchRestaurants(dist, this.currentPage + 1)
+    next()
+  },
   methods: {
     fetchRestaurants (dist, page) {
       this.isLoading = true

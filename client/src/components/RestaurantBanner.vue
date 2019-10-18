@@ -27,15 +27,15 @@
             class="dropdown-menu rounded-sm"
             aria-labelledby="dropdownMenuButton"
           >
-            <a
+            <router-link
               v-for="district in districts"
               :key="district.eng_name"
+              :to="{name: 'restaurants', query: {dist: district.chinese_name}}"
               class="dropdown-item text-center"
               :class="{disabled: district.chinese_name === currentDistrict}"
-              href="#"
             >
               {{ district.chinese_name }}
-            </a>
+            </router-link>
           </div>
         </div>
       </div>
