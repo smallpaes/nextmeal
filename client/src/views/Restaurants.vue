@@ -51,6 +51,28 @@
         </div>
       </div>
     </section>
+    <section class="map bg-white">
+      <div class="container pt-3 pb-5">
+        <Header>
+          <template v-slot:title>
+            {{ currentDistrict }}餐廳
+          </template>
+          <template v-slot:description>
+            探索最近的美食地圖
+          </template>
+        </Header>
+        <GMap
+          v-if="!isLoading"
+          :center="{lat: parseFloat(map.center.lat), lng: parseFloat(map.center.lng)}"
+          :restaurants="map.restaurants"
+          :street-view-control="false"
+          :map-type-control="false"
+          :fullscreen-control="true"
+          :zoom-control="true"
+          class="shadow-sm rounded-sm"
+        />
+      </div>
+    </section>
     <Footer />
   </section>
 </template>
@@ -61,6 +83,8 @@ import Footer from '../components/Footer'
 import RestaurantBanner from '../components/RestaurantBanner'
 import RestaurantCarousel from '../components/RestaurantCarousel'
 import RestaurantCard from '../components/RestaurantCard'
+import GMap from '../components/GMap'
+import Header from '../components/Header'
 
 const dummyRestaurantAndDistrict = {
   popular_restaurants: [
@@ -215,7 +239,9 @@ export default {
     Footer,
     RestaurantBanner,
     RestaurantCarousel,
-    RestaurantCard
+    RestaurantCard,
+    GMap,
+    Header
   },
   data () {
     return {
@@ -227,7 +253,8 @@ export default {
       districts: [],
       currentDistrict: '',
       currentPage: 0,
-      totalPage: null
+      totalPage: null,
+      isLoading: true
     }
   },
   created () {
@@ -237,6 +264,7 @@ export default {
   },
   methods: {
     fetchRestaurants (dist, page) {
+      this.isLoading = true
       // fetch data from api
       this.popular_restaurants = dummyRestaurantAndDistrict.popular_restaurants || this.popular_restaurants
       this.more_restaurants.rows = [
@@ -248,6 +276,7 @@ export default {
       this.districts = dummyRestaurantAndDistrict.districts || this.districts
       // update current page number
       this.currentPage += 1
+      this.isLoading = false
     }
   }
 }
@@ -275,5 +304,10 @@ export default {
     .btn {
         @include buttonOutline;
     }
+}
+
+.google-map {
+  width: 100%;
+  height: 400px;
 }
 </style>
