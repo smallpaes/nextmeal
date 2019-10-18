@@ -229,7 +229,7 @@ describe('# Admin::Owner request', () => {
           .put('/api/owner/menu')
           .send('name=steak&quantity=60&id=2')
           .expect(200)
-          .end((err, res) => {
+          .end(async (err, res) => {
             const meal = await db.Meal.findByPk(2)
             expect(meal.quantity).to.be.equal(60)
             expect(res.body.status).to.be.equal('success')
