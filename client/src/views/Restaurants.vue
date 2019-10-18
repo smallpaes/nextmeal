@@ -2,7 +2,7 @@
   <section>
     <header>
       <Navbar />
-      <RestaurantBanner
+      <MediumBanner
         :districts="districts"
         :current-district="currentDistrict"
       />
@@ -80,7 +80,7 @@
 <script>
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import RestaurantBanner from '../components/RestaurantBanner'
+import MediumBanner from '../components/Banner/MediumBanner'
 import RestaurantCarousel from '../components/RestaurantCarousel'
 import RestaurantCard from '../components/RestaurantCard'
 import GMap from '../components/GMap'
@@ -237,7 +237,7 @@ export default {
   components: {
     Navbar,
     Footer,
-    RestaurantBanner,
+    MediumBanner,
     RestaurantCarousel,
     RestaurantCard,
     GMap,
