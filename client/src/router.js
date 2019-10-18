@@ -20,6 +20,11 @@ export default new Router({
       path: '/restaurant/:restaurant_id',
       name: 'restaurant',
       component: () => import('./views/Restaurant.vue')
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('./views/Login.vue')
     }
   ]
 })
