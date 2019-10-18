@@ -2,7 +2,7 @@
   <section>
     <header>
       <Navbar />
-      <LargeBanner />
+      <LandingPageBanner />
       <OrderProcess />
     </header>
     <section class="popular">
@@ -38,7 +38,7 @@
 
 <script>
 import Navbar from '../components/Navbar'
-import LargeBanner from '../components/Banner/LargeBanner'
+import LandingPageBanner from '../components/Banner/LandingPageBanner'
 import OrderProcess from '../components/OrderProcess'
 import RestaurantCarousel from '../components/RestaurantCarousel'
 import Districts from '../components/Districts'
@@ -120,7 +120,7 @@ export default {
   name: 'Home',
   components: {
     Navbar,
-    LargeBanner,
+    LandingPageBanner,
     OrderProcess,
     RestaurantCarousel,
     Districts,
