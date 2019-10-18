@@ -214,7 +214,7 @@ let ownerController = {
     try {
       let meal = await Meal.findByPk(req.params.dish_id)
       if (!meal) {
-        res.status(422).json({ status: 'error', message: 'meal is not exist.' })
+        return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
       }
       validMessage(req, res) //驗證表格
       const { file } = req
@@ -234,6 +234,18 @@ let ownerController = {
         await meal.update(req.body)
         res.status(200).json({ status: 'success', message: 'Successfully update a meal.' })
       }
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  deleteDish: async (req, res) => {
+    try {
+      let meal = await Meal.findByPk(req.params.dish_id)
+      if (!meal) return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
+      
+      await meal.destroy()
+      res.status(200).json({ status: 'success', message: 'was successfully destroyed.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })

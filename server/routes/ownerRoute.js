@@ -11,5 +11,6 @@ router.put('/', upload.single('image'), validRestaurantForm, ownerController.put
 router.get('/dishes', ownerController.getDishes)
 router.post('/dishes', upload.single('image'), validMealForm, ownerController.postDish)
 router.put('/dishes/:dish_id/edit', upload.single('image'), validMealForm, ownerController.putDish)
+router.delete('/dishes/:dish_id', upload.single('image'), validMealForm, ownerController.deleteDish)
 
 module.exports = router
