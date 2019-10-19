@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC:400,700,900&display=swap&subset=chinese-traditional');
+
+* {
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+button {
+    &:focus {
+        outline: none;
+        box-shadow: none;
+    }
+}
