@@ -1,0 +1,30 @@
+[
+  {
+    "chinese_name": "大安區",
+    "eng_name": "Da'an",
+    "image": "https://picsum.photos/1920/1080",
+    "lng": "121.5434446",
+    "lat": "25.02677012"
+  },
+  {
+    "chinese_name": "信義區",
+    "eng_name": "Xinyi",
+    "image": "https://picsum.photos/1920/1080",
+    "lng": "121.5716697",
+    "lat": "25.03062083"
+  },
+  {
+    "chinese_name": "中山區",
+    "eng_name": "Zhongshan",
+    "image": "https://picsum.photos/1920/1080",
+    "lng": "121.7308913",
+    "lat": "25.14986365"
+  },
+  {
+    "chinese_name": "松山區",
+    "eng_name": "Songshan",
+    "image": "https://picsum.photos/1920/1080",
+    "lng": "121.5575876",
+    "lat": "25.05999101"
+  }
+]
