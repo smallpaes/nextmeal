@@ -86,22 +86,22 @@ describe('# Admin::Restaurant request', () => {
         request(app)
           .get('/api/admin/restaurants')
           .expect(200)
-          .then(response => {
-            expect(response.body).to.have.property('restaurants')
-            done()
-          }).catch(err => console.log(err))
+          .end((err, res) => {
+            expect(res.body).to.have.property('restaurants')
+            expect(res.body.restaurants.length).to.be.at.most(10)
+            return done()
+          })
       })
 
-      // it('should be able to filter restaurants by location', (done) => {
-      //   request(app)
-      //     .get('/api/admin/users?dist=')
-      //     .expect(200)
-      //     .end(async (err, res) => {
-      //       const users = await db.User.findAll()
-      //       expect(users.length).to.be.equal(3)
-      //       return done()
-      //     })
-      // })
+      it('should be able to filter restaurants by location', (done) => {
+        request(app)
+          .get("/api/admin/restaurants?dist=Da'an")
+          .expect(200)
+          .end(async (err, res) => {
+            expect(res.body.restaurants.length).to.be.equal(1)
+            return done()
+          })
+      })
 
       it('should see specific restaurant info', (done) => {
         request(app)
@@ -134,7 +134,6 @@ describe('# Admin::Restaurant request', () => {
             expect(restaurant.name).to.be.equal('john')
             return done()
           })
-
       })
 
       it('should be able to delete specific restaurant info', (done) => {
@@ -147,6 +146,13 @@ describe('# Admin::Restaurant request', () => {
               return done()
             })
           })
+      })
+
+      it('fail to delete specific restaurant info', (done) => {
+        request(app)
+          .delete('/api/admin/restaurants/U001')
+          .expect(400)
+          .expect({ status: "error", message: "restaurant does not exist" }, done)
 
       })
 
@@ -176,7 +182,14 @@ describe('# Admin::Restaurant request', () => {
           })
       })
 
-      it('should be able to  update  specific order info', (done) => {
+      it('fail to see specific order info', (done) => {
+        request(app)
+          .get('/api/admin/orders/U001')
+          .expect(400)
+          .expect({ status: "error", message: "order does not exist" }, done)
+      })
+
+      it('should be able to update specific order info', (done) => {
         request(app)
           .put('/api/admin/orders/1')
           .send('order_status=done')
@@ -188,6 +201,13 @@ describe('# Admin::Restaurant request', () => {
           })
       })
 
+      it('fail to update specific order info', (done) => {
+        request(app)
+          .put('/api/admin/orders/U001')
+          .expect(400)
+          .expect({ status: "error", message: "order does not exist" }, done)
+      })
+
       it('should be able to delete specific order info', (done) => {
         request(app)
           .delete('/api/admin/orders/1')
@@ -197,6 +217,13 @@ describe('# Admin::Restaurant request', () => {
             expect(order).to.be.null
             return done()
           })
+      })
+
+      it('fail to delete specific order info', (done) => {
+        request(app)
+          .delete('/api/admin/orders/U001')
+          .expect(400)
+          .expect({ status: "error", message: "order does not exist" }, done)
       })
 
 
