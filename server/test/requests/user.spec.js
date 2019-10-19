@@ -221,12 +221,7 @@ describe('# User: request', () => {
         request(app)
           .delete('/api/order/2')
           .expect(200)
-          .expect({ status: 'success', message: 'successfully delete an order' })
-          .end(async (err, res) => {
-            const order = await db.Order.findByPk(2)
-            expect(order).to.be.null
-            return done()
-          })
+          .expect({ status: 'success', message: 'successfully delete an order' }, done)
       })
 
       after(async () => {

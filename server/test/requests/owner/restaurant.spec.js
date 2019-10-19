@@ -177,10 +177,10 @@ describe('# Admin::Owner request', () => {
 
       it('should be able to delete specific meal info', (done) => {
         request(app)
-          .delete('/api/owner/dishes/2')
+          .delete('/api/owner/dishes/1')
           .expect(200)
           .end(async (err, res) => {
-            const meal = await db.Meal.findByPk(2)
+            const meal = await db.Meal.findByPk(1)
             expect(meal).to.be.null
             return done()
           })
@@ -191,12 +191,6 @@ describe('# Admin::Owner request', () => {
           .get('/api/owner/menu?ran=thisWeek')
           .expect(200)
           .end((err, res) => {
-            // res.body.meals.map(item => {
-            //   expect(item).to.have.property('name')
-            //   expect(item).to.have.property('id')
-            //   expect(item).to.have.property('image')
-            //   expect(item).to.have.property('quantity')
-            // })
             expect(res.body.meal).to.have.property('name')
             expect(res.body.meal).to.have.property('id')
             expect(res.body.meal).to.have.property('image')

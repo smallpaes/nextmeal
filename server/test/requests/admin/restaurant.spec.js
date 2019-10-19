@@ -176,6 +176,7 @@ describe('# Admin::Restaurant request', () => {
           .end(async (err, res) => {
             const order = await db.Order.findByPk(1)
             expect(order).not.to.be.null
+            expect(res.body.order_status).not.to.be.empty()
             return done()
           })
       })
