@@ -86,7 +86,7 @@ describe('# Admin::Owner request', () => {
           .post('/api/owner')
           .send('name=dannyRestaurant')
           .expect(200)
-          .expect({ status: 'success', message: 'successfuly add a new restaurant' })
+          .expect({ status: 'success', message: 'successfully add a new restaurant' })
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)
             expect(restaurant.name).to.be.equal('dannyRestaurant')
@@ -210,12 +210,6 @@ describe('# Admin::Owner request', () => {
           .get('/api/owner/menu?ran=nextWeek')
           .expect(200)
           .end((err, res) => {
-            // res.body.meals.map(item => {
-            //   expect(item).to.have.property('name')
-            //   expect(item).to.have.property('id')
-            //   expect(item).to.have.property('image')
-            //   expect(item).to.have.property('quantity')
-            // })
             expect(res.body.meal).to.have.property('name')
             expect(res.body.meal).to.have.property('id')
             expect(res.body.meal).to.have.property('image')
