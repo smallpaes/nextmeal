@@ -107,13 +107,12 @@ describe('# Admin::Restaurant request', () => {
         request(app)
           .get('/api/admin/restaurants/1')
           .expect(200)
-          .then(response => {
+          .end((err, res) => {
             expect(response.body).to.have.property('name')
             expect(response.body).to.have.property('location')
             expect(response.body).to.have.property('rating')
-            done()
+            return done()
           })
-
       })
 
       it('fail to get specific restaurant info', (done) => {
@@ -121,7 +120,6 @@ describe('# Admin::Restaurant request', () => {
           .get('/api/admin/restaurants/U001')
           .expect(400)
           .expect({ status: "error", message: "restaurant does not exist" }, done)
-
       })
 
       it('should be able to update specific restaurant info', (done) => {
