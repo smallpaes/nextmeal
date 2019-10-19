@@ -63,6 +63,15 @@
     }
 }
 
+@mixin linkStyling($color) {
+    color: color($color);
+    transition: color .2s linear;
+
+    &:hover {
+        color: darken(color(tertiary), 5%);
+    }
+}
+
 @mixin headingStyling {
     &-heading {
         text-align: center;

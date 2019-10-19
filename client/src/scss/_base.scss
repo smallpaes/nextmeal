@@ -14,3 +14,7 @@ button {
         box-shadow: none;
     }
 }
+
+.btn {
+    @extend button;
+}

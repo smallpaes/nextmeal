@@ -9,3 +9,12 @@ export const timeTransformFilter = {
     }
   }
 }
+
+export const dateTransformFilter = {
+  filters: {
+    dateTransform (timestamp) {
+      if (!timestamp) return '-'
+      return moment(timestamp).format('YYYY-MM-DD')
+    }
+  }
+}

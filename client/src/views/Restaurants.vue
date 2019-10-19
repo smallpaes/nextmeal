@@ -64,7 +64,7 @@
         <GMap
           v-if="!isLoading"
           :center="{lat: parseFloat(map.center.lat), lng: parseFloat(map.center.lng)}"
-          :restaurants="map.restaurants"
+          :locations="map.restaurants"
           :street-view-control="false"
           :map-type-control="false"
           :fullscreen-control="true"

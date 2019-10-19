@@ -51,7 +51,9 @@
           <p class="text-left m-0 mr-3">
             現在就前往體驗 NextMeal
           </p>
-          <a href="#">註冊</a>
+          <router-link :to="{name: 'signup'}">
+            註冊
+          </router-link>
         </div>
       </form>
     </div>
