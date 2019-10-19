@@ -14,8 +14,17 @@ export default {
 </script>
 
 <style lang="scss">
+html {
+  height: 100%;
+}
+
 body {
   background-color: #F4F7F8;
   color: color(secondary);
+  height: 100%;
+}
+
+#app {
+  height: 100%;
 }
 </style>

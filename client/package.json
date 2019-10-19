@@ -8,9 +8,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
     "core-js": "^2.6.5",
+    "google-maps-api-loader": "^1.1.1",
     "jquery": "^3.4.1",
+    "moment": "^2.24.0",
     "popper.js": "^1.15.0",
     "sass-loader": "^7.1.0",
     "vue": "^2.6.10",
