@@ -1,5 +1,7 @@
 const db = require('../models')
 const Subscription = db.Subscription
+const sequelize = require('sequelize')
+const Op = sequelize.Op
 const crypto = require("crypto"); // 加密
 // const nodemailer = require("nodemailer"); // 寄送 mail
 
@@ -47,9 +49,9 @@ function create_mpg_aes_decrypt(TradeInfo) {
   return result;
 }
 
-function getTradeInfo(Amt, Desc, email) {
+function getTradeInfo(Amt, Desc, email, sn) {
   console.log("===== getTradeInfo =====");
-  console.log(Amt, Desc, email);
+  console.log(Amt, Desc, email, sn);
   console.log("==========");
 
   data = {
@@ -57,7 +59,7 @@ function getTradeInfo(Amt, Desc, email) {
     RespondType: "JSON", // 回傳格式
     TimeStamp: Date.now(), // 時間戳記
     Version: 1.5, // 串接程式版本
-    MerchantOrderNo: Date.now(), // 商店訂單編號
+    MerchantOrderNo: (sn) ? sn : Date.now(), // 商店訂單編號
     LoginType: 0, // 智付通會員
     OrderComment: "OrderComment", // 商店備註
     Amt: Amt, // 訂單金額
@@ -94,22 +96,54 @@ function getTradeInfo(Amt, Desc, email) {
 }
 
 let userController = {
+  getSubscription: async (req, res) => {
+    try {
+      let subscription = await Subscription.findAll({
+        where: { UserId: 1 },
+        order: [['createdAt', 'DESC']],
+        limit: 1
+      })
+      if (subscription.length === 0 || subscription[0].payment_status === '0' || subscription[0].sub_expired_date < Date.now()) {
+        return res.status(200).json({
+          status: 'error',
+          subscription: (subscription) ? subscription : '',
+          message: 'you should subscribe the NextMeal now'
+        })
+      }
+      return res.status(200).json({ status: 'error', subscription, message: 'you are already subscribe the NextMeal' })
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
   postSubscription: async (req, res) => {
     try {
-      console.log(req.body.sub_price)
-      console.log(req.body.sub_name)
-      console.log(req.body.email)
-      const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.email)
-      let subscription = await Subscription.create({
-        UserId: 1,
-        sub_name: req.body.sub_name,
-        sub_price: req.body.sub_price,
-        payment_status: 0,
-        sub_balance: req.body.sub_balance,
-        sn: tradeInfo.MerchantOrderNo
+      // console.log(req.body.sub_price)
+      // console.log(req.body.sub_name)
+      // console.log(req.body.email)
+      // 如果沒有訂單
+      let subscription = await Subscription.findAll({
+        where: { UserId: 1 },
+        order: [['createdAt', 'DESC']],
+        limit: 1
       })
-      return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
-    } catch (error){
+      if (subscription.length === 0) {
+        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.email) //req.user.email
+        let subscription = await Subscription.create({
+            UserId: 1,
+            sub_name: req.body.sub_name,
+            sub_price: req.body.sub_price,
+            payment_status: 0,
+            sub_balance: req.body.sub_balance,
+            sn: tradeInfo.MerchantOrderNo
+        })
+        return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
+      }
+      
+      // 如果有訂單
+      const tradeInfo = getTradeInfo(subscription[0].sub_price, subscription[0].sub_name, req.body.email, subscription[0].sn)
+      return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
+    } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
