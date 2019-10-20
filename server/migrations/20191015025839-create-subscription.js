@@ -29,6 +29,9 @@ module.exports = {
       payment_status: {
         type: Sequelize.STRING
       },
+      sn: {
+        type: Sequelize.STRING
+      },
       sub_balance: {
         type: Sequelize.FLOAT
       },

@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     sub_date: DataTypes.DATE,
     sub_expired_date: DataTypes.DATE,
     payment_status: DataTypes.STRING,
+    sn: DataTypes.STRING,
     sub_balance: DataTypes.FLOAT
   }, {});
   Subscription.associate = function (models) {
