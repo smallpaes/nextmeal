@@ -1,5 +1,6 @@
 const db = require('../models')
 const Subscription = db.Subscription
+const User = db.User
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const crypto = require("crypto"); // 加密
@@ -177,6 +178,26 @@ let userController = {
 
       return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
     } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getProfile: async (req, res) => {
+    try {
+      
+      if (req.user.id !== req.params.user_id) {
+        return res.status(403).json({status: 'success', message: 'You are not allow access this page.'})
+      }
+
+      const user = await User.findByPk(req.params.user_id, {
+        attributes: {
+          exclude: ['password']
+        }
+      })
+
+      return res.status(200).json({status: 'success', user, message: 'get personal profile page.'})
+    } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }
