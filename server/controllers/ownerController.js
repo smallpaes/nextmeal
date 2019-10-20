@@ -2,6 +2,7 @@ const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const Restaurant = db.Restaurant
+const Category = db.Category
 const Meal = db.Meal
 const { validMessage } = require('../middleware/middleware')
 
@@ -10,14 +11,34 @@ const mealQuantities = 50
 let ownerController = {
   getRestaurant: async (req, res) => {
     try {
-      const restaurant = await Restaurant.findAll({
-        where: { UserId: 5 }
+      let restaurant = await Restaurant.findAll({
+        where: { UserId: 5 },
+        include: [{ model: Category, attributes: ['id', 'name'] }],
+        attributes: ['id',
+          'name',
+          'description',
+          'image',
+          'tel',
+          'rating',
+          'location',
+          ['latitude', 'lat'],
+          ['longitude', 'lng'],
+          'address',
+          'opening_hour',
+          'closing_hour',
+          'UserId'
+        ]
       })
       if (restaurant.length === 0) {
         return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
       }
-      res.status(200).json({ status: 'success', restaurant, message: 'Successfully get the restaurant information.' })
+      
+      const categories = await Category.findAll({
+        attributes: ['id', 'name']
+      })
+      res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get the restaurant information.' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -266,13 +287,13 @@ let ownerController = {
         whereQuery = { RestaurantId: restaurant.id, isServing: true }
         message = 'the meals for this week'
       }
-      if (req.query.ran === 'nextWeek'){
+      if (req.query.ran === 'nextWeek') {
         whereQuery = { RestaurantId: restaurant.id, nextServing: true }
         message = 'the meals for next week'
       }
 
       let meals = await Meal.findAll({ where: whereQuery })
-      return res.status(200).json({ 
+      return res.status(200).json({
         status: 'success',
         meals,
         options: (req.query.ran === 'nextWeek') ? restaurant.Meals : undefined,
@@ -292,10 +313,10 @@ let ownerController = {
       const today = new Date().getDay()
       // 修改 nextServing 為真，而且可以更改數量
       if (Number(req.body.quantity) < 1) {
-        res.status(400).json({status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week'})
+        res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
       }
       if (today >= 6) {
-        res.status(400).json({status: 'error', message: 'Today can not edit next week\'s menu.'})
+        res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
       if (!meal || Number(req.body.quantity) > 0) {
         await meal.update({
