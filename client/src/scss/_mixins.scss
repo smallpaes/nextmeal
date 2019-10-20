@@ -31,10 +31,11 @@
     }
 }
 
-@mixin flexPosition($justCont:center, $alignIte: center) {
+@mixin flexPosition($justCont:center, $alignIte: center, $direction: column) {
     display: flex;
     justify-content: $justCont;
     align-items: $alignIte;
+    flex-direction: $direction;
 }
 
 @mixin setBackground($imageUrl, $height) {
@@ -73,11 +74,11 @@
 }
 
 @mixin linkStyling($color) {
-    color: color($color);
+    color: $color;
     transition: color .2s linear;
 
     &:hover {
-        color: darken(color($color), 5%);
+        color: darken($color, 10%);
     }
 }
 

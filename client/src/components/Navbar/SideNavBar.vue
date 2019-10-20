@@ -61,10 +61,13 @@
 <style lang="scss" scoped>
 .sidenav {
     @include brand(sidenav);
+    position: fixed;
+    height: 100vh;
     width: 80px;
     white-space: nowrap;
     background-color: color(quaternary);
     transition: width .2s linear;
+    overflow-y: scroll;
 
     &-brand {
       @include visibleTransition(invisible);
@@ -89,9 +92,8 @@
     }
 
     &-link {
-        @include linkStyling(secondary);
+        @include linkStyling(lighten(color(secondary), 20%));
         padding: 0;
-        color: lighten(color(secondary), 20%);
         font-size: size(md);
 
         &.active {

@@ -30,6 +30,8 @@ export default {
 .info {
     padding: 2.3rem 2rem;
     max-width: 800px;
+    margin-left: 80px;
+    transition: margin-left .1s linear;
 
     &-title {
         size: size(lg);
@@ -37,6 +39,10 @@ export default {
 
     &-divider {
         width: 100%;
+    }
+
+    @include response(md) {
+        margin-left: 145px;
     }
 }
 </style>

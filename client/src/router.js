@@ -35,6 +35,11 @@ export default new Router({
       path: '/owner',
       name: 'owner-info',
       component: () => import('./views/OwnerInfo.vue')
+    },
+    {
+      path: '/owner/dishes',
+      name: 'owner-dishes',
+      component: () => import('./views/OwnerDishes.vue')
     }
   ]
 })
