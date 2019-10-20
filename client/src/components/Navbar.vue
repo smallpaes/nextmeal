@@ -1,9 +1,11 @@
 <template>
   <nav class="navbar navbar-expand-sm navbar-light bg-white fixed-top shadow-sm">
-    <a
-      href="#"
+    <router-link
       class="navbar-brand"
-    >NextMeal</a>
+      :to="{name: 'home'}"
+    >
+      NextMeal
+    </router-link>
     <button
       class="navbar-toggler"
       type="button"
