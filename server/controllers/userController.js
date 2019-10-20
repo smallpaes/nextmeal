@@ -4,6 +4,7 @@ const db = require('../models')
 const User = db.User
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
+const Category = db.Category
 
 module.exports = {
     emailCheck:async (req,res)=>{
@@ -70,6 +71,11 @@ module.exports = {
             id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar,dob:user.dob.toLocaleDateString('en-US'),prefer:user.prefer,address:user.address
           }
         })
+      },
+      getCategories:async(req,res)=>{
+          const categories = await Category.findAll()
+          const category = categories.map(item=>item.name)
+          return res.json({category})
       }
 
 }
