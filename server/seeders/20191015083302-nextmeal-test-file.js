@@ -130,7 +130,7 @@ module.exports = {
       , {});
 
       // add orders
-    return queryInterface.bulkInsert("Orders",
+    queryInterface.bulkInsert("Orders",
     Array.from({ length: 3 }).map((item, index) => (
       {
         UserId: Math.ceil(Math.random()*2),
@@ -141,12 +141,31 @@ module.exports = {
         updatedAt: new Date()
       }))
     , {});
+
+    // add subscriptions
+    return queryInterface.bulkInsert("Subscriptions",
+    Array.from({ length: 6 }).map((item, index) => (
+      {
+        UserId: index+1,
+        sub_name:'輕量型',
+        sub_price:1000,
+        sub_description:'一個月10餐',
+        sub_balance:10,
+        sub_date:new Date(),
+        sub_expired_date:new Date(nowTime.getTime()+(24*60*60*30*1000)),
+        payment_status:Math.floor(Math.random()*2),
+        sn:new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }))
+    , {});
   },
 
   down: (queryInterface, Sequelize) => {
     queryInterface.bulkDelete('Users', null, { truncate: true })
     queryInterface.bulkDelete('Categories', null, { truncate: true })
-    queryInterface.bulkDelete('Meals', null, { truncate: true }),
+    queryInterface.bulkDelete('Meals', null, { truncate: true })
+    queryInterface.bulkDelete('Subscriptions', null, { truncate: true })
     queryInterface.bulkDelete('Orders', null, { truncate: true })
     return queryInterface.bulkDelete('Restaurants', null, { truncate: true })
   }
