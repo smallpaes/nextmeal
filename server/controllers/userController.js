@@ -1,9 +1,12 @@
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
 const db = require('../models')
 const Subscription = db.Subscription
 const User = db.User
-const sequelize = require('sequelize')
-const Op = sequelize.Op
+const Category = db.Category
 const crypto = require("crypto"); // 加密
+const { validMessage } = require('../middleware/middleware')
+const districts = require('../location/district.json')
 // const nodemailer = require("nodemailer"); // 寄送 mail
 
 const URL = 'https://f798ad18.ngrok.io'; //本地 domain 不接受，使用 ngrok 工具做臨時網址，取得的網址放這
@@ -184,23 +187,55 @@ let userController = {
 
   getProfile: async (req, res) => {
     try {
-      
       if (req.user.id !== req.params.user_id) {
         return res.status(403).json({status: 'success', message: 'You are not allow access this page.'})
       }
-
+      const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
         attributes: {
           exclude: ['password']
         }
       })
 
-      return res.status(200).json({status: 'success', user, message: 'get personal profile page.'})
+      return res.status(200).json({status: 'success', user, categories, districts, message: 'get personal profile page.'})
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
-  }
+  },
+  putProfile: async (req, res) => {
+    try {
+      if (req.user.id !== req.params.user_id) {
+        return res.status(403).json({status: 'success', message: 'You are not allow edit this profile.'})
+      }
+      validMessage(req, res)
+      let user = await User.findByPk(req.params.user_id)
+      const { file } = req
+      // 如果上有照片
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        imgur.upload(file.path, async (err, img) => {
+          await user.update({
+            ...req.body,
+            avatar: file ? img.data.link : user.avatar,
+          })
+          return res.status(200).json({
+            status: 'success',
+            message: 'Successfully update user profile with image.'
+          })
+        })
+      } else {
+        // 如果沒上傳照片
+        await user.update({
+          ...req.body
+        })
+        res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
+      }
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
 }
 
 module.exports = userController
