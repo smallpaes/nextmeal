@@ -27,14 +27,18 @@ export const getGeoMethods = {
       try {
         const BASE_URL = 'https://maps.googleapis.com/maps/api/geocode'
         const language = 'zh-TW'
-        const postalCode = 'postal_code:106|postal_code:104|postal_code:105|postal_code:110'
+        const activeDistricts = ['信義區', '大安區', '中山區', '松山區']
         const addressInput = document.getElementById('address')
         const form = document.querySelector('form')
-        const { data } = await axios.get(`${BASE_URL}/json?address=${this[storeLocation].address}&language=${language}&components=country:TW|${postalCode}&key=${this.apiKey}`)
+        const { data } = await axios.get(`${BASE_URL}/json?address=${this[storeLocation].address}&language=${language}&components=country:TW&key=${this.apiKey}`)
+
+        // Retrieve district from data
+        const district = data.results[0].address_components[2] || null
+
         // validate address
-        if (data.status !== 'OK') {
+        if (data.status !== 'OK' || !district || !activeDistricts.includes(district.long_name)) {
           addressInput.setCustomValidity('invalid')
-          this.validationMsg.address = '請確認地址位於信義、松山、大安、中山區'
+          this.validationMsg.address = '請確認地址位於台北市信義、松山、大安、中山區'
         } else {
           addressInput.setCustomValidity('')
           this.validationMsg.address = '請輸入地址'

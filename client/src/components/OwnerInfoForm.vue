@@ -3,6 +3,14 @@
     class="form p-3 rounded shadow-sm"
     novalidate
   >
+    <!--Show alert section-->
+    <div
+      v-if="warningMessage"
+      class="alert p-1"
+      role="alert"
+    >
+      <i class="fas fa-exclamation-circle" />  {{ warningMessage }}
+    </div>
     <div class="form-row">
       <!--Name-->
       <div class="form-group col-md-6">
@@ -338,5 +346,10 @@ export default {
             text-align: right;
         }
     }
+}
+
+.alert {
+  background-color: color(tertiary);
+  color: color(quaternary);
 }
 </style>
