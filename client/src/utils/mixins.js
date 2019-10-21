@@ -55,3 +55,14 @@ export const getGeoMethods = {
     }
   }
 }
+
+export const handleFileChangeMethod = {
+  methods: {
+    handleFileChange (event, targetName) {
+      const files = event.target.files
+      if (!files.length) return
+      const imageURL = window.URL.createObjectURL(files[0])
+      this[targetName].image = imageURL
+    }
+  }
+}

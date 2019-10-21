@@ -132,7 +132,7 @@
         type="file"
         class="file-input"
         accept=".png, .jpg, .jpeg"
-        @change="handleFileChange"
+        @change="handleFileChange($event, 'restaurant')"
       >
       <!--Preview image-->
       <div
@@ -174,7 +174,7 @@
 </template>
 
 <script>
-import { getGeoMethods } from '../utils/mixins'
+import { getGeoMethods, handleFileChangeMethod } from '../utils/mixins'
 
 const dummyRestaurant = {
   restaurant: {
@@ -208,7 +208,7 @@ const dummyRestaurant = {
 }
 
 export default {
-  mixins: [getGeoMethods],
+  mixins: [getGeoMethods, handleFileChangeMethod],
   data () {
     return {
       restaurant: {
@@ -261,12 +261,6 @@ export default {
       }
       this.categories = categories
       this.hasRestaurantData = true
-    },
-    handleFileChange (e) {
-      const files = e.target.files
-      if (!files.length) return
-      const imageURL = window.URL.createObjectURL(files[0])
-      this.restaurant.image = imageURL
     },
     afterReceiveGeo () {
       this.hasRestaurantData ? this.updateRestaurant() : this.createRestaurant()

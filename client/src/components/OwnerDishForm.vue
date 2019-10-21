@@ -1,6 +1,6 @@
 <template>
   <form
-    class="form p-3 rounded shadow-sm"
+    class="form p-3 rounded shadow-sm needs-validation"
     novalidate
     @submit.stop.prevent="handleSubmit"
   >
@@ -12,7 +12,7 @@
       <label for="name">餐點名稱</label>
       <input
         id="name"
-        v-model.trim="name"
+        v-model.trim="dish.name"
         type="text"
         class="form-control"
         required
@@ -26,7 +26,7 @@
       <label for="description">餐點介紹</label>
       <textarea
         id="description"
-        v-model="description"
+        v-model="dish.description"
         class="form-control"
         minlength="10"
         maxlength="100"
@@ -48,22 +48,22 @@
         type="file"
         class="file-input"
         accept=".png, .jpg, .jpeg"
-        @change="handleFileChange"
+        @change="handleFileChange($event,'dish')"
       >
       <!--Preview image-->
       <div
-        v-if="image"
+        v-if="dish.image"
         class="file-image-wrapper"
       >
         <img
-          :src="image"
+          :src="dish.image"
           class="file-image"
           alt="餐點照片"
         >
         <span
           class="close-btn"
           aria-hidden="true"
-          @click="image = ''"
+          @click="dish.image = ''"
         >&times;</span>
       </div>
       <!--Visible file upload button-->
@@ -90,23 +90,53 @@
 </template>
 
 <script>
+import { handleFileChangeMethod } from '../utils/mixins'
+
 export default {
+  mixins: [handleFileChangeMethod],
+  props: {
+    initialDish: {
+      type: Object,
+      default: () => ({
+        name: '',
+        description: '',
+        image: ''
+      })
+    }
+  },
   data () {
     return {
-      name: '',
-      description: '',
-      image: ''
+      dish: {
+        name: '',
+        description: '',
+        image: ''
+      }
+    }
+  },
+  watch: {
+    initialDish (dish) {
+      this.dish = {
+        ...this.dish,
+        ...dish
+      }
+    }
+  },
+  created () {
+    this.dish = {
+      ...this.dish,
+      ...this.initialDish
     }
   },
   methods: {
-    handleFileChange (e) {
-      const files = e.target.files
-      if (!files.length) return
-      const imageURL = window.URL.createObjectURL(files[0])
-      this.image = imageURL
-    },
-    handleSubmit () {
-      const formData = { name: this.name, description: this.description, image: this.image }
+    handleSubmit (e) {
+      // form validation
+      const form = e.target
+      if (form.checkValidity() === false) {
+        form.classList.add('was-validated')
+        return
+      }
+
+      const formData = { ...this.dish }
       this.$emit('after-submit', formData)
     }
   }

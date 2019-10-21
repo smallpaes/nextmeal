@@ -45,6 +45,11 @@ export default new Router({
       path: '/owner/dishes/new',
       name: 'owner-dish-new',
       component: () => import('./views/OwnerDishNew.vue')
+    },
+    {
+      path: '/owner/dishes/:dish_id/edit',
+      name: 'owner-dish-edit',
+      component: () => import('./views/OwnerDishEdit.vue')
     }
   ]
 })
