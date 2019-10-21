@@ -231,12 +231,29 @@ let ownerController = {
     }
   },
 
-  putDish: async (req, res) => {
+  getDish: async (req, res) => {
     try {
       let meal = await Meal.findByPk(req.params.dish_id)
       if (!meal) {
         return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
       }
+
+      res.status(200).json({ status: 'success', meal, message: 'Successfully get the dish information.' })
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  putDish: async (req, res) => {
+    try {
+      let meal = await Meal.findByPk(req.params.dish_id, {
+        include: [{model: Restaurant, attributes: ['UserId']}]
+      })
+      if (!meal) {
+        return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
+      }
+      if (meal.Restaurant.UserId !== req.user.id) return res.status(422).json({ status: 'error', message: 'You are not allow this action.' })
+      
       validMessage(req, res) //驗證表格
       const { file } = req
       if (file) {
