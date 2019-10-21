@@ -127,23 +127,30 @@ let userController = {
       // console.log(req.body.email)
       // 如果沒有訂單
       let subscription = await Subscription.findAll({
-        where: { UserId: 1 },
+        where: { UserId: req.user.id },
         order: [['createdAt', 'DESC']],
         limit: 1
       })
-      if (subscription.length === 0) {
-        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.email) //req.user.email
+
+      if (subscription.length > 0 && subscription[0].dataValues.sub_expired_date > Date.now()) {
+        return res.status(200).json({ status: 'success', message: 'You still have an active subscrtiption.' })
+      }
+      if (subscription.length === 0 ||
+        subscription[0].dataValues.payment_status !== '0' &&
+        subscription[0].dataValues.sub_expired_date < Date.now()
+      ) {
+        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.user.email) //req.user.email
         let subscription = await Subscription.create({
-            UserId: 1,
-            sub_name: req.body.sub_name,
-            sub_price: req.body.sub_price,
-            payment_status: 0,
-            sub_balance: req.body.sub_balance,
-            sn: tradeInfo.MerchantOrderNo
+          UserId: req.user.id,
+          sub_name: req.body.sub_name,
+          sub_price: req.body.sub_price,
+          payment_status: 0,
+          sub_balance: req.body.sub_balance,
+          sn: tradeInfo.MerchantOrderNo,
         })
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
       }
-      
+
       // 如果有訂單
       const tradeInfo = getTradeInfo(subscription[0].sub_price, subscription[0].sub_name, req.body.email, subscription[0].sn)
       return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
@@ -168,16 +175,15 @@ let userController = {
       const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
       console.log("===== spgatewayCallback: create_mpg_aes_decrypt、data =====");
       console.log(data);
-      // let sub_date = new Date()
-      // let sub_expired_date = sub_date.setDate(sub_date.getMonth() + 1)
-      // let subscription = await Subscription.findAll({ where: { sn: data['Result']['MerchantOrderNo'] } })
-
-      // subscription.update({
-      //   ...req.body,
-      //   payment_ststus: 1,
-      //   sub_date: sub_date,
-      //   sub_expired_date: sub_expired_date
-      // })
+      let sub_date = new Date()
+      let sub_expired_date = sub_date.setDate(sub_date.getDate() + 30)
+      let subscription = await Subscription.findAll({ where: { sn: data['Result']['MerchantOrderNo'] } })
+      subscription.update({
+        ...req.body,
+        payment_ststus: 1,
+        sub_date: sub_date,
+        sub_expired_date: sub_expired_date
+      })
 
       return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
     } catch (error) {
@@ -188,7 +194,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== req.params.user_id) {
-        return res.status(403).json({status: 'success', message: 'You are not allow access this page.'})
+        return res.status(403).json({ status: 'success', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -197,7 +203,7 @@ let userController = {
         }
       })
 
-      return res.status(200).json({status: 'success', user, categories, districts, message: 'get personal profile page.'})
+      return res.status(200).json({ status: 'success', user, categories, districts, message: 'get personal profile page.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
@@ -205,8 +211,8 @@ let userController = {
   },
   putProfile: async (req, res) => {
     try {
-      if (req.user.id !== req.params.user_id) {
-        return res.status(403).json({status: 'success', message: 'You are not allow edit this profile.'})
+      if (req.user.id !== req.params.user_id || req.user.role !== 'Admin') {
+        return res.status(403).json({ status: 'success', message: 'You are not allow edit this profile.' })
       }
       validMessage(req, res)
       let user = await User.findByPk(req.params.user_id)
