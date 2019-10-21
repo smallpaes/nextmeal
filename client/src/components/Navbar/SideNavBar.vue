@@ -11,20 +11,20 @@
         <router-link
           :to="{name: 'owner-info'}"
           class="nav-link"
-          :class="{active: $route.name === 'owner-info'}"
         >
           <span class="icon"><i class="fas fa-store" /></span>
           <span class="nav-link-description">餐廳</span>
         </router-link>
       </li>
       <li class="nav-item">
-        <a
-          href="#"
+        <router-link
+          :to="{name: 'owner-dishes'}"
           class="nav-link"
+          active-class="active"
         >
           <span class="icon"><i class="fas fa-utensils" /></span>
           <span class="nav-link-description">餐點</span>
-        </a>
+        </router-link>
       </li>
       <li class="nav-item">
         <a
