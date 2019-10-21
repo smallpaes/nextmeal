@@ -21,11 +21,18 @@
     "express": "^4.17.1",
     "express-validator": "^6.2.0",
     "faker": "^4.1.0",
+<<<<<<< HEAD
     "imgur-node-api": "^0.1.0",
+=======
+    "jsonwebtoken": "^8.5.1",
+    "method-override": "^3.0.0",
+>>>>>>> 9ae6fefc7053cdfab36e51f1bf31dc6786847e5d
     "mocha": "^6.2.1",
     "multer": "^1.4.2",
     "mysql2": "^1.7.0",
     "nodemon": "^1.19.3",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
     "sequelize": "^5.19.6",
     "sequelize-cli": "^5.5.1",
     "sequelize-test-helpers": "^1.1.2",

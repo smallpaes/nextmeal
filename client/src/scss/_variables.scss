@@ -1,8 +1,9 @@
 $colors: (
   primary: #EF4B4D,
-  secondary: rgb(51, 51, 51),
+  secondary: #5d5a58,
   tertiary: rgb(0, 195, 173),
   quaternary: rgb(255, 255, 255),
+  quinary: #F4F7F8
 );
 
 @function color($color-name) {
@@ -10,13 +11,23 @@ $colors: (
 }
 
 $font-size: (
-  xl: 3.75rem,
+  xl: 4.5rem,
   lg: 2rem,
   md: 1.5rem,
   sm: 1rem,
-  xs: 0.75rem
+  xs: 0.85rem
 );
 
 @function size($size) {
   @return map-get($font-size, $size)
+};
+
+$font-weight: (
+  normal: 400,
+  bold: 700,
+  bolder: 900
+);
+
+@function weight($weight) {
+  @return map-get($font-weight, $weight);
 };
