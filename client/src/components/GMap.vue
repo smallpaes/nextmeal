@@ -35,7 +35,7 @@ export default {
       type: Boolean,
       default: true
     },
-    restaurants: {
+    locations: {
       type: Array,
       default: () => []
     }
@@ -92,7 +92,7 @@ export default {
       // clear existing markers
       this.clearMarkers()
 
-      this.restaurants.forEach(location => {
+      this.locations.forEach(location => {
         const marker = new this.google.maps.Marker({
           position: { lat: location.lat, lng: location.lng },
           map: this.map
