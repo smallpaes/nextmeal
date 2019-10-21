@@ -162,7 +162,7 @@
         請上傳一張圖片檔案
       </div>
     </div>
-    <div class="btn-container text-right mt-3">
+    <div class="btn-container mt-3">
       <button
         class="btn"
         @click.stop.prevent="getLocation('restaurant')"
@@ -336,5 +336,13 @@ export default {
 
 .btn {
     @include solidButton;
+
+    &-container {
+        text-align: center;
+
+        @include response(md) {
+            text-align: right;
+        }
+    }
 }
 </style>
