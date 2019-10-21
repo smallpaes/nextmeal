@@ -12,7 +12,6 @@ const Meal = db.Meal
 const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 const { validationResult } = require('express-validator');
-const Promise = require('bluebird')
 // const pageLimit = 10
 
 let adminController = {
@@ -132,17 +131,25 @@ let adminController = {
           include: [
             [sequelize.literal('(SELECT COUNT(*) FROM Orders WHERE Orders.UserId = User.id)'), 'orderCount'],
           ],
-          exclude: ['password']
+          exclude: [
+            'password', 'prefer', 'dob', 'modifiedAt', 'location',
+            'address', 'latitude', 'longitude', 'createdAt', 'updatedAt'
+          ]
         },
         order: [[{model: Subscription}, 'createdAt', 'DESC']],  
       })
-      // let users = await db.sequelize.query("SELECT * FROM Users", { type: sequelize.QueryTypes.SELECT}).then(users => {
-      //   return Promise.map(users, (user) => {
-      //     // console.log(u)
-      //     return db.sequelize.query("SELECT * FROM Subscriptions WHERE Subscriptions.UserId =" + user.id + " LIMIT = 1 ORDER BY createdAt DESC")
-      //   })
-      // })
-
+      users = users.map(user => ({
+        ...user.dataValues,
+        sub_description: (user.dataValues.Subscriptions[0]) ? (
+          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' && 
+          user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()
+          ) ? user.dataValues.Subscriptions[0].dataValues.sub_description : false 
+        : false,
+        subscription_status: (user.dataValues.Subscriptions[0]) ? (
+            user.dataValues.Subscriptions[0].dataValues.payment_status === '1' && 
+            user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? true : false 
+          : false
+      }))
       res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
     } catch (error) {
       console.log(error)
@@ -152,7 +159,10 @@ let adminController = {
 
   deleteUser: async (req, res) => {
     try {
-
+      let user = await User.findByPk(req.params.user_id)
+      if (!user) return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
+      await user.destroy()
+      res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
