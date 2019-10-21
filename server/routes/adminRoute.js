@@ -11,6 +11,7 @@ router.put('/restaurants/:restaurant_id', upload.single('image'), valid, adminCo
 router.delete('/restaurants/:restaurant_id', adminController.deleteRestaurant)
 
 router.get('/users', adminController.getUsers)
+router.get('/users/:user_id', adminController.getUser)
 router.delete('/users/:user_id', adminController.deleteUser)
 
 module.exports = router

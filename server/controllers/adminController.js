@@ -157,6 +157,24 @@ let adminController = {
     }
   },
 
+  getUser: async (req, res) => {
+    try {
+      // if (req.user.role !== 'Admin') return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
+      let user = await User.findByPk(req.params.user_id, {
+        attributes: [
+          'id', 'name', 'email', 'role', 'avatar',
+          'prefer', 'dob', 'modifiedAt', 'location',
+          'address', ['latitude', 'lat'], ['longitude', 'lng']
+        ]
+      })
+      
+      res.status(200).json({ status: 'success', user, message: 'Successfully delete this user.' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
   deleteUser: async (req, res) => {
     try {
       let user = await User.findByPk(req.params.user_id)
