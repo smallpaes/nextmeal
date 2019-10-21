@@ -3,14 +3,16 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
+const Subscription = db.Subscription
 const Restaurant = db.Restaurant
 const Category = db.Category
 const Comment = db.Comment
 const Order = db.Order
 const Meal = db.Meal
+const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 const { validationResult } = require('express-validator');
-
+const Promise = require('bluebird')
 // const pageLimit = 10
 
 let adminController = {
@@ -45,12 +47,12 @@ let adminController = {
         // offset: (page - 1) * pageLimit,
         // limit: pageLimit,
         // subQuery: false
-      },)
+      })
       restaurants = restaurants.map(restaurant => ({
         ...restaurant.dataValues,
         orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
       }))
-      restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1 )
+      restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
       res.status(202).json({ status: 'success', restaurants, message: 'Successfully get restautants' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -118,6 +120,41 @@ let adminController = {
       await restaurant.destroy()
       return res.status(202).json({ status: 'success', message: 'restaurant was successfully destroyed' })
     } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getUsers: async (req, res) => {
+    try {
+      let users = await User.findAll({
+        include: [{model: Subscription}],
+        attributes: {
+          include: [
+            [sequelize.literal('(SELECT COUNT(*) FROM Orders WHERE Orders.UserId = User.id)'), 'orderCount'],
+          ],
+          exclude: ['password']
+        },
+        order: [[{model: Subscription}, 'createdAt', 'DESC']],  
+      })
+      // let users = await db.sequelize.query("SELECT * FROM Users", { type: sequelize.QueryTypes.SELECT}).then(users => {
+      //   return Promise.map(users, (user) => {
+      //     // console.log(u)
+      //     return db.sequelize.query("SELECT * FROM Subscriptions WHERE Subscriptions.UserId =" + user.id + " LIMIT = 1 ORDER BY createdAt DESC")
+      //   })
+      // })
+
+      res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  deleteUser: async (req, res) => {
+    try {
+
+    } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }
