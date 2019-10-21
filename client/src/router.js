@@ -15,6 +15,11 @@ export default new Router({
       path: '/restaurants',
       name: 'restaurants',
       component: () => import('./views/Restaurants.vue')
+    },
+    {
+      path: '/restaurant/:restaurant_id',
+      name: 'restaurant',
+      component: () => import('./views/Restaurant.vue')
     }
   ]
 })

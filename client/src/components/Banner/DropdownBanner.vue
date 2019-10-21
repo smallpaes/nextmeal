@@ -5,7 +5,7 @@
     <div class="banner-container">
       <div
         class="banner-img"
-        :sryle="{backgroundImage: getDistrictImageUrl(currentDistrict)}"
+        :style="{backgroundImage: getDistrictImageUrl(currentDistrict)}"
       />
       <div class="banner-overlay" />
       <div class="banner-content">
