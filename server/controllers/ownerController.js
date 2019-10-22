@@ -337,12 +337,11 @@ let ownerController = {
         return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
       if (!meal || Number(req.body.quantity) > 0) {
-        await meal.update({
-          name: req.body.name || meal.name,
+        meal = await meal.update({
           quantity: req.body.quantity || meal.quantity,
           nextServing: 1
         })
-        res.status(200).json({ status: 'success', message: 'Successfully setting menu for next week' })
+        res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -354,6 +353,7 @@ let ownerController = {
       //算出今天開始、結束日期
       const start = moment().startOf('day').toISOString()
       const end = moment().endOf('day').toISOString()
+      let restaurant = await Restaurant.findOne({where: {UserId: req.user.id}})
       let orders = await Order.findAll({
         where: {
           order_status: { [Op.like]: '未領取' },
@@ -365,7 +365,7 @@ let ownerController = {
           }
         },
         include: [
-          { model: Meal, as: 'meals', where: { RestaurantId: 1 }, attributes: ['id', 'name', 'image'] },
+          { model: Meal, as: 'meals',where: { RestaurantId:  restaurant.id }, attributes: ['id', 'name', 'image']},
           { model: User, attributes: ['id', 'name', 'email'] }
         ],
         attributes: [
