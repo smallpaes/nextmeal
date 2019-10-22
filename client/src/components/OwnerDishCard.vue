@@ -4,29 +4,40 @@
   >
     <div class="card-left">
       <img
-        src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg"
+        :src="meal.image"
         class="card-img rounded-0 d-none d-md-inline rounded-sm"
         alt="Dish image"
       >
     </div>
     <div class="card-right">
       <div class="card-body px-3 py-0">
-        <a
-          ref="#"
+        <router-link
+          :to="{name: 'owner-dish-edit', params: {dish_id: meal.id}}"
           class="edit-btn btn p-0"
         >
           <i class="fas fa-pencil-alt" />
-        </a>
+        </router-link>
         <h5 class="card-title m-0">
-          Card title
+          {{ meal.name }}
         </h5>
         <p class="card-text d-none d-md-inline mt-2">
-          This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+          {{ meal.description }}
         </p>
       </div>
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    meal: {
+      type: Object,
+      required: true
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .card {
