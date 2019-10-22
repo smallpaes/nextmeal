@@ -12,7 +12,7 @@
     <div class="card-right">
       <div class="card-body px-3 py-0">
         <button
-          v-if="$route.query.ran === 'nextWeek'"
+          v-if="$route.query.ran === 'nextWeek' && currentDay !== 0"
           type="button"
           class="edit-btn btn p-0"
           @click="$emit('edit-meal')"
@@ -47,6 +47,12 @@ export default {
     day: {
       type: String,
       required: true
+    }
+  },
+  computed: {
+    currentDay: function () {
+      const date = new Date()
+      return date.getDay()
     }
   }
 }
