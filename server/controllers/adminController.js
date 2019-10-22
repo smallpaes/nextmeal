@@ -12,20 +12,19 @@ const Meal = db.Meal
 const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 const { validationResult } = require('express-validator');
-// const pageLimit = 10
+const districts = require('../location/district.json')
+const pageLimit = 10
 
 let adminController = {
   getRestaurants: async (req, res) => {
     try {
+      const { name, category, location} = req.query
       // let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
-      let whereQuery = {}
-      if (req.query.category) {
-        whereQuery['CategoryId'] = req.query.category
-      }
       let restaurants = await Restaurant.findAll({
         where: {
           name: { [Op.substring]: req.query.name || '' },
-          CategoryId: { [Op.substring]: req.query.category || '' }
+          CategoryId: { [Op.substring]: req.query.category || '' },
+          location: { [Op.substring]: req.query.location || '' }
         },
         include: [
           { model: Category, attributes: ['name'] },
@@ -47,13 +46,15 @@ let adminController = {
         // limit: pageLimit,
         // subQuery: false
       })
+      const categories = await Category.findAll()
       restaurants = restaurants.map(restaurant => ({
         ...restaurant.dataValues,
         orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
       }))
       restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
-      res.status(202).json({ status: 'success', restaurants, message: 'Successfully get restautants' })
+      res.status(202).json({ status: 'success', restaurants, districts, categories, message: 'Successfully get restautants' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -181,6 +182,43 @@ let adminController = {
       if (!user) return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
       await user.destroy()
       res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getOrders: async (req, res) => {
+    try {
+      const { page, order_id, order_status, email} = req.query
+      let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
+      let orders = await Order.findAll({
+        where: {
+          id: { [Op.substring]: order_id || '' },
+          order_status: { [Op.substring]: order_status || '' }
+        },
+        include: [
+          { model: User,
+            where: {email: { [Op.substring]: email || '' }},
+            attributes: ['id', 'name', 'email']
+          },
+          { model: Meal, as: 'meals', attributes: ['id', 'name', 'image'],
+            include:[{model: Restaurant, attributes: ['id', 'name', 'image']}]
+          }
+        ],
+        attributes: [
+          'id', 'require_date', 'order_status', 'updatedAt',
+          [sequelize.fn('date_format', sequelize.col('require_date'), '%Y%c%d'), 'date'],
+          [sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time']
+        ],
+        offset: (pageNum - 1) * pageLimit,
+        limit: pageLimit,
+      })
+      orders = orders.map(order => ({
+        ...order.dataValues,
+        meals: order.dataValues.meals[0].dataValues
+      }))
+      res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
