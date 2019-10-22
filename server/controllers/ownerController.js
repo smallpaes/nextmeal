@@ -17,7 +17,7 @@ let ownerController = {
   getRestaurant: async (req, res) => {
     try {
       let restaurant = await Restaurant.findAll({
-        where: { UserId: 5 },
+        where: { UserId: req.user.id },
         include: [{ model: Category, attributes: ['id', 'name'] }],
         attributes: ['id',
           'name',
