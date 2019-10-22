@@ -22,9 +22,9 @@ let adminController = {
       // let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
       let restaurants = await Restaurant.findAll({
         where: {
-          name: { [Op.substring]: req.query.name || '' },
-          CategoryId: { [Op.substring]: req.query.category || '' },
-          location: { [Op.substring]: req.query.location || '' }
+          name: { [Op.substring]: name || '' },
+          CategoryId: { [Op.substring]: category || '' },
+          location: { [Op.substring]: location || '' }
         },
         include: [
           { model: Category, attributes: ['name'] },
