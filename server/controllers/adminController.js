@@ -169,7 +169,7 @@ let adminController = {
         ]
       })
       
-      res.status(200).json({ status: 'success', user, message: 'Successfully delete this user.' })
+      res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
