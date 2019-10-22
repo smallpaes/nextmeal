@@ -202,6 +202,8 @@ export default {
 
 .btn {
     @include solidButton;
+    min-width: 100px;
+    transition: min-width .2s linear;
 
     &-container {
         text-align: center;
@@ -209,6 +211,10 @@ export default {
         @include response(md) {
             text-align: right;
         }
+    }
+
+    @include response(md) {
+        min-width: 200px;
     }
 }
 </style>

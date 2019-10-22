@@ -89,6 +89,7 @@ export default {
 .dish {
     padding: 2.3rem 2rem;
     max-width: 800px;
+    overflow-y: scroll;
     margin-left: 80px;
     transition: margin-left .1s linear;
 

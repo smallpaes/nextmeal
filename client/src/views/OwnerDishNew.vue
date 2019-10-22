@@ -48,6 +48,7 @@ export default {
 
 <style lang="scss" scoped>
 .wrapper {
+    @include hideScrollBar;
     background-color: color(quinary);
 }
 
@@ -55,6 +56,7 @@ export default {
     padding: 2.3rem 2rem;
     max-width: 800px;
     margin-left: 80px;
+    overflow-y: scroll;
     transition: margin-left .1s linear;
 
     &-title {

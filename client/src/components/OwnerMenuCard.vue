@@ -1,38 +1,64 @@
 <template>
   <div
-    class="card d-flex flex-row rounded-sm"
+    class="card d-flex flex-row rounded-sm rounded-0"
   >
     <div class="card-left">
       <img
-        src="https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg"
+        :src="meal.image"
         class="card-img rounded-0 d-none d-md-inline rounded-sm"
         alt="Dish image"
       >
     </div>
     <div class="card-right">
       <div class="card-body px-3 py-0">
-        <a
-          ref="#"
+        <button
+          v-if="$route.query.ran === 'nextWeek'"
+          type="button"
           class="edit-btn btn p-0"
+          @click="$emit('edit-meal')"
         >
           <i class="fas fa-pencil-alt" />
-        </a>
+        </button>
         <h5 class="card-title m-0">
-          Card title
+          {{ day }}
         </h5>
-        <p class="card-text d-none d-md-inline mt-2">
-          This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
-        </p>
+        <div class="card-description mt-2">
+          <p class="m-0 d-inline d-md-block">
+            <span class="d-none d-md-inline">餐點名稱：</span>
+            {{ meal.name }}
+          </p>
+          <p class="m-0 d-inline d-md-block">
+            <span class="d-none d-md-inline">供應數量</span>
+            ：{{ meal.quantity }}份
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
+<script>
+export default {
+  props: {
+    meal: {
+      type: Object,
+      required: true
+    },
+    day: {
+      type: String,
+      required: true
+    }
+  }
+}
+</script>
+
 <style lang="scss" scoped>
 .card {
     position: relative;
-    height: 50px;
+    height: 80px;
     overflow-y: scroll;
+    border: none;
+    border-bottom: 1px solid lighten(color(secondary), 50%);
 
     &-body {
         @include flexPosition(center, flex-start, column);
@@ -55,7 +81,7 @@
         }
     }
 
-    &-text {
+    &-description {
         font-size: size(sm);
         color: lighten(color(secondary), 10%);
     }
@@ -63,13 +89,12 @@
     .edit-btn {
         position: absolute;
         right: 2%;
-        top: 50%;
-        transform: translateY(-50%);
+        top: 15%;
         cursor: pointer;
         color: lighten(color(secondary), 10%);
 
         @include response(md) {
-            top: 17%;
+            top: 10%;
         }
     }
 

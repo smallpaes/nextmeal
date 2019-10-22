@@ -49,7 +49,8 @@
 
 @mixin solidButton($width: 200 ,$radius: 1) {
     background-color: color(primary);
-    width: #{$width}px;
+    min-width: #{$width}px;
+    max-width: #{$width}px;
     color: color(quaternary);
     border-radius: #{$radius}rem;
 
@@ -223,4 +224,11 @@
         }
     }
     
+}
+
+@mixin hideScrollBar {
+    ::-webkit-scrollbar {
+        width: 0;
+        background-color: transparent;
+    }
 }
