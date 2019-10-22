@@ -8,8 +8,6 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const Category = db.Category
 
-const fetch = require('node-fetch')
-
 // import express-validator for validation
 const { validationResult } = require('express-validator/check');
 
@@ -50,13 +48,6 @@ module.exports = {
     }
 
     try {
-      // get lat & lng from address
-      const geoCodingUrl = 'https://maps.googleapis.com/maps/api/geocode/json' + '?' + `address=${req.body.address}&key=${process.env.API_KEY}`
-      const response = await fetch(encodeURI(geoCodingUrl));
-      const data = await response.json()
-      const { lat, lng } = data.results[0].geometry.location
-      const location = data.results[0].address_components[2].long_name
-
       // create user
       const user = await User.create({
         name: req.body.name,
@@ -67,9 +58,9 @@ module.exports = {
         dob: req.body.dob,
         prefer: req.body.prefer,
         address: req.body.address,
-        latitude: lat,
-        longitude: lng,
-        location
+        latitude: req.body.lat,
+        longitude: req.body.lng,
+        location: req.body.location
       })
 
       // check if the user has valid subscriptions
