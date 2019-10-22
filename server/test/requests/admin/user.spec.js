@@ -104,6 +104,9 @@ describe('# Admin::User request', () => {
         await db.User.create(defaultUser2)
         await db.User.create(defaultUser3)
         await db.Subscription.create({ UserId: 1 })
+        await db.Order.create({ UserId: 1 })
+        await db.Order.create({ UserId: 1 })
+        await db.Order.create({ UserId: 2 })
 
       })
 
@@ -111,11 +114,10 @@ describe('# Admin::User request', () => {
         request(app)
           .get('/api/admin/users')
           .expect(200)
-          .then(response => {
-            expect(response.body).to.have.property('users')
-            // expect(response.body.users[0].name).to.be.equal('Tao')
-            done()
-          }).catch(err => console.log(err))
+          .end((err, res) => {
+            expect(res.body.users[0].order_num).to.be.greaterThan(res.body.users[1].order_num)
+            return done()
+          })
       })
 
       it('should be able to filter user by payment_status', (done) => {
@@ -123,12 +125,7 @@ describe('# Admin::User request', () => {
           .get('/api/admin/users?payment_status=true')
           .expect(200)
           .end(async (err, res) => {
-            const users = await db.User.findAll({
-              include: {
-                model: db.Subscription
-              }
-            })
-            expect(users[0].Subscriptions.length).to.be.equal(1)
+            expect(res.body.users.length).to.be.equal(1)
             return done()
           })
       })
@@ -137,12 +134,11 @@ describe('# Admin::User request', () => {
         request(app)
           .get('/api/admin/users/1')
           .expect(200)
-          .then(response => {
-            expect(response.body).to.have.property('name')
-            expect(response.body).to.have.property('location')
-            done()
+          .end((err, res) => {
+            expect(res.body).to.have.property('name')
+            expect(res.body).to.have.property('location')
+            return done()
           })
-
       })
 
       it('fail to get specific user info', (done) => {
@@ -150,7 +146,6 @@ describe('# Admin::User request', () => {
           .get('/api/admin/users/U100')
           .expect(400)
           .expect({ status: "error", message: "user does not exist" }, done)
-
       })
 
       it('should be able to update specific user info', (done) => {
@@ -163,7 +158,6 @@ describe('# Admin::User request', () => {
             expect(user.name).to.be.equal('john')
             return done()
           })
-
       })
 
       it('should be able to delete specific user info', (done) => {
@@ -176,13 +170,11 @@ describe('# Admin::User request', () => {
               return done()
             })
           })
-
       })
 
 
 
       after(async () => {
-
         this.ensureAuthenticated.restore();
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true })

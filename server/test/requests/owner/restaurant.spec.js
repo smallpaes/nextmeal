@@ -86,7 +86,7 @@ describe('# Admin::Owner request', () => {
           .post('/api/owner')
           .send('name=dannyRestaurant')
           .expect(200)
-          .expect({ status: 'success', message: 'successfuly add a new restaurant' })
+          .expect({ status: 'success', message: 'successfully add a new restaurant' })
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)
             expect(restaurant.name).to.be.equal('dannyRestaurant')
@@ -177,10 +177,10 @@ describe('# Admin::Owner request', () => {
 
       it('should be able to delete specific meal info', (done) => {
         request(app)
-          .delete('/api/owner/dishes/2')
+          .delete('/api/owner/dishes/1')
           .expect(200)
           .end(async (err, res) => {
-            const meal = await db.Meal.findByPk(2)
+            const meal = await db.Meal.findByPk(1)
             expect(meal).to.be.null
             return done()
           })
@@ -191,12 +191,6 @@ describe('# Admin::Owner request', () => {
           .get('/api/owner/menu?ran=thisWeek')
           .expect(200)
           .end((err, res) => {
-            // res.body.meals.map(item => {
-            //   expect(item).to.have.property('name')
-            //   expect(item).to.have.property('id')
-            //   expect(item).to.have.property('image')
-            //   expect(item).to.have.property('quantity')
-            // })
             expect(res.body.meal).to.have.property('name')
             expect(res.body.meal).to.have.property('id')
             expect(res.body.meal).to.have.property('image')
@@ -210,12 +204,6 @@ describe('# Admin::Owner request', () => {
           .get('/api/owner/menu?ran=nextWeek')
           .expect(200)
           .end((err, res) => {
-            // res.body.meals.map(item => {
-            //   expect(item).to.have.property('name')
-            //   expect(item).to.have.property('id')
-            //   expect(item).to.have.property('image')
-            //   expect(item).to.have.property('quantity')
-            // })
             expect(res.body.meal).to.have.property('name')
             expect(res.body.meal).to.have.property('id')
             expect(res.body.meal).to.have.property('image')
@@ -229,7 +217,7 @@ describe('# Admin::Owner request', () => {
           .put('/api/owner/menu')
           .send('name=steak&quantity=60&id=2')
           .expect(200)
-          .end((err, res) => {
+          .end(async (err, res) => {
             const meal = await db.Meal.findByPk(2)
             expect(meal.quantity).to.be.equal(60)
             expect(res.body.status).to.be.equal('success')

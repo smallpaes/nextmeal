@@ -1,10 +1,33 @@
 $colors: (
-  primary: rgb(24, 125, 207),
-  secondary: #ffe,
-  tertiary: #37693b,
-  quaternary: #f5b149
+  primary: #EF4B4D,
+  secondary: #5d5a58,
+  tertiary: rgb(0, 195, 173),
+  quaternary: rgb(255, 255, 255),
+  quinary: #F4F7F8
 );
 
 @function color($color-name) {
   @return map-get($colors, $color-name);
 }
+
+$font-size: (
+  xl: 4.5rem,
+  lg: 2rem,
+  md: 1.5rem,
+  sm: 1rem,
+  xs: 0.85rem
+);
+
+@function size($size) {
+  @return map-get($font-size, $size)
+};
+
+$font-weight: (
+  normal: 400,
+  bold: 700,
+  bolder: 900
+);
+
+@function weight($weight) {
+  @return map-get($font-weight, $weight);
+};

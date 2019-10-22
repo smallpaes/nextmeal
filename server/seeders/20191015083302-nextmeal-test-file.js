@@ -3,7 +3,7 @@ const faker = require('faker')
 const bcrypt = require('bcryptjs')
 const locations = ['信義區', '大安區', '中山區', '松山區']
 const categories = ['中式料理', '日本料理', '義大利料理', '墨西哥料理', '素食料理', '美式料理', '複合式料理']
-
+const nowTime = new Date()
 module.exports = {
   up: (queryInterface, Sequelize) => {
 
@@ -114,7 +114,7 @@ module.exports = {
     ), {});
 
     // add meals
-    return queryInterface.bulkInsert("Meals",
+     queryInterface.bulkInsert("Meals",
       Array.from({ length: 4 }).map((item, index) => (
         {
           name: faker.name.findName(),
@@ -127,13 +127,46 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date()
         }))
-      , {})
+      , {});
+
+      // add orders
+    queryInterface.bulkInsert("Orders",
+    Array.from({ length: 3 }).map((item, index) => (
+      {
+        UserId: Math.ceil(Math.random()*2),
+        order_date:new Date(),
+        require_date:new Date(nowTime.getTime()+(24*60*60*1000)),
+        order_status:'prepared',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }))
+    , {});
+
+    // add subscriptions
+    return queryInterface.bulkInsert("Subscriptions",
+    Array.from({ length: 6 }).map((item, index) => (
+      {
+        UserId: index+1,
+        sub_name:'輕量型',
+        sub_price:1000,
+        sub_description:'一個月10餐',
+        sub_balance:10,
+        sub_date:new Date(),
+        sub_expired_date:new Date(nowTime.getTime()+(24*60*60*30*1000)),
+        payment_status:Math.floor(Math.random()*2),
+        sn:new Date(),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }))
+    , {});
   },
 
   down: (queryInterface, Sequelize) => {
     queryInterface.bulkDelete('Users', null, { truncate: true })
     queryInterface.bulkDelete('Categories', null, { truncate: true })
     queryInterface.bulkDelete('Meals', null, { truncate: true })
+    queryInterface.bulkDelete('Subscriptions', null, { truncate: true })
+    queryInterface.bulkDelete('Orders', null, { truncate: true })
     return queryInterface.bulkDelete('Restaurants', null, { truncate: true })
   }
 };
