@@ -21,4 +21,6 @@ router.delete('/dishes/:dish_id', ownerController.deleteDish)
 router.get('/menu', ownerController.getMenu)
 router.put('/menu', validMenuForm, ownerController.putMenu)
 
+router.get('/orders', ownerController.getOrders)
+
 module.exports = router
