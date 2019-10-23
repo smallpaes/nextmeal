@@ -1,7 +1,7 @@
-const { check } = require('express-validator');
+const { check, validationResult } = require('express-validator')
 
 let middleware = {
-  valid: [
+  validRestaurantForm: [
     check('name')
       .not().isEmpty().withMessage('name should be not empty'),
     check('description')
@@ -11,6 +11,24 @@ let middleware = {
     check('address')
       .not().isEmpty().withMessage('address should be not empty')
   ],
+  validMenuForm: [
+    check('quantity')
+      .not().isEmpty().withMessage('quantity should be not empty'),
+  ],
+  validDishForm: [
+    check('name')
+      .not().isEmpty().withMessage('name should be not empty'),
+    check('description')
+      .not().isEmpty().withMessage('description should be not empty'),
+  ],
+  validMessage: (req, res) => {
+    console.log('message')
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ status: 'error', errors: errors.array(), message: 'Information should be filled' });
+    }
+  }
 }
 
-module.exports = { valid } = middleware
+module.exports = { validRestaurantForm, validMealForm, validMessage } = middleware
+

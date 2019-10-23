@@ -4,16 +4,18 @@ const db = require('../models')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const Subscription = db.Subscription
+
 const Restaurant = db.Restaurant
 const Category = db.Category
 const Comment = db.Comment
 const Order = db.Order
 const Meal = db.Meal
-const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
-const { validationResult } = require('express-validator');
+const { validMessage } = require('../middleware/middleware')
+// const pageLimit = 10
+const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 const districts = require('../location/district.json')
-const pageLimit = 10
+
 
 let adminController = {
   getRestaurants: async (req, res) => {
@@ -45,16 +47,17 @@ let adminController = {
         // offset: (page - 1) * pageLimit,
         // limit: pageLimit,
         // subQuery: false
+
       })
       const categories = await Category.findAll()
       restaurants = restaurants.map(restaurant => ({
         ...restaurant.dataValues,
         orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
       }))
+
       restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
       res.status(202).json({ status: 'success', restaurants, districts, categories, message: 'Successfully get restautants' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -73,10 +76,7 @@ let adminController = {
   // admin 修改餐廳資訊
   putRestaurant: async (req, res) => {
     try {
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 'error', errors: errors.array(), message: 'restautant information should be filled' });
-      }
+      validMessage(req, res)
       let restaurant = await Restaurant.findByPk(req.params.restaurant_id)
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
