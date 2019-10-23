@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.TEXT,
     image: DataTypes.STRING,
     quantity: DataTypes.INTEGER,
+    nextServing_quantity: DataTypes.INTEGER,
     RestaurantId: DataTypes.INTEGER,
     modifiedAt: DataTypes.DATE,
     isServing: DataTypes.BOOLEAN,
