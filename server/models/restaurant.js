@@ -5,7 +5,10 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.TEXT,
     image: DataTypes.STRING,
     tel: DataTypes.STRING,
-    rating: DataTypes.FLOAT,
+    rating: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
+    },
     CategoryId: DataTypes.INTEGER,
     location: DataTypes.STRING,
     address: DataTypes.STRING,

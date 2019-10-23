@@ -2,6 +2,7 @@ const { ensureAuthenticated, isAuthAdmin, getUser } = require('../config/auth')
 const mainRoute = require('./mainRoute')
 const restRoute = require('./restRoute')
 const ownerRoute = require('./ownerRoute')
+
 const adminRoute = require('./adminRoute')
 
 module.exports = (app) => {

@@ -31,3 +31,4 @@ let middleware = {
 }
 
 module.exports = { validRestaurantForm, validMealForm, validMessage } = middleware
+
