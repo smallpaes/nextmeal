@@ -68,7 +68,7 @@ let adminController = {
       if (restaurant) {
         return res.status(202).json({ status: 'success', restaurant, message: 'Successfully get restautant' })
       }
-      return res.status(400).json({ status: 'success', message: 'restaurant does not exist' })
+      return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -144,7 +144,7 @@ let adminController = {
         }],
         attributes: {
           include: [
-            [sequelize.literal(customQuery.Order.UserId), 'orderCount'],
+            [sequelize.literal(customQuery.Order.UserId), 'order_num'],
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
@@ -165,7 +165,7 @@ let adminController = {
           user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? 'active' : 'inactive'
           : 'inactive'
       }))
-      res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
+      return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
     } catch (error) {
       console.log(error)
       return res.status(500).json({ status: 'error', message: error })
@@ -174,7 +174,6 @@ let adminController = {
 
   getUser: async (req, res) => {
     try {
-      // if (req.user.role !== 'Admin') return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
       let user = await User.findByPk(req.params.user_id, {
         attributes: [
           'id', 'name', 'email', 'role', 'avatar',
@@ -182,8 +181,8 @@ let adminController = {
           'address', ['latitude', 'lat'], ['longitude', 'lng']
         ]
       })
-
-      res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
+      if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
+      return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
@@ -195,7 +194,7 @@ let adminController = {
       let user = await User.findByPk(req.params.user_id)
       if (!user) return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
       await user.destroy()
-      res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
+      return res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
@@ -245,7 +244,7 @@ let adminController = {
   putOrder: async (req, res) => {
     try {
       let order = await Order.findByPk(req.params.order_id)
-      if (!order) return res.status(400).json({ status: 'error', message: 'order is not exist.' })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
       if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       order = await order.update({
         order_status: '取消'
