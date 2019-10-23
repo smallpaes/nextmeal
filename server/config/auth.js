@@ -16,5 +16,10 @@ module.exports = {
     if (!req.user) return res.json({ status: 'error', message: 'Permission denied for users' })
     if (req.user.role !== 'Admin') return res.status(401).json({ status: 'error', message: 'Permission denied' })
     next()
+  },
+  isAuthOwner: (req, res, next) => {
+    if (!req.user) return res.json({ status: 'error', message: 'Permission denied for users' })
+    if (req.user.role !== 'Owner') return res.status(401).json({ status: 'error', message: 'Permission denied' })
+    next()
   }
 }
