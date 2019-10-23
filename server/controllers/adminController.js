@@ -102,7 +102,7 @@ let adminController = {
           })
         })
       } else {
-        await restaurant.update(req.body)
+        await restaurant.update({...req.body})
         return res.status(200).json({
           status: 'success',
           message: 'Successfully update restaurant information.'
@@ -219,6 +219,20 @@ let adminController = {
         meals: order.dataValues.meals[0].dataValues
       }))
       res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders.' })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+  // 未完成
+  getOrder: async (req, res) => {
+    try {
+      let date = new Date(req.query.date)
+
+      const order = await Order.findByPk(req.params.order_id, {
+        where: { }
+      })
+      return res.status(200).json({ status: 'success', order, message: 'Successfully get the order.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })

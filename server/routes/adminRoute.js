@@ -15,5 +15,8 @@ router.get('/users/:user_id', adminController.getUser)
 router.delete('/users/:user_id', adminController.deleteUser)
 
 router.get('/orders', adminController.getOrders)
+router.get('/orders/:order_id', adminController.getOrder)
+// router.put('/orders/:order_id', adminController.putOrder)
+router.delete('/orders/:order_id', adminController.getOrder)
 
 module.exports = router
