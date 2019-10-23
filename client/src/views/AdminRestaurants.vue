@@ -6,55 +6,24 @@
         餐廳管理
       </h1>
       <hr class="restaurants-divider">
-      <form
-        class="form p-3 rounded shadow-sm"
-        novalidate
+      <AdminFilterPanel
+        :options="locations"
+        @after-search="handleAfterSearch"
+        @after-filter="handleAfterFilter"
       >
-        <div class="form-row">
-          <!--Name-->
-          <div class="form-group col-md-6">
-            <input
-              id="name"
-              v-model.trim="name"
-              type="text"
-              class="form-control"
-              placeholder="搜尋餐廳名稱"
-              required
-            >
-            <div class="invalid-feedback">
-              請輸入餐廳名稱
-            </div>
-          </div>
-          <!--Location-->
-          <div class="form-group col-md-6">
-            <select
-              v-model.trim="selectedLocation"
-              class="form-control"
-              required
-            >
-              <option selected>
-                餐廳地區
-              </option>
-              <option
-                v-for="location in locations"
-                :key="location"
-                :value="location"
-              >
-                {{ location }}
-              </option>
-            </select>
-            <div class="invalid-feedback">
-              請選擇餐廳類別
-            </div>
-          </div>
-        </div>
-      </form>
+        <template v-slot:filterOption>
+          搜尋名稱
+        </template>
+      </AdminFilterPanel>
+      <AdminRestaurantsTable :restaurants="restaurants" />
     </section>
   </section>
 </template>
 
 <script>
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
+import AdminFilterPanel from '../components/AdminFilterPanel'
+import AdminRestaurantsTable from '../components/AdminRestaurantsTable.vue'
 
 const dummyRestaurants = {
   restaurants: [
@@ -81,6 +50,30 @@ const dummyRestaurants = {
       Comments: [],
       Meals: [],
       orderCount: 3
+    },
+    {
+      id: '3',
+      name: '餐廳三',
+      rating: 4.2,
+      commentCount: 10,
+      Category: {
+        name: '日本料理'
+      },
+      Comments: [],
+      Meals: [],
+      orderCount: 12
+    },
+    {
+      id: '4',
+      name: '餐廳四',
+      rating: 2.4,
+      commentCount: 1,
+      Category: {
+        name: '美式料理'
+      },
+      Comments: [],
+      Meals: [],
+      orderCount: 3
     }
   ],
   locations: ['信義區', '大安區', '松山區', '中山區']
@@ -88,14 +81,16 @@ const dummyRestaurants = {
 
 export default {
   components: {
-    AdminSideNavBar
+    AdminSideNavBar,
+    AdminFilterPanel,
+    AdminRestaurantsTable
   },
   data () {
     return {
       restaurants: [],
       locations: [],
-      name: '',
-      selectedLocation: ''
+      currentSearchInput: '',
+      currentFilterOption: ''
     }
   },
   created () {
@@ -105,10 +100,18 @@ export default {
     this.fetchRestaurants()
   },
   methods: {
-    fetchRestaurants () {
+    fetchRestaurants (name, category) {
       // fetch data from API
       this.restaurants = dummyRestaurants.restaurants
       this.locations = dummyRestaurants.locations || this.locations
+    },
+    handleAfterSearch (searchInput) {
+      this.currentSearchInput = searchInput
+      this.fetchRestaurants(this.currentSearchInput, this.currentFilterOption)
+    },
+    handleAfterFilter (selectedOption) {
+      this.currentFilterOption = selectedOption
+      this.fetchRestaurants(this.currentSearchInput, this.currentFilterOption)
     }
   }
 }
@@ -124,6 +127,7 @@ export default {
     max-width: 800px;
     margin-left: 80px;
     transition: margin-left .1s linear;
+    overflow-y: scroll;
 
     &-title {
         size: size(lg);
