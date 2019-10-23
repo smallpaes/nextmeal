@@ -143,6 +143,6 @@ export default {
 }
 
 .btn {
-    @include solidButton(100%, .1);
+    @include solidButton(200, 1);
 }
 </style>
