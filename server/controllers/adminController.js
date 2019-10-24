@@ -235,6 +235,7 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
+      if (!orders) return res.status(400).json({status: 'error', message: 'can not find any orders'})
       orders = orders.map(order => ({
         ...order.dataValues,
         meals: order.dataValues.meals[0]
