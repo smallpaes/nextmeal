@@ -15,7 +15,7 @@
         class="form-control"
         required
       >
-        <option>
+        <option value="">
           選擇餐點
         </option>
         <option
@@ -45,7 +45,7 @@
         required
       >
       <div class="invalid-feedback">
-        請填寫欲提供的數量，最多 50 份
+        請填寫欲提供的數量，最少 1 份和最多 50 份
       </div>
     </div>
 
