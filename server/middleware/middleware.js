@@ -21,6 +21,20 @@ let middleware = {
     check('description')
       .not().isEmpty().withMessage('description should be not empty'),
   ],
+  validUserProfile: [
+    check('name')
+      .not().isEmpty().withMessage('name should be not empty'),
+    check('email')
+      .not().isEmpty().withMessage('email should be not empty'),
+    check('location')
+      .not().isEmpty().withMessage('location should be not empty'),
+    check('address')
+      .not().isEmpty().withMessage('address should be not empty'),
+    check('dob')
+      .not().isEmpty().withMessage('birthday should be not empty'),
+    check('prefer')
+      .not().isEmpty().withMessage('birthday should be not empty'),
+  ],
   validMessage: (req, res) => {
     console.log('message')
     const errors = validationResult(req)
