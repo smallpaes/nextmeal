@@ -94,6 +94,7 @@ export default {
 
         &-top {
             padding: 2.7rem;
+            margin: 0;
             width: 100%;
 
             &-header {

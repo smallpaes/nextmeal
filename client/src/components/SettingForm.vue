@@ -100,15 +100,15 @@
         :zoom="18"
         class="shadow-sm rounded-sm"
       />
-      <div class="form-buttons d-flex mt-3">
+      <div class="form-buttons d-flex justify-content-center mt-3">
         <button
-          class="btn"
+          class="btn btn-update"
           @click.stop.prevent="handleSubmit"
         >
           位置正確
         </button>
         <button
-          class="btn btn-outline ml-2"
+          class="btn ml-2"
           @click.prevent.stop="showMap = false"
         >
           修改地址
@@ -217,5 +217,23 @@ export default {
 
 .btn {
     @include solidButton(200, 1);
+    min-width: 100px;
+
+    &-update {
+      background-color: color(tertiary);
+
+      &:hover {
+        background-color: darken(color(tertiary), 20%);
+      }
+    }
+
+    @include response(sm) {
+      min-width: 150px;
+    }
+
+    @include response(md) {
+      min-width: 170px;
+    }
 }
+
 </style>

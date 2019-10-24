@@ -52,6 +52,7 @@ export default {
       // Send signup and setting data to backend
       console.log(userData)
       // Redirect to subscribe page
+      this.$router.push({ name: 'subscribe' })
     }
   }
 }
