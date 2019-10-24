@@ -20,6 +20,9 @@ module.exports = {
       quantity: {
         type: Sequelize.INTEGER
       },
+      nextServing_quantity: {
+        type: Sequelize.INTEGER
+      },
       RestaurantId: {
         type: Sequelize.INTEGER
       },

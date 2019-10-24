@@ -12,20 +12,32 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "chai": "^4.2.0",
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-validator": "^6.2.0",
     "faker": "^4.1.0",
+    "imgur-node-api": "^0.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "method-override": "^3.0.0",
     "mocha": "^6.2.1",
+    "moment": "^2.24.0",
+    "multer": "^1.4.2",
     "mysql2": "^1.7.0",
+    "node-fetch": "^2.6.0",
     "nodemon": "^1.19.3",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
     "sequelize": "^5.19.6",
     "sequelize-cli": "^5.5.1",
     "sequelize-test-helpers": "^1.1.2",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "underscore": "^1.9.1"
   }
 }

@@ -44,7 +44,6 @@ import RestaurantCarousel from '../components/RestaurantCarousel'
 import Districts from '../components/Districts'
 import Questions from '../components/Questions'
 import Footer from '../components/Footer'
-
 const dummyRestaurantAndDistrict = {
   popular_restaurants: [
     { id: 1,
@@ -115,7 +114,6 @@ const dummyRestaurantAndDistrict = {
     }
   ]
 }
-
 export default {
   name: 'Home',
   components: {
@@ -149,15 +147,12 @@ export default {
 <style lang="scss" scoped>
 .popular {
     @include headingStyling;
-
     &-heading {
       text-align: center;
     }
 }
-
 .districts {
   @include headingStyling;
-
     &-heading {
       text-align: center;
     }

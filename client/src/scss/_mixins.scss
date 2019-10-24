@@ -222,5 +222,30 @@
             @content;
         }
     }
-    
+
+}
+
+@mixin formControl {
+    &-control {
+        border-radius: .1rem;
+
+        &:focus {
+            outline: none;
+            box-shadow: none;
+            border-color: color(primary);
+        }
+    }
+}
+
+@mixin formValidation {
+    &:valid {
+        background-image: none;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    &:invalid {
+        @extend .form-control:valid;
+    }
 }
