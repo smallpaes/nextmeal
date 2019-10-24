@@ -1,18 +1,23 @@
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
+const sequelize = require('sequelize')
+const Op = sequelize.Op
 const Restaurant = db.Restaurant
 const Category = db.Category
 const Meal = db.Meal
+const Order = db.Order
+const User = db.User
 const { validMessage } = require('../middleware/middleware')
-
+const moment = require('moment')
 const mealQuantities = 50
+const _ = require('underscore')
 
 let ownerController = {
   getRestaurant: async (req, res) => {
     try {
       let restaurant = await Restaurant.findAll({
-        where: { UserId: 5 },
+        where: { UserId: req.user.id },
         include: [{ model: Category, attributes: ['id', 'name'] }],
         attributes: ['id',
           'name',
@@ -32,20 +37,19 @@ let ownerController = {
       if (restaurant.length === 0) {
         return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
       }
-      
+
       const categories = await Category.findAll({
         attributes: ['id', 'name']
       })
       res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get the restaurant information.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
 
   postRestaurant: async (req, res) => {
     try {
-      let restaurant = await Restaurant.findAll({ where: { UserId: 1 } })
+      let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
       if (restaurant) return res.status(422).json({ status: 'error', message: 'You already have a restaurant.' });
       const { file } = req
       validMessage(req, res)
@@ -94,7 +98,6 @@ let ownerController = {
         })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -226,17 +229,33 @@ let ownerController = {
         res.status(200).json({ status: 'success', message: 'Successfully create a meal.' })
       }
     } catch (error) {
-      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getDish: async (req, res) => {
+    try {
+      let meal = await Meal.findByPk(req.params.dish_id)
+      if (!meal) {
+        return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
+      }
+
+      res.status(200).json({ status: 'success', meal, message: 'Successfully get the dish information.' })
+    } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
   },
 
   putDish: async (req, res) => {
     try {
-      let meal = await Meal.findByPk(req.params.dish_id)
+      let meal = await Meal.findByPk(req.params.dish_id, {
+        include: [{ model: Restaurant, attributes: ['UserId'] }]
+      })
       if (!meal) {
         return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
       }
+      if (meal.Restaurant.UserId !== req.user.id) return res.status(422).json({ status: 'error', message: 'You are not allow this action.' })
+
       validMessage(req, res) //驗證表格
       const { file } = req
       if (file) {
@@ -300,7 +319,6 @@ let ownerController = {
         message: message
       })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -313,21 +331,56 @@ let ownerController = {
       const today = new Date().getDay()
       // 修改 nextServing 為真，而且可以更改數量
       if (Number(req.body.quantity) < 1) {
-        res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
+        return res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
       }
       if (today >= 6) {
-        res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
+        return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
       if (!meal || Number(req.body.quantity) > 0) {
-        await meal.update({
-          name: req.body.name || meal.name,
+        meal = await meal.update({
           quantity: req.body.quantity || meal.quantity,
           nextServing: 1
         })
-        res.status(200).json({ status: 'success', message: 'Successfully setting menu for next week' })
+        res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }
     } catch (error) {
-      console.log(error)
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getOrders: async (req, res) => {
+    try {
+      //算出今天開始、結束日期
+      const start = moment().startOf('day').toISOString()
+      const end = moment().endOf('day').toISOString()
+      let restaurant = await Restaurant.findOne({where: {UserId: req.user.id}})
+      let orders = await Order.findAll({
+        where: {
+          order_status: { [Op.like]: '未領取' },
+          require_date: {
+            // 大於開始日
+            [Op.gte]: start,
+            // 小於結束日
+            [Op.lte]: end
+          }
+        },
+        include: [
+          { model: Meal, as: 'meals',where: { RestaurantId:  restaurant.id }, attributes: ['id', 'name', 'image']},
+          { model: User, attributes: ['id', 'name', 'email'] }
+        ],
+        attributes: [
+          'id', 'require_date', 'order_status',
+          [ sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time'],
+        ],
+        order: [['require_date', 'ASC']],
+      })
+      orders = orders.map(order => ({
+        ...order.dataValues,
+        meals: order.dataValues.meals[0]
+      }))
+      orders = _.mapObject(_.groupBy(orders, 'time'))
+      res.status(200).json({ status: 'success', orders, message: 'getOrders' })
+    } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
   }

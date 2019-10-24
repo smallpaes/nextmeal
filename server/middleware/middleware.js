@@ -12,8 +12,6 @@ let middleware = {
       .not().isEmpty().withMessage('address should be not empty')
   ],
   validMenuForm: [
-    check('name')
-      .not().isEmpty().withMessage('name should be not empty'),
     check('quantity')
       .not().isEmpty().withMessage('quantity should be not empty'),
   ],
@@ -47,3 +45,4 @@ let middleware = {
 }
 
 module.exports = { validRestaurantForm, validMealForm, validMessage } = middleware
+

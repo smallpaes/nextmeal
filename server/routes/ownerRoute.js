@@ -13,11 +13,14 @@ router.put('/', upload.single('image'), validRestaurantForm, ownerController.put
 // owner dish
 router.get('/dishes', ownerController.getDishes)
 router.post('/dishes', upload.single('image'), validDishForm, ownerController.postDish)
+router.get('/dishes/:dish_id', ownerController.getDish)
 router.put('/dishes/:dish_id/edit', upload.single('image'), validDishForm, ownerController.putDish)
 router.delete('/dishes/:dish_id', ownerController.deleteDish)
 
 // owner meun
 router.get('/menu', ownerController.getMenu)
 router.put('/menu', validMenuForm, ownerController.putMenu)
+
+router.get('/orders', ownerController.getOrders)
 
 module.exports = router
