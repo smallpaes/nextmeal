@@ -10,7 +10,7 @@ const upload = multer({ dest: 'temp/' })
 router.get('/restaurants', adminController.getRestaurants)
 router.get('/restaurants/:restaurant_id', adminController.getRestaurant)
 
-router.put('/restaurants/:restaurant_id', upload.single('image'), valid, adminController.putRestaurant)
+router.put('/restaurants/:restaurant_id', upload.single('image'), validRestaurantForm, adminController.putRestaurant)
 router.delete('/restaurants/:restaurant_id', adminController.deleteRestaurant)
 
 router.get('/users', adminController.getUsers)
@@ -18,5 +18,7 @@ router.get('/users/:user_id', adminController.getUser)
 router.delete('/users/:user_id', adminController.deleteUser)
 
 router.get('/orders', adminController.getOrders)
+// router.get('/orders/:order_id', adminController.getOrder)
+router.put('/orders/:order_id', adminController.putOrder) // admin 取消訂單使用
 
 module.exports = router
