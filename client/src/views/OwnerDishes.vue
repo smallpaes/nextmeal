@@ -2,13 +2,13 @@
   <section class="wrapper d-flex vh-100">
     <SideNavBar />
     <section class="dishes flex-fill">
-      <a
-        href=""
+      <router-link
+        :to="{name: 'owner-dish-new'}"
         class="new-dish"
       >
         <i class="fas fa-plus" />
         <span class="ml-1 d-none d-md-inline">新增菜單</span>
-      </a>
+      </router-link>
       <h1 class="dishes-title">
         餐點資訊
       </h1>
@@ -18,6 +18,7 @@
         <OwnerDishCard
           v-for="meal in meals"
           :key="meal.id"
+          :meal="meal"
           class="col-12 p-0"
         />
       </div>

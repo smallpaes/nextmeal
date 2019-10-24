@@ -33,12 +33,13 @@ export const getGeoMethods = {
         const { data } = await axios.get(`${BASE_URL}/json?address=${this[storeLocation].address}&language=${language}&components=country:TW&key=${this.apiKey}`)
 
         // Retrieve district from data
-        const district = data.results[0].address_components[2] || null
+        const addressComponents = data.results[0].address_components
+        const district = addressComponents.filter(item => activeDistricts.includes(item.long_name))
 
         // validate address
-        if (data.status !== 'OK' || !district || !activeDistricts.includes(district.long_name)) {
+        if (data.status !== 'OK' || !district.length || addressComponents.length <= 4) {
           addressInput.setCustomValidity('invalid')
-          this.validationMsg.address = '請確認地址位於台北市信義、松山、大安、中山區'
+          this.validationMsg.address = '請確認為台北市信義、松山、大安、中山區的完整地址'
         } else {
           addressInput.setCustomValidity('')
           this.validationMsg.address = '請輸入地址'
@@ -51,7 +52,7 @@ export const getGeoMethods = {
         // update location data
         this[storeLocation].lat = data.results[0].geometry.location.lat
         this[storeLocation].lng = data.results[0].geometry.location.lng
-        this[storeLocation].location = data.results[0].address_components[2].long_name
+        this[storeLocation].location = district[0].long_name
         this.afterReceiveGeo()
       } catch (error) {
         this.warningMessage = 'Oops！設定時有些狀況，請稍後再試！'
