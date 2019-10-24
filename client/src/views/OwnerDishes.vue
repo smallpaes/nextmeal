@@ -1,5 +1,5 @@
 <template>
-  <section class="wrapper d-flex h-100">
+  <section class="wrapper d-flex vh-100">
     <SideNavBar />
     <section class="dishes flex-fill">
       <router-link
@@ -117,6 +117,7 @@ export default {
 
 <style lang="scss" scoped>
 .wrapper {
+    @include hideScrollBar;
     background-color: color(quinary);
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <section class="wrapper d-flex h-100">
+  <section class="wrapper d-flex vh-100">
     <SideNavBar />
     <section class="info flex-fill">
       <h1 class="info-title">

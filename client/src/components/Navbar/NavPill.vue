@@ -2,27 +2,27 @@
   <ul class="nav nav-pills">
     <li class="nav-item">
       <router-link
-        class="nav-link active"
+        class="nav-link"
         :to="{name: 'owner-dishes'}"
       >
         全部<span class="d-none d-md-inline">菜單</span>
       </router-link>
     </li>
     <li class="nav-item">
-      <a
+      <router-link
         class="nav-link"
-        href="#"
+        :to="{name: 'owner-menu', query: {ran: 'thisWeek'}}"
       >
         本週<span class="d-none d-md-inline">菜單</span>
-      </a>
+      </router-link>
     </li>
     <li class="nav-item">
-      <a
+      <router-link
         class="nav-link"
-        href="#"
+        :to="{name: 'owner-menu', query: {ran: 'nextWeek'}}"
       >
         下週<span class="d-none d-md-inline">菜單</span>
-      </a>
+      </router-link>
     </li>
   </ul>
 </template>

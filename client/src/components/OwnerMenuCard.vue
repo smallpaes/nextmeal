@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card d-flex flex-row rounded-sm"
+    class="card d-flex flex-row rounded-sm rounded-0"
   >
     <div class="card-left">
       <img
@@ -11,18 +11,27 @@
     </div>
     <div class="card-right">
       <div class="card-body px-3 py-0">
-        <router-link
-          :to="{name: 'owner-dish-edit', params: {dish_id: meal.id}}"
+        <button
+          v-if="$route.query.ran === 'nextWeek' && currentDay !== 0"
+          type="button"
           class="edit-btn btn p-0"
+          @click="$emit('edit-meal')"
         >
           <i class="fas fa-pencil-alt" />
-        </router-link>
+        </button>
         <h5 class="card-title m-0">
-          {{ meal.name }}
+          {{ day }}
         </h5>
-        <p class="card-text d-none d-md-inline mt-2">
-          {{ meal.description }}
-        </p>
+        <div class="card-description mt-2">
+          <p class="m-0 d-inline d-md-block">
+            <span class="d-none d-md-inline">餐點名稱：</span>
+            {{ meal.name }}
+          </p>
+          <p class="m-0 d-inline d-md-block">
+            <span class="d-none d-md-inline">供應數量</span>
+            ：{{ meal.quantity }}份
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -34,6 +43,16 @@ export default {
     meal: {
       type: Object,
       required: true
+    },
+    day: {
+      type: String,
+      required: true
+    }
+  },
+  computed: {
+    currentDay: function () {
+      const date = new Date()
+      return date.getDay()
     }
   }
 }
@@ -42,8 +61,10 @@ export default {
 <style lang="scss" scoped>
 .card {
     position: relative;
-    height: 50px;
+    height: 80px;
     overflow-y: scroll;
+    border: none;
+    border-bottom: 1px solid lighten(color(secondary), 50%);
 
     &-body {
         @include flexPosition(center, flex-start, column);
@@ -66,7 +87,7 @@ export default {
         }
     }
 
-    &-text {
+    &-description {
         font-size: size(sm);
         color: lighten(color(secondary), 10%);
     }
@@ -74,13 +95,12 @@ export default {
     .edit-btn {
         position: absolute;
         right: 2%;
-        top: 50%;
-        transform: translateY(-50%);
+        top: 15%;
         cursor: pointer;
         color: lighten(color(secondary), 10%);
 
         @include response(md) {
-            top: 17%;
+            top: 10%;
         }
     }
 

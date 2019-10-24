@@ -21,6 +21,7 @@
           :to="{name: 'owner-dishes'}"
           class="nav-link"
           active-class="active"
+          :class="{active: $route.name === 'owner-menu'}"
         >
           <span class="icon"><i class="fas fa-utensils" /></span>
           <span class="nav-link-description">餐點</span>
