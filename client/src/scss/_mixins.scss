@@ -48,7 +48,7 @@
 }
 
 @mixin solidButton($width: 200 ,$radius: 1,$color: primary) {
-    background-color: color(primary);
+    background-color: color($color);
     min-width: #{$width}px;
     max-width: #{$width}px;
     color: color(quaternary);
@@ -56,7 +56,7 @@
     transition: all .2s linear;
 
     &:hover {
-        background-color: darken(color(primary), 20%);
+        background-color: darken(color($color), 20%);
     }
 }
 

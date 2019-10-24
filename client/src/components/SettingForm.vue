@@ -1,6 +1,6 @@
 <template>
   <form
-    class="form-content needs-validation"
+    class="form-content needs-validation rounded"
     novalidate
     @submit.prevent.stop="getLocation"
   >
@@ -9,9 +9,14 @@
       v-if="!showMap"
       class="form-content-top rounded-top"
     >
-      <h3 class="pt-0 pb-3">
-        偏好設定
-      </h3>
+      <div class="form-content-top-header mb-4">
+        <h3>
+          設定
+        </h3>
+        <h5>
+          完成偏好設定以獲得更好體驗
+        </h5>
+      </div>
       <!--Show alert section-->
       <div
         v-if="warningMessage"
@@ -70,12 +75,14 @@
           class="form-text text-left"
         >填寫出生年月日</small>
       </div>
-      <button
-        class="btn mt-1"
-        type="submit"
-      >
-        送出
-      </button>
+      <div class="btn-container text-center">
+        <button
+          class="btn mt-1"
+          type="submit"
+        >
+          送出
+        </button>
+      </div>
     </div>
 
     <!--Map sidplay section-->

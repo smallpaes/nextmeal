@@ -1,13 +1,18 @@
 <template>
   <form
-    class="form-content needs-validation"
+    class="form-content needs-validation rounded"
     novalidate
     @submit.prevent.stop="handleSubmit"
   >
     <div class="form-content-top rounded-top">
-      <h3 class="pt-0 pb-3">
-        註冊
-      </h3>
+      <div class="form-content-top-header mb-4">
+        <h3>
+          註冊
+        </h3>
+        <h5>
+          註冊您的專屬 NextMeal 帳號
+        </h5>
+      </div>
       <div class="form-group">
         <input
           id="name"
@@ -66,12 +71,14 @@
           {{ validationMsg.passwordCheck }}
         </div>
       </div>
-      <button
-        type="submit"
-        class="btn mt-1"
-      >
-        註冊
-      </button>
+      <div class="btn-container text-center">
+        <button
+          type="submit"
+          class="btn mt-1"
+        >
+          註冊
+        </button>
+      </div>
     </div>
     <div class="form-content-bottom rounded-bottom d-flex">
       <p class="text-left m-0 mr-3">
