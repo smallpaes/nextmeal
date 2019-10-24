@@ -47,12 +47,13 @@
     background-repeat: no-repeat;
 }
 
-@mixin solidButton($width: 200 ,$radius: 1) {
+@mixin solidButton($width: 200 ,$radius: 1,$color: primary) {
     background-color: color(primary);
     min-width: #{$width}px;
     max-width: #{$width}px;
     color: color(quaternary);
     border-radius: #{$radius}rem;
+    transition: all .2s linear;
 
     &:hover {
         background-color: darken(color(primary), 20%);
@@ -371,6 +372,48 @@
                                 content: '';
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin fileUpload {
+    .file {
+        &-input {
+            @include hiddenInput;
+        }
+    
+        /* Style label into button */
+        &-label {
+            @include flexPosition;
+            @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), 0.1);
+            cursor: pointer;
+        }
+    
+        &-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+    
+            &-wrapper {
+                position: relative;
+                width: 100px;
+                height: 100px;
+                padding: .2rem;
+                border-radius: .1rem;
+                border: 1px solid lighten(color(secondary), 50%);
+    
+                .close-btn {
+                    position: absolute;
+                    top: 0;
+                    right: 4px;
+                    color: lighten(color(secondary), 15%);
+                    cursor: pointer;
+    
+                    &:hover {
+                        color: lighten(color(secondary), 30%);
                     }
                 }
             }
