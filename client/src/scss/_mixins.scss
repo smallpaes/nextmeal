@@ -40,11 +40,11 @@
     background-repeat: no-repeat;
 }
 
-@mixin solidButton {
+@mixin solidButton($width: '200px',$radius: 1) {
     background-color: color(primary);
-    width: 200px;
+    width: $width;
     color: color(quaternary);
-    border-radius: 1rem;
+    border-radius: #{$radius}rem;
 
     &:hover {
         background-color: darken(color(primary), 20%);
@@ -60,6 +60,15 @@
     &:hover {
         background-color: color(primary);
         color: color(quaternary)
+    }
+}
+
+@mixin linkStyling($color) {
+    color: color($color);
+    transition: color .2s linear;
+
+    &:hover {
+        color: darken(color(tertiary), 5%);
     }
 }
 
@@ -112,5 +121,30 @@
         &:hover {
             @extend .footer-brand;
         }
+    }
+}
+
+@mixin formControl {
+    &-control {
+        border-radius: .1rem;
+
+        &:focus {
+            outline: none;
+            box-shadow: none;
+            border-color: color(primary);
+        }
+    }
+}
+
+@mixin formValidation {
+    &:valid {
+        background-image: none;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    &:invalid {
+        @extend .form-control:valid;
     }
 }
