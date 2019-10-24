@@ -126,7 +126,7 @@
         required
       />
       <div class="invalid-feedback">
-        請輸入餐廳簡介
+        請輸入餐廳簡介，長度介於 10-100 之間
       </div>
     </div>
     <!--Image upload-->
