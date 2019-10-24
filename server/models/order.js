@@ -4,7 +4,10 @@ module.exports = (sequelize, DataTypes) => {
     UserId: DataTypes.STRING,
     order_date: DataTypes.DATE,
     require_date: DataTypes.STRING,
-    order_status: DataTypes.STRING
+    order_status: DataTypes.STRING,
+    amount: DataTypes.FLOAT,
+    hasComment: DataTypes.BOOLEAN
+
   }, {});
   Order.associate = function (models) {
     // associations can be defined here
