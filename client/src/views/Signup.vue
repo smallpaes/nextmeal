@@ -92,7 +92,7 @@ export default {
             color:lighten(color(secondary), 10%);
 
             a {
-                @include linkStyling(tertiary);
+                @include linkStyling(color(tertiary));
             }
         }
     }
@@ -109,17 +109,5 @@ export default {
 
 /deep/ .invalid-feedback {
     text-align: left;
-}
-
-/deep/ .btn {
-    @include solidButton(100%, .1);
-
-    &-outline {
-        background-color: color(tertiary);
-
-        &:hover {
-            background-color: darken(color(tertiary), 5%);
-        }
-    }
 }
 </style>

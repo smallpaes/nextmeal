@@ -31,6 +31,13 @@
     }
 }
 
+@mixin flexPosition($justCont:center, $alignIte: center, $direction: column) {
+    display: flex;
+    justify-content: $justCont;
+    align-items: $alignIte;
+    flex-direction: $direction;
+}
+
 @mixin setBackground($imageUrl, $height) {
     background-image: url($imageUrl);
     width: 100%;
@@ -40,35 +47,40 @@
     background-repeat: no-repeat;
 }
 
-@mixin solidButton($width: '200px',$radius: 1) {
+@mixin solidButton($width: 200 ,$radius: 1,$color: primary) {
     background-color: color(primary);
-    width: $width;
+    min-width: #{$width}px;
+    max-width: #{$width}px;
     color: color(quaternary);
     border-radius: #{$radius}rem;
+    transition: all .2s linear;
 
     &:hover {
         background-color: darken(color(primary), 20%);
     }
 }
 
-@mixin buttonOutline {
-    width: 200px;
-    color: color(primary);
-    border-radius: 1rem;
-    border: 1px solid color(primary);
+@mixin buttonOutline($width: 200 ,$height: 38, $color: color(primary), $hoverColor: color(quaternary), $bgColor: color(primary), $radius: 1) {
+    width: #{$width}px;
+    height: #{$height}px;
+    color: $color;
+    border-radius: #{$radius}rem;
+    border: 1px solid $color;
+    transition: all .2s linear;
 
     &:hover {
-        background-color: color(primary);
-        color: color(quaternary)
+        border-color: $hoverColor;
+        background-color: $bgColor;
+        color: $hoverColor;
     }
 }
 
 @mixin linkStyling($color) {
-    color: color($color);
+    color: $color;
     transition: color .2s linear;
 
     &:hover {
-        color: darken(color(tertiary), 5%);
+        color: darken($color, 10%);
     }
 }
 
@@ -101,6 +113,19 @@
     }
 }
 
+@mixin pseudoStyling($keyword, $color, $width, $height) {
+    position: relative;
+
+    &::#{$keyword} {
+        content: '';
+        position: absolute;
+        width: #{$width}rem;
+        height: #{$height}rem;
+        left: 0;
+        background-color: color($color);
+    }
+}
+
 @mixin imgOverlay($amount: 0.8) {
     &-overlay {
         position: absolute;
@@ -112,14 +137,14 @@
     }
 }
 
-@mixin brand {
+@mixin brand($name) {
     &-brand {
         font-family: 'Pacifico', cursive;
         color: color(primary);
         font-size: size(md);
 
         &:hover {
-            @extend .footer-brand;
+            @extend .#{$name}-brand;
         }
     }
 }
@@ -127,6 +152,8 @@
 @mixin formControl {
     &-control {
         border-radius: .1rem;
+        border: 1px solid lighten(color(secondary), 50%);
+        color: color(secondary);
 
         &:focus {
             outline: none;
@@ -134,6 +161,20 @@
             border-color: color(primary);
         }
     }
+}
+
+@mixin formSelectControl {
+    &-select-control {
+        border: 1px solid lighten(color(secondary), 50%);
+        border-radius: .1rem;
+      }
+    
+      select {
+        &.form-control {
+          border: 0px;
+          height: 35px;
+        }
+      }
 }
 
 @mixin formValidation {
@@ -146,5 +187,236 @@
 
     &:invalid {
         @extend .form-control:valid;
+    }
+}
+
+@mixin hiddenInput {
+    /* Hide default input button */
+    position: absolute;
+    border: 0;
+    clip: rect(0,0,0,0);
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+@mixin visibleTransition($status) {
+    @if($status == invisible) {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.5s linear;
+    }
+
+    @if($status == visible) {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+@mixin response($breakpoint) {
+    @if($breakpoint == sm) {
+        @media(min-width: 576px) {
+            @content;
+        }
+    }
+
+    @if($breakpoint == md) {
+        @media(min-width: 768px) {
+            @content;
+        }
+    }
+
+    @if($breakpoint == lg) {
+        @media(min-width: 992px) {
+            @content;
+        }
+    }
+
+    @if($breakpoint == xl) {
+        @media(min-width: 1200px) {
+            @content;
+        }
+    }
+    
+}
+
+@mixin hideScrollBar {
+    ::-webkit-scrollbar {
+        width: 0;
+        background-color: transparent;
+    }
+}
+
+@mixin tableMobile {
+    .table {
+        color: color(secondary);
+    
+        thead {
+            display: block;
+            position: absolute;
+            top: -99999px;
+            left: -99999px;
+            color: transparent;
+        }
+    
+        tbody {
+            display: block;
+            tr {
+                @extend tbody;
+                background-color: color(quaternary);
+                padding: 0 1rem .4rem 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+                border-radius: .2rem;
+                transition: transform .2s linear, box-shadow .2s linear;
+    
+                &:last-child {
+                    margin-bottom: 0;
+                }
+    
+                &:hover {
+                    color: color(secondary);
+                    cursor: pointer;
+                    transform: translateY(-5px);
+                    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+                }
+            }
+    
+            td {
+                @extend tbody;
+                position: relative;
+                border-bottom: 1px solid lighten(color(secondary), 55%);
+                padding-left: 50%;
+    
+                &::before {
+                    position: absolute;
+                    top: .75rem;
+                    left: .75rem;
+                    width: 45%;
+                    white-space: nowrap;
+                }
+    
+                @for $i from 1 through 5 {
+                    &:nth-of-type(#{$i}) {
+                        &:before {
+                            content: map-get($headers, $i);
+                            font-weight: weight(bold);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin tableFullSize {
+    .table {    
+        &-wrapper {
+            @include response(md) {
+                width: 100%;
+                background-color: color(quaternary);
+                padding: 0 1rem .4rem 1rem;
+                border-radius: .2rem;
+                box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+            }
+        }
+    
+        thead {
+            @include response(md) {
+                border-bottom: 2px solid lighten(color(secondary), 55%);
+                display: table-header-group;
+                position: unset;
+                color: color(secondary);
+            }
+        }
+    
+        tbody {
+            @include response(md) {
+                display: table-row-group;
+    
+                tr {
+                    color: lighten(color(secondary), 10%);
+                    transition: all .1s linear;
+                    display: table-row;
+                    background-color: color(quaternary);
+                    padding: unset;
+                    margin-bottom: 0;
+                    box-shadow: unset;
+                    border-radius: unset;
+    
+                    &:hover {
+                        background-color: lighten(color(secondary), 55%);
+                        color: color(primary);
+                        transform: unset;
+                        box-shadow: unset;
+                        cursor: pointer;
+                    }
+                }
+    
+                td {
+                    display: table-cell;
+                    position: relative;
+                    border-bottom: unset;
+                    padding: .75rem;
+    
+                    &::before {
+                        position: unset;
+                        width: unset;
+                        white-space: nowrap;
+                    }
+    
+                    @for $i from 1 through 5 {
+                        &:nth-of-type(#{$i}) {
+                            &:before {
+                                content: '';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin fileUpload {
+    .file {
+        &-input {
+            @include hiddenInput;
+        }
+    
+        /* Style label into button */
+        &-label {
+            @include flexPosition;
+            @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), 0.1);
+            cursor: pointer;
+        }
+    
+        &-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+    
+            &-wrapper {
+                position: relative;
+                width: 100px;
+                height: 100px;
+                padding: .2rem;
+                border-radius: .1rem;
+                border: 1px solid lighten(color(secondary), 50%);
+    
+                .close-btn {
+                    position: absolute;
+                    top: 0;
+                    right: 4px;
+                    color: lighten(color(secondary), 15%);
+                    cursor: pointer;
+    
+                    &:hover {
+                        color: lighten(color(secondary), 30%);
+                    }
+                }
+            }
+        }
     }
 }
