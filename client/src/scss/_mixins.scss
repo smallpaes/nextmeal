@@ -31,6 +31,13 @@
     }
 }
 
+@mixin flexPosition($justCont:center, $alignIte: center, $direction: column) {
+    display: flex;
+    justify-content: $justCont;
+    align-items: $alignIte;
+    flex-direction: $direction;
+}
+
 @mixin setBackground($imageUrl, $height) {
     background-image: url($imageUrl);
     width: 100%;
@@ -40,9 +47,9 @@
     background-repeat: no-repeat;
 }
 
-@mixin solidButton($width: '200px',$radius: 1) {
+@mixin solidButton($width: 200 ,$radius: 1) {
     background-color: color(primary);
-    width: $width;
+    width: #{$width}px;
     color: color(quaternary);
     border-radius: #{$radius}rem;
 
@@ -51,24 +58,27 @@
     }
 }
 
-@mixin buttonOutline {
-    width: 200px;
-    color: color(primary);
-    border-radius: 1rem;
-    border: 1px solid color(primary);
+@mixin buttonOutline($width: 200 ,$height: 38, $color: color(primary), $hoverColor: color(quaternary), $bgColor: color(primary), $radius: 1) {
+    width: #{$width}px;
+    height: #{$height}px;
+    color: $color;
+    border-radius: #{$radius}rem;
+    border: 1px solid $color;
+    transition: all .2s linear;
 
     &:hover {
-        background-color: color(primary);
-        color: color(quaternary)
+        border-color: $hoverColor;
+        background-color: $bgColor;
+        color: $hoverColor;
     }
 }
 
 @mixin linkStyling($color) {
-    color: color($color);
+    color: $color;
     transition: color .2s linear;
 
     &:hover {
-        color: darken(color(tertiary), 5%);
+        color: darken($color, 10%);
     }
 }
 
@@ -101,6 +111,19 @@
     }
 }
 
+@mixin pseudoStyling($keyword, $color, $width, $height) {
+    position: relative;
+
+    &::#{$keyword} {
+        content: '';
+        position: absolute;
+        width: #{$width}rem;
+        height: #{$height}rem;
+        left: 0;
+        background-color: color($color);
+    }
+}
+
 @mixin imgOverlay($amount: 0.8) {
     &-overlay {
         position: absolute;
@@ -112,16 +135,94 @@
     }
 }
 
-@mixin brand {
+@mixin brand($name) {
     &-brand {
         font-family: 'Pacifico', cursive;
         color: color(primary);
         font-size: size(md);
 
         &:hover {
-            @extend .footer-brand;
+            @extend .#{$name}-brand;
         }
     }
+}
+
+@mixin formControl {
+    &-control {
+        border-radius: .1rem;
+        border: 1px solid lighten(color(secondary), 50%);
+        color: color(secondary);
+
+        &:focus {
+            outline: none;
+            box-shadow: none;
+            border-color: color(primary);
+        }
+    }
+}
+
+@mixin formValidation {
+    &:valid {
+        background-image: none;
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    &:invalid {
+        @extend .form-control:valid;
+    }
+}
+
+@mixin hiddenInput {
+    /* Hide default input button */
+    position: absolute;
+    border: 0;
+    clip: rect(0,0,0,0);
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+@mixin visibleTransition($status) {
+    @if($status == invisible) {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.5s linear;
+    }
+
+    @if($status == visible) {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+@mixin response($breakpoint) {
+    @if($breakpoint == sm) {
+        @media(min-width: 576px) {
+            @content;
+        }
+    }
+
+    @if($breakpoint == md) {
+        @media(min-width: 768px) {
+            @content;
+        }
+    }
+
+    @if($breakpoint == lg) {
+        @media(min-width: 992px) {
+            @content;
+        }
+    }
+
+    @if($breakpoint == xl) {
+        @media(min-width: 1200px) {
+            @content;
+        }
+    }
+
 }
 
 @mixin formControl {

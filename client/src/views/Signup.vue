@@ -92,7 +92,7 @@ export default {
             color:lighten(color(secondary), 10%);
 
             a {
-                @include linkStyling(tertiary);
+                @include linkStyling(color(tertiary));
             }
         }
     }
