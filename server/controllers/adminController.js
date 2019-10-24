@@ -240,16 +240,25 @@ let adminController = {
       res.status(500).json({ status: 'error', message: error })
     }
   },
-  // 未完成
   putOrder: async (req, res) => {
     try {
+      let start = moment.utc().startOf('day').toDate()
+      // 取得訂單 取得使用者的 subscription 取消後退還餘額
       let order = await Order.findByPk(req.params.order_id)
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
-      if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
-      order = await order.update({
-        order_status: '取消'
+      let subscription = await Subscription.findAll({
+        where: {
+          UserId: order.UserId,
+          sub_expired_date: {[Op.gte]: start}
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
       })
-      return res.status(200).json({ status: 'success', order, message: 'Successfully cancel the order.' })
+      // if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
+      // order = await order.update({
+      //   order_status: '取消'
+      // })
+      return res.status(200).json({ status: 'success', order,subscription,  message: 'Successfully cancel the order.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
