@@ -70,9 +70,9 @@
           required
         >
         <small
-          v-if="!dob"
           id="dob-reminder"
           class="form-text text-left"
+          v-if="!dob"
         >填寫出生年月日</small>
       </div>
       <div class="btn-container text-center">
