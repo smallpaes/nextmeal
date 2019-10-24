@@ -1,4 +1,5 @@
 const { check, validationResult } = require('express-validator')
+const moment = require('moment')
 
 let middleware = {
   validRestaurantForm: [
@@ -35,12 +36,25 @@ let middleware = {
     check('prefer')
       .not().isEmpty().withMessage('birthday should be not empty'),
   ],
+  validOrderForm: [
+    check('require_date')
+      .not().isEmpty().withMessage('name should be not empty'),
+    check('quantity')
+      .not().isEmpty().withMessage('email should be not empty'),
+  ],
   validMessage: (req, res) => {
-    console.log('message')
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res.status(422).json({ status: 'error', errors: errors.array(), message: 'Information should be filled' });
     }
+  },
+  getTimeStop: (opening_hour, closing_hour) => {
+    let array = []
+    while (opening_hour < closing_hour) {
+      array.push(new moment(opening_hour).format('HH:mm'))
+      opening_hour.add(30, 'minute')
+    }
+    return array
   }
 }
 
