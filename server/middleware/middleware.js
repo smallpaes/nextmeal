@@ -1,6 +1,11 @@
 const { check, validationResult } = require('express-validator')
 const moment = require('moment')
 
+const db = require('../models')
+const Subscription = db.Subscription
+const sequelize = require('sequelize')
+const Op = sequelize.Op
+
 let middleware = {
   validRestaurantForm: [
     check('name')
@@ -55,6 +60,24 @@ let middleware = {
       opening_hour.add(30, 'minute')
     }
     return array
+  },
+  validSubsribe: async (req, res, next) => {
+    try {
+      let start = moment().startOf('day').toDate()
+      const subscription = await Subscription.findOne({
+        where: {
+          UserId: req.user.id,
+          payment_status: 1,
+          sub_expired_date: { [Op.gte]: start },
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
+      })
+      if (!subscription) return res.status(400).json({ status: 'error', message: 'You need to subscribe next meal now.' })
+      next()
+    } catch (error) {
+      return res.status(500).json({ status: 'error', message: error })
+    }
   }
 }
 
