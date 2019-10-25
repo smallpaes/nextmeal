@@ -25,7 +25,7 @@
 
 <style lang="scss" scoped>
 .footer{
-     @include brand;
+     @include brand(footer);
      background-color: darken(color(secondary), 6%);
 
      &-nav-link {
