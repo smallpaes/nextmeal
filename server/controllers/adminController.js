@@ -243,14 +243,14 @@ let adminController = {
       let start = moment().startOf('day').toDate()
       // 先取得本訂單，需驗證剩下多少數量，取得數量
       let order = await Order.findByPk(req.params.order_id, {
-        include: [ { model: Meal, as: 'meals', include: [Restaurant] } ]
+        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
       let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
           payment_status: 1,
-          sub_expired_date: {[Op.gte]: start}
+          sub_expired_date: { [Op.gte]: start }
         },
         order: [['sub_expired_date', 'DESC']],
         limit: 1
@@ -263,7 +263,11 @@ let adminController = {
       order = await order.update({
         order_status: '取消'
       })
-      return res.status(200).json({ status: 'success', order, subscription,  message: 'Successfully cancel the order.' })
+      let meal = await Meal.findByPk(order.meals[0].dataValues.id)
+      await meal.update({
+        quantity: meal.quantity + order.amount 
+      })
+      return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })

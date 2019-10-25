@@ -10,6 +10,18 @@ const Op = sequelize.Op
 const { validMessage, getTimeStop } = require('../middleware/middleware')
 
 let orderController = {
+  getNew: async (req, res) => {
+    try {
+      // query.order_id
+      const meal = await Meal.findByPk(req.query.meal_id,{
+        include: [{ model: Restaurant, attributes: ['id', 'name', 'rating'] }]
+      })
+      return res.status(200).json({ status: 'success', message: 'Successfully get the new order page info' })
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
   getOrder: async (req, res) => {
     try {
       let order = await Order.findByPk(req.params.order_id, {
@@ -57,7 +69,7 @@ let orderController = {
         ],
         attributes: ['id', 'amount', 'order_date', 'require_date']
       })
-      if (!order) return res.status(400).json({ status: 'success', message: 'order does not exist' })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       // 為了給前端 time_slots 取得餐廳開店與關店時間
       let opening_hour = moment(order.meals[0].dataValues.Restaurant.dataValues.opening_hour, 'HH:mm')
       let closing_hour = moment(order.meals[0].dataValues.Restaurant.dataValues.closing_hour, 'HH:mm')
@@ -115,34 +127,17 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
-      // 需驗證剩下多少數量，取得數量
+      // 取得 order 數量
       let order = await Order.findByPk(req.params.order_id, {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
-      if (!order) return res.status(400).json({ status: 'success', message: 'order does not exist' })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       validMessage(req, res)
-      // 計算被訂購的數量，不用傳給前端
-      let orders = await Order.findAll({
-        where: {
-          order_status: { [Op.notLike]: '取消' },
-          updatedAt: { [Op.gte]: start, [Op.lte]: end }
-        },
-        include: [{
-          model: Meal, as: 'meals', where: {
-            id: order.meals[0].dataValues.id
-          }
-        }],
-        attributes: [
-          [sequelize.fn('sum', sequelize.col('amount')), 'total']
-        ]
-      })
-      // meal預設數量 order.meals[0].dataValues.quantity
-      // 已被訂購的數量  orders[0].dataValues.total
-      // meal 總數 - (找出所有今天 orders 已被訂購的數量) 相減回傳數量 (未修改前)
-      let quantity = order.meals[0].dataValues.quantity - orders[0].dataValues.total
-      // 修改時， 剩餘 quantity + 使用者原訂購數量 - 新訂購數量，不得為負數，否則失敗
+      // meal 會減少直接當庫存
+      let quantity = order.meals[0].dataValues.quantity
+      // 修改後的庫存等於剩餘的 quantity + 使用者原訂購數量 - 新訂購數量，不得為負數，否則失敗
       let newQuantity = quantity + order.dataValues.amount - Number(req.body.quantity)
-      // 修改時， 剩餘 sub_balance + 使用者原訂購數量 - 新訂購數量，不得為負數，否則失敗
+      // 修改後的sub_balance等於剩餘 sub_balance + 使用者原訂購數量 - 新訂購數量，不得為負數，否則失敗
       let newSub_balance = subscription.sub_balance + order.dataValues.amount - Number(req.body.quantity)
       // (驗證 subscription sub_balance - 傳進來的數字不小於 0) && (quantity - 傳進來的數字不小於 0)
       if (newSub_balance < 0) return res.status(400).json({ status: 'error', message: 'Your credit is not enough.' })
@@ -163,7 +158,12 @@ let orderController = {
         orderItem.update({
           quantity: req.body.quantity,
         })
-        return res.status(200).json({ status: 'success', message: 'Successfully edit Order information.' })
+        // 修改 meal 的庫存
+        let meal = await Meal.findByPk(order.meals[0].dataValues.id)
+        await meal.update({
+          quantity: newQuantity
+        })
+        return res.status(200).json({ status: 'success',order, message: 'Successfully edit Order information.' })
       }
       return res.status(400).json({ status: 'error', message: 'Store\'s quantity is none in stock.' })
     } catch (error) {
