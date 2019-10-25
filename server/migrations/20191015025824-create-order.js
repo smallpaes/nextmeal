@@ -20,6 +20,12 @@ module.exports = {
       order_status: {
         type: Sequelize.STRING
       },
+      amount: {
+        type: Sequelize.FLOAT
+      },
+      hasComment: {
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
