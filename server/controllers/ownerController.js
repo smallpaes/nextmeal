@@ -351,8 +351,8 @@ let ownerController = {
   getOrders: async (req, res) => {
     try {
       //算出今天開始、結束日期
-      const start = moment().startOf('day').toISOString()
-      const end = moment().endOf('day').toISOString()
+      const start = moment().startOf('day').format()
+      const end = moment().endOf('day').format()
       let restaurant = await Restaurant.findOne({where: {UserId: req.user.id}})
       let orders = await Order.findAll({
         where: {
