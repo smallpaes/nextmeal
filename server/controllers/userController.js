@@ -20,6 +20,8 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 // const nodemailer = require("nodemailer"); // 寄送 mail
 
+const pageLimit = 6
+
 // import express-validator for validation
 const { validationResult } = require('express-validator/check');
 
@@ -395,6 +397,62 @@ let userController = {
 
       if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getOrders: async (req, res) => {
+    try {
+      const { page, status } = req.query
+      let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
+      if (!status &&
+        status !== 'today' &&
+        status !== 'tomorrow' &&
+        status !== 'cancel' &&
+        status !== 'history'
+      ) return res.status(400).json({
+        status: 'error',
+        message: 'should be query string like today、tomorrow、cancel、history'
+      })
+      let start, end
+      let whereQuery = {
+        UserId: req.user.id,
+        order_status: { [Op.notLike]: '取消' },
+      }
+      if (status === 'today') {
+        start = moment().startOf('day').toDate()
+        end = moment().endOf('day').toDate()
+        whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
+      }
+      if (status === 'tomorrow' ) {
+        start  = moment().add(1,'days').startOf('day').toDate()
+        end  = moment().add(1,'days').endOf('day').toDate()
+        whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
+      }
+      if (status === 'cancel' ) { whereQuery['order_status'] = '取消' }
+      let orders = await Order.findAndCountAll({
+        where: whereQuery,
+        include: [{
+          model: Meal,
+          as: 'meals',
+          include: [{ model: Restaurant, attributes: ['id', 'name', 'rating']}],
+          attributes: ['id', 'name', 'description', 'image']
+        }],
+        attributes: ['id', 'order_date', 'require_date', 'order_status', 'amount'],
+        order: [['require_date', 'ASC']],
+        offset: (pageNum - 1) * pageLimit,
+        limit: pageLimit,
+      })
+      if (!orders) return res.status(400).json({ status: 'error', message: 'not order yet.' })
+      let count = orders.count
+      orders = orders.rows.map(order => ({
+        ...order.dataValues,
+        meals: order.dataValues.meals[0]
+      }))
+      let pages = Math.ceil((count) / pageLimit)
+      return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get orders.' })
     } catch (error) {
       console.log(error)
       return res.status(500).json({ status: 'error', message: error })

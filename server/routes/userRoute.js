@@ -17,6 +17,7 @@ router.post('/emailcheck', validator.creatUser, userController.emailCheck)
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 
+router.get('/orders', ensureAuthenticated, getUser, validSubsribe, userController.getOrders)
 router.get('/tomorrow', ensureAuthenticated, getUser, validSubsribe, userController.getTomorrow)
 
 router.put('/:user_id/edit', ensureAuthenticated, getUser, upload.single('avatar'), validUserProfile, userController.putProfile)

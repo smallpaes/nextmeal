@@ -211,7 +211,7 @@ let adminController = {
         whereQuery['require_date'] = { [Op.gte]: start || '', [Op.lte]: end || '' }
       }
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
-      let orders = await Order.findAll({
+      let orders = await Order.findAndCountAll({
         where: whereQuery,
         include: [
           { model: User, attributes: ['id', 'name', 'email'] },
@@ -228,11 +228,13 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      orders = orders.map(order => ({
+      let count = orders.count
+      orders = orders.rows.map(order => ({
         ...order.dataValues,
         meals: order.dataValues.meals[0]
       }))
-      res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders.' })
+      let pages = Math.ceil((count) / pageLimit)
+      res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
