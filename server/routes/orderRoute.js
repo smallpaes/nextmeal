@@ -5,8 +5,8 @@ const orderController = require('../controllers/orderController.js')
 
 
 router.get('/:order_id/comment', orderController.getComment)
-router.get('/:order_id', orderController.getOrder)
+router.put('/:order_id/cancel', orderController.putCancel)
 router.get('/:order_id/edit', orderController.getOrderEdit)
-router.put('/:order_id', validOrderForm, orderController.putOrder) // 之後要記得加上 validOrderForm
-
+router.get('/:order_id', orderController.getOrder)
+router.put('/:order_id', validOrderForm, orderController.putOrder)
 module.exports = router

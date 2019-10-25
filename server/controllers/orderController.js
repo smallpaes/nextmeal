@@ -104,7 +104,7 @@ let orderController = {
         ${new Date().getDate() + 1} ${req.body.require_date}
         `
       ).toISOString().replace('T', ' ').replace('Z', '').split('.000')[0]
-      
+
       // 找出使用者目前 subscription 是否為有效
       const subscription = await Subscription.findOne({
         where: {
@@ -117,7 +117,7 @@ let orderController = {
       })
       // 需驗證剩下多少數量，取得數量
       let order = await Order.findByPk(req.params.order_id, {
-        include: [ { model: Meal, as: 'meals', include: [Restaurant] } ]
+        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'success', message: 'order does not exist' })
       validMessage(req, res)
@@ -156,7 +156,7 @@ let orderController = {
           require_date: newRequire_date
         })
         // 更新訂單 order 和 orderitem 原本數量
-        await order.update({amount: req.body.quantity})
+        await order.update({ amount: req.body.quantity })
         let orderItem = await OrderItem.findOne({
           where: { OrderId: req.params.order_id }
         })
@@ -175,6 +175,37 @@ let orderController = {
     try {
 
       return res.status(200).json({ status: 'success', message: 'Successfully get user comment' })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
+  putCancel: async (req, res) => {
+    try {
+      let start = moment().startOf('day').toDate()
+      // 先取得本訂單，需驗證剩下多少數量，取得數量
+      let order = await Order.findByPk(req.params.order_id, {
+        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
+      })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
+      let subscription = await Subscription.findOne({
+        where: {
+          UserId: order.UserId,
+          payment_status: 1,
+          sub_expired_date: { [Op.gte]: start }
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
+      })
+      let returnNum = subscription.sub_balance + order.amount
+      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
+      if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
+      await subscription.update({
+        sub_balance: returnNum
+      })
+      order = await order.update({
+        order_status: '取消'
+      })
+      return res.status(200).json({ status: 'success', message: 'Successfully cancel the order.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }

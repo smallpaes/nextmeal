@@ -36,7 +36,7 @@ let adminController = {
             include: [{
               model: Order,
               as: 'orders',
-              where: { order_status: '今天' },
+              where: { order_status: '今日' },
             }],
           }
         ],
@@ -238,8 +238,8 @@ let adminController = {
     }
   },
   // admin 的取消路由
-  putOrder: async (req, res) => {
-    try { // 使用者訂閱狀態跟退還餘額， 訂單取消
+  putCancel: async (req, res) => {
+    try {
       let start = moment().startOf('day').toDate()
       // 先取得本訂單，需驗證剩下多少數量，取得數量
       let order = await Order.findByPk(req.params.order_id, {
