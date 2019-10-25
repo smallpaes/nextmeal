@@ -3,12 +3,14 @@ const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
 
 const db = require('../models')
 const Subscription = db.Subscription
+const Restaurant = db.Restaurant
 const Category = db.Category
 const User = db.User
 const Order = db.Order
+const Meal = db.Meal
 
 const crypto = require("crypto"); // 加密
-const { validMessage, validSubsribe } = require('../middleware/middleware')
+const { validMessage } = require('../middleware/middleware')
 const districts = require('../location/district.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -381,11 +383,19 @@ let userController = {
           UserId: req.user.id,
           require_date: { [Op.gte]: start, [Op.lte]: end },
           order_status: { [Op.notLike]: '取消' }
-        }
+        },
+        include: [{
+          model: Meal,
+          as: 'meals',
+          include: [{ model: Restaurant, attributes: ['id', 'name', 'rating']}],
+          attributes: ['id', 'name', 'description', 'image']
+        }],
+        attributes: ['id']
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
