@@ -115,7 +115,7 @@ let orderController = {
         ${new Date().getMonth() + 1}-
         ${new Date().getDate() + 1} ${req.body.require_date}
         `
-      ).toISOString().replace('T', ' ').replace('Z', '').split('.000')[0]
+      ).toISOString()
 
       // 找出使用者目前 subscription 是否為有效
       const subscription = await Subscription.findOne({
