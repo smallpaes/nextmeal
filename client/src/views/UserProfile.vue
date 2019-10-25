@@ -1,9 +1,9 @@
 <template>
-  <section>
+  <section class="profile-container">
     <header>
       <Navbar />
     </header>
-    <section class="container pt-4 pb-4">
+    <section class="container pt-4 pb-4 w-100">
       <div class="profile-wrapper row profil">
         <div class="profile-content-left col-12 col-md-3 p-2">
           <UserProfileCard />
@@ -13,7 +13,7 @@
         </div>
       </div>
     </section>
-    <Footer />
+    <Footer class="w-100" />
   </section>
 </template>
 
@@ -41,29 +41,22 @@ export default {
         avatar: ''
       }
     }
-  },
-  created () {
-
-  },
-  methods: {
-    fetchUser () {
-      // fetch full user data from API
-    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .profile {
+    &-container {
+        display: flex;
+        flex-wrap: wrap;
+
+        align-content: space-between;
+        height: 100%;
+    }
+
     &-wrapper {
         margin-top: 62px;
     }
 }
-
-// .btn-container {
-//     text-align: center;
-//     .btn {
-//         @include buttonOutline;
-//     }
-// }
 </style>
