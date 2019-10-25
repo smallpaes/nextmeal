@@ -167,7 +167,6 @@ let adminController = {
       }))
       return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -184,7 +183,6 @@ let adminController = {
       if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
       return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -196,7 +194,6 @@ let adminController = {
       await user.destroy()
       return res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -240,25 +237,33 @@ let adminController = {
       res.status(500).json({ status: 'error', message: error })
     }
   },
+  // admin 的取消路由
   putOrder: async (req, res) => {
-    try {
-      let start = moment.utc().startOf('day').toDate()
-      // 取得訂單 取得使用者的 subscription 取消後退還餘額
-      let order = await Order.findByPk(req.params.order_id)
+    try { // 使用者訂閱狀態跟退還餘額， 訂單取消
+      let start = moment().startOf('day').toDate()
+      // 先取得本訂單，需驗證剩下多少數量，取得數量
+      let order = await Order.findByPk(req.params.order_id, {
+        include: [ { model: Meal, as: 'meals', include: [Restaurant] } ]
+      })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
-      let subscription = await Subscription.findAll({
+      let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
+          payment_status: 1,
           sub_expired_date: {[Op.gte]: start}
         },
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
-      // if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
-      // order = await order.update({
-      //   order_status: '取消'
-      // })
-      return res.status(200).json({ status: 'success', order,subscription,  message: 'Successfully cancel the order.' })
+      let returnNum = subscription.sub_balance + order.amount
+      if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
+      await subscription.update({
+        sub_balance: returnNum
+      })
+      order = await order.update({
+        order_status: '取消'
+      })
+      return res.status(200).json({ status: 'success', order, subscription,  message: 'Successfully cancel the order.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })

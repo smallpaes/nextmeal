@@ -34,13 +34,13 @@ let middleware = {
     check('dob')
       .not().isEmpty().withMessage('birthday should be not empty'),
     check('prefer')
-      .not().isEmpty().withMessage('birthday should be not empty'),
+      .not().isEmpty().withMessage('prefer should be not empty'),
   ],
   validOrderForm: [
     check('require_date')
       .not().isEmpty().withMessage('name should be not empty'),
     check('quantity')
-      .not().isEmpty().withMessage('email should be not empty'),
+      .not().isEmpty().withMessage('quantity should be not empty'),
   ],
   validMessage: (req, res) => {
     const errors = validationResult(req)

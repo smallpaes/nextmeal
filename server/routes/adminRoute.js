@@ -19,6 +19,6 @@ router.delete('/users/:user_id', adminController.deleteUser)
 
 router.get('/orders', adminController.getOrders)
 // router.get('/orders/:order_id', adminController.getOrder)
-router.put('/orders/:order_id', adminController.putOrder) // admin 取消訂單使用
+router.put('/orders/:order_id', adminController.putOrder) // admin 取消訂單使用，沒有編輯功能!
 
 module.exports = router
