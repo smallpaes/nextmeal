@@ -25,7 +25,7 @@ let orderController = {
       })
       if (!order) return res.status(400).json({ status: 'error', order, message: 'getOrder' })
       order = { ...order.dataValues, meals: order.dataValues.meals[0] }
-      return res.status(200).json({ status: 'success', order, message: 'getOrder' })
+      return res.status(200).json({ status: 'success', order, message: 'Successfully get the Order' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
@@ -40,10 +40,12 @@ let orderController = {
         where: {
           UserId: req.user.id,
           payment_status: 1,
-          sub_expired_date: { [Op.gte]: start }
-        }
+          sub_expired_date: { [Op.gte]: start },
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
       })
-      // 需驗證剩下多少數量，取得數量
+      // 需驗證剩下多少數量，取得數量，先取得本訂單
       let order = await Order.findByPk(req.params.order_id, {
         include: [
           {
@@ -56,27 +58,39 @@ let orderController = {
         attributes: ['id', 'order_date', 'require_date']
       })
       if (!order) return res.status(400).json({ status: 'success', message: 'order does not exist' })
-      // 取得餐廳開店與關店時間
+      // 為了給前端 time_slots 取得餐廳開店與關店時間
+      console.log(order.meals[0].dataValues.Restaurant)
       let opening_hour = moment(order.meals[0].dataValues.Restaurant.dataValues.opening_hour, 'HH:mm')
       let closing_hour = moment(order.meals[0].dataValues.Restaurant.dataValues.closing_hour, 'HH:mm')
       let time_slots = getTimeStop(opening_hour, closing_hour)
-      let orderItem = await OrderItem.findAll({
+      // 取得當日所有已經被訂購的餐點數量
+      // let orderItem = await OrderItem.findAll({
+      //   where: {
+      //     updatedAt: { [Op.gte]: start, [Op.lte]: end }
+      //   },
+      //   attributes: [
+      //     [sequelize.fn('sum', sequelize.col('quantity')), 'total']
+      //   ]
+      // })
+      let orders = await Order.findAll({
         where: {
+          order_status: {[Op.notLike]: '取消'},
           updatedAt: { [Op.gte]: start, [Op.lte]: end }
         },
-        attributes: [
-          [sequelize.fn('sum', sequelize.col('quantity')), 'total']
-        ]
+        include: [{model: Meal, as: 'meals', where: {
+          id: order.meals[0].dataValues.id
+        }}]
       })
+
       // 撈出 meal 預設數量 order.meals[0].dataValues.quantity
       // 已經被訂購的數量 orderItem[0].dataValues.total
       // meal 總數 - (找出所有今天 orders 計算 quatity) 相減回傳數量
       let quantity = order.meals[0].dataValues.quantity - orderItem[0].dataValues.total
-      order = { ...order.dataValues, meals: order.dataValues.meals[0].dataValues }
+      // order = { ...order.dataValues, meals: order.dataValues.meals[0].dataValues }
       // 回傳 substription 數量，以及餐點剩餘數量
       return res.status(200).json({
         status: 'success',
-        order, quantity, subscription, time_slots,
+        order, quantity, subscription, time_slots, orders,
         message: 'Successfully edit Order information.'
       })
     } catch (error) {
@@ -149,6 +163,14 @@ let orderController = {
       return res.status(200).json({ status: 'success', order, subscription, orderItem, message: 'Successfully edit Order information.' })
     } catch (error) {
       console.log(error)
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
+  getComment: async (req, res) => {
+    try {
+      
+      return res.status(200).json({ status: 'success', message: 'Successfully get user comment' })
+    } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
   },
