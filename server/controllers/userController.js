@@ -390,8 +390,9 @@ let userController = {
           include: [{ model: Restaurant, attributes: ['id', 'name', 'rating']}],
           attributes: ['id', 'name', 'description', 'image']
         }],
-        attributes: ['id']
+        attributes: ['id', 'require_date']
       })
+
       if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
