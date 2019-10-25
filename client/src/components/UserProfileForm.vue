@@ -51,8 +51,11 @@
         class="col-md-6"
         :categories="categories"
       />
-      <!--Closing time-->
-      <CustomDatePicker v-model="user" />
+      <!--Date of birth-->
+      <CustomDatePicker
+        v-model="user"
+        class="px-1"
+      />
     </div>
     <!--Address-->
     <div class="form-group">

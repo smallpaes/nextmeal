@@ -1,6 +1,9 @@
 <template>
-  <div class="form-group form-calendar-group col-md-6">
-    <label for="hidden-date-input">出生年月日</label>
+  <div class="form-group form-calendar-group col-md-6 p-0">
+    <label
+      v-if="hasLabel"
+      for="hidden-date-input"
+    >出生年月日</label>
     <input
       id="hidden-date-input"
       type="date"
@@ -34,6 +37,10 @@ export default {
     value: {
       type: Object,
       required: true
+    },
+    hasLabel: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
@@ -94,10 +101,19 @@ export default {
   .cell {
     &.actived {
       background-color: color(primary);
+      color: color(quaternary);
     }
 
     &:hover {
       background-color: lighten(color(primary), 35%);
+      color: color(primary);
+    }
+  }
+}
+
+/deep/ .mx-panel-date {
+  td {
+    &.today {
       color: color(primary);
     }
   }

@@ -74,7 +74,6 @@ export default {
         background-color: color(quaternary);
         margin-top: 70px;
         margin: 0 auto;
-        overflow-y: hidden;
 
         &-top {
             background-color: color(quaternary);
