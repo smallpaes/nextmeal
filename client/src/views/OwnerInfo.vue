@@ -6,18 +6,18 @@
         餐廳資訊
       </h1>
       <hr class="info-divider">
-      <OwnerInfoForm />
+      <RestaurantInfoForm />
     </section>
   </section>
 </template>
 
 <script>
 import SideNavBar from '../components/Navbar/SideNavBar'
-import OwnerInfoForm from '../components/OwnerInfoForm'
+import RestaurantInfoForm from '../components/RestaurantInfoForm'
 export default {
   components: {
     SideNavBar,
-    OwnerInfoForm
+    RestaurantInfoForm
   }
 }
 </script>

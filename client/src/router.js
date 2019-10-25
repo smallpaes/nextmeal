@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import NotFound from './views/NotFound'
 
 Vue.use(Router)
 
@@ -33,6 +34,16 @@ export default new Router({
       component: () => import('./views/Signup.vue')
     },
     {
+      path: '/subscribe',
+      name: 'subscribe',
+      component: () => import('./views/Subscribe.vue')
+    },
+    {
+      path: '/user',
+      name: 'user-profile',
+      component: () => import('./views/UserProfile.vue')
+    },
+    {
       path: '/owner',
       name: 'owner-info',
       component: () => import('./views/OwnerInfo.vue')
@@ -56,6 +67,31 @@ export default new Router({
       path: '/owner/menu',
       name: 'owner-menu',
       component: () => import('./views/OwnerMenu.vue')
+    },
+    {
+      path: '/admin/restaurants',
+      name: 'admin-restaurants',
+      component: () => import('./views/AdminRestaurants.vue')
+    },
+    {
+      path: '/admin/restaurants/:restaurant_id',
+      name: 'admin-restaurant-edit',
+      component: () => import('./views/AdminRestaurantEdit.vue')
+    },
+    {
+      path: '/admin/users',
+      name: 'admin-users',
+      component: () => import('./views/AdminUsers.vue')
+    },
+    {
+      path: '/admin/users/:user_id',
+      name: 'admin-user-edit',
+      component: () => import('./views/AdminUserEdit.vue')
+    },
+    {
+      path: '*',
+      name: 'not-found',
+      component: NotFound
     }
   ]
 })
