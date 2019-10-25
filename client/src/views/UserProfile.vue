@@ -50,7 +50,6 @@ export default {
     &-container {
         display: flex;
         flex-wrap: wrap;
-
         align-content: space-between;
         height: 100%;
     }
