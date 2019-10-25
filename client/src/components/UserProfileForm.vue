@@ -3,7 +3,10 @@
     class="form p-3 rounded shadow-sm needs-validation"
     novalidate
   >
-    <h3 class="form-header mb-4">
+    <h3
+      v-if="$route.name === 'user-profile'"
+      class="form-header mb-4"
+    >
       帳號設定
     </h3>
     <!--Show alert section-->

@@ -84,6 +84,11 @@ export default new Router({
       component: () => import('./views/AdminUsers.vue')
     },
     {
+      path: '/admin/users/:user_id',
+      name: 'admin-user-edit',
+      component: () => import('./views/AdminUserEdit.vue')
+    },
+    {
       path: '*',
       name: 'not-found',
       component: NotFound

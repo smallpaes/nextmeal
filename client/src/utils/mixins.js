@@ -69,7 +69,7 @@ export const getGeoMethods = {
         } else {
           document.getElementById('hidden-date-input').setCustomValidity('')
         }
-        console.log(form.checkValidity())
+
         // Validate form data
         if (form.checkValidity() === false) {
           form.classList.add('was-validated')
