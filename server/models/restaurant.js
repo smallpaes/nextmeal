@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     longitude: DataTypes.STRING,
     opening_hour: DataTypes.TIME,
     closing_hour: DataTypes.TIME,
+    geometry: DataTypes.GEOMETRY('POINT', 4326),
     UserId: DataTypes.INTEGER
   }, {});
   Restaurant.associate = function (models) {
