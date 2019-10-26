@@ -23,7 +23,7 @@ let orderController = {
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
-        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour',[distance, 'distance']], // distance
+        attributes: ['id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
         order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
@@ -40,11 +40,11 @@ let orderController = {
   },
   postNew: async (req, res) => {
     try {
-      const quantity = Number(req.body.quantity) 
+      const quantity = Number(req.body.quantity)
       let start = moment().startOf('day').toDate()
       const requireTime = req.body.require_date.split(':')
 
-      let tomorrow = moment().add(1,'days').startOf('day')
+      let tomorrow = moment().add(1, 'days').startOf('day')
       tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
       tomorrow = new Date(tomorrow)
 
@@ -59,13 +59,17 @@ let orderController = {
         limit: 1
       })
       // 找不到 meal、庫存不足、order點超過庫存
-      if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.'})
-      if (meal.quantity < 1 ) return res.status.json({ status: 'error', message: 'the meal is out of stock.'})
-      if ((meal.quantity -quantity) < 0) {
-        return res.status.json({status: 'error', message: 'order\'s quantity can not excess stock\'s quantity'})
+      if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.' })
+      if (meal.quantity < 1) return res.status(400).json({ status: 'error', message: 'the meal is out of stock.' })
+      if ((meal.quantity - quantity) < 0) {
+        return res.status(400).json({ status: 'error', message: 'order\'s quantity can not excess stock\'s quantity' })
       }
       if ((subscription.sub_balance - quantity) < 0) {
+<<<<<<< HEAD
         return res.status(400).json({status: 'error', message: 'order\'s quantity can not excess subscription\'s sub_balance'})
+=======
+        return res.status(400).json({ status: 'error', message: 'order\'s quantity can not excess subscription\'s sub_balance' })
+>>>>>>> 89d6b816bd3ad481fb805d4e6094af3d4418c587
       }
       // 回傳 order_id
       let order = await Order.create({ // UserId、require_date、amount，order_date、order_status 預設
@@ -86,6 +90,7 @@ let orderController = {
       })
       return res.status(200).json({ status: 'success', order_id: order.id, message: 'Successfully order the meal.' })
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -210,7 +215,7 @@ let orderController = {
         await meal.update({
           quantity: newQuantity
         })
-        return res.status(200).json({ status: 'success',order, message: 'Successfully edit Order information.' })
+        return res.status(200).json({ status: 'success', order, message: 'Successfully edit Order information.' })
       }
       return res.status(400).json({ status: 'error', message: 'Store\'s quantity is none in stock.' })
     } catch (error) {
