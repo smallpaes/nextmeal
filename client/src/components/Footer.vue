@@ -1,5 +1,5 @@
 <template>
-  <footer class="py-3 footer">
+  <footer class="py-3 footer w-100">
     <div class="footer-wrapper container d-flex flex-column text-center">
       <a
         href="#"
