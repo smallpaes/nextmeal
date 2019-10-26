@@ -65,11 +65,7 @@ let orderController = {
         return res.status(400).json({ status: 'error', message: 'order\'s quantity can not excess stock\'s quantity' })
       }
       if ((subscription.sub_balance - quantity) < 0) {
-<<<<<<< HEAD
-        return res.status(400).json({status: 'error', message: 'order\'s quantity can not excess subscription\'s sub_balance'})
-=======
         return res.status(400).json({ status: 'error', message: 'order\'s quantity can not excess subscription\'s sub_balance' })
->>>>>>> 89d6b816bd3ad481fb805d4e6094af3d4418c587
       }
       // 回傳 order_id
       let order = await Order.create({ // UserId、require_date、amount，order_date、order_status 預設
