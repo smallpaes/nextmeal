@@ -48,7 +48,7 @@ let orderController = {
       tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
       tomorrow = new Date(tomorrow)
 
-      let meal = await Meal.findByPk(1)
+      let meal = await Meal.findByPk(req.body.meal_id)
       let subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
@@ -65,7 +65,7 @@ let orderController = {
         return res.status.json({status: 'error', message: 'order\'s quantity can not excess stock\'s quantity'})
       }
       if ((subscription.sub_balance - quantity) < 0) {
-        return res.status.json({status: 'error', message: 'order\'s quantity can not excess subscription\'s sub_balance'})
+        return res.status(400).json({status: 'error', message: 'order\'s quantity can not excess subscription\'s sub_balance'})
       }
       // 回傳 order_id
       let order = await Order.create({ // UserId、require_date、amount，order_date、order_status 預設
