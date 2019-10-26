@@ -44,6 +44,9 @@ module.exports = {
       longitude: {
         type: Sequelize.STRING
       },
+      geometry: {
+        type: Sequelize.GEOMETRY
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

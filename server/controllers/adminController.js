@@ -210,10 +210,10 @@ let adminController = {
       let whereQuery = {
         id: { [Op.substring]: order_id || '' },
         order_status: { [Op.notLike]: '取消' },
-        require_date: { [Op.gte]: start , [Op.lte]: end}
+        require_date: { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_status && order_status === '取消') {
-        whereQuery['order_status'] = { [Op.substring]: '取消' || ''}
+        whereQuery['order_status'] = { [Op.substring]: '取消' || '' }
       }
 
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
@@ -235,7 +235,7 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (!orders) return res.status(400).json({status: 'error', message: 'can not find any orders'})
+      if (!orders) return res.status(400).json({ status: 'error', message: 'can not find any orders' })
       orders = orders.map(order => ({
         ...order.dataValues,
         meals: order.dataValues.meals[0]

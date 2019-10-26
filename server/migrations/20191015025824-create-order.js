@@ -15,7 +15,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       require_date: {
-        type: Sequelize.STRING
+        type: Sequelize.DATE
       },
       order_status: {
         type: Sequelize.STRING
