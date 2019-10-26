@@ -11,6 +11,6 @@ module.exports = (app) => {
   app.use('/api/restaurants', restRoute)
   app.use('/api/users', userRoute)
   app.use('/api/admin', ensureAuthenticated, getUser, isAuthAdmin, adminRoute)
-  app.use('/api/owner', ownerRoute)
+  app.use('/api/owner', ensureAuthenticated, getUser, ownerRoute)
   app.use('/api/order', ensureAuthenticated, getUser, orderRoute)
 }

@@ -207,4 +207,8 @@ export default {
 .alert {
     color: color(primary);
 }
+
+.btn {
+    @include solidButton(200, 1);
+}
 </style>
