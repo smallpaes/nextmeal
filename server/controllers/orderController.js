@@ -12,29 +12,29 @@ const { validMessage, getTimeStop } = require('../middleware/middleware')
 let orderController = {
   getNew: async (req, res) => {
     try {
+      const location = sequelize.literal(`ST_GeomFromText('POINT(${req.user.longitude} ${req.user.latitude})')`)
+      const distance = sequelize.fn('ST_Distance_Sphere', sequelize.literal('geometry'), location)
       // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
       let restaurants = await Restaurant.findAll({
-        // where: {
-        //   // 利用使用者資料中的座標 query 500公尺餐廳
-        // },
+        where: sequelize.where(distance, { [Op.lte]: 500 }),
         include: [{
           model: Meal,
           where: { isServing: true },
           attributes: ['id', 'name', 'image', 'description'],
           required: true
         }],
-        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour'], // distance
+        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour',[distance, 'distance']], // distance
         order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
       restaurants = restaurants.map((restaurant, index) => ({
         ...restaurant.dataValues,
         Meals: restaurant.dataValues.Meals[0].dataValues,
+        distance: parseInt(restaurant.dataValues.distance),
         time_slots: getTimeStop(restaurants[index].opening_hour, restaurants[index].closing_hour)
       }))
       return res.status(200).json({ status: 'success', restaurants, message: 'Successfully get the new order page info' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -86,7 +86,6 @@ let orderController = {
       })
       return res.status(200).json({ status: 'success', order_id: order.id, message: 'Successfully order the meal.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -183,8 +182,7 @@ let orderController = {
         ${new Date().getMonth() + 1}-
         ${new Date().getDate() + 1} ${req.body.require_date}
         `
-      ).toISOString().replace('T', ' ').replace('Z', '').split('.000')[0]
-
+      )
       // 找出使用者目前 subscription 是否為有效
       const subscription = await Subscription.findOne({
         where: {
@@ -235,7 +233,6 @@ let orderController = {
       }
       return res.status(400).json({ status: 'error', message: 'Store\'s quantity is none in stock.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },

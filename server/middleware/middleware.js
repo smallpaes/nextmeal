@@ -38,7 +38,7 @@ let middleware = {
   ],
   validOrderForm: [
     check('require_date')
-      .not().isEmpty().withMessage('name should be not empty'),
+      .not().isEmpty().withMessage('require_date should be not empty'),
     check('quantity')
       .not().isEmpty().withMessage('quantity should be not empty'),
   ],
