@@ -20,7 +20,7 @@ const districts = require('../location/district.json')
 let adminController = {
   getRestaurants: async (req, res) => {
     try {
-      const { name, category, location} = req.query
+      const { name, category, location } = req.query
       // let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
       let restaurants = await Restaurant.findAll({
         where: {
@@ -127,7 +127,7 @@ let adminController = {
   getUsers: async (req, res) => {
     try {
       let users = await User.findAll({
-        include: [{model: Subscription}],
+        include: [{ model: Subscription }],
         attributes: {
           include: [
             [sequelize.literal('(SELECT COUNT(*) FROM Orders WHERE Orders.UserId = User.id)'), 'orderCount'],
@@ -137,18 +137,18 @@ let adminController = {
             'address', 'latitude', 'longitude', 'createdAt', 'updatedAt'
           ]
         },
-        order: [[{model: Subscription}, 'createdAt', 'DESC']],  
+        order: [[{ model: Subscription }, 'createdAt', 'DESC']],
       })
       users = users.map(user => ({
         ...user.dataValues,
         sub_description: (user.dataValues.Subscriptions[0]) ? (
-          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' && 
+          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' &&
           user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()
-          ) ? user.dataValues.Subscriptions[0].dataValues.sub_description : false 
-        : false,
+        ) ? user.dataValues.Subscriptions[0].dataValues.sub_description : false
+          : false,
         subscription_status: (user.dataValues.Subscriptions[0]) ? (
-            user.dataValues.Subscriptions[0].dataValues.payment_status === '1' && 
-            user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? true : false 
+          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' &&
+          user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? true : false
           : false
       }))
       res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
@@ -168,7 +168,7 @@ let adminController = {
           'address', ['latitude', 'lat'], ['longitude', 'lng']
         ]
       })
-      
+
       res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
       console.log(error)
@@ -190,7 +190,7 @@ let adminController = {
 
   getOrders: async (req, res) => {
     try {
-      const { page, order_id, order_status, email} = req.query
+      const { page, order_id, order_status, email } = req.query
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let orders = await Order.findAll({
         where: {
@@ -198,12 +198,14 @@ let adminController = {
           order_status: { [Op.substring]: order_status || '' }
         },
         include: [
-          { model: User,
-            where: {email: { [Op.substring]: email || '' }},
+          {
+            model: User,
+            where: { email: { [Op.substring]: email || '' } },
             attributes: ['id', 'name', 'email']
           },
-          { model: Meal, as: 'meals', attributes: ['id', 'name', 'image'],
-            include:[{model: Restaurant, attributes: ['id', 'name', 'image']}]
+          {
+            model: Meal, as: 'meals', attributes: ['id', 'name', 'image'],
+            include: [{ model: Restaurant, attributes: ['id', 'name', 'image'] }]
           }
         ],
         attributes: [
