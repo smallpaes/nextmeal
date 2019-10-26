@@ -20,11 +20,7 @@ const districts = require('../location/district.json')
 let adminController = {
   getRestaurants: async (req, res) => {
     try {
-<<<<<<< HEAD
-      const { name, category, location } = req.query
-=======
       const { name, category, dist } = req.query
->>>>>>> 7a859e983690372935c5bc99c83a8c8178372c52
       // let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
       let restaurants = await Restaurant.findAll({
         where: {
@@ -141,15 +137,11 @@ let adminController = {
         }
       }
       let users = await User.findAll({
-<<<<<<< HEAD
-        include: [{ model: Subscription }],
-=======
         where: { name: { [Op.substring]: name || '' } },
         include: [{
           model: Subscription,
           where: whereQuery
         }],
->>>>>>> 7a859e983690372935c5bc99c83a8c8178372c52
         attributes: {
           include: [
             [sequelize.literal(customQuery.Order.UserId), 'order_num'],
@@ -159,11 +151,7 @@ let adminController = {
             'address', 'latitude', 'longitude', 'createdAt', 'updatedAt'
           ]
         },
-<<<<<<< HEAD
-        order: [[{ model: Subscription }, 'createdAt', 'DESC']],
-=======
         order: [[{ model: Subscription }, 'createdAt', 'DESC']]
->>>>>>> 7a859e983690372935c5bc99c83a8c8178372c52
       })
       users = users.map(user => ({
         ...user.dataValues,
@@ -174,13 +162,8 @@ let adminController = {
           : false,
         subscription_status: (user.dataValues.Subscriptions[0]) ? (
           user.dataValues.Subscriptions[0].dataValues.payment_status === '1' &&
-<<<<<<< HEAD
-          user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? true : false
-          : false
-=======
           user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? 'active' : 'inactive'
           : 'inactive'
->>>>>>> 7a859e983690372935c5bc99c83a8c8178372c52
       }))
       return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
     } catch (error) {
@@ -198,13 +181,8 @@ let adminController = {
           'address', ['latitude', 'lat'], ['longitude', 'lng']
         ]
       })
-<<<<<<< HEAD
-
-      res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
-=======
       if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
       return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
->>>>>>> 7a859e983690372935c5bc99c83a8c8178372c52
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
@@ -225,9 +203,6 @@ let adminController = {
 
   getOrders: async (req, res) => {
     try {
-<<<<<<< HEAD
-      const { page, order_id, order_status, email } = req.query
-=======
       const { page, order_id, order_status, date } = req.query
       let start = moment.utc(date).startOf('day').toDate()
       let end = moment.utc(date).endOf('day').toDate()
@@ -235,26 +210,17 @@ let adminController = {
       let whereQuery = {
         id: { [Op.substring]: order_id || '' },
         order_status: { [Op.notLike]: '取消' },
-        require_date: { [Op.gte]: start , [Op.lte]: end}
+        require_date: { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_status && order_status === '取消') {
-        whereQuery['order_status'] = { [Op.substring]: '取消' || ''}
+        whereQuery['order_status'] = { [Op.substring]: '取消' || '' }
       }
 
->>>>>>> 7a859e983690372935c5bc99c83a8c8178372c52
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let orders = await Order.findAll({
         where: whereQuery,
         include: [
-<<<<<<< HEAD
-          {
-            model: User,
-            where: { email: { [Op.substring]: email || '' } },
-            attributes: ['id', 'name', 'email']
-          },
-=======
           { model: User, attributes: ['id', 'name', 'email'] },
->>>>>>> 7a859e983690372935c5bc99c83a8c8178372c52
           {
             model: Meal, as: 'meals', attributes: ['id', 'name', 'image'],
             include: [{ model: Restaurant, attributes: ['id', 'name', 'image'] }]
@@ -269,7 +235,7 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (!orders) return res.status(400).json({status: 'error', message: 'can not find any orders'})
+      if (!orders) return res.status(400).json({ status: 'error', message: 'can not find any orders' })
       orders = orders.map(order => ({
         ...order.dataValues,
         meals: order.dataValues.meals[0]
