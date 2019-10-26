@@ -17,15 +17,21 @@ let orderController = {
         // where: {
         //   // 利用使用者資料中的座標 query 500公尺餐廳
         // },
-        include: [{model: Meal, where: { isServing: true }, required: true}],
-        order: sequelize.literal('rand()'),
+        include: [{
+          model: Meal,
+          where: { isServing: true },
+          attributes: ['id', 'name', 'image', 'description'],
+          required: true
+        }],
+        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour'], // distance
+        order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
       restaurants = restaurants.map((restaurant, index) => ({
         ...restaurant.dataValues,
+        Meals: restaurant.dataValues.Meals[0].dataValues,
         time_slots: getTimeStop(restaurants[index].opening_hour, restaurants[index].closing_hour)
       }))
-
       return res.status(200).json({ status: 'success', restaurants, message: 'Successfully get the new order page info' })
     } catch (error) {
       console.log(error)
