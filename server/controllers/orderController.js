@@ -16,11 +16,11 @@ let orderController = {
       const distance = sequelize.fn('ST_Distance_Sphere', sequelize.literal('geometry'), location)
       // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
       let restaurants = await Restaurant.findAll({
-        where: sequelize.where(distance, { [Op.lte]: 500 }),
+        where: sequelize.where(distance, { [Op.lte]: 50000000000 }),
         include: [{
           model: Meal,
           where: { isServing: true },
-          attributes: ['id', 'name', 'image', 'description'],
+          attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
         attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour',[distance, 'distance']], // distance
@@ -46,7 +46,7 @@ let orderController = {
 
       let tomorrow = moment().add(1,'days').startOf('day')
       tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
-      tomorrow = new Date(tomorrow).toISOString().replace('T', ' ').replace('Z', '').split('.000')[0]
+      tomorrow = new Date(tomorrow)
 
       let meal = await Meal.findByPk(1)
       let subscription = await Subscription.findOne({
@@ -113,7 +113,6 @@ let orderController = {
   getOrderEdit: async (req, res) => {
     try {
       let start = moment().startOf('day').toDate()
-      let end = moment().endOf('day').toDate()
       // 找出使用者目前 subscription 是否為有效
       const subscription = await Subscription.findOne({
         where: {
@@ -124,7 +123,7 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
-      // 需驗證剩下多少數量，取得數量，先取得本訂單
+      // 取得訂單
       let order = await Order.findByPk(req.params.order_id, {
         include: [
           {
@@ -141,30 +140,12 @@ let orderController = {
       let opening_hour = order.meals[0].dataValues.Restaurant.dataValues.opening_hour
       let closing_hour = order.meals[0].dataValues.Restaurant.dataValues.closing_hour
       let time_slots = getTimeStop(opening_hour, closing_hour)
-      // 計算被訂購的數量，不用傳給前端
-      let orders = await Order.findAll({
-        where: {
-          order_status: { [Op.notLike]: '取消' },
-          updatedAt: { [Op.gte]: start, [Op.lte]: end }
-        },
-        include: [{
-          model: Meal, as: 'meals', where: {
-            id: order.meals[0].dataValues.id
-          }
-        }],
-        attributes: [
-          [sequelize.fn('sum', sequelize.col('amount')), 'total']
-        ]
-      })
-      // 撈出 meal預設數量 order.meals[0].dataValues.quantity
-      // 已經被訂購的數量   orders[0].dataValues.total
-      // meal 總數 - (找出所有今天 orders 計算 quatity) 相減回傳數量
-      let quantity = order.meals[0].dataValues.quantity - orders[0].dataValues.total
+
       order = { ...order.dataValues, meals: order.dataValues.meals[0].dataValues }
       // 回傳 subscription 數量，以及餐點剩餘數量
       return res.status(200).json({
         status: 'success',
-        order, quantity, subscription, time_slots,
+        order, subscription, time_slots,
         message: 'Successfully edit Order information.'
       })
     } catch (error) {
