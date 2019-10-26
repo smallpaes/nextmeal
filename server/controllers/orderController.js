@@ -13,10 +13,62 @@ let orderController = {
   getNew: async (req, res) => {
     try {
       // query.order_id
-      const meal = await Meal.findByPk(req.query.meal_id,{
+      const meal = await Meal.findByPk(req.query.meal_id, {
         include: [{ model: Restaurant, attributes: ['id', 'name', 'rating'] }]
       })
       return res.status(200).json({ status: 'success', message: 'Successfully get the new order page info' })
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
+  postNew: async (req, res) => {
+    try {
+      const quantity = Number(req.body.quantity) 
+      let start = moment().startOf('day').toDate()
+      const requireTime = req.body.require_date.split(':')
+
+      let tomorrow = moment().add(1,'days').startOf('day')
+      tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
+      tomorrow = new Date(tomorrow).toISOString().replace('T', ' ').replace('Z', '').split('.000')[0]
+
+      let meal = await Meal.findByPk(1)
+      let subscription = await Subscription.findOne({
+        where: {
+          UserId: req.user.id,
+          payment_status: 1,
+          sub_expired_date: { [Op.gte]: start }
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
+      })
+      // 找不到 meal、庫存不足、order點超過庫存
+      if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.'})
+      if (meal.quantity < 1 ) return res.status.json({ status: 'error', message: 'the meal is out of stock.'})
+      if ((meal.quantity -quantity) < 0) {
+        return res.status.json({status: 'error', message: 'order\'s quantity can not excess stock\'s quantity'})
+      }
+      if ((subscription.sub_balance - quantity) < 0) {
+        return res.status.json({status: 'error', message: 'order\'s quantity can not excess subscription\'s sub_balance'})
+      }
+      // 回傳 order_id
+      let order = await Order.create({ // UserId、require_date、amount，order_date、order_status 預設
+        UserId: req.user.id,
+        amount: quantity,
+        require_date: tomorrow
+      })
+      await OrderItem.create({ // 紀錄 order_id、meal_id、數量 
+        OrderId: order.id,
+        MealId: meal.id,
+        quantity: quantity
+      })
+      await meal.update({ //減少庫存
+        quantity: meal.quantity - quantity
+      })
+      subscription = await subscription.update({ // 減少點數
+        sub_balance: subscription.sub_balance - quantity
+      })
+      return res.status(200).json({ status: 'success', order_id: order.id, message: 'Successfully order the meal.' })
     } catch (error) {
       console.log(error)
       return res.status(500).json({ status: 'error', message: error })
@@ -94,7 +146,7 @@ let orderController = {
       // meal 總數 - (找出所有今天 orders 計算 quatity) 相減回傳數量
       let quantity = order.meals[0].dataValues.quantity - orders[0].dataValues.total
       order = { ...order.dataValues, meals: order.dataValues.meals[0].dataValues }
-      // 回傳 substription 數量，以及餐點剩餘數量
+      // 回傳 subscription 數量，以及餐點剩餘數量
       return res.status(200).json({
         status: 'success',
         order, quantity, subscription, time_slots,
@@ -209,7 +261,7 @@ let orderController = {
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
-  },
+  }
 }
 
 module.exports = orderController

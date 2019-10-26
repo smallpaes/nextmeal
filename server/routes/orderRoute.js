@@ -5,6 +5,7 @@ const orderController = require('../controllers/orderController.js')
 
 
 router.get('/new', orderController.getNew) //瀏覽新增一筆訂購餐點的表單
+router.post('/new', orderController.postNew)
 
 router.get('/:order_id/comment', orderController.getComment)
 router.get('/:order_id/edit', orderController.getOrderEdit)
