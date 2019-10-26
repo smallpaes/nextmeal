@@ -328,6 +328,9 @@ let ownerController = {
       validMessage(req, res) //驗證表格
       // 找出要修改的 meal
       let meal = await Meal.findByPk(req.body.id)
+      let nextWeeKMeal = await Meal.findOne({
+        where: { nextServing: 1 }
+      })
       const today = new Date().getDay()
       // 修改 nextServing 為真，而且可以更改數量
       if (Number(req.body.quantity) < 1) {
@@ -340,6 +343,9 @@ let ownerController = {
         meal = await meal.update({
           quantity: req.body.quantity || meal.quantity,
           nextServing: 1
+        })
+        await nextWeeKMeal.update({
+          nextServing: 0
         })
         res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }

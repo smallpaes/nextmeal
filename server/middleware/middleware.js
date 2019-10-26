@@ -49,10 +49,12 @@ let middleware = {
     }
   },
   getTimeStop: (opening_hour, closing_hour) => {
+    let openingHour = moment(opening_hour, 'HH:mm')
+    let closingHour = moment(closing_hour, 'HH:mm')
     let array = []
-    while (opening_hour < closing_hour) {
-      array.push(new moment(opening_hour).format('HH:mm'))
-      opening_hour.add(30, 'minute')
+    while (openingHour < closingHour) {
+      array.push(new moment(openingHour).format('HH:mm'))
+      openingHour.add(30, 'minute')
     }
     return array
   }

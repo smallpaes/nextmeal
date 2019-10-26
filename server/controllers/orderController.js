@@ -12,11 +12,21 @@ const { validMessage, getTimeStop } = require('../middleware/middleware')
 let orderController = {
   getNew: async (req, res) => {
     try {
-      // query.order_id
-      const meal = await Meal.findByPk(req.query.meal_id, {
-        include: [{ model: Restaurant, attributes: ['id', 'name', 'rating'] }]
+      // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
+      let restaurants = await Restaurant.findAll({
+        // where: {
+        //   // 利用使用者資料中的座標 query 500公尺餐廳
+        // },
+        include: [{model: Meal, where: { isServing: true }, required: true}],
+        order: sequelize.literal('rand()'),
+        limit: 2
       })
-      return res.status(200).json({ status: 'success', message: 'Successfully get the new order page info' })
+      restaurants = restaurants.map((restaurant, index) => ({
+        ...restaurant.dataValues,
+        time_slots: getTimeStop(restaurants[index].opening_hour, restaurants[index].closing_hour)
+      }))
+
+      return res.status(200).json({ status: 'success', restaurants, message: 'Successfully get the new order page info' })
     } catch (error) {
       console.log(error)
       return res.status(500).json({ status: 'error', message: error })
@@ -123,8 +133,8 @@ let orderController = {
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       // 為了給前端 time_slots 取得餐廳開店與關店時間
-      let opening_hour = moment(order.meals[0].dataValues.Restaurant.dataValues.opening_hour, 'HH:mm')
-      let closing_hour = moment(order.meals[0].dataValues.Restaurant.dataValues.closing_hour, 'HH:mm')
+      let opening_hour = order.meals[0].dataValues.Restaurant.dataValues.opening_hour
+      let closing_hour = order.meals[0].dataValues.Restaurant.dataValues.closing_hour
       let time_slots = getTimeStop(opening_hour, closing_hour)
       // 計算被訂購的數量，不用傳給前端
       let orders = await Order.findAll({
