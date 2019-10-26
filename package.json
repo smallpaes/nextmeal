@@ -35,7 +35,6 @@
     "sequelize": "^5.19.6",
     "sequelize-cli": "^5.5.1",
     "sequelize-test-helpers": "^1.1.2",
-    "silly-datetime": "^0.1.2",
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
     "supertest": "^4.0.2",
