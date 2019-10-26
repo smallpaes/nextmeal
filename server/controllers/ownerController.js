@@ -326,7 +326,6 @@ let ownerController = {
   putMenu: async (req, res) => {
     try {
       validMessage(req, res) //驗證表格
-      // 找出要修改的 meal
       let meal = await Meal.findByPk(req.body.id, {
         include: [Restaurant]
       })
