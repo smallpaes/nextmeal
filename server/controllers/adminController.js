@@ -201,14 +201,16 @@ let adminController = {
   getOrders: async (req, res) => {
     try {
       const { page, order_id, order_status, date } = req.query
+      let start = moment.utc(date).startOf('day').toDate()
+      let end = moment.utc(date).endOf('day').toDate()
+      // 如果 order_status 不是取消，就顯示非取消的 order, 預設為當日非取消的 order 
       let whereQuery = {
         id: { [Op.substring]: order_id || '' },
-        order_status: { [Op.substring]: order_status || '' }
+        order_status: { [Op.notLike]: '取消' },
+        require_date: { [Op.gte]: start, [Op.lte]: end }
       }
-      if (date) {
-        const start = moment(date).startOf('day').toISOString()
-        const end = moment(date).endOf('day').toISOString()
-        whereQuery['require_date'] = { [Op.gte]: start || '', [Op.lte]: end || '' }
+      if (order_status && order_status === '取消') {
+        whereQuery['order_status'] = { [Op.substring]: '取消' || '' }
       }
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let orders = await Order.findAndCountAll({
@@ -225,11 +227,12 @@ let adminController = {
           [sequelize.fn('date_format', sequelize.col('require_date'), '%Y%c%d'), 'date'],
           [sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time']
         ],
+        order: [['require_date', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      let count = orders.count
-      orders = orders.rows.map(order => ({
+      if (!orders) return res.status(400).json({ status: 'error', message: 'can not find any orders' })
+      orders = orders.map(order => ({
         ...order.dataValues,
         meals: order.dataValues.meals[0]
       }))

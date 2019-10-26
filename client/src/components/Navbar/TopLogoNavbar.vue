@@ -1,11 +1,12 @@
 <template>
   <nav class="navbar navbar-expand-sm navbar-light bg-white fixed-top shadow-sm">
-    <router-link
-      class="navbar-brand"
-      :to="{name: 'home'}"
+    <button
+      class="navbar-brand btn"
+      type="button"
+      @click="$route.path === '/' ? $router.go() : $router.push('/')"
     >
       NextMeal
-    </router-link>
+    </button>
   </nav>
 </template>
 

@@ -326,24 +326,34 @@ let ownerController = {
   putMenu: async (req, res) => {
     try {
       validMessage(req, res) //驗證表格
-      // 找出要修改的 meal
-      let meal = await Meal.findByPk(req.body.id)
+      let meal = await Meal.findByPk(req.body.id, {
+        include: [Restaurant]
+      })
+      let nextWeeKMeal = await Meal.findOne({
+        where: { nextServing: 1 },
+        include: [{ model: Restaurant, where: { id: meal.Restaurant.id } }]
+      })
       const today = new Date().getDay()
       // 修改 nextServing 為真，而且可以更改數量
       if (Number(req.body.quantity) < 1) {
         return res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
       }
+      if (!meal) return res.status(200).json({ status: 'success', meal, message: 'null' })
       if (today >= 6) {
         return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
-      if (!meal || Number(req.body.quantity) > 0) {
+      if (Number(req.body.quantity) > 0) {
         meal = await meal.update({
           quantity: req.body.quantity || meal.quantity,
           nextServing: 1
         })
-        res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
+        await nextWeeKMeal.update({
+          nextServing: 0
+        })
+        return res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -353,7 +363,7 @@ let ownerController = {
       //算出今天開始、結束日期
       const start = moment().startOf('day').format()
       const end = moment().endOf('day').format()
-      let restaurant = await Restaurant.findOne({where: {UserId: req.user.id}})
+      let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       let orders = await Order.findAll({
         where: {
           order_status: { [Op.like]: '未領取' },
@@ -365,12 +375,12 @@ let ownerController = {
           }
         },
         include: [
-          { model: Meal, as: 'meals',where: { RestaurantId:  restaurant.id }, attributes: ['id', 'name', 'image']},
+          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] },
           { model: User, attributes: ['id', 'name', 'email'] }
         ],
         attributes: [
           'id', 'require_date', 'order_status',
-          [ sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time'],
+          [sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time'],
         ],
         order: [['require_date', 'ASC']],
       })
