@@ -110,16 +110,4 @@ export default {
 /deep/ .invalid-feedback {
     text-align: left;
 }
-
-/deep/ .btn {
-    @include solidButton(100%, .1);
-
-    &-outline {
-        background-color: color(tertiary);
-
-        &:hover {
-            background-color: darken(color(tertiary), 5%);
-        }
-    }
-}
 </style>
