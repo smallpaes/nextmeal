@@ -44,6 +44,11 @@
             &:hover {
                 @extend .navbar-brand;
             }
+
+            &:focus {
+              color: color(primary);
+              outline: none;
+            }
         }
 
         &-toggler {

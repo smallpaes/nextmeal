@@ -126,3 +126,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.btn {
+    @include solidButton(200, 1);
+}
+</style>

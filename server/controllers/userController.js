@@ -227,7 +227,7 @@ let userController = {
   getSubscription: async (req, res) => {
     try {
       let subscription = await Subscription.findAll({
-        where: { UserId: 1 },
+        where: { UserId: req.user.id },
         order: [['createdAt', 'DESC']],
         limit: 1
       })
@@ -317,8 +317,8 @@ let userController = {
 
   getProfile: async (req, res) => {
     try {
-      if (req.user.id !== req.params.user_id) {
-        return res.status(403).json({ status: 'success', message: 'You are not allow access this page.' })
+      if (req.user.id !== Number(req.params.user_id)) {
+        return res.status(403).json({ status: 'error', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -335,8 +335,8 @@ let userController = {
   },
   putProfile: async (req, res) => {
     try {
-      if (req.user.id !== req.params.user_id || req.user.role !== 'Admin') {
-        return res.status(403).json({ status: 'success', message: 'You are not allow edit this profile.' })
+      if (req.user.id !== Number(req.params.user_id) || req.user.role !== 'Admin') {
+        return res.status(403).json({ status: 'error', message: 'You are not allow edit this profile.' })
       }
       validMessage(req, res)
       let user = await User.findByPk(req.params.user_id)
