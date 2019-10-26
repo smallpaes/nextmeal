@@ -33,7 +33,7 @@ let middleware = {
     check('dob')
       .not().isEmpty().withMessage('birthday should be not empty'),
     check('prefer')
-      .not().isEmpty().withMessage('birthday should be not empty'),
+      .not().isEmpty().withMessage('prefer should be not empty'),
   ],
   validMessage: (req, res) => {
     console.log('message')
