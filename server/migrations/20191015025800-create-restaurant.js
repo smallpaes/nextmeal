@@ -38,6 +38,9 @@ module.exports = {
       longitude: {
         type: Sequelize.STRING
       },
+      geometry: {
+        type: Sequelize.GEOMETRY
+      },
       UserId: {
         type: Sequelize.INTEGER
       },
