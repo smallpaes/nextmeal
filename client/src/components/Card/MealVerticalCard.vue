@@ -1,5 +1,5 @@
 <template>
-  <a
+  <div
     class="card shadow"
     href="#"
   >
@@ -22,14 +22,9 @@
       </p>
     </div>
     <div class="card-footer text-right">
-      <router-link
-        :to="{name: 'order', query: {order_id: order.id}}"
-        class="btn"
-      >
-        查看訂單
-      </router-link>
+      <slot name="footer" />
     </div>
-  </a>
+  </div>
 </template>
 
 <script>

@@ -31,6 +31,14 @@
               <template v-slot:indicator>
                 <span class="card-indicator">{{ meal.indicator }}</span>
               </template>
+              <template v-slot:footer>
+                <router-link
+                  :to="{name: 'order', query: {order_id: meal.order.id}}"
+                  class="btn"
+                >
+                  查看訂單
+                </router-link>
+              </template>
             </MealVerticalCard>
             <NewOrderCard
               v-else
@@ -80,7 +88,7 @@ const dummyOrders = [
     id: 1,
     meal: {
       name: '宮保雞丁套餐',
-      description: '祖傳 90 年四川辣椒大火快炒放山雞，搭配健康糙米飯與新竹貢丸攤。午餐另外附贈知名淡水阿婆酸梅湯，幫助餐後解膩！祖傳 90 年四川辣椒大火快炒放山雞，搭配健康糙米飯與新竹貢丸攤。午餐另外附贈知名淡',
+      description: '祖傳90年四川辣椒大火快炒放山雞,搭配健康糙米飯與新竹貢丸攤,午餐另外附贈知名淡水阿婆酸梅湯,幫助餐後解膩!祖傳90年四川辣椒大火快炒放山雞,搭配健康糙米飯與新竹貢丸攤!午餐另外附贈知名淡',
       image: 'https://images.pexels.com/photos/1860204/pexels-photo-1860204.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
       restaurant: {
         id: 2,
