@@ -175,4 +175,4 @@ let middleware = {
   }
 }
 
-module.exports = { tradeInfo } = middleware
+module.exports = middleware
