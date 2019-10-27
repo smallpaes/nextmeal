@@ -115,33 +115,17 @@ export default {
       // save data
       this.order = { ...this.order, restaurant, meal, orderData, timeSlots }
     },
-    handleOrder (mealItem) {
-      this.chosenMeal = mealItem
-    },
     handleAfterSubmit (formData) {
       // PUT /api/order/:order_id
       console.log(formData)
+      // redirect to order detail page
+      this.$router.push({ name: 'order', params: { order_id: this.$route.params.order_id } })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.meal {
-    &-content {
-        position: relative;
-        top: -7rem;
-    }
-
-    &-card {
-        &:first-child {
-            @include response(lg) {
-                margin-left: 8.333333%;
-            }
-        }
-    }
-}
-
 .order {
   &-content {
     position: relative;

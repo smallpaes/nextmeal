@@ -156,8 +156,11 @@ export default {
       this.chosenMeal = mealItem
     },
     handleAfterSubmit (formData) {
+      // POST to /api/order/new
       const form = { ...formData, meal_id: this.chosenMeal.meal.id }
       console.log(form)
+      // redirect to order detail page
+      this.$router.push({ name: 'order', params: { order_id: 1 } })
     }
   }
 }

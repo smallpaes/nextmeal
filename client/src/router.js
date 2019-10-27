@@ -39,19 +39,24 @@ export default new Router({
       component: () => import('./views/Subscribe.vue')
     },
     {
-      path: '/orders/tomorrow',
+      path: '/order/tomorrow',
       name: 'order-tomorrow',
       component: () => import('./views/OrdersTomorrow.vue')
     },
     {
-      path: '/orders/new',
+      path: '/order/new',
       name: 'order-new',
       component: () => import('./views/OrderNew.vue')
     },
     {
-      path: '/orders/:order_id/edit',
+      path: '/order/:order_id/edit',
       name: 'order-edit',
       component: () => import('./views/OrderEdit.vue')
+    },
+    {
+      path: '/order/:order_id',
+      name: 'order',
+      component: () => import('./views/Order.vue')
     },
     {
       path: '/user',
