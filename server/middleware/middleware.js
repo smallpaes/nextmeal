@@ -170,7 +170,7 @@ let middleware = {
       })
       return subscription
     } catch (error) {
-      res.json({ status: 'error', message: error })
+      res.status(400).json({ status: 'error', message: error })
     }
   }
 }
