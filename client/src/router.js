@@ -64,6 +64,11 @@ export default new Router({
       component: () => import('./views/UserProfile.vue')
     },
     {
+      path: '/user/orders',
+      name: 'user-order',
+      component: () => import('./views/UserOrders.vue')
+    },
+    {
       path: '/owner',
       name: 'owner-info',
       component: () => import('./views/OwnerInfo.vue')
