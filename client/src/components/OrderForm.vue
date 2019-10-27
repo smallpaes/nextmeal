@@ -28,6 +28,7 @@
             type="radio"
             name="inlineRadioOptions"
             :value="timeSlot"
+            :checked="timeSlot === formData.time"
             hidden
           >
           <label
@@ -68,6 +69,7 @@
       <hr class="form-divider mt-4">
       <div class="btn-container text-right">
         <button
+          v-if="$route.name==='order-new'"
           class="btn btn-last"
           @click.stop.prevent="$emit('change-order')"
         >
@@ -77,7 +79,9 @@
           class="btn btn-next"
           type="submit"
         >
-          確認訂購
+          <slot name="submit">
+            確認訂購
+          </slot>
         </button>
       </div>
     </form>
@@ -90,6 +94,13 @@ export default {
     orderInfo: {
       type: Object,
       required: true
+    },
+    initialOrder: {
+      type: Object,
+      default: () => ({
+        time: '',
+        quantity: 1
+      })
     }
   },
   data () {
@@ -99,6 +110,20 @@ export default {
         quantity: 1
       },
       errorMessage: []
+    }
+  },
+  watch: {
+    initialOrder (order) {
+      this.formData = {
+        ...this.formData,
+        ...this.order
+      }
+    }
+  },
+  created () {
+    this.formData = {
+      ...this.formData,
+      ...this.initialOrder
     }
   },
   methods: {
