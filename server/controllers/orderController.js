@@ -221,9 +221,23 @@ let orderController = {
   },
   getComment: async (req, res) => {
     try {
-
-      return res.status(200).json({ status: 'success', message: 'Successfully get user comment' })
+      let order = await Order.findByPk(req.params.order_id, {
+        include: [{
+          model: Meal,
+          as: 'meals',
+          include: [{ model: Restaurant, attributes: ['id', 'name']}],
+          attributes: ['name', 'image', 'description']
+        }],
+        attributes: ['order_date', 'require_date', 'amount', 'UserId']
+      })
+      if (req.user.id !== Number(order.UserId)) {
+        return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
+      }
+      if (order.hasComment) return res.status(400).json({ status: 'error', message: 'This order has already been commented.' })
+      order = { ...order.dataValues,  meals: order.dataValues.meals[0] }
+      return res.status(200).json({ status: 'success', order, message: 'Successfully get user comment page\'s  information.' })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
