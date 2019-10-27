@@ -40,14 +40,7 @@ let orderController = {
   },
   postNew: async (req, res) => {
     try {
-      const quantity = Number(req.body.quantity)
       let start = moment().startOf('day').toDate()
-      const requireTime = req.body.require_date.split(':')
-
-      let tomorrow = moment().add(1, 'days').startOf('day')
-      tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
-      tomorrow = new Date(tomorrow)
-
       let meal = await Meal.findByPk(req.body.meal_id)
       let subscription = await Subscription.findOne({
         where: {
@@ -60,6 +53,14 @@ let orderController = {
       })
       // 找不到 meal、庫存不足、order點超過庫存
       if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.' })
+      // if (!meal.isServing) return res.status(400).json({ status: 'error', message: 'the meal does not serving today.' }) 
+      validMessage(req, res)
+      const quantity = Number(req.body.quantity)
+      const requireTime = req.body.require_date.split(':')
+      let tomorrow = moment().add(1, 'days').startOf('day')
+      tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
+      tomorrow = new Date(tomorrow)
+
       if (meal.quantity < 1) return res.status(400).json({ status: 'error', message: 'the meal is out of stock.' })
       if ((meal.quantity - quantity) < 0) {
         return res.status(400).json({ status: 'error', message: 'order\'s quantity can not excess stock\'s quantity' })
@@ -156,17 +157,9 @@ let orderController = {
 
   putOrder: async (req, res) => {
     try {
-      let start = moment().startOf('day').toDate()
-      let end = moment().endOf('day').toDate()
-      let newRequire_date = new Date(
-        `
-        ${new Date().getFullYear()}-
-        ${new Date().getMonth() + 1}-
-        ${new Date().getDate() + 1} ${req.body.require_date}
-        `
-      )
+      let start = moment().startOf('day').toDate()   
       // 找出使用者目前 subscription 是否為有效
-      const subscription = await Subscription.findOne({
+      let subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
           payment_status: 1,
@@ -181,12 +174,16 @@ let orderController = {
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       validMessage(req, res)
+      const requireTime = req.body.require_date.split(':')
+      let tomorrow = moment().add(1, 'days').startOf('day')
+      tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
+      tomorrow = new Date(tomorrow)
       // meal 會減少直接當庫存
       let quantity = order.meals[0].dataValues.quantity
       // 修改後的庫存等於剩餘的 quantity + 使用者原訂購數量 - 新訂購數量，不得為負數，否則失敗
-      let newQuantity = quantity + order.dataValues.amount - Number(req.body.quantity)
+      let newQuantity = quantity + order.amount - Number(req.body.quantity)
       // 修改後的sub_balance等於剩餘 sub_balance + 使用者原訂購數量 - 新訂購數量，不得為負數，否則失敗
-      let newSub_balance = subscription.sub_balance + order.dataValues.amount - Number(req.body.quantity)
+      let newSub_balance = subscription.sub_balance + order.amount - Number(req.body.quantity)
       // (驗證 subscription sub_balance - 傳進來的數字不小於 0) && (quantity - 傳進來的數字不小於 0)
       if (newSub_balance < 0) return res.status(400).json({ status: 'error', message: 'Your credit is not enough.' })
       if ((newSub_balance >= 0) && (newQuantity >= 0)) {
@@ -196,15 +193,15 @@ let orderController = {
         })
         // 更新原本訂單領餐日期
         order = await order.update({
-          require_date: newRequire_date
+          require_date: tomorrow
         })
         // 更新訂單 order 和 orderitem 原本數量
-        await order.update({ amount: req.body.quantity })
+        await order.update({ amount: Number(req.body.quantity) })
         let orderItem = await OrderItem.findOne({
           where: { OrderId: req.params.order_id }
         })
         orderItem.update({
-          quantity: req.body.quantity,
+          quantity: Number(req.body.quantity),
         })
         // 修改 meal 的庫存
         let meal = await Meal.findByPk(order.meals[0].dataValues.id)

@@ -4,7 +4,7 @@ const db = require('../models')
 const Subscription = db.Subscription
 const User = db.User
 const Category = db.Category
-const { validMessage, getTradeInfo } = require('../middleware/middleware')
+const { validMessage, getTradeInfo, createSubscription } = require('../middleware/middleware')
 const districts = require('../location/district.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -12,18 +12,13 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 // const nodemailer = require("nodemailer"); // 寄送 mail
 
-// import express-validator for validation
-const { validationResult } = require('express-validator/check');
-
 let userController = {
   emailCheck: async (req, res) => {
     try {
       //check if email has been used
       const { email } = req.body
-      const errors = validationResult(req)
-      if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 'error', message: 'invalid Email format' });
-      }
+      validMessage(req, res)
+
       const user = await User.findOne({ where: { email } })
       //if user exsist , return error
       if (user) {
@@ -155,38 +150,34 @@ let userController = {
 
   postSubscription: async (req, res) => {
     try {
-      // console.log(req.body.sub_price)
-      // console.log(req.body.sub_name)
-      // console.log(req.body.email)
       // 如果沒有訂單
+      if (!req.body.sub_price || !req.body.sub_name || !req.user.email || !req.body.sub_description || !req.body.sub_balance) {
+        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_name、user\'s email' })
+      }
       let subscription = await Subscription.findAll({
         where: { UserId: req.user.id },
         order: [['createdAt', 'DESC']],
         limit: 1
       })
-      if (subscription.length > 0 && subscription[0].dataValues.sub_expired_date > Date.now()) {
+      const haveSubscription = subscription.length > 0
+      const stillSubscribe = subscription[0].dataValues.sub_expired_date > Date.now()
+      const unSubscribe = subscription[0].dataValues.sub_expired_date < Date.now()
+      const paid = subscription[0].dataValues.payment_status !== '0'
+      const insufficient = subscription[0].dataValues.sub_balance <= 0
+      const once = ( haveSubscription && paid && insufficient && stillSubscribe) ? true : false
+      const expired = ( haveSubscription && paid && unSubscribe) ? true : false
+      const newbie = (subscription.length === 0) ? true : false
+
+      if (haveSubscription && stillSubscribe && !once) {
         return res.status(200).json({ status: 'success', message: 'You still have an active subscrtiption.' })
       }
-      // 需要訂購的人有 沒有訂單，有訂單但是過期，有訂單但是餘額用完
-      const newbie = (subscription.length === 0) ? true : false
-      const expired = (subscription[0].dataValues.payment_status !== '0' &&
-        subscription[0].dataValues.sub_expired_date < Date.now()) ? true : false
-      const insufficient = (subscription[0].dataValues.payment_status !== '0' &&
-        subscription[0].dataValues.sub_balance <= 0 &&
-        subscription[0].dataValues.sub_expired_date > Date.now()) ? true : false
 
-      if (newbie || expired || insufficient ) {
-        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.user.email) //req.user.email
-        let subscription = await Subscription.create({
-          UserId: req.user.id,
-          sub_name: req.body.sub_name,
-          sub_price: req.body.sub_price,
-          payment_status: 0,
-          sub_balance: req.body.sub_balance,
-          sn: tradeInfo.MerchantOrderNo,
-        })
+      if (newbie || expired || once) {
+        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.user.email)
+        const subscription = await createSubscription(req, res, tradeInfo)
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
       }
+
       // 如果有訂單，但還沒付款，先產生新 trandeInfo 記得傳入 sn，如果選擇的方案不相同，修改方案
       const tradeInfo = getTradeInfo(subscription[0].sub_price, subscription[0].sub_name, req.user.email, subscription[0].sn)
       if (subscription[0].dataValues.sub_name !== req.body.sub_name) {
