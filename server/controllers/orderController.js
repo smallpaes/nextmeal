@@ -257,6 +257,7 @@ let orderController = {
         return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
       }
       if (order.hasComment) return res.status(400).json({ status: 'error', message: 'This order has already been commented.' })
+      validMessage(req, res)
       let restaurant = await Restaurant.findByPk(order.meals[0].Restaurant.id)
       const { file } = req
       // 驗證表單
