@@ -23,7 +23,7 @@ let orderController = {
           attributes: ['id', 'name', 'image', 'description'],
           required: true
         }],
-        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour',[distance, 'distance']], // distance
+        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
         order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })

@@ -175,7 +175,7 @@ let userController = {
       const payload = { id: user.id }
       const token = jwt.sign(payload, 'NextmealProject')
 
-      return res.json({
+      return res.status(200).json({
         status: 'success', message: 'Successfully sign up', user: {
           id: user.id,
           name: user.name,
@@ -212,7 +212,7 @@ let userController = {
       // generate and provide user with a token
       const payload = { id: user.id }
       const token = jwt.sign(payload, 'NextmealProject')
-      return res.json({
+      return res.status(200).json({
         status: 'success', message: 'Successfully log in', token,
         user: {
           id: user.id,
@@ -255,9 +255,6 @@ let userController = {
 
   postSubscription: async (req, res) => {
     try {
-      // console.log(req.body.sub_price)
-      // console.log(req.body.sub_name)
-      // console.log(req.body.email)
       // 如果沒有訂單
       let subscription = await Subscription.findAll({
         where: { UserId: req.user.id },
@@ -440,7 +437,7 @@ let userController = {
           include: [{ model: Restaurant, attributes: ['id', 'name', 'rating']}],
           attributes: ['id', 'name', 'description', 'image']
         }],
-        attributes: ['id', 'order_date', 'require_date', 'order_status', 'amount'],
+        attributes: { exclude: ['updatedAt', 'updatedAt']},
         order: [['require_date', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,

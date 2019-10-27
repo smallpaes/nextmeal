@@ -274,7 +274,6 @@ let adminController = {
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }
