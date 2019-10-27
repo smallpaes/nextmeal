@@ -1,13 +1,16 @@
+const imgur = require('imgur-node-api')
+const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
 const db = require('../models')
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
-const Meal = db.Meal
-const Order = db.Order
 const OrderItem = db.OrderItem
+const Comment = db.Comment
+const Order = db.Order
+const Meal = db.Meal
 const moment = require('moment')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
-const { validMessage, getTimeStop } = require('../middleware/middleware')
+const { validMessage, getTimeStop, avgRating } = require('../middleware/middleware')
 
 let orderController = {
   getNew: async (req, res) => {
@@ -160,7 +163,7 @@ let orderController = {
 
   putOrder: async (req, res) => {
     try {
-      let start = moment().startOf('day').toDate()   
+      let start = moment().startOf('day').toDate()
       // 找出使用者目前 subscription 是否為有效
       let subscription = await Subscription.findOne({
         where: {
@@ -225,7 +228,7 @@ let orderController = {
         include: [{
           model: Meal,
           as: 'meals',
-          include: [{ model: Restaurant, attributes: ['id', 'name']}],
+          include: [{ model: Restaurant, attributes: ['id', 'name'] }],
           attributes: ['name', 'image', 'description']
         }],
         attributes: ['order_date', 'require_date', 'amount', 'UserId']
@@ -234,10 +237,51 @@ let orderController = {
         return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
       }
       if (order.hasComment) return res.status(400).json({ status: 'error', message: 'This order has already been commented.' })
-      order = { ...order.dataValues,  meals: order.dataValues.meals[0] }
+      order = { ...order.dataValues, meals: order.dataValues.meals[0] }
       return res.status(200).json({ status: 'success', order, message: 'Successfully get user comment page\'s  information.' })
     } catch (error) {
       console.log(error)
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
+  postComment: async (req, res) => {
+    try {
+      let order = await Order.findByPk(req.params.order_id, {
+        include: [{
+          model: Meal,
+          as: 'meals',
+          include: [{ model: Restaurant, attributes: ['id'] }]
+        }]
+      })
+      if (req.user.id !== Number(order.UserId)) {
+        return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
+      }
+      if (order.hasComment) return res.status(400).json({ status: 'error', message: 'This order has already been commented.' })
+      let restaurant = await Restaurant.findByPk(order.meals[0].Restaurant.id)
+      const { file } = req
+      // 驗證表單
+      if (file) {
+        imgur.setClientID(IMGUR_CLIENT_ID)
+        imgur.upload(file.path, async (err, img) => {
+          let comment = await Comment.create({
+            user_text: req.body.user_text,
+            rating: req.body.rating,
+            image: await file ? img.data.link : null,
+            UserId: req.user.id,
+            RestaurantId: order.meals[0].Restaurant.id
+          })
+          avgRating(res, restaurant, comment, order)
+        })
+      } else {
+        let comment = await Comment.create({
+          user_text: req.body.user_text,
+          rating: req.body.rating,
+          UserId: req.user.id,
+          RestaurantId: order.meals[0].Restaurant.id
+        })
+        avgRating(res, restaurant, comment, order)
+      }
+    } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
   },

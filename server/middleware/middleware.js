@@ -3,7 +3,8 @@ const moment = require('moment')
 const crypto = require("crypto"); // 加密
 const db = require('../models')
 const Subscription = db.Subscription
-
+const Comment = db.Comment
+const sequelize = require('sequelize')
 const URL = 'https://f798ad18.ngrok.io'; //本地 domain 不接受，使用 ngrok 工具做臨時網址，取得的網址放這
 const MerchantID = 'MS38035958'; // 商店代號
 const HashKey = 'WF1pmVp4AxMgFs13YrlZQPuirCd47ql6'; //API 金鑰
@@ -86,6 +87,12 @@ let middleware = {
       .not().isEmpty().withMessage('Quantity should be not empty')
       .isInt().withMessage('Quantity should be a integer'),
   ],
+  validComment: [
+    check('user_text')
+      .not().isEmpty().withMessage('Require_date should be not empty'),
+    check('rating')
+      .not().isEmpty().withMessage('You are not rating the restaurant yet.'),
+  ],
   validMessage: (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -107,7 +114,7 @@ let middleware = {
     console.log("===== getTradeInfo =====");
     console.log(Amt, Desc, email, sn);
     console.log("==========");
-  
+
     data = {
       MerchantID: MerchantID, // 商店代號
       RespondType: "JSON", // 回傳格式
@@ -123,17 +130,17 @@ let middleware = {
       NotifyURL: NotifyURL, // 支付通知網址/每期授權結果通知
       ClientBackURL: ClientBackURL // 支付取消返回商店網址
     };
-  
+
     console.log("===== getTradeInfo: data =====");
     console.log(data);
-  
+
     mpg_aes_encrypt = create_mpg_aes_encrypt(data);
     mpg_sha_encrypt = create_mpg_sha_encrypt(mpg_aes_encrypt);
-  
+
     console.log("===== getTradeInfo: mpg_aes_encrypt, mpg_sha_encrypt =====");
     console.log(mpg_aes_encrypt);
     console.log(mpg_sha_encrypt);
-  
+
     tradeInfo = {
       MerchantID: MerchantID, // 商店代號
       TradeInfo: mpg_aes_encrypt, // 加密後參數
@@ -142,10 +149,10 @@ let middleware = {
       PayGateWay: PayGateWay,
       MerchantOrderNo: data.MerchantOrderNo
     };
-  
+
     console.log("===== getTradeInfo: tradeInfo =====");
     console.log(tradeInfo);
-  
+
     return tradeInfo;
   },
   // 交易完成後回傳資料使用的反向解密
@@ -172,6 +179,19 @@ let middleware = {
     } catch (error) {
       res.status(400).json({ status: 'error', message: error })
     }
+  },
+  avgRating: async (res, restaurant, comment, order) => {
+    let comments = await Comment.findAll({
+      where: { RestaurantId: restaurant.id },
+      attributes: [[sequelize.fn('avg', sequelize.col('rating')), 'average']]
+    })
+    await restaurant.update({
+      rating: comments[0].dataValues.average.toFixed(2) || 0
+    })
+    await order.update({
+      hasComment: 1
+    })
+    return res.status(200).json({ status: 'success', comment, message: 'Successfully post comment.' })
   }
 }
 
