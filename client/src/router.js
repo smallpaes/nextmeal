@@ -34,6 +34,11 @@ export default new Router({
       component: () => import('./views/Signup.vue')
     },
     {
+      path: '/subscribe',
+      name: 'subscribe',
+      component: () => import('./views/Subscribe.vue')
+    },
+    {
       path: '/owner',
       name: 'owner-info',
       component: () => import('./views/OwnerInfo.vue')
@@ -57,6 +62,16 @@ export default new Router({
       path: '/owner/menu',
       name: 'owner-menu',
       component: () => import('./views/OwnerMenu.vue')
+    },
+    {
+      path: '/admin/restaurants',
+      name: 'admin-restaurants',
+      component: () => import('./views/AdminRestaurants.vue')
+    },
+    {
+      path: '/admin/restaurants/:restaurant_id',
+      name: 'admin-restaurant-edit',
+      component: () => import('./views/AdminRestaurantEdit.vue')
     },
     {
       path: '*',
