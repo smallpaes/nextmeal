@@ -45,21 +45,15 @@ let userController = {
     if (req.body.password !== req.body.passwordCheck) {
       return res.json({ status: 'error', message: 'Two passwords do not match' })
     }
-
+    const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
     try {
       // create user
       const user = await User.create({
-        name: req.body.name,
-        email: req.body.email,
+        ...req.body,
         password: bcrypt.hashSync(req.body.password, 10),
         avatar: 'https://randomuser.me/api/portraits/lego/1.jpg',
         role: 'User',
-        dob: req.body.dob,
-        prefer: req.body.prefer,
-        address: req.body.address,
-        latitude: req.body.lat,
-        longitude: req.body.lng,
-        location: req.body.location
+        geometry: point,
       })
 
       // check if the user has valid subscriptions
@@ -259,6 +253,7 @@ let userController = {
         return res.status(403).json({ status: 'error', message: 'You are not allow edit this profile.' })
       }
       validMessage(req, res)
+      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       let user = await User.findByPk(req.params.user_id)
       const { file } = req
       // 如果上有照片
@@ -268,6 +263,7 @@ let userController = {
           await user.update({
             ...req.body,
             avatar: file ? img.data.link : user.avatar,
+            geometry: point
           })
           return res.status(200).json({
             status: 'success',
@@ -277,7 +273,8 @@ let userController = {
       } else {
         // 如果沒上傳照片
         await user.update({
-          ...req.body
+          ...req.body,
+          geometry: point,
         })
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }

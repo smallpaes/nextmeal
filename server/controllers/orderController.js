@@ -12,11 +12,11 @@ const { validMessage, getTimeStop } = require('../middleware/middleware')
 let orderController = {
   getNew: async (req, res) => {
     try {
-      const location = sequelize.literal(`ST_GeomFromText('POINT(${req.user.longitude} ${req.user.latitude})')`)
+      const location = sequelize.literal(`ST_GeomFromText('POINT(${req.user.lng} ${req.user.lat})')`)
       const distance = sequelize.fn('ST_Distance_Sphere', sequelize.literal('geometry'), location)
       // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
       let restaurants = await Restaurant.findAll({
-        where: sequelize.where(distance, { [Op.lte]: 50000000000 }),
+        where: sequelize.where(distance, { [Op.lte]: 500 }),
         include: [{
           model: Meal,
           where: { isServing: true },
@@ -46,12 +46,14 @@ let orderController = {
         where: {
           UserId: req.user.id,
           payment_status: 1,
-          sub_expired_date: { [Op.gte]: start }
+          sub_expired_date: { [Op.gte]: start },
+          sub_balance: { [Op.gt]: 0 }
         },
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
       // 找不到 meal、庫存不足、order點超過庫存
+      if (!subscription) return res.status(400).json({ status: 'error', message: 'You need to subscribe a new subscription.' })
       if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.' })
       // if (!meal.isServing) return res.status(400).json({ status: 'error', message: 'the meal does not serving today.' }) 
       validMessage(req, res)
@@ -125,6 +127,7 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
+      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'You need to subscribe a new subscription.' })
       // 取得訂單
       let order = await Order.findByPk(req.params.order_id, {
         include: [
@@ -168,6 +171,7 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
+      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'You need to subscribe a new subscription.' })
       // 取得 order 數量
       let order = await Order.findByPk(req.params.order_id, {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
@@ -240,6 +244,7 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
+      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'You need to subscribe a new subscription.' })
       let returnNum = subscription.sub_balance + order.amount
       if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
       if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })

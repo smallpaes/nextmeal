@@ -19,20 +19,9 @@ let ownerController = {
       let restaurant = await Restaurant.findAll({
         where: { UserId: req.user.id },
         include: [{ model: Category, attributes: ['id', 'name'] }],
-        attributes: ['id',
-          'name',
-          'description',
-          'image',
-          'tel',
-          'rating',
-          'location',
-          ['latitude', 'lat'],
-          ['longitude', 'lng'],
-          'address',
-          'opening_hour',
-          'closing_hour',
-          'UserId'
-        ]
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
       })
       if (restaurant.length === 0) {
         return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
@@ -69,8 +58,8 @@ let ownerController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng,
+            lat: req.body.lat,
+            lng: req.body.lng,
             geometry: point,
             UserId: req.user.id
           })
@@ -91,8 +80,8 @@ let ownerController = {
           address: req.body.address,
           opening_hour: req.body.opening_hour,
           closing_hour: req.body.closing_hour,
-          latitude: req.body.lat,
-          longitude: req.body.lng,
+          lat: req.body.lat,
+          lng: req.body.lng,
           geometry: point,
           UserId: req.user.id
         })
@@ -126,8 +115,8 @@ let ownerController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng,
+            lat: req.body.lat,
+            lng: req.body.lng,
             geometry: point,
           })
           return res.status(200).json({
