@@ -29,7 +29,6 @@ let adminController = {
           location: { [Op.substring]: dist || '' }
         },
         include: [
-          { model: Category, attributes: ['name'] },
           { model: Comment, attributes: ['id', 'user_text', 'res_text', 'rating', 'image', 'createdAt'] },
           {
             model: Meal,
@@ -41,7 +40,7 @@ let adminController = {
           }
         ],
         attributes: [
-          'id', 'name', 'rating',
+          'id', 'name', 'rating', 'location',
           [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
         ],
         // offset: (page - 1) * pageLimit,
@@ -49,14 +48,9 @@ let adminController = {
         // subQuery: false
 
       })
-      const categories = await Category.findAll()
-      restaurants = restaurants.map(restaurant => ({
-        ...restaurant.dataValues,
-        orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
-      }))
 
       restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
-      res.status(202).json({ status: 'success', restaurants, districts, categories, message: 'Successfully get restautants' })
+      res.status(202).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
