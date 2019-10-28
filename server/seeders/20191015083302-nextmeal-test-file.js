@@ -136,7 +136,9 @@ module.exports = {
           UserId: Math.ceil(Math.random() * 2),
           order_date: new Date(),
           require_date: new Date(nowTime.getTime() + (24 * 60 * 60 * 1000)),
-          order_status: 'prepared',
+          order_status: '今日',
+          hasComment: Math.round(Math.random()),
+          amount: 1,
           createdAt: new Date(),
           updatedAt: new Date()
         }))
@@ -154,7 +156,7 @@ module.exports = {
           sub_date: new Date(),
           sub_expired_date: new Date(nowTime.getTime() + (24 * 60 * 60 * 30 * 1000)),
           payment_status: Math.floor(Math.random() * 2),
-          sn: new Date(),
+          sn: Date.now() + index,
           createdAt: new Date(),
           updatedAt: new Date()
         }))
