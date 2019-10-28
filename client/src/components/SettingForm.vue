@@ -1,6 +1,6 @@
 <template>
   <form
-    class="form-content needs-validation"
+    class="form-content needs-validation rounded"
     novalidate
     @submit.prevent.stop="getLocation"
   >
@@ -9,9 +9,14 @@
       v-if="!showMap"
       class="form-content-top rounded-top"
     >
-      <h3 class="pt-0 pb-3">
-        偏好設定
-      </h3>
+      <div class="form-content-top-header mb-4">
+        <h3>
+          設定
+        </h3>
+        <h5>
+          完成偏好設定以獲得更好體驗
+        </h5>
+      </div>
       <!--Show alert section-->
       <div
         v-if="warningMessage"
@@ -23,7 +28,7 @@
       <div class="form-group">
         <input
           id="address"
-          v-model="address"
+          v-model="user.address"
           type="text"
           class="form-control"
           placeholder="預設所在地址"
@@ -36,7 +41,7 @@
       </div>
       <div class="form-group">
         <select
-          v-model="prefer"
+          v-model="user.prefer"
           class="form-control"
           required
         >
@@ -55,7 +60,7 @@
           請選擇一種偏好餐廳
         </div>
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <input
           id="dob"
           v-model="dob"
@@ -66,16 +71,22 @@
         >
         <small
           id="dob-reminder"
-          class="form-text text-left"
           v-if="!dob"
+          class="form-text text-left"
         >填寫出生年月日</small>
+      </div> -->
+      <CustomDatePicker
+        v-model="user"
+        :has-label="false"
+      />
+      <div class="btn-container text-center">
+        <button
+          class="btn mt-1"
+          type="submit"
+        >
+          送出
+        </button>
       </div>
-      <button
-        class="btn mt-1"
-        type="submit"
-      >
-        送出
-      </button>
     </div>
 
     <!--Map sidplay section-->
@@ -93,15 +104,15 @@
         :zoom="18"
         class="shadow-sm rounded-sm"
       />
-      <div class="form-buttons d-flex mt-3">
+      <div class="form-buttons d-flex justify-content-center mt-3">
         <button
-          class="btn"
+          class="btn btn-update"
           @click.stop.prevent="handleSubmit"
         >
           位置正確
         </button>
         <button
-          class="btn btn-outline ml-2"
+          class="btn ml-2"
           @click.prevent.stop="showMap = false"
         >
           修改地址
@@ -113,12 +124,14 @@
 
 <script>
 import { dateTransformFilter } from '../utils/mixins'
+import CustomDatePicker from '../components/CustomDatePicker'
 import axios from 'axios'
 import GMap from '../components/GMap'
 
 export default {
   components: {
-    GMap
+    GMap,
+    CustomDatePicker
   },
   mixins: [dateTransformFilter],
   props: {
@@ -129,10 +142,13 @@ export default {
   },
   data () {
     return {
+      user: {
+        address: '',
+        prefer: '',
+        dob: ''
+      },
       warningMessage: '',
-      address: '',
-      prefer: '',
-      dob: '',
+
       apiKey: process.env.VUE_APP_GOOGLE,
       validationMsg: {
         address: '請輸入地址'
@@ -210,5 +226,23 @@ export default {
 
 .btn {
     @include solidButton(200, 1);
+    min-width: 100px;
+
+    &-update {
+      background-color: color(tertiary);
+
+      &:hover {
+        background-color: darken(color(tertiary), 20%);
+      }
+    }
+
+    @include response(sm) {
+      min-width: 150px;
+    }
+
+    @include response(md) {
+      min-width: 170px;
+    }
 }
+
 </style>

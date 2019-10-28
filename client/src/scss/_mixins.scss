@@ -47,15 +47,16 @@
     background-repeat: no-repeat;
 }
 
-@mixin solidButton($width: 200 ,$radius: 1) {
-    background-color: color(primary);
+@mixin solidButton($width: 200 ,$radius: 1,$color: primary) {
+    background-color: color($color);
     min-width: #{$width}px;
     max-width: #{$width}px;
     color: color(quaternary);
     border-radius: #{$radius}rem;
+    transition: all .2s linear;
 
     &:hover {
-        background-color: darken(color(primary), 20%);
+        background-color: darken(color($color), 20%);
     }
 }
 
@@ -125,14 +126,14 @@
     }
 }
 
-@mixin imgOverlay($amount: 0.8) {
+@mixin imgOverlay($amount: 0.8, $color: color(secondary)) {
     &-overlay {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: transparentize(color(secondary), $amount);
+        background-color: transparentize($color, $amount);
     }
 }
 
@@ -160,6 +161,20 @@
             border-color: color(primary);
         }
     }
+}
+
+@mixin formSelectControl {
+    &-select-control {
+        border: 1px solid lighten(color(secondary), 50%);
+        border-radius: .1rem;
+      }
+    
+      select {
+        &.form-control {
+          border: 0px;
+          height: 35px;
+        }
+      }
 }
 
 @mixin formValidation {
@@ -230,5 +245,190 @@
     ::-webkit-scrollbar {
         width: 0;
         background-color: transparent;
+    }
+}
+
+@mixin tableMobile {
+    .table {
+        color: color(secondary);
+    
+        thead {
+            display: block;
+            position: absolute;
+            top: -99999px;
+            left: -99999px;
+            color: transparent;
+        }
+    
+        tbody {
+            display: block;
+            tr {
+                @extend tbody;
+                background-color: color(quaternary);
+                padding: 0 1rem .4rem 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+                border-radius: .2rem;
+                transition: transform .2s linear, box-shadow .2s linear;
+    
+                &:last-child {
+                    margin-bottom: 0;
+                }
+    
+                &:hover {
+                    color: color(secondary);
+                    cursor: pointer;
+                    transform: translateY(-5px);
+                    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+                }
+            }
+    
+            td {
+                @extend tbody;
+                position: relative;
+                border-bottom: 1px solid lighten(color(secondary), 55%);
+                padding-left: 50%;
+    
+                &::before {
+                    position: absolute;
+                    top: .75rem;
+                    left: .75rem;
+                    width: 45%;
+                    white-space: nowrap;
+                }
+    
+                @for $i from 1 through 5 {
+                    &:nth-of-type(#{$i}) {
+                        &:before {
+                            content: map-get($headers, $i);
+                            font-weight: weight(bold);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin tableFullSize {
+    .table {    
+        &-wrapper {
+            @include response(md) {
+                width: 100%;
+                background-color: color(quaternary);
+                padding: 0 1rem .4rem 1rem;
+                border-radius: .2rem;
+                box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+            }
+        }
+    
+        thead {
+            @include response(md) {
+                border-bottom: 2px solid lighten(color(secondary), 55%);
+                display: table-header-group;
+                position: unset;
+                color: color(secondary);
+            }
+        }
+    
+        tbody {
+            @include response(md) {
+                display: table-row-group;
+    
+                tr {
+                    color: lighten(color(secondary), 10%);
+                    transition: all .1s linear;
+                    display: table-row;
+                    background-color: color(quaternary);
+                    padding: unset;
+                    margin-bottom: 0;
+                    box-shadow: unset;
+                    border-radius: unset;
+    
+                    &:hover {
+                        background-color: lighten(color(secondary), 55%);
+                        color: color(primary);
+                        transform: unset;
+                        box-shadow: unset;
+                        cursor: pointer;
+                    }
+                }
+    
+                td {
+                    display: table-cell;
+                    position: relative;
+                    border-bottom: unset;
+                    padding: .75rem;
+    
+                    &::before {
+                        position: unset;
+                        width: unset;
+                        white-space: nowrap;
+                    }
+    
+                    @for $i from 1 through 5 {
+                        &:nth-of-type(#{$i}) {
+                            &:before {
+                                content: '';
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin fileUpload {
+    .file {
+        &-input {
+            @include hiddenInput;
+        }
+    
+        /* Style label into button */
+        &-label {
+            @include flexPosition;
+            @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), 0.1);
+            cursor: pointer;
+        }
+    
+        &-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+    
+            &-wrapper {
+                position: relative;
+                width: 100px;
+                height: 100px;
+                padding: .2rem;
+                border-radius: .1rem;
+                border: 1px solid lighten(color(secondary), 50%);
+    
+                .close-btn {
+                    position: absolute;
+                    top: 0;
+                    right: 4px;
+                    color: lighten(color(secondary), 15%);
+                    cursor: pointer;
+    
+                    &:hover {
+                        color: lighten(color(secondary), 30%);
+                    }
+                }
+            }
+        }
+    }
+}
+
+@mixin spinAnimation {
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+    
+        to {
+            transform: rotate(360deg)
+        }
     }
 }

@@ -5,7 +5,7 @@
       <h1 class="dishes-title">
         餐點資訊
       </h1>
-      <NavPill class="mt-4 ml-1" />
+      <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dishes-divider">
       <div class="dishes-card-container row mx-0 p-3 rounded-sm shadow-sm">
         <OwnerMenuCard
@@ -30,7 +30,7 @@
 
 <script>
 import SideNavBar from '../components/Navbar/SideNavBar'
-import NavPill from '../components/Navbar/NavPill'
+import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerMenuCard from '../components/OwnerMenuCard'
 import OwnerMenuForm from '../components/OwnerMenuForm'
 
@@ -61,7 +61,7 @@ const dummyMeal = {
 export default {
   components: {
     SideNavBar,
-    NavPill,
+    OwnerDishNavPill,
     OwnerMenuCard,
     OwnerMenuForm
   },
