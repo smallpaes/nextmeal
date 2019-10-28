@@ -10,6 +10,7 @@
       <li class="nav-item">
         <router-link
           :to="{name: 'admin-restaurants'}"
+          active-class="active"
           class="nav-link"
         >
           <span class="icon"><i class="fas fa-store" /></span>
@@ -17,13 +18,14 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <a
-          href="#"
+        <router-link
+          :to="{name: 'admin-users'}"
+          active-class="active"
           class="nav-link"
         >
           <span class="icon"><i class="fas fa-utensils" /></span>
           <span class="nav-link-description">用戶</span>
-        </a>
+        </router-link>
       </li>
       <li class="nav-item">
         <a

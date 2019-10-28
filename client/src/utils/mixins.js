@@ -5,8 +5,26 @@ import 'moment/locale/zh-tw'
 export const timeTransformFilter = {
   filters: {
     timeTransform (timestamp) {
+      console.log(timestamp)
       if (!timestamp) return '-'
       return moment(timestamp).format('LL')
+    }
+  }
+}
+
+export const dateFormatterFilter = {
+  methods: {
+    dateFormatter (date) {
+      return moment(date).format('LL')
+    }
+  }
+}
+
+export const placeholderImageFilter = {
+  filters: {
+    placeholderImage (url) {
+      if (url) return url
+      return 'https://images.pexels.com/photos/1490908/pexels-photo-1490908.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
     }
   }
 }
@@ -44,6 +62,14 @@ export const getGeoMethods = {
           addressInput.setCustomValidity('')
           this.validationMsg.address = '請輸入地址'
         }
+
+        // validate dob
+        if ('dob' in this[storeLocation] && !this[storeLocation].dob) {
+          document.getElementById('hidden-date-input').setCustomValidity('invalid')
+        } else {
+          document.getElementById('hidden-date-input').setCustomValidity('')
+        }
+
         // Validate form data
         if (form.checkValidity() === false) {
           form.classList.add('was-validated')
