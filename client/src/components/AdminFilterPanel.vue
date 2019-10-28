@@ -33,7 +33,7 @@
           v-model.trim="searchInput"
           type="text"
           class="form-control"
-          placeholder="搜尋名稱"
+          :placeholder="inputPlaceholder"
           required
         >
         <div class="input-group-append">
@@ -56,6 +56,10 @@ export default {
     options: {
       type: Array,
       required: true
+    },
+    inputPlaceholder: {
+      type: String,
+      default: '搜尋名稱'
     }
   },
   data () {
