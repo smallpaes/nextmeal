@@ -243,12 +243,8 @@ let adminController = {
     try {
       let order = await Order.findByPk(req.params.order_id)
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      
       let start = moment().startOf('day').toDate()
-      // 先取得本訂單，需驗證剩下多少數量，取得數量
-      let order = await Order.findByPk(req.params.order_id, {
-        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
-      })
-      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
       let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
