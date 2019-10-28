@@ -1,11 +1,11 @@
 <template>
   <section class="wrapper d-flex vh-100">
     <SideNavBar />
-    <section class="info flex-fill">
-      <h1 class="info-title">
+    <section class="order flex-fill">
+      <h1 class="order-title">
         今日訂單
       </h1>
-      <hr class="info-divider">
+      <hr class="order-divider">
       <OwnerOrdersTable
         v-for="(timeSlotOrders, timeSlot) in orders"
         :key="timeSlot"
@@ -206,7 +206,7 @@ export default {
     background-color: color(quinary);
 }
 
-.info {
+.order {
     padding: 2.3rem 2rem;
     max-width: 800px;
     margin-left: 80px;
