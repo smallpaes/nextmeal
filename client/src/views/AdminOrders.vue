@@ -72,7 +72,7 @@ const dummyOrders = {
     {
       id: 2,
       require_date: '2019-10-28T03:00:00.000Z',
-      order_status: '今日',
+      order_status: '取消',
       date: '20191028',
       time: '11:00',
       meals: {
@@ -150,7 +150,13 @@ export default {
     },
     handleAfterCancel (orderId) {
       console.log('from parent', orderId)
-      this.orders = this.orders.filter(order => order.id !== orderId)
+      this.orders = this.orders.map(order => {
+        if (order.id !== orderId) { return order }
+        return ({
+          ...order,
+          order_status: '取消'
+        })
+      })
     }
   }
 }

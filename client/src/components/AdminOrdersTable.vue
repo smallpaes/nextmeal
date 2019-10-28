@@ -19,7 +19,7 @@
             時段
           </th>
           <th scope="col">
-            取消
+            訂單狀態
           </th>
         </tr>
       </thead>
@@ -33,7 +33,11 @@
           <td>{{ order.meals.Restaurant.name }}</td>
           <td>{{ order.date.slice(4, 8) }}</td>
           <td>{{ order.time }}</td>
+          <td v-if="order.order_status === '取消'">
+            已取消
+          </td>
           <td
+            v-else
             class="cancel"
             @click="cancelOrder(order.id)"
           >
@@ -72,7 +76,7 @@ $headers: (
     3: '餐廳',
     4: '日期',
     5: '成交量',
-    6: '取消'
+    6: '狀態'
 );
 
 // table layout for small screen
