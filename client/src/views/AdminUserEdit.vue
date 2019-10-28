@@ -1,23 +1,24 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <SideNavBar />
-    <section class="info flex-fill">
-      <h1 class="info-title">
-        餐廳資訊
+    <AdminSideNavBar />
+    <section class="user flex-fill">
+      <h1 class="user-title">
+        編輯用戶
       </h1>
-      <hr class="info-divider">
-      <RestaurantInfoForm />
+      <hr class="user-divider">
+      <UserProfileForm />
     </section>
   </section>
 </template>
 
 <script>
-import SideNavBar from '../components/Navbar/SideNavBar'
-import RestaurantInfoForm from '../components/RestaurantInfoForm'
+import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
+import UserProfileForm from '../components/UserProfileForm'
+
 export default {
   components: {
-    SideNavBar,
-    RestaurantInfoForm
+    AdminSideNavBar,
+    UserProfileForm
   }
 }
 </script>
@@ -27,18 +28,15 @@ export default {
     background-color: color(quinary);
 }
 
-.info {
+.user {
     padding: 2.3rem 2rem;
     max-width: 800px;
     margin-left: 80px;
+    overflow-y: scroll;
     transition: margin-left .1s linear;
 
     &-title {
         size: size(lg);
-    }
-
-    &-divider {
-        width: 100%;
     }
 
     @include response(md) {

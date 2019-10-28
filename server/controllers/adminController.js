@@ -29,19 +29,18 @@ let adminController = {
           location: { [Op.substring]: dist || '' }
         },
         include: [
-          { model: Category, attributes: ['name'] },
           { model: Comment, attributes: ['id', 'user_text', 'res_text', 'rating', 'image', 'createdAt'] },
           {
             model: Meal,
             include: [{
               model: Order,
               as: 'orders',
-              where: { order_status: '今天' },
+              where: { order_status: '今日' },
             }],
           }
         ],
         attributes: [
-          'id', 'name', 'rating',
+          'id', 'name', 'rating', 'location',
           [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
         ],
         // offset: (page - 1) * pageLimit,
@@ -49,14 +48,9 @@ let adminController = {
         // subQuery: false
 
       })
-      const categories = await Category.findAll()
-      restaurants = restaurants.map(restaurant => ({
-        ...restaurant.dataValues,
-        orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
-      }))
 
       restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
-      res.status(202).json({ status: 'success', restaurants, districts, categories, message: 'Successfully get restautants' })
+      res.status(202).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -93,8 +87,8 @@ let adminController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng
+            lat: req.body.lat,
+            lng: req.body.lng
           })
           return res.status(200).json({
             status: 'success',
@@ -148,7 +142,7 @@ let adminController = {
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
-            'address', 'latitude', 'longitude', 'createdAt', 'updatedAt'
+            'address', 'lat','lng', 'createdAt', 'updatedAt'
           ]
         },
         order: [[{ model: Subscription }, 'createdAt', 'DESC']]
@@ -167,7 +161,6 @@ let adminController = {
       }))
       return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -178,13 +171,12 @@ let adminController = {
         attributes: [
           'id', 'name', 'email', 'role', 'avatar',
           'prefer', 'dob', 'modifiedAt', 'location',
-          'address', ['latitude', 'lat'], ['longitude', 'lng']
+          'address', 'lat', 'lng'
         ]
       })
       if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
       return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -196,7 +188,6 @@ let adminController = {
       await user.destroy()
       return res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -215,9 +206,8 @@ let adminController = {
       if (order_status && order_status === '取消') {
         whereQuery['order_status'] = { [Op.substring]: '取消' || '' }
       }
-
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
-      let orders = await Order.findAll({
+      let orders = await Order.findAndCountAll({
         where: whereQuery,
         include: [
           { model: User, attributes: ['id', 'name', 'email'] },
@@ -235,28 +225,53 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (!orders) return res.status(400).json({ status: 'error', message: 'can not find any orders' })
-      orders = orders.map(order => ({
+      if (orders.rows.length < 1) return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+      const count = orders.count
+      orders = orders.rows.map(order => ({
         ...order.dataValues,
         meals: order.dataValues.meals[0]
       }))
-      res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders.' })
+      let pages = Math.ceil((count) / pageLimit)
+      res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
-  // 未完成
-  putOrder: async (req, res) => {
+  // admin 的取消路由
+  putCancel: async (req, res) => {
     try {
       let order = await Order.findByPk(req.params.order_id)
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      let start = moment().startOf('day').toDate()
+      // 先取得本訂單，需驗證剩下多少數量，取得數量
+      let order = await Order.findByPk(req.params.order_id, {
+        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
+      })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
+      let subscription = await Subscription.findOne({
+        where: {
+          UserId: order.UserId,
+          payment_status: 1,
+          sub_expired_date: { [Op.gte]: start }
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
+      })
+      let returnNum = subscription.sub_balance + order.amount
       if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
+      await subscription.update({
+        sub_balance: returnNum
+      })
       order = await order.update({
         order_status: '取消'
       })
-      return res.status(200).json({ status: 'success', order, message: 'Successfully cancel the order.' })
+      let meal = await Meal.findByPk(order.meals[0].dataValues.id)
+      await meal.update({
+        quantity: meal.quantity + order.amount 
+      })
+      return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }

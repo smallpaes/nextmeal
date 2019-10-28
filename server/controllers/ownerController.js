@@ -19,20 +19,9 @@ let ownerController = {
       let restaurant = await Restaurant.findAll({
         where: { UserId: req.user.id },
         include: [{ model: Category, attributes: ['id', 'name'] }],
-        attributes: ['id',
-          'name',
-          'description',
-          'image',
-          'tel',
-          'rating',
-          'location',
-          ['latitude', 'lat'],
-          ['longitude', 'lng'],
-          'address',
-          'opening_hour',
-          'closing_hour',
-          'UserId'
-        ]
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
       })
       if (restaurant.length === 0) {
         return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
@@ -50,7 +39,9 @@ let ownerController = {
   postRestaurant: async (req, res) => {
     try {
       let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
-      if (restaurant) return res.status(422).json({ status: 'error', message: 'You already have a restaurant.' });
+      if (restaurant.length > 0) return res.status(400).json({ status: 'error', message: 'You already have a restaurant.' });
+      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+
       const { file } = req
       validMessage(req, res)
       if (file) {
@@ -67,8 +58,9 @@ let ownerController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng,
+            lat: req.body.lat,
+            lng: req.body.lng,
+            geometry: point,
             UserId: req.user.id
           })
           return res.status(200).json({
@@ -88,8 +80,9 @@ let ownerController = {
           address: req.body.address,
           opening_hour: req.body.opening_hour,
           closing_hour: req.body.closing_hour,
-          latitude: req.body.lat,
-          longitude: req.body.lng,
+          lat: req.body.lat,
+          lng: req.body.lng,
+          geometry: point,
           UserId: req.user.id
         })
         return res.status(200).json({
@@ -108,7 +101,8 @@ let ownerController = {
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
       }
-      validMessage(req, res)
+      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+      // validMessage(req, res)
       const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
@@ -121,8 +115,9 @@ let ownerController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng
+            lat: req.body.lat,
+            lng: req.body.lng,
+            geometry: point,
           })
           return res.status(200).json({
             status: 'success',
@@ -326,22 +321,31 @@ let ownerController = {
   putMenu: async (req, res) => {
     try {
       validMessage(req, res) //驗證表格
-      // 找出要修改的 meal
-      let meal = await Meal.findByPk(req.body.id)
+      let meal = await Meal.findByPk(req.body.id, {
+        include: [Restaurant]
+      })
+      let nextWeeKMeal = await Meal.findOne({
+        where: { nextServing: 1 },
+        include: [{ model: Restaurant, where: { id: meal.Restaurant.id } }]
+      })
       const today = new Date().getDay()
       // 修改 nextServing 為真，而且可以更改數量
       if (Number(req.body.quantity) < 1) {
         return res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
       }
+      if (!meal) return res.status(200).json({ status: 'success', meal, message: 'null' })
       if (today >= 6) {
         return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
-      if (!meal || Number(req.body.quantity) > 0) {
+      if (Number(req.body.quantity) > 0) {
         meal = await meal.update({
           quantity: req.body.quantity || meal.quantity,
           nextServing: 1
         })
-        res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
+        await nextWeeKMeal.update({
+          nextServing: 0
+        })
+        return res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -351,12 +355,12 @@ let ownerController = {
   getOrders: async (req, res) => {
     try {
       //算出今天開始、結束日期
-      const start = moment().startOf('day').toISOString()
-      const end = moment().endOf('day').toISOString()
-      let restaurant = await Restaurant.findOne({where: {UserId: req.user.id}})
+      const start = moment().startOf('day').toDate()
+      const end = moment().endOf('day').toDate()
+      let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       let orders = await Order.findAll({
         where: {
-          order_status: { [Op.like]: '未領取' },
+          order_status: { [Op.like]: '今日' },
           require_date: {
             // 大於開始日
             [Op.gte]: start,
@@ -365,12 +369,12 @@ let ownerController = {
           }
         },
         include: [
-          { model: Meal, as: 'meals',where: { RestaurantId:  restaurant.id }, attributes: ['id', 'name', 'image']},
+          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] },
           { model: User, attributes: ['id', 'name', 'email'] }
         ],
         attributes: [
           'id', 'require_date', 'order_status',
-          [ sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time'],
+          [sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time'],
         ],
         order: [['require_date', 'ASC']],
       })
