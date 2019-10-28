@@ -3,10 +3,16 @@
     <SideNavBar />
     <section class="info flex-fill">
       <h1 class="info-title">
-        餐廳資訊
+        今日訂單
       </h1>
       <hr class="info-divider">
-      <OwnerOrdersTable :restaurants="restaurants" />
+      <OwnerOrdersTable
+        v-for="(timeSlotOrders, timeSlot) in orders"
+        :key="timeSlot"
+        :orders="timeSlotOrders"
+        :time-slot="timeSlot"
+        class="mb-3"
+      />
     </section>
   </section>
 </template>
@@ -103,6 +109,71 @@ const dummyOrders = {
         email: 'micky@example.com'
       }
     }
+  ],
+  '12:30': [
+    {
+      id: 5,
+      require_date: '2019-10-28T03:00:00.000Z',
+      order_status: '今日',
+      time: '11:30',
+      meals: {
+        id: 2,
+        name: '巨無霸套餐',
+        image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+        OrderItem: {
+          OrderId: 5,
+          MealId: 2,
+          quantity: 1
+        }
+      },
+      User: {
+        id: 1,
+        name: 'Mike',
+        email: 'mike@example.com'
+      }
+    },
+    {
+      id: 6,
+      require_date: '2019-10-28T03:00:00.000Z',
+      order_status: '今日',
+      time: '11:30',
+      meals: {
+        id: 2,
+        name: '巨無霸套餐',
+        image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+        OrderItem: {
+          OrderId: 6,
+          MealId: 2,
+          quantity: 4
+        }
+      },
+      User: {
+        id: 2,
+        name: 'Micky',
+        email: 'micky@example.com'
+      }
+    },
+    {
+      id: 7,
+      require_date: '2019-10-28T03:00:00.000Z',
+      order_status: '今日',
+      time: '11:30',
+      meals: {
+        id: 2,
+        name: '巨無霸套餐',
+        image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
+        OrderItem: {
+          OrderId: 7,
+          MealId: 2,
+          quantity: 4
+        }
+      },
+      User: {
+        id: 2,
+        name: 'Micky',
+        email: 'micky@example.com'
+      }
+    }
   ]
 }
 
@@ -119,11 +190,11 @@ export default {
   created () {
     this.fetchOrders()
   },
-  method: {
+  methods: {
     fetchOrders () {
       this.orders = {
-        ...this.orders
-
+        ...this.orders,
+        ...dummyOrders
       }
     }
   }

@@ -1,14 +1,14 @@
 <template>
-  <div class="card">
+  <div class="card rounded-sm border-0 shadow-sm">
     <div class="card-header">
-      <h4 class="card-title">
-        11:00 (6)
+      <h4 class="card-title mb-1">
+        {{ timeSlot }}
       </h4>
       <p class="card-text">
-        共需準備 6 份餐點
+        共需準備 {{ orders.length }} 份餐點
       </p>
     </div>
-    <div class="card-bory">
+    <div class="card-body p-0">
       <div class="table-wrapper table-borderless table-hover rounded-sm ">
         <table class="table m-0">
           <thead>
@@ -26,13 +26,12 @@
           </thead>
           <tbody>
             <tr
-              v-for="restaurant in restaurants"
-              :key="restaurant.id"
-              @click="$router.push({name:'admin-restaurant-edit', params: {restaurant_id: restaurant.id}})"
+              v-for="order in orders"
+              :key="order.id"
             >
-              <td>{{ restaurant.name }}</td>
-              <td>{{ restaurant.Category.name }}</td>
-              <td>{{ restaurant.Category.name }}</td>
+              <td>#{{ order.id }}</td>
+              <td>{{ order.User.name }}</td>
+              <td>{{ order.meals.OrderItem.quantity }} 份</td>
             </tr>
           </tbody>
         </table>
@@ -44,8 +43,12 @@
 <script>
 export default {
   props: {
-    restaurants: {
+    orders: {
       type: Array,
+      required: true
+    },
+    timeSlot: {
+      type: String,
       required: true
     }
   }
@@ -54,9 +57,9 @@ export default {
 
 <style lang="scss" scoped>
 $headers: (
-    1: '訂單編號',
-    2: '取餐人',
-    3: '餐點數量'
+    1: '編號',
+    2: '客戶',
+    3: '數量'
 );
 
 // table layout for small screen
@@ -71,4 +74,50 @@ $headers: (
 .low-rating {
     color: color(primary);
 }
+
+.card {
+
+    &-header {
+      background-color: lighten(color(secondary), 10%);
+
+    }
+
+    &-title {
+        color: color(quaternary);
+    }
+
+    &-text {
+        color: lighten(color(secondary), 50%);
+        font-size: size(xs);
+    }
+}
+
+.table {
+    tbody {
+        tr {
+            border-radius: 0;
+            box-shadow: none;
+
+            &:not(:last-child) {
+                border-bottom: 1.5px dashed lighten(color(secondary), 40%);
+
+                @include response(md) {
+                    border-bottom: none;
+                }
+            }
+
+            &:hover {
+                transform: translateY(0px);
+                cursor: unset;
+                color: color(secondary);
+                box-shadow: none;
+
+                @include response(md) {
+                    font-weight: weight(bold);
+                }
+            }
+        }
+    }
+}
+
 </style>

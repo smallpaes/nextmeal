@@ -265,7 +265,7 @@
             tr {
                 @extend tbody;
                 background-color: color(quaternary);
-                padding: 0 1rem .4rem 1rem;
+                padding: 0 1rem 0rem 1rem;
                 margin-bottom: 1rem;
                 box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
                 border-radius: .2rem;
@@ -285,9 +285,12 @@
     
             td {
                 @extend tbody;
-                position: relative;
-                border-bottom: 1px solid lighten(color(secondary), 55%);
+                position: relative;      
                 padding-left: 50%;
+
+                &:not(:last-child) {
+                    border-bottom: 1px solid lighten(color(secondary), 55%);
+                }
     
                 &::before {
                     position: absolute;
@@ -357,13 +360,16 @@
                 td {
                     display: table-cell;
                     position: relative;
-                    border-bottom: unset;
                     padding: .75rem;
     
                     &::before {
                         position: unset;
                         width: unset;
                         white-space: nowrap;
+                    }
+
+                    &:not(:last-child) {
+                        border-bottom: none;
                     }
     
                     @for $i from 1 through 5 {
