@@ -1,22 +1,23 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <SideNavBar />
-    <section class="info flex-fill">
-      <h1 class="info-title">
-        餐廳資訊
+    <AdminSideNavBar />
+    <section class="restaurant flex-fill">
+      <h1 class="restaurant-title">
+        編輯餐廳
       </h1>
-      <hr class="info-divider">
+      <hr class="restaurant-divider">
       <RestaurantInfoForm />
     </section>
   </section>
 </template>
 
 <script>
-import SideNavBar from '../components/Navbar/SideNavBar'
+import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
 import RestaurantInfoForm from '../components/RestaurantInfoForm'
+
 export default {
   components: {
-    SideNavBar,
+    AdminSideNavBar,
     RestaurantInfoForm
   }
 }
@@ -27,10 +28,11 @@ export default {
     background-color: color(quinary);
 }
 
-.info {
+.restaurant {
     padding: 2.3rem 2rem;
     max-width: 800px;
     margin-left: 80px;
+    overflow-y: scroll;
     transition: margin-left .1s linear;
 
     &-title {
