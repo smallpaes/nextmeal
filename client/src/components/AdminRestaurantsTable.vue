@@ -60,7 +60,7 @@ export default {
 <style lang="scss" scoped>
 $headers: (
     1: '名稱',
-    2: '類別',
+    2: '地區',
     3: '評分',
     4: '評論',
     5: '成交量'
