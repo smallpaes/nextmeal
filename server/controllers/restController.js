@@ -62,7 +62,7 @@ let restController = {
       const district = districts.find(dist => { return dist.chinese_name === req.query.dist })
       const restaurants = await Restaurant.findAll({
         where: wherequery,
-        attributes: ['id', 'name', 'latitude', 'longitude'],
+        attributes: ['id', 'name', 'lat', 'lng'],
       })
       const map = {
         center: {
@@ -95,7 +95,7 @@ let restController = {
             attributes: [
               'id', 'image', 'name', 'rating',
               'description', 'tel', 'address',
-              'opening_hour', 'closing_hour', 'location', 'latitude', 'longitude',
+              'opening_hour', 'closing_hour', 'location', 'lat', 'lng',
               [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
               'CategoryId'
             ]

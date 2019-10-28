@@ -29,7 +29,6 @@ let adminController = {
           location: { [Op.substring]: dist || '' }
         },
         include: [
-          { model: Category, attributes: ['name'] },
           { model: Comment, attributes: ['id', 'user_text', 'res_text', 'rating', 'image', 'createdAt'] },
           {
             model: Meal,
@@ -41,7 +40,7 @@ let adminController = {
           }
         ],
         attributes: [
-          'id', 'name', 'rating',
+          'id', 'name', 'rating', 'location',
           [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
         ],
         // offset: (page - 1) * pageLimit,
@@ -49,14 +48,9 @@ let adminController = {
         // subQuery: false
 
       })
-      const categories = await Category.findAll()
-      restaurants = restaurants.map(restaurant => ({
-        ...restaurant.dataValues,
-        orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
-      }))
 
       restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
-      res.status(202).json({ status: 'success', restaurants, districts, categories, message: 'Successfully get restautants' })
+      res.status(202).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -93,8 +87,8 @@ let adminController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng
+            lat: req.body.lat,
+            lng: req.body.lng
           })
           return res.status(200).json({
             status: 'success',
@@ -148,7 +142,7 @@ let adminController = {
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
-            'address', 'latitude', 'longitude', 'createdAt', 'updatedAt'
+            'address', 'lat','lng', 'createdAt', 'updatedAt'
           ]
         },
         order: [[{ model: Subscription }, 'createdAt', 'DESC']]
@@ -177,7 +171,7 @@ let adminController = {
         attributes: [
           'id', 'name', 'email', 'role', 'avatar',
           'prefer', 'dob', 'modifiedAt', 'location',
-          'address', ['latitude', 'lat'], ['longitude', 'lng']
+          'address', 'lat', 'lng'
         ]
       })
       if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })

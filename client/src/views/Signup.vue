@@ -1,17 +1,15 @@
 <template>
   <section class="signup">
     <TopLogoNavbar />
-    <div class="form-container">
-      <SignupForm
-        v-if="isSigningUp"
-        @after-signup="handleAfterSignup"
-      />
-      <SettingForm
-        v-else
-        :categories="categories"
-        @after-setting="handleAfterSetting"
-      />
-    </div>
+    <SignupForm
+      v-if="isSigningUp"
+      @after-signup="handleAfterSignup"
+    />
+    <SettingForm
+      v-else
+      :categories="categories"
+      @after-setting="handleAfterSetting"
+    />
   </section>
 </template>
 
@@ -54,6 +52,7 @@ export default {
       // Send signup and setting data to backend
       console.log(userData)
       // Redirect to subscribe page
+      this.$router.push({ name: 'subscribe' })
     }
   }
 }
@@ -61,28 +60,36 @@ export default {
 
 <style lang="scss" scoped>
 .signup {
-    height: 100%;
+    @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
     overflow-y: scroll;
+    max-height: 100vh;
+    padding: 120px 15px 30px 15px;
 }
 
 /deep/ .form {
     @include formControl;
-    @include positionCenter;
-
-    &-container {
-        // @include setBackground('https://images.unsplash.com/photo-1497888329096-51c27beff665?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=5551&q=80', 100%);
-        @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
-        height: 100%;
-        margin-top: 62px;
-    }
 
     &-content {
-        width: 100%;
         max-width: 450px;
+        background-color: color(quaternary);
+        margin-top: 70px;
+        margin: 0 auto;
 
         &-top {
             background-color: color(quaternary);
             padding: 2.7rem;
+
+            &-header {
+                text-align: center;
+
+                h3 {
+                    font-size: size(lg);
+                }
+
+                h5 {
+                    font-size: size(sm);
+                }
+            }
         }
 
         &-bottom {
