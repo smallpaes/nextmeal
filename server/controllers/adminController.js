@@ -249,7 +249,7 @@ let adminController = {
   putOrder: async (req, res) => {
     try {
       let order = await Order.findByPk(req.params.order_id)
-      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       order = await order.update({
         order_status: '取消'
