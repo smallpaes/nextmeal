@@ -173,9 +173,17 @@
     <div class="btn-container mt-3">
       <button
         class="btn"
+        :class="{'btn-update': $route.name === 'admin-restaurant-edit'}"
         @click.stop.prevent="getLocation('restaurant')"
       >
         更新
+      </button>
+      <button
+        v-if="$route.name ==='admin-restaurant-edit'"
+        class="btn"
+        @click.stop.prevent="deleteRestaurant"
+      >
+        刪除
       </button>
     </div>
   </form>
@@ -246,7 +254,8 @@ export default {
   },
   methods: {
     fetchRestaurantData () {
-      // fetch data from api
+      // fetch data from api based on route name
+      console.log(this.$route.name)
 
       // check if restaurant data alreadt exists
       if (!dummyRestaurant) {
@@ -271,6 +280,7 @@ export default {
       this.hasRestaurantData = true
     },
     afterReceiveGeo () {
+      console.log(this.restaurant.lat, this.restaurant.lng)
       this.hasRestaurantData ? this.updateRestaurant() : this.createRestaurant()
     },
     createRestaurant () {
@@ -280,6 +290,10 @@ export default {
     updateRestaurant () {
       // Send data to PUT /api/owner
       console.log('PUT', this.restaurant)
+    },
+    deleteRestaurant () {
+      // Send data to DELETE /api/admin/restaurants/:id
+      console.log('DELETE', this.restaurant)
     }
   }
 }
@@ -287,6 +301,7 @@ export default {
 
 <style lang="scss" scoped>
 .form {
+  @include fileUpload;
     @include formControl;
     background-color: color(quaternary);
     color: color(secondary);
@@ -296,61 +311,27 @@ export default {
     }
 }
 
-.file {
-    &-input {
-        @include hiddenInput;
-    }
-
-    /* Style label into button */
-    &-label {
-        @include flexPosition;
-        @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), 0.1);
-        cursor: pointer;
-    }
-
-    &-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-
-        &-wrapper {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            padding: .2rem;
-            border-radius: .1rem;
-            border: 1px solid lighten(color(secondary), 50%);
-
-            .close-btn {
-                position: absolute;
-                top: 0;
-                right: 4px;
-                color: lighten(color(secondary), 15%);
-                cursor: pointer;
-
-                &:hover {
-                    color: lighten(color(secondary), 30%);
-                }
-            }
-        }
-    }
-}
-
 .btn {
     @include solidButton;
     min-width: 100px;
-    transition: min-width .2s linear;
+    margin: 0 .5rem;
+    padding: .28rem .7rem;
 
     &-container {
-        text-align: center;
+        @include flexPosition(center, center, row);
+    }
 
-        @include response(md) {
-            text-align: right;
-        }
+    &-update {
+      background-color: color(tertiary);
+
+      &:hover {
+        background-color: darken(color(tertiary), 20%);
+      }
     }
 
     @include response(md) {
       min-width: 200px;
+      padding: .375rem .75rem;
     }
 }
 
