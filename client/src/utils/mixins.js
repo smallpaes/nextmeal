@@ -5,9 +5,17 @@ import 'moment/locale/zh-tw'
 export const timeTransformFilter = {
   filters: {
     timeTransform (timestamp) {
-      console.log(timestamp)
       if (!timestamp) return '-'
       return moment(timestamp).format('LL')
+    }
+  }
+}
+
+export const isAfterTodayMethod = {
+  methods: {
+    isAfterToday (date) {
+      const today = moment()
+      return moment(date).isAfter(today, 'date')
     }
   }
 }
