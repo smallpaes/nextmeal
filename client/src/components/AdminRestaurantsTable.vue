@@ -7,7 +7,7 @@
             名稱
           </th>
           <th scope="col">
-            類別
+            地區
           </th>
           <th scope="col">
             評分
@@ -27,7 +27,7 @@
           @click="$router.push({name:'admin-restaurant-edit', params: {restaurant_id: restaurant.id}})"
         >
           <td>{{ restaurant.name }}</td>
-          <td>{{ restaurant.Category.name }}</td>
+          <td>{{ restaurant.location }}</td>
           <td>
             <span
               class="d-none d-md-inline pr-1"
@@ -66,7 +66,7 @@ export default {
 <style lang="scss" scoped>
 $headers: (
     1: '名稱',
-    2: '類別',
+    2: '地區',
     3: '評分',
     4: '評論',
     5: '成交量'

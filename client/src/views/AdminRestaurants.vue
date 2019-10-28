@@ -12,7 +12,7 @@
         @after-filter="handleAfterFilter"
       >
         <template v-slot:filterOption>
-          搜尋名稱
+          搜尋地區
         </template>
       </AdminFilterPanel>
       <AdminRestaurantsTable :restaurants="restaurants" />
@@ -32,6 +32,7 @@ const dummyRestaurants = {
       name: '餐廳一',
       rating: 4.6,
       commentCount: 0,
+      location: '大安區',
       Category: {
         name: '日本料理'
       },
@@ -44,6 +45,7 @@ const dummyRestaurants = {
       name: '餐廳二',
       rating: 3.4,
       commentCount: 3,
+      location: '信義區',
       Category: {
         name: '美式料理'
       },
@@ -56,6 +58,7 @@ const dummyRestaurants = {
       name: '餐廳三',
       rating: 4.2,
       commentCount: 10,
+      location: '中山區',
       Category: {
         name: '日本料理'
       },
@@ -68,6 +71,7 @@ const dummyRestaurants = {
       name: '餐廳四',
       rating: 2.4,
       commentCount: 1,
+      location: '松山區',
       Category: {
         name: '美式料理'
       },
@@ -76,7 +80,36 @@ const dummyRestaurants = {
       orderCount: 3
     }
   ],
-  locations: ['信義區', '大安區', '松山區', '中山區']
+  locations: [
+    {
+      'chinese_name': '大安區',
+      'eng_name': "Da'an",
+      'image': 'https://picsum.photos/1920/1080',
+      'lng': '121.5434446',
+      'lat': '25.02677012'
+    },
+    {
+      'chinese_name': '信義區',
+      'eng_name': 'Xinyi',
+      'image': 'https://picsum.photos/1920/1080',
+      'lng': '121.5716697',
+      'lat': '25.03062083'
+    },
+    {
+      'chinese_name': '中山區',
+      'eng_name': 'Zhongshan',
+      'image': 'https://picsum.photos/1920/1080',
+      'lng': '121.7308913',
+      'lat': '25.14986365'
+    },
+    {
+      'chinese_name': '松山區',
+      'eng_name': 'Songshan',
+      'image': 'https://picsum.photos/1920/1080',
+      'lng': '121.5575876',
+      'lat': '25.05999101'
+    }
+  ]
 }
 
 export default {
@@ -103,7 +136,7 @@ export default {
     fetchRestaurants (name, category) {
       // fetch data from API
       this.restaurants = dummyRestaurants.restaurants
-      this.locations = dummyRestaurants.locations || this.locations
+      this.locations = dummyRestaurants.locations.map(location => location['chinese_name'])
     },
     handleAfterSearch (searchInput) {
       this.currentSearchInput = searchInput
