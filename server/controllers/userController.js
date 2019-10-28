@@ -1,13 +1,20 @@
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
+
 const db = require('../models')
 const Subscription = db.Subscription
-const User = db.User
+const Restaurant = db.Restaurant
 const Category = db.Category
 const { validMessage, getTradeInfo, createSubscription } = require('../middleware/middleware')
 const districts = require('../location/district.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const User = db.User
+const Order = db.Order
+const Meal = db.Meal
+const pageLimit = 6
+
+const moment = require('moment')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 // const nodemailer = require("nodemailer"); // 寄送 mail
@@ -64,7 +71,7 @@ let userController = {
       const payload = { id: user.id }
       const token = jwt.sign(payload, 'NextmealProject')
 
-      return res.json({
+      return res.status(200).json({
         status: 'success', message: 'Successfully sign up', user: {
           id: user.id,
           name: user.name,
@@ -101,7 +108,7 @@ let userController = {
       // generate and provide user with a token
       const payload = { id: user.id }
       const token = jwt.sign(payload, 'NextmealProject')
-      return res.json({
+      return res.status(200).json({
         status: 'success', message: 'Successfully log in', token,
         user: {
           id: user.id,
@@ -144,7 +151,6 @@ let userController = {
 
   postSubscription: async (req, res) => {
     try {
-
       if (!req.body.sub_price || !req.body.sub_name || !req.user.email || !req.body.sub_description || !req.body.sub_balance) {
         return res.status(400).json({ status: 'error', message: 'need sub_price、sub_name、user\'s email' })
       }
@@ -180,7 +186,7 @@ let userController = {
           subscription = await createSubscription(req, res, tradeInfo)
           return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
         }
-        
+
         // 如果有訂單，但還沒付款，先產生新 trandeInfo 記得傳入 sn，如果選擇的方案不相同，修改方案
         const tradeInfo = getTradeInfo(subscription[0].sub_price, subscription[0].sub_name, req.user.email, subscription[0].sn)
         if (subscription[0].dataValues.sub_name !== req.body.sub_name) {
@@ -281,6 +287,89 @@ let userController = {
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getTomorrow: async (req, res) => {
+    try {
+      let start = moment().add(1, 'days').startOf('day').toDate()
+      let end = moment().add(1, 'days').endOf('day').toDate()
+      let order = await Order.findAll({
+        where: {
+          UserId: req.user.id,
+          require_date: { [Op.gte]: start, [Op.lte]: end },
+          order_status: { [Op.notLike]: '取消' }
+        },
+        include: [{
+          model: Meal,
+          as: 'meals',
+          include: [{ model: Restaurant, attributes: ['id', 'name', 'rating'] }],
+          attributes: ['id', 'name', 'description', 'image']
+        }],
+        attributes: ['id', 'require_date']
+      })
+
+      if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
+      return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
+
+  getOrders: async (req, res) => {
+    try {
+      const { page, status } = req.query
+      let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
+      if (!status &&
+        status !== 'today' &&
+        status !== 'tomorrow' &&
+        status !== 'cancel' &&
+        status !== 'history'
+      ) return res.status(400).json({
+        status: 'error',
+        message: 'should be query string like today、tomorrow、cancel、history'
+      })
+      let start, end
+      let whereQuery = {
+        UserId: req.user.id,
+        order_status: { [Op.notLike]: '取消' },
+      }
+      if (status === 'today') {
+        start = moment().startOf('day').toDate()
+        end = moment().endOf('day').toDate()
+        whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
+      }
+      if (status === 'tomorrow') {
+        start = moment().add(1, 'days').startOf('day').toDate()
+        end = moment().add(1, 'days').endOf('day').toDate()
+        whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
+      }
+      if (status === 'cancel') { whereQuery['order_status'] = '取消' }
+      let orders = await Order.findAndCountAll({
+        where: whereQuery,
+        include: [{
+          model: Meal,
+          as: 'meals',
+          include: [{ model: Restaurant, attributes: ['id', 'name', 'rating'] }],
+          attributes: ['id', 'name', 'description', 'image']
+        }],
+        attributes: { exclude: ['updatedAt', 'updatedAt'] },
+        order: [['require_date', 'ASC']],
+        offset: (pageNum - 1) * pageLimit,
+        limit: pageLimit,
+      })
+      if (orders.rows.length === 0) return res.status(400).json({ status: 'error', message: 'Can not found any order.' })
+      let count = orders.count
+      orders = orders.rows.map(order => ({
+        ...order.dataValues,
+        meals: order.dataValues.meals[0]
+      }))
+      let pages = Math.ceil((count) / pageLimit)
+      return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get orders.' })
+    } catch (error) {
+      console.log(error)
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
 }

@@ -36,7 +36,7 @@ let restController = {
         more_restaurants.count = more_restaurants.count - 6
         more_restaurants.pages = Math.ceil((more_restaurants.count) / pageLimit)
 
-        return res.json({ status: 'success', more_restaurants, message: 'Get all restaurants page info' })
+        return res.status(200).json({ status: 'success', more_restaurants, message: 'Get all restaurants page info' })
       }
 
       // 第一次進入抓熱門、更多(近來就算第一頁)

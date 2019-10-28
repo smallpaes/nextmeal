@@ -40,6 +40,11 @@ const create_mpg_sha_encrypt = (TradeInfo) => {
     .toUpperCase();
 }
 
+// const db = require('../models')
+// const Subscription = db.Subscription
+// const sequelize = require('sequelize')
+// const Op = sequelize.Op
+
 let middleware = {
   creatUser: [
     check('email')
@@ -102,12 +107,29 @@ let middleware = {
     }
     return array
   },
-
+  validSubsribe: async (req, res, next) => {
+    try {
+      let start = moment().startOf('day').toDate()
+      const subscription = await Subscription.findOne({
+        where: {
+          UserId: req.user.id,
+          payment_status: 1,
+          sub_expired_date: { [Op.gte]: start },
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
+      })
+      if (!subscription) return res.status(400).json({ status: 'error', message: 'You need to subscribe next meal now.' })
+      next()
+    } catch (error) {
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
   getTradeInfo: (Amt, Desc, email, sn) => {
     console.log("===== getTradeInfo =====");
     console.log(Amt, Desc, email, sn);
     console.log("==========");
-  
+
     data = {
       MerchantID: MerchantID, // 商店代號
       RespondType: "JSON", // 回傳格式
@@ -123,17 +145,17 @@ let middleware = {
       NotifyURL: NotifyURL, // 支付通知網址/每期授權結果通知
       ClientBackURL: ClientBackURL // 支付取消返回商店網址
     };
-  
+
     console.log("===== getTradeInfo: data =====");
     console.log(data);
-  
+
     mpg_aes_encrypt = create_mpg_aes_encrypt(data);
     mpg_sha_encrypt = create_mpg_sha_encrypt(mpg_aes_encrypt);
-  
+
     console.log("===== getTradeInfo: mpg_aes_encrypt, mpg_sha_encrypt =====");
     console.log(mpg_aes_encrypt);
     console.log(mpg_sha_encrypt);
-  
+
     tradeInfo = {
       MerchantID: MerchantID, // 商店代號
       TradeInfo: mpg_aes_encrypt, // 加密後參數
@@ -142,10 +164,10 @@ let middleware = {
       PayGateWay: PayGateWay,
       MerchantOrderNo: data.MerchantOrderNo
     };
-  
+
     console.log("===== getTradeInfo: tradeInfo =====");
     console.log(tradeInfo);
-  
+
     return tradeInfo;
   },
   // 交易完成後回傳資料使用的反向解密
