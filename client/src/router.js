@@ -94,6 +94,11 @@ export default new Router({
       component: () => import('./views/OwnerMenu.vue')
     },
     {
+      path: '/owner/orders',
+      name: 'owner-orders',
+      component: () => import('./views/OwnerOrders.vue')
+    },
+    {
       path: '/admin/restaurants',
       name: 'admin-restaurants',
       component: () => import('./views/AdminRestaurants.vue')
