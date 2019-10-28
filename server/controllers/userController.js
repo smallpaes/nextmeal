@@ -375,8 +375,8 @@ let userController = {
 
   getTomorrow: async (req, res) => {
     try {
-      let start  = moment().add(1,'days').startOf('day').toDate()
-      let end  = moment().add(1,'days').endOf('day').toDate()
+      let start = moment().add(1, 'days').startOf('day').toDate()
+      let end = moment().add(1, 'days').endOf('day').toDate()
       let order = await Order.findAll({
         where: {
           UserId: req.user.id,
@@ -386,7 +386,7 @@ let userController = {
         include: [{
           model: Meal,
           as: 'meals',
-          include: [{ model: Restaurant, attributes: ['id', 'name', 'rating']}],
+          include: [{ model: Restaurant, attributes: ['id', 'name', 'rating'] }],
           attributes: ['id', 'name', 'description', 'image']
         }],
         attributes: ['id', 'require_date']
@@ -423,25 +423,26 @@ let userController = {
         end = moment().endOf('day').toDate()
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
-      if (status === 'tomorrow' ) {
-        start  = moment().add(1,'days').startOf('day').toDate()
-        end  = moment().add(1,'days').endOf('day').toDate()
+      if (status === 'tomorrow') {
+        start = moment().add(1, 'days').startOf('day').toDate()
+        end = moment().add(1, 'days').endOf('day').toDate()
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
-      if (status === 'cancel' ) { whereQuery['order_status'] = '取消' }
+      if (status === 'cancel') { whereQuery['order_status'] = '取消' }
       let orders = await Order.findAndCountAll({
         where: whereQuery,
         include: [{
           model: Meal,
           as: 'meals',
-          include: [{ model: Restaurant, attributes: ['id', 'name', 'rating']}],
+          include: [{ model: Restaurant, attributes: ['id', 'name', 'rating'] }],
           attributes: ['id', 'name', 'description', 'image']
         }],
-        attributes: { exclude: ['updatedAt', 'updatedAt']},
+        attributes: { exclude: ['updatedAt', 'updatedAt'] },
         order: [['require_date', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
+      console.log(orders);
       if (!orders) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       let count = orders.count
       orders = orders.rows.map(order => ({
