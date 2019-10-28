@@ -57,7 +57,7 @@
       <!--Date of birth-->
       <CustomDatePicker
         v-model="user"
-        class="px-1"
+        class="px-1 col-md-6 p-0"
       />
     </div>
     <!--Address-->

@@ -119,6 +119,11 @@ export default new Router({
       component: () => import('./views/AdminUserEdit.vue')
     },
     {
+      path: '/admin/orders',
+      name: 'admin-orders',
+      component: () => import('./views/AdminOrders.vue')
+    },
+    {
       path: '*',
       name: 'not-found',
       component: NotFound

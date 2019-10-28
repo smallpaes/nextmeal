@@ -300,7 +300,7 @@
                     white-space: nowrap;
                 }
     
-                @for $i from 1 through 5 {
+                @for $i from 1 through 6 {
                     &:nth-of-type(#{$i}) {
                         &:before {
                             content: map-get($headers, $i);
@@ -372,7 +372,7 @@
                         border-bottom: none;
                     }
     
-                    @for $i from 1 through 5 {
+                    @for $i from 1 through 6 {
                         &:nth-of-type(#{$i}) {
                             &:before {
                                 content: '';
