@@ -19,20 +19,9 @@ let ownerController = {
       let restaurant = await Restaurant.findAll({
         where: { UserId: req.user.id },
         include: [{ model: Category, attributes: ['id', 'name'] }],
-        attributes: ['id',
-          'name',
-          'description',
-          'image',
-          'tel',
-          'rating',
-          'location',
-          ['latitude', 'lat'],
-          ['longitude', 'lng'],
-          'address',
-          'opening_hour',
-          'closing_hour',
-          'UserId'
-        ]
+        attributes: {
+          exclude: ['createdAt', 'updatedAt']
+        }
       })
       if (restaurant.length === 0) {
         return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
@@ -50,7 +39,9 @@ let ownerController = {
   postRestaurant: async (req, res) => {
     try {
       let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
-      if (restaurant) return res.status(422).json({ status: 'error', message: 'You already have a restaurant.' });
+      if (restaurant.length > 0) return res.status(400).json({ status: 'error', message: 'You already have a restaurant.' });
+      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+
       const { file } = req
       validMessage(req, res)
       if (file) {
@@ -67,8 +58,9 @@ let ownerController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng,
+            lat: req.body.lat,
+            lng: req.body.lng,
+            geometry: point,
             UserId: req.user.id
           })
           return res.status(200).json({
@@ -88,8 +80,9 @@ let ownerController = {
           address: req.body.address,
           opening_hour: req.body.opening_hour,
           closing_hour: req.body.closing_hour,
-          latitude: req.body.lat,
-          longitude: req.body.lng,
+          lat: req.body.lat,
+          lng: req.body.lng,
+          geometry: point,
           UserId: req.user.id
         })
         return res.status(200).json({
@@ -108,7 +101,8 @@ let ownerController = {
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
       }
-      validMessage(req, res)
+      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+      // validMessage(req, res)
       const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
@@ -121,8 +115,9 @@ let ownerController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng
+            lat: req.body.lat,
+            lng: req.body.lng,
+            geometry: point,
           })
           return res.status(200).json({
             status: 'success',

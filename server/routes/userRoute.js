@@ -1,19 +1,17 @@
 const express = require('express')
 const router = express.Router()
-const { validUserProfile, validSubsribe } = require('../middleware/middleware')
+const { validUserProfile, creatUser, getUser } = require('../middleware/middleware')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
-const validator = require('../_helpers')
 const userController = require('../controllers/userController.js')
-const { ensureAuthenticated, getUser } = require('../config/auth')
 
-router.get('/subscribe',ensureAuthenticated, userController.getSubscription)
-router.post('/subscribe',ensureAuthenticated, userController.postSubscription)
+router.get('/subscribe', ensureAuthenticated, getUser, userController.getSubscription)
+router.post('/subscribe', ensureAuthenticated, getUser, userController.postSubscription)
 router.post('/subscribe/spgateway/callback', userController.spgatewayCallback)
 
 //user signup/signin related
 router.get('/signup', userController.getCategories)
-router.post('/emailcheck', validator.creatUser, userController.emailCheck)
+router.post('/emailcheck', creatUser, userController.emailCheck)
 router.post('/signup', userController.signUp)
 router.post('/signin', userController.signIn)
 

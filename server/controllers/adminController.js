@@ -87,8 +87,8 @@ let adminController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng
+            lat: req.body.lat,
+            lng: req.body.lng
           })
           return res.status(200).json({
             status: 'success',
@@ -142,7 +142,7 @@ let adminController = {
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
-            'address', 'latitude', 'longitude', 'createdAt', 'updatedAt'
+            'address', 'lat','lng', 'createdAt', 'updatedAt'
           ]
         },
         order: [[{ model: Subscription }, 'createdAt', 'DESC']]
@@ -171,7 +171,7 @@ let adminController = {
         attributes: [
           'id', 'name', 'email', 'role', 'avatar',
           'prefer', 'dob', 'modifiedAt', 'location',
-          'address', ['latitude', 'lat'], ['longitude', 'lng']
+          'address', 'lat', 'lng'
         ]
       })
       if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
