@@ -2,9 +2,21 @@
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define('Order', {
     UserId: DataTypes.STRING,
-    order_date: DataTypes.DATE,
-    require_date: DataTypes.STRING,
-    order_status: DataTypes.STRING
+    order_date: {
+      type: DataTypes.DATE,
+      defaultValue: new Date()
+    },
+    require_date: DataTypes.DATE,
+    order_status: {
+      type: DataTypes.STRING,
+      defaultValue: '明日'
+    },
+    amount: DataTypes.FLOAT,
+    hasComment: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
+
   }, {});
   Order.associate = function (models) {
     // associations can be defined here

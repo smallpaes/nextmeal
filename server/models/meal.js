@@ -8,8 +8,14 @@ module.exports = (sequelize, DataTypes) => {
     nextServing_quantity: DataTypes.INTEGER,
     RestaurantId: DataTypes.INTEGER,
     modifiedAt: DataTypes.DATE,
-    isServing: DataTypes.BOOLEAN,
-    nextServing: DataTypes.BOOLEAN
+    isServing: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    nextServing: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {});
   Meal.associate = function (models) {
     // associations can be defined here

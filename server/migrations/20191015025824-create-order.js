@@ -15,10 +15,16 @@ module.exports = {
         type: Sequelize.DATE
       },
       require_date: {
-        type: Sequelize.STRING
+        type: Sequelize.DATE
       },
       order_status: {
         type: Sequelize.STRING
+      },
+      amount: {
+        type: Sequelize.FLOAT
+      },
+      hasComment: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
