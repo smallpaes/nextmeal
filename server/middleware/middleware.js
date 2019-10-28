@@ -40,10 +40,10 @@ const create_mpg_sha_encrypt = (TradeInfo) => {
     .toUpperCase();
 }
 
-const db = require('../models')
-const Subscription = db.Subscription
-const sequelize = require('sequelize')
-const Op = sequelize.Op
+// const db = require('../models')
+// const Subscription = db.Subscription
+// const sequelize = require('sequelize')
+// const Op = sequelize.Op
 
 let middleware = {
   creatUser: [

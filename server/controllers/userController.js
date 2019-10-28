@@ -9,6 +9,10 @@ const { validMessage, getTradeInfo, createSubscription } = require('../middlewar
 const districts = require('../location/district.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const User = db.User
+const Order = db.Order
+const Meal = db.Meal
+const pageLimit = 6
 
 const moment = require('moment')
 const Sequelize = require('sequelize')
