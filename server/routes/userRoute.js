@@ -4,6 +4,7 @@ const { validUserProfile, creatUser, getUser } = require('../middleware/middlewa
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 const userController = require('../controllers/userController.js')
+const { ensureAuthenticated, isAuthAdmin, getUser } = require('../config/auth')
 
 router.get('/subscribe', ensureAuthenticated, getUser, userController.getSubscription)
 router.post('/subscribe', ensureAuthenticated, getUser, userController.postSubscription)
