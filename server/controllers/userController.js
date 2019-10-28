@@ -5,13 +5,13 @@ const db = require('../models')
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
 const Category = db.Category
+const Order = db.Order
+const User = db.User
+const Meal = db.Meal
 const { validMessage, getTradeInfo, createSubscription } = require('../middleware/middleware')
 const districts = require('../location/district.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const User = db.User
-const Order = db.Order
-const Meal = db.Meal
 const pageLimit = 6
 
 const moment = require('moment')
@@ -200,7 +200,6 @@ let userController = {
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -249,7 +248,6 @@ let userController = {
 
       return res.status(200).json({ status: 'success', user, categories, districts, message: 'get personal profile page.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -285,7 +283,6 @@ let userController = {
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -312,20 +309,19 @@ let userController = {
       if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
 
   getOrders: async (req, res) => {
     try {
-      const { page, status } = req.query
+      const { page, order_status } = req.query
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
-      if (!status &&
-        status !== 'today' &&
-        status !== 'tomorrow' &&
-        status !== 'cancel' &&
-        status !== 'history'
+      if (!order_status &&
+        order_status !== 'today' &&
+        order_status !== 'tomorrow' &&
+        order_status !== 'cancel' &&
+        order_status !== 'history'
       ) return res.status(400).json({
         status: 'error',
         message: 'should be query string like today、tomorrow、cancel、history'
@@ -335,17 +331,17 @@ let userController = {
         UserId: req.user.id,
         order_status: { [Op.notLike]: '取消' },
       }
-      if (status === 'today') {
+      if (order_status === 'today') {
         start = moment().startOf('day').toDate()
         end = moment().endOf('day').toDate()
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
-      if (status === 'tomorrow') {
+      if (order_status === 'tomorrow') {
         start = moment().add(1, 'days').startOf('day').toDate()
         end = moment().add(1, 'days').endOf('day').toDate()
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
-      if (status === 'cancel') { whereQuery['order_status'] = '取消' }
+      if (order_status === 'cancel') { whereQuery['order_status'] = '取消' }
       let orders = await Order.findAndCountAll({
         where: whereQuery,
         include: [{
@@ -368,7 +364,6 @@ let userController = {
       let pages = Math.ceil((count) / pageLimit)
       return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get orders.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },

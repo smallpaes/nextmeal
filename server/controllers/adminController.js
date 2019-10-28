@@ -225,14 +225,16 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (!orders) return res.status(400).json({ status: 'error', message: 'can not find any orders' })
-      orders = orders.map(order => ({
+      if (orders.rows.length < 1) return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+      const count = orders.count
+      orders = orders.rows.map(order => ({
         ...order.dataValues,
         meals: order.dataValues.meals[0]
       }))
       let pages = Math.ceil((count) / pageLimit)
       res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },

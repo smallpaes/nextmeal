@@ -3,6 +3,8 @@ const moment = require('moment')
 const crypto = require("crypto"); // 加密
 const db = require('../models')
 const Subscription = db.Subscription
+const sequelize = require('sequelize')
+const Op = sequelize.Op
 
 const URL = 'https://f798ad18.ngrok.io'; //本地 domain 不接受，使用 ngrok 工具做臨時網址，取得的網址放這
 const MerchantID = 'MS38035958'; // 商店代號
@@ -39,11 +41,6 @@ const create_mpg_sha_encrypt = (TradeInfo) => {
     .digest("hex")
     .toUpperCase();
 }
-
-// const db = require('../models')
-// const Subscription = db.Subscription
-// const sequelize = require('sequelize')
-// const Op = sequelize.Op
 
 let middleware = {
   creatUser: [

@@ -25,7 +25,7 @@ let restController = {
           where: wherequery,
           include: [{ model: Category, attributes: ['name', 'image'] }],
           attributes: [
-            'id', 'image', 'name', 'rating','description',
+            'id', 'image', 'name', 'rating', 'description',
             [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
             'CategoryId'
           ],
