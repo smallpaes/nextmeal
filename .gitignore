@@ -85,5 +85,3 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
-
-client/ngrok
