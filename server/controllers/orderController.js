@@ -23,7 +23,7 @@ let orderController = {
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
-        attributes: ['id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
+        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
         order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
@@ -235,6 +235,7 @@ let orderController = {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
+      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
       let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
@@ -246,7 +247,6 @@ let orderController = {
       })
       if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'You need to subscribe a new subscription.' })
       let returnNum = subscription.sub_balance + order.amount
-      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
       if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       await subscription.update({
         sub_balance: returnNum
