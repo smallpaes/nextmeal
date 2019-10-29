@@ -28,13 +28,14 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <a
-          href="#"
+        <router-link
+          :to="{name: 'owner-orders'}"
           class="nav-link"
+          active-class="active"
         >
           <span class="icon"><i class="fas fa-clipboard-list" /></span>
           <span class="nav-link-description">訂單</span>
-        </a>
+        </router-link>
       </li>
       <li class="nav-item">
         <a
