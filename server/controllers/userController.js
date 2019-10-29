@@ -151,31 +151,28 @@ let userController = {
 
   postSubscription: async (req, res) => {
     try {
-      if (!req.body.sub_price || !req.body.sub_name || !req.user.email || !req.body.sub_description || !req.body.sub_balance) {
+      if (!req.body.sub_price || !req.body.sub_name || !req.body.email || !req.body.sub_description || !req.body.sub_balance) {
         return res.status(400).json({ status: 'error', message: 'need sub_price、sub_name、user\'s email' })
       }
-      let subscription = await Subscription.findAll({
+      let subscription = await Subscription.findOne({
         where: { UserId: req.user.id },
-        order: [['createdAt', 'DESC']],
+        order: [['updatedAt', 'DESC']],
         limit: 1
       })
 
-      const newbie = (subscription.length === 0) ? true : false
-      const haveSubscription = subscription.length > 0
-
-      if (newbie) {
+      if (!subscription) {
         const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.user.email)
         subscription = await createSubscription(req, res, tradeInfo)
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
       }
 
-      if (haveSubscription) {
-        const stillSubscribe = subscription[0].dataValues.sub_expired_date > Date.now()
-        const unSubscribe = subscription[0].dataValues.sub_expired_date < Date.now()
-        const paid = subscription[0].dataValues.payment_status !== '0'
-        const insufficient = subscription[0].dataValues.sub_balance <= 0
-        const once = (haveSubscription && stillSubscribe && paid && insufficient) ? true : false
-        const expired = (haveSubscription && paid && unSubscribe) ? true : false
+      if (subscription) {
+        const stillSubscribe = subscription.sub_expired_date > Date.now()
+        const unSubscribe = subscription.sub_expired_date < Date.now()
+        const paid = subscription.payment_status !== '0'
+        const insufficient = subscription.sub_balance <= 0
+        const once = (subscription && stillSubscribe && paid && insufficient) ? true : false
+        const expired = (subscription && paid && unSubscribe) ? true : false
         // 有效訂單
         if (stillSubscribe && !once && !expired) {
           return res.status(200).json({ status: 'success', message: 'You still have an active subscrtiption.' })
@@ -188,8 +185,8 @@ let userController = {
         }
 
         // 如果有訂單，但還沒付款，先產生新 trandeInfo 記得傳入 sn，如果選擇的方案不相同，修改方案
-        const tradeInfo = getTradeInfo(subscription[0].sub_price, subscription[0].sub_name, req.user.email, subscription[0].sn)
-        if (subscription[0].dataValues.sub_name !== req.body.sub_name) {
+        const tradeInfo = getTradeInfo(subscription.sub_price, subscription.sub_name, req.user.email, subscription.sn)
+        if (subscription.sub_name !== req.body.sub_name) {
           subscription = await subscription.update({
             sub_name: req.body.sub_name,
             sub_price: req.body.sub_price,
@@ -200,6 +197,7 @@ let userController = {
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },

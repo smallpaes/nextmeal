@@ -13,6 +13,7 @@ const commentLimit = 4
 let restController = {
   getRestaurants: async (req, res) => {
     try {
+      if (!req.query.dist) return res.status(200).json({ status: 'error', more_restaurants, message: 'need to query dist some where' })
       // 設定尋找需求
       let page = Number(req.query.page)
       let wherequery = {}
