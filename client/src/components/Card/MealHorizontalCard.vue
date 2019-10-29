@@ -14,7 +14,10 @@
         <h5 class="card-title m-0">
           {{ order.meal.name }}
         </h5>
-        <p class="card-text mt-1">
+        <p
+          v-if="order.restaurant.rating"
+          class="card-text mt-1"
+        >
           <span class="rating">&#9733; {{ order.restaurant.rating }}</span>
           <span class="mx-1">|</span>{{ order.restaurant.name }}
         </p>

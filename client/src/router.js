@@ -54,6 +54,11 @@ export default new Router({
       component: () => import('./views/OrderEdit.vue')
     },
     {
+      path: '/order/:order_id/comment',
+      name: 'order-comment',
+      component: () => import('./views/OrderComment.vue')
+    },
+    {
       path: '/order/:order_id',
       name: 'order',
       component: () => import('./views/Order.vue')
