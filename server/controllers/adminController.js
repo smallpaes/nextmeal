@@ -2,31 +2,31 @@ const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const sequelize = require('sequelize')
+const moment = require('moment')
 const Op = sequelize.Op
 const Subscription = db.Subscription
-
 const Restaurant = db.Restaurant
 const Category = db.Category
 const Comment = db.Comment
 const Order = db.Order
 const Meal = db.Meal
+const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 const { validMessage } = require('../middleware/middleware')
-// const pageLimit = 10
-const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
+const pageLimit = 10
 const districts = require('../location/district.json')
 
 
 let adminController = {
   getRestaurants: async (req, res) => {
     try {
-      const { name, category, location} = req.query
+      const { name, category, dist } = req.query
       // let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
       let restaurants = await Restaurant.findAll({
         where: {
           name: { [Op.substring]: name || '' },
           CategoryId: { [Op.substring]: category || '' },
-          location: { [Op.substring]: location || '' }
+          location: { [Op.substring]: dist || '' }
         },
         include: [
           { model: Category, attributes: ['name'] },
@@ -36,7 +36,7 @@ let adminController = {
             include: [{
               model: Order,
               as: 'orders',
-              where: { order_status: '已領取' },
+              where: { order_status: '今日' },
             }],
           }
         ],
@@ -68,7 +68,7 @@ let adminController = {
       if (restaurant) {
         return res.status(202).json({ status: 'success', restaurant, message: 'Successfully get restautant' })
       }
-      return res.status(202).json({ status: 'success', message: 'Restautant is not exist.' })
+      return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -93,8 +93,8 @@ let adminController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            latitude: req.body.lat,
-            longitude: req.body.lng
+            lat: req.body.lat,
+            lng: req.body.lng
           })
           return res.status(200).json({
             status: 'success',
@@ -102,7 +102,7 @@ let adminController = {
           })
         })
       } else {
-        await restaurant.update(req.body)
+        await restaurant.update({ ...req.body })
         return res.status(200).json({
           status: 'success',
           message: 'Successfully update restaurant information.'
@@ -116,9 +116,9 @@ let adminController = {
   deleteRestaurant: async (req, res) => {
     try {
       let restaurant = await Restaurant.findByPk(req.params.restaurant_id)
-      if (!restaurant) return res.status(400).json({ status: 'error', message: 'restaurant is not exist' })
+      if (!restaurant) return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
       await restaurant.destroy()
-      return res.status(202).json({ status: 'success', message: 'restaurant was successfully destroyed' })
+      return res.status(200).json({ status: 'success', message: 'restaurant was successfully destroyed' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -126,52 +126,63 @@ let adminController = {
 
   getUsers: async (req, res) => {
     try {
+      const { name, payment_status } = req.body
+      let time = moment().format('YYYY-MM-DD')
+      let whereQuery = {}
+      if (payment_status) {
+        if (payment_status === '0') {
+          whereQuery = { sub_expired_date: { [Op.lt]: time } }
+        } else {
+          whereQuery = { payment_status: payment_status, sub_expired_date: { [Op.gte]: time } }
+        }
+      }
       let users = await User.findAll({
-        include: [{model: Subscription}],
+        where: { name: { [Op.substring]: name || '' } },
+        include: [{
+          model: Subscription,
+          where: whereQuery
+        }],
         attributes: {
           include: [
-            [sequelize.literal('(SELECT COUNT(*) FROM Orders WHERE Orders.UserId = User.id)'), 'orderCount'],
+            [sequelize.literal(customQuery.Order.UserId), 'order_num'],
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
-            'address', 'latitude', 'longitude', 'createdAt', 'updatedAt'
+            'address', 'lat','lng', 'createdAt', 'updatedAt'
           ]
         },
-        order: [[{model: Subscription}, 'createdAt', 'DESC']],  
+        order: [[{ model: Subscription }, 'createdAt', 'DESC']]
       })
       users = users.map(user => ({
         ...user.dataValues,
         sub_description: (user.dataValues.Subscriptions[0]) ? (
-          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' && 
+          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' &&
           user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()
-          ) ? user.dataValues.Subscriptions[0].dataValues.sub_description : false 
-        : false,
+        ) ? user.dataValues.Subscriptions[0].dataValues.sub_description : false
+          : false,
         subscription_status: (user.dataValues.Subscriptions[0]) ? (
-            user.dataValues.Subscriptions[0].dataValues.payment_status === '1' && 
-            user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? true : false 
-          : false
+          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' &&
+          user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? 'active' : 'inactive'
+          : 'inactive'
       }))
-      res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
+      return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
 
   getUser: async (req, res) => {
     try {
-      // if (req.user.role !== 'Admin') return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
       let user = await User.findByPk(req.params.user_id, {
         attributes: [
           'id', 'name', 'email', 'role', 'avatar',
           'prefer', 'dob', 'modifiedAt', 'location',
-          'address', ['latitude', 'lat'], ['longitude', 'lng']
+          'address', 'lat', 'lng'
         ]
       })
-      
-      res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
+      if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
+      return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -181,29 +192,34 @@ let adminController = {
       let user = await User.findByPk(req.params.user_id)
       if (!user) return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
       await user.destroy()
-      res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
+      return res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
 
   getOrders: async (req, res) => {
     try {
-      const { page, order_id, order_status, email} = req.query
+      const { page, order_id, order_status, date } = req.query
+      let start = moment.utc(date).startOf('day').toDate()
+      let end = moment.utc(date).endOf('day').toDate()
+      // 如果 order_status 不是取消，就顯示非取消的 order, 預設為當日非取消的 order 
+      let whereQuery = {
+        id: { [Op.substring]: order_id || '' },
+        order_status: { [Op.notLike]: '取消' },
+        require_date: { [Op.gte]: start, [Op.lte]: end }
+      }
+      if (order_status && order_status === '取消') {
+        whereQuery['order_status'] = { [Op.substring]: '取消' || '' }
+      }
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let orders = await Order.findAll({
-        where: {
-          id: { [Op.substring]: order_id || '' },
-          order_status: { [Op.substring]: order_status || '' }
-        },
+        where: whereQuery,
         include: [
-          { model: User,
-            where: {email: { [Op.substring]: email || '' }},
-            attributes: ['id', 'name', 'email']
-          },
-          { model: Meal, as: 'meals', attributes: ['id', 'name', 'image'],
-            include:[{model: Restaurant, attributes: ['id', 'name', 'image']}]
+          { model: User, attributes: ['id', 'name', 'email'] },
+          {
+            model: Meal, as: 'meals', attributes: ['id', 'name', 'image'],
+            include: [{ model: Restaurant, attributes: ['id', 'name', 'image'] }]
           }
         ],
         attributes: [
@@ -211,14 +227,51 @@ let adminController = {
           [sequelize.fn('date_format', sequelize.col('require_date'), '%Y%c%d'), 'date'],
           [sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time']
         ],
+        order: [['require_date', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
+      if (!orders) return res.status(400).json({ status: 'error', message: 'can not find any orders' })
       orders = orders.map(order => ({
         ...order.dataValues,
-        meals: order.dataValues.meals[0].dataValues
+        meals: order.dataValues.meals[0]
       }))
       res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders.' })
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+  // admin 的取消路由
+  putCancel: async (req, res) => {
+    try {
+      let start = moment().startOf('day').toDate()
+      // 先取得本訂單，需驗證剩下多少數量，取得數量
+      let order = await Order.findByPk(req.params.order_id, {
+        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
+      })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
+      let subscription = await Subscription.findOne({
+        where: {
+          UserId: order.UserId,
+          payment_status: 1,
+          sub_expired_date: { [Op.gte]: start }
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
+      })
+      let returnNum = subscription.sub_balance + order.amount
+      if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
+      await subscription.update({
+        sub_balance: returnNum
+      })
+      order = await order.update({
+        order_status: '取消'
+      })
+      let meal = await Meal.findByPk(order.meals[0].dataValues.id)
+      await meal.update({
+        quantity: meal.quantity + order.amount 
+      })
+      return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
       console.log(error)
       res.status(500).json({ status: 'error', message: error })
