@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prestart": "node_modules/.bin/sequelize db:migrate",
     "start": "node server/app.js",
     "dev": "nodemon server/app.js",
     "test": "mocha server/test --exit --recursive --timeout 6000"
