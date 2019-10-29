@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     }
-
   }, {});
   Order.associate = function (models) {
     // associations can be defined here

@@ -2,7 +2,19 @@
   <section>
     <header>
       <Navbar />
-      <LandingPageBanner />
+      <ImageHeaderBanner :background-photo="bannerImage">
+        <template v-slot:header>
+          <h1 class="banner-content-title">
+            吃飯免煩惱
+          </h1>
+          <h3 class="banner-content-description">
+            午餐不到 100 元
+          </h3>
+          <button class="btn mt-2">
+            體驗看看
+          </button>
+        </template>
+      </ImageHeaderBanner>
       <OrderProcess />
     </header>
     <section class="popular">
@@ -38,7 +50,7 @@
 
 <script>
 import Navbar from '../components/Navbar'
-import LandingPageBanner from '../components/Banner/LandingPageBanner'
+import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import OrderProcess from '../components/OrderProcess'
 import RestaurantCarousel from '../components/RestaurantCarousel'
 import Districts from '../components/Districts'
@@ -118,7 +130,7 @@ export default {
   name: 'Home',
   components: {
     Navbar,
-    LandingPageBanner,
+    ImageHeaderBanner,
     OrderProcess,
     RestaurantCarousel,
     Districts,
@@ -128,7 +140,8 @@ export default {
   data () {
     return {
       popular_restaurants: [],
-      districts: []
+      districts: [],
+      bannerImage: 'https://images.pexels.com/photos/929192/pexels-photo-929192.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
     }
   },
   created () {
