@@ -8,7 +8,7 @@ const Category = db.Category
 const Order = db.Order
 const User = db.User
 const Meal = db.Meal
-const { validMessage, getTradeInfo, createSubscription } = require('../middleware/middleware')
+const { validMessage, getTradeInfo, createSubscription, create_mpg_aes_decrypt } = require('../middleware/middleware')
 const districts = require('../location/district.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -151,8 +151,8 @@ let userController = {
 
   postSubscription: async (req, res) => {
     try {
-      if (!req.body.sub_price || !req.body.sub_name || !req.body.email || !req.body.sub_description || !req.body.sub_balance) {
-        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_name、user\'s email' })
+      if (!req.body.sub_price || !req.body.sub_name || !req.user.email || !req.body.sub_description || !req.body.sub_balance) {
+        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_description、sub_name、user\'s email' })
       }
       let subscription = await Subscription.findOne({
         where: { UserId: req.user.id },
@@ -161,7 +161,7 @@ let userController = {
       })
 
       if (!subscription) {
-        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.user.email)
+        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.sub_description, req.user.email)
         subscription = await createSubscription(req, res, tradeInfo)
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
       }
@@ -175,17 +175,22 @@ let userController = {
         const expired = (subscription && paid && unSubscribe) ? true : false
         // 有效訂單
         if (stillSubscribe && !once && !expired) {
-          return res.status(200).json({ status: 'success', message: 'You still have an active subscrtiption.' })
+          return res.status(400).json({ status: 'error', message: 'You still have an active subscrtiption.' })
         }
         // 曾經訂閱
         if (expired || once) {
-          const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.user.email)
+          const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.sub_description, req.user.email)
           subscription = await createSubscription(req, res, tradeInfo)
           return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
         }
 
         // 如果有訂單，但還沒付款，先產生新 trandeInfo 記得傳入 sn，如果選擇的方案不相同，修改方案
-        const tradeInfo = getTradeInfo(subscription.sub_price, subscription.sub_name, req.user.email, subscription.sn)
+        const tradeInfo = getTradeInfo(
+          subscription.sub_price,
+          subscription.sub_name,
+          req.body.sub_description,
+          req.user.email, subscription.sn
+        )
         if (subscription.sub_name !== req.body.sub_name) {
           subscription = await subscription.update({
             sub_name: req.body.sub_name,
@@ -197,36 +202,28 @@ let userController = {
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
 
   spgatewayCallback: async (req, res) => {
     try {
-      // const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo));
-      console.log("===== spgatewayCallback =====");
-      console.log(req.method); // 總共四次，回傳前 post 3 次，確認電商網站是否正常。
-      console.log(req.query); // 回傳 { from: NotifyURL}，第四次回傳 { from: ReturnURL}
-      console.log(req.body); // 回傳的 object 解碼使用
-      console.log("==========");
-      console.log("===== spgatewayCallback: TradeInfo =====");
-      console.log(req.body.TradeInfo);
-      // 將回傳交易訊息解密
-      const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
-      console.log("===== spgatewayCallback: create_mpg_aes_decrypt、data =====");
-      console.log(data);
-      let sub_date = new Date()
-      let sub_expired_date = sub_date.setDate(sub_date.getDate() + 30)
-      let subscription = await Subscription.findAll({ where: { sn: data['Result']['MerchantOrderNo'] } })
-      subscription.update({
-        ...req.body,
-        payment_ststus: 1,
-        sub_date: sub_date,
-        sub_expired_date: sub_expired_date
-      })
-
-      return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
+      if (req.query.from === 'NotifyURL') {
+        res.status(200).json({ status: 'success', data, message: 'Get the NotifyURL.' })
+      }
+      if (req.query.from === 'ReturnURL') {
+        const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
+        let sub_date = moment().toDate()
+        let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
+        let subscription = await Subscription.findOne({ where: { sn: data['Result']['MerchantOrderNo'] } })
+        subscription.update({
+          ...req.body,
+          payment_status: 1,
+          sub_date: sub_date,
+          sub_expired_date: sub_expired_date
+        })
+        return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
+      }
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
