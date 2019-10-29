@@ -80,7 +80,7 @@ export default {
         text-shadow: 1px 1px 1px #636161;
 
         &-title {
-            font-size: size(xl);
+            font-size: size(xxl);
             font-weight: weight(bold);
         }
     }

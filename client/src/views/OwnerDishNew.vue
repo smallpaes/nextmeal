@@ -5,7 +5,7 @@
       <h1 class="dish-title">
         餐點資訊
       </h1>
-      <NavPill class="mt-4 ml-1" />
+      <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dish-divider">
       <div class="dish-form-container pb-4">
         <OwnerDishForm @after-submit="handleAfterSubmit">
@@ -23,13 +23,13 @@
 
 <script>
 import SideNavBar from '../components/Navbar/SideNavBar'
-import NavPill from '../components/Navbar/NavPill'
+import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishForm from '../components/OwnerDishForm'
 
 export default {
   components: {
     SideNavBar,
-    NavPill,
+    OwnerDishNavPill,
     OwnerDishForm
   },
   data () {
