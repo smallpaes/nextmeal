@@ -56,7 +56,7 @@ let orderController = {
         limit: 1
       })
       // 找不到 meal、庫存不足、order點超過庫存
-      if (!subscription) return res.status(400).json({ status: 'error', message: 'You need to subscribe a new subscription.' })
+      if (!subscription) return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
       if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.' })
       // if (!meal.isServing) return res.status(400).json({ status: 'error', message: 'the meal does not serving today.' }) 
       validMessage(req, res)
@@ -130,7 +130,7 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
-      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'You need to subscribe a new subscription.' })
+      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'you are not authorized to do that' })
       // 取得訂單
       let order = await Order.findByPk(req.params.order_id, {
         include: [
@@ -174,7 +174,7 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
-      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'You need to subscribe a new subscription.' })
+      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'you are not authorized to do that' })
       // 取得 order 數量
       let order = await Order.findByPk(req.params.order_id, {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
@@ -306,7 +306,7 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
-      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'You need to subscribe a new subscription.' })
+      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'you are not authorized to do that' })
       let returnNum = subscription.sub_balance + order.amount
       if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       await subscription.update({

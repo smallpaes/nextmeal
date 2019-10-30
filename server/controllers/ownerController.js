@@ -24,7 +24,7 @@ let ownerController = {
         }
       })
       if (restaurant.length === 0) {
-        return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
+        return res.status(200).json({ status: 'success', categories, message: 'You have not restaurant yet.' })
       }
 
       const categories = await Category.findAll({
@@ -102,7 +102,7 @@ let ownerController = {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
       }
       const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
-      // validMessage(req, res)
+      validMessage(req, res)
       const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
@@ -113,6 +113,7 @@ let ownerController = {
             image: file ? img.data.link : restaurant.image,
             tel: req.body.tel,
             address: req.body.address,
+            CategoryId: req.body.CategoryId,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
             lat: req.body.lat,
@@ -125,7 +126,10 @@ let ownerController = {
           })
         })
       } else {
-        await restaurant.update(req.body)
+        await restaurant.update({
+          ...req.body,
+          geometry: point,
+        })
         return res.status(200).json({
           status: 'success',
           message: 'Successfully update restaurant information.'
