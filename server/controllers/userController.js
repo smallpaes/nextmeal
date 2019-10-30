@@ -58,7 +58,7 @@ let userController = {
     if (req.body.password !== req.body.passwordCheck) {
       return res.json({ status: 'error', message: 'Two passwords do not match' })
     }
-    const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+    const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
     try {
       // create user
       const user = await User.create({
@@ -269,7 +269,7 @@ let userController = {
         return res.status(400).json({ status: 'error', message: 'You are not allow edit this profile.' })
       }
       validMessage(req, res)
-      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+      const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       let user = await User.findByPk(req.params.user_id)
       const { file } = req
       // 如果上有照片
@@ -295,6 +295,7 @@ let userController = {
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },

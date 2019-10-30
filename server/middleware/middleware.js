@@ -4,6 +4,8 @@ const crypto = require("crypto"); // 加密
 const nodemailer = require("nodemailer"); // 寄送 mail
 const db = require('../models')
 const Subscription = db.Subscription
+const Comment = db.Comment
+
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 
@@ -97,6 +99,12 @@ let middleware = {
     check('quantity')
       .not().isEmpty().withMessage('Quantity should be not empty')
       .isInt().withMessage('Quantity should be a integer'),
+  ],
+  validComment: [
+    check('user_text')
+      .not().isEmpty().withMessage('Require_date should be not empty'),
+    check('rating')
+      .not().isEmpty().withMessage('You are not rating the restaurant yet.'),
   ],
   validMessage: (req, res) => {
     const errors = validationResult(req)
@@ -216,6 +224,19 @@ let middleware = {
       console.log(error)
       res.status(400).json({ status: 'error', message: error })
     }
+  },
+  avgRating: async (res, restaurant, comment, order) => {
+    let comments = await Comment.findAll({
+      where: { RestaurantId: restaurant.id },
+      attributes: [[sequelize.fn('avg', sequelize.col('rating')), 'average']]
+    })
+    await restaurant.update({
+      rating: comments[0].dataValues.average.toFixed(2) || 0
+    })
+    await order.update({
+      hasComment: 1
+    })
+    return res.status(200).json({ status: 'success', comment, message: 'Successfully post comment.' })
   }
 }
 
