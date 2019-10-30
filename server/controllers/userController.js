@@ -5,10 +5,17 @@ const db = require('../models')
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
 const Category = db.Category
+const Payment = db.Payment
 const Order = db.Order
 const User = db.User
 const Meal = db.Meal
-const { validMessage, getTradeInfo, createSubscription, create_mpg_aes_decrypt } = require('../middleware/middleware')
+const {
+  validMessage,
+  getTradeInfo,
+  createSubscription,
+  create_mpg_aes_decrypt,
+  sendEmail
+} = require('../middleware/middleware')
 const districts = require('../location/district.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -17,7 +24,6 @@ const pageLimit = 6
 const moment = require('moment')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-// const nodemailer = require("nodemailer"); // 寄送 mail
 
 let userController = {
   emailCheck: async (req, res) => {
@@ -138,12 +144,12 @@ let userController = {
       })
       if (subscription.length === 0 || subscription[0].payment_status === '0' || subscription[0].sub_expired_date < Date.now()) {
         return res.status(200).json({
-          status: 'error',
+          status: 'success',
           subscription: (subscription) ? subscription : '',
           message: 'you should subscribe the NextMeal now'
         })
       }
-      return res.status(200).json({ status: 'error', subscription, message: 'you are already subscribe the NextMeal' })
+      return res.status(200).json({ status: 'success', subscription, message: 'you are already subscribe the NextMeal' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -165,7 +171,6 @@ let userController = {
         subscription = await createSubscription(req, res, tradeInfo)
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
       }
-
       if (subscription) {
         const stillSubscribe = subscription.sub_expired_date > Date.now()
         const unSubscribe = subscription.sub_expired_date < Date.now()
@@ -183,21 +188,20 @@ let userController = {
           subscription = await createSubscription(req, res, tradeInfo)
           return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
         }
-
         // 如果有訂單，但還沒付款，先產生新 trandeInfo 記得傳入 sn，如果選擇的方案不相同，修改方案
         const tradeInfo = getTradeInfo(
           subscription.sub_price,
           subscription.sub_name,
           req.body.sub_description,
-          req.user.email, subscription.sn
+          req.user.email
         )
-        if (subscription.sub_name !== req.body.sub_name) {
-          subscription = await subscription.update({
-            sub_name: req.body.sub_name,
-            sub_price: req.body.sub_price,
-            sub_balance: req.body.sub_balance
-          })
-        }
+        subscription = await subscription.update({
+          sub_name: req.body.sub_name,
+          sub_price: req.body.sub_price,
+          sub_balance: req.body.sub_balance,
+          sub_description: req.body.sub_description,
+          sn: tradeInfo.MerchantOrderNo
+        })
         // 如果有訂單，選擇的方案相同
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
@@ -215,13 +219,26 @@ let userController = {
         const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
         let sub_date = moment().toDate()
         let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
-        let subscription = await Subscription.findOne({ where: { sn: data['Result']['MerchantOrderNo'] } })
-        subscription.update({
-          ...req.body,
-          payment_status: 1,
-          sub_date: sub_date,
-          sub_expired_date: sub_expired_date
+        let subscription = await Subscription.findOne({
+          where: { sn: data['Result']['MerchantOrderNo'] },
+          include: [{model: User, attributes: [ 'name' ]}]
         })
+        await Payment.create({
+          SubscriptionId: subscription.id,
+          params: req.body.Status,
+          amount: data.Result.Amt,
+          paidAt: new Date(),
+          sn: data.Result.MerchantOrderNo
+        })
+        if (req.body.Status === 'SUCCESS') {
+          await subscription.update({
+            ...req.body,
+            payment_status: 1,
+            sub_date: sub_date,
+            sub_expired_date: sub_expired_date
+          })
+          await sendEmail(req, res, subscription, data)
+        }
         return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
       }
     } catch (error) {
@@ -232,7 +249,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(403).json({ status: 'error', message: 'You are not allow access this page.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -249,7 +266,7 @@ let userController = {
   putProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id) || req.user.role !== 'Admin') {
-        return res.status(403).json({ status: 'error', message: 'You are not allow edit this profile.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow edit this profile.' })
       }
       validMessage(req, res)
       const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)

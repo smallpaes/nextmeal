@@ -74,7 +74,7 @@ let restController = {
         },
         restaurants
       }
-      return res.status(202).json({ 
+      return res.status(200).json({ 
         status: 'success', popular_restaurants,
         more_restaurants, map, districts,
         message: 'Successfully get all restaurants page info'
@@ -112,7 +112,7 @@ let restController = {
           limit: commentLimit
         })
         comments.pages = Math.ceil((comments.count) / commentLimit)
-        return res.status(202).json({
+        return res.status(200).json({
           status: 'success',
           restaurant,
           comments,
