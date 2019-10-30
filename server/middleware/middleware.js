@@ -1,20 +1,32 @@
 const { check, validationResult } = require('express-validator')
 const moment = require('moment')
 const crypto = require("crypto"); // 加密
+const nodemailer = require("nodemailer"); // 寄送 mail
 const db = require('../models')
 const Subscription = db.Subscription
+const Comment = db.Comment
+
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 
-const URL = 'https://f798ad18.ngrok.io'; //本地 domain 不接受，使用 ngrok 工具做臨時網址，取得的網址放這
-const MerchantID = 'MS38035958'; // 商店代號
-const HashKey = 'WF1pmVp4AxMgFs13YrlZQPuirCd47ql6'; //API 金鑰
-const HashIV = 'CFPnopI11rY5YolP'; //API 金鑰
+const URL = process.env.URL; //本地 domain 不接受，使用 ngrok 工具做臨時網址，取得的網址放這
+const MerchantID = process.env.MERCHANT_ID; // 商店代號
+const HashKey = process.env.HASH_KEY; //API 金鑰
+const HashIV = process.env.HASH_IV; //API 金鑰
 const PayGateWay = "https://ccore.newebpay.com/MPG/mpg_gateway"; //付款網址
-const ReturnURL = URL + "/api/user/subscribe/spgateway/callback?from=ReturnURL"; //支付完成返還商店網址
-const NotifyURL = URL + "/api/user/subscribe/spgateway/callback?from=NotifyURL"; //支付通知網址
-const ClientBackURL = URL + "/api"; //支付取消返回網址
+const ReturnURL = URL + "/api/users/subscribe/spgateway/callback?from=ReturnURL"; //支付完成返還商店網址
+const NotifyURL = URL + "/api/users/subscribe/spgateway/callback?from=NotifyURL"; //支付通知網址
+const ClientBackURL = URL + "/subscribe"; //支付取消返回網址
 
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.GMAIL_ACCOUNT,
+    pass: process.env.GMAIL_PASSWORD,
+  },
+})
 // 將資料轉成字串
 const genDataChain = (TradeInfo) => {
   let results = [];
@@ -88,6 +100,12 @@ let middleware = {
       .not().isEmpty().withMessage('Quantity should be not empty')
       .isInt().withMessage('Quantity should be a integer'),
   ],
+  validComment: [
+    check('user_text')
+      .not().isEmpty().withMessage('Require_date should be not empty'),
+    check('rating')
+      .not().isEmpty().withMessage('You are not rating the restaurant yet.'),
+  ],
   validMessage: (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -122,37 +140,25 @@ let middleware = {
       return res.status(500).json({ status: 'error', message: error })
     }
   },
-  getTradeInfo: (Amt, Desc, email, sn) => {
-    console.log("===== getTradeInfo =====");
-    console.log(Amt, Desc, email, sn);
-    console.log("==========");
-
+  getTradeInfo: (Amt, ItemDesc, description, email) => {
     data = {
       MerchantID: MerchantID, // 商店代號
       RespondType: "JSON", // 回傳格式
       TimeStamp: Date.now(), // 時間戳記
       Version: 1.5, // 串接程式版本
-      MerchantOrderNo: (sn) ? sn : Date.now(), // 商店訂單編號
+      MerchantOrderNo: Date.now(), // 商店訂單編號
       LoginType: 0, // 智付通會員
-      OrderComment: "OrderComment", // 商店備註
+      OrderComment: description, // 商店備註
       Amt: Amt, // 訂單金額
-      ItemDesc: Desc, // 產品名稱
+      ItemDesc: ItemDesc, // 產品名稱
       Email: email, // 付款人電子信箱
       ReturnURL: ReturnURL, // 支付完成返回商店網址
       NotifyURL: NotifyURL, // 支付通知網址/每期授權結果通知
-      ClientBackURL: ClientBackURL // 支付取消返回商店網址
+      ClientBackURL: ClientBackURL,
+      CREDIT: 1  // 支付取消返回商店網址
     };
-
-    console.log("===== getTradeInfo: data =====");
-    console.log(data);
-
     mpg_aes_encrypt = create_mpg_aes_encrypt(data);
     mpg_sha_encrypt = create_mpg_sha_encrypt(mpg_aes_encrypt);
-
-    console.log("===== getTradeInfo: mpg_aes_encrypt, mpg_sha_encrypt =====");
-    console.log(mpg_aes_encrypt);
-    console.log(mpg_sha_encrypt);
-
     tradeInfo = {
       MerchantID: MerchantID, // 商店代號
       TradeInfo: mpg_aes_encrypt, // 加密後參數
@@ -161,10 +167,6 @@ let middleware = {
       PayGateWay: PayGateWay,
       MerchantOrderNo: data.MerchantOrderNo
     };
-
-    console.log("===== getTradeInfo: tradeInfo =====");
-    console.log(tradeInfo);
-
     return tradeInfo;
   },
   // 交易完成後回傳資料使用的反向解密
@@ -190,6 +192,54 @@ let middleware = {
       return subscription
     } catch (error) {
       res.status(400).json({ status: 'error', message: error })
+    }
+  },
+  sendEmail: async (req, res, subscription, data) => {
+    try {
+      const mailOptions = {
+        from: process.env.GMAIL_ACCOUNT,
+        to: process.env.GMAIL_ACCOUNT,
+        subject: `恭喜你成功訂閱 NextMeal 。`,
+        html: `
+        <h1>Enjoy Your Next Meal!</h1>
+        <h3>您這次的訂閱資訊</h3>
+        <ul>
+          <li>訂閱編號: ${subscription.sn}</li>
+          <li>方案名稱: ${subscription.sub_name}</li>
+          <li>訂閱價格: ${subscription.sub_price}</li>
+          <li>訂閱餐點數: ${subscription.sub_balance} 餐</li>
+          <li>訂閱日期: ${subscription.sub_date}</li>
+          <li>有效期限: ${subscription.sub_expired_date}</li>
+        </ul>
+        ` // html body
+      }
+      await transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log(error)
+        } else {
+          console.log('Email sent ' + info.response)
+        }
+      })
+    } catch (error) {
+      console.log(error)
+      res.status(400).json({ status: 'error', message: error })
+    }
+  },
+  avgRating: async (res, restaurant, comment, order) => {
+    try {
+      let comments = await Comment.findAll({
+        where: { RestaurantId: restaurant.id },
+        attributes: [[sequelize.fn('avg', sequelize.col('rating')), 'average']]
+      })
+      await restaurant.update({
+        rating: comments[0].dataValues.average.toFixed(2) || 0
+      })
+      await order.update({
+        hasComment: 1
+      })
+      return res.status(200).json({ status: 'success', comment, message: 'Successfully post comment.' })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', message: error })
     }
   }
 }

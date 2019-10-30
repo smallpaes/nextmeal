@@ -5,10 +5,17 @@ const db = require('../models')
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
 const Category = db.Category
+const Payment = db.Payment
 const Order = db.Order
 const User = db.User
 const Meal = db.Meal
-const { validMessage, getTradeInfo, createSubscription } = require('../middleware/middleware')
+const {
+  validMessage,
+  getTradeInfo,
+  createSubscription,
+  create_mpg_aes_decrypt,
+  sendEmail
+} = require('../middleware/middleware')
 const districts = require('../location/district.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -17,7 +24,6 @@ const pageLimit = 6
 const moment = require('moment')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-// const nodemailer = require("nodemailer"); // 寄送 mail
 
 let userController = {
   emailCheck: async (req, res) => {
@@ -52,7 +58,7 @@ let userController = {
     if (req.body.password !== req.body.passwordCheck) {
       return res.json({ status: 'error', message: 'Two passwords do not match' })
     }
-    const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+    const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
     try {
       // create user
       const user = await User.create({
@@ -138,12 +144,12 @@ let userController = {
       })
       if (subscription.length === 0 || subscription[0].payment_status === '0' || subscription[0].sub_expired_date < Date.now()) {
         return res.status(200).json({
-          status: 'error',
+          status: 'success',
           subscription: (subscription) ? subscription : '',
           message: 'you should subscribe the NextMeal now'
         })
       }
-      return res.status(200).json({ status: 'error', subscription, message: 'you are already subscribe the NextMeal' })
+      return res.status(200).json({ status: 'success', subscription, message: 'you are already subscribe the NextMeal' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -152,50 +158,50 @@ let userController = {
   postSubscription: async (req, res) => {
     try {
       if (!req.body.sub_price || !req.body.sub_name || !req.user.email || !req.body.sub_description || !req.body.sub_balance) {
-        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_name、user\'s email' })
+        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_description、sub_name、user\'s email' })
       }
-      let subscription = await Subscription.findAll({
+      let subscription = await Subscription.findOne({
         where: { UserId: req.user.id },
-        order: [['createdAt', 'DESC']],
+        order: [['updatedAt', 'DESC']],
         limit: 1
       })
 
-      const newbie = (subscription.length === 0) ? true : false
-      const haveSubscription = subscription.length > 0
-
-      if (newbie) {
-        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.user.email)
+      if (!subscription) {
+        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.sub_description, req.user.email)
         subscription = await createSubscription(req, res, tradeInfo)
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
       }
-
-      if (haveSubscription) {
-        const stillSubscribe = subscription[0].dataValues.sub_expired_date > Date.now()
-        const unSubscribe = subscription[0].dataValues.sub_expired_date < Date.now()
-        const paid = subscription[0].dataValues.payment_status !== '0'
-        const insufficient = subscription[0].dataValues.sub_balance <= 0
-        const once = (haveSubscription && stillSubscribe && paid && insufficient) ? true : false
-        const expired = (haveSubscription && paid && unSubscribe) ? true : false
+      if (subscription) {
+        const stillSubscribe = subscription.sub_expired_date > Date.now()
+        const unSubscribe = subscription.sub_expired_date < Date.now()
+        const paid = subscription.payment_status !== '0'
+        const insufficient = subscription.sub_balance <= 0
+        const once = (subscription && stillSubscribe && paid && insufficient) ? true : false
+        const expired = (subscription && paid && unSubscribe) ? true : false
         // 有效訂單
         if (stillSubscribe && !once && !expired) {
-          return res.status(200).json({ status: 'success', message: 'You still have an active subscrtiption.' })
+          return res.status(400).json({ status: 'error', message: 'You still have an active subscrtiption.' })
         }
         // 曾經訂閱
         if (expired || once) {
-          const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.user.email)
+          const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.sub_description, req.user.email)
           subscription = await createSubscription(req, res, tradeInfo)
           return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
         }
-
         // 如果有訂單，但還沒付款，先產生新 trandeInfo 記得傳入 sn，如果選擇的方案不相同，修改方案
-        const tradeInfo = getTradeInfo(subscription[0].sub_price, subscription[0].sub_name, req.user.email, subscription[0].sn)
-        if (subscription[0].dataValues.sub_name !== req.body.sub_name) {
-          subscription = await subscription.update({
-            sub_name: req.body.sub_name,
-            sub_price: req.body.sub_price,
-            sub_balance: req.body.sub_balance
-          })
-        }
+        const tradeInfo = getTradeInfo(
+          subscription.sub_price,
+          subscription.sub_name,
+          req.body.sub_description,
+          req.user.email
+        )
+        subscription = await subscription.update({
+          sub_name: req.body.sub_name,
+          sub_price: req.body.sub_price,
+          sub_balance: req.body.sub_balance,
+          sub_description: req.body.sub_description,
+          sn: tradeInfo.MerchantOrderNo
+        })
         // 如果有訂單，選擇的方案相同
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
@@ -206,29 +212,35 @@ let userController = {
 
   spgatewayCallback: async (req, res) => {
     try {
-      // const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo));
-      console.log("===== spgatewayCallback =====");
-      console.log(req.method); // 總共四次，回傳前 post 3 次，確認電商網站是否正常。
-      console.log(req.query); // 回傳 { from: NotifyURL}，第四次回傳 { from: ReturnURL}
-      console.log(req.body); // 回傳的 object 解碼使用
-      console.log("==========");
-      console.log("===== spgatewayCallback: TradeInfo =====");
-      console.log(req.body.TradeInfo);
-      // 將回傳交易訊息解密
-      const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
-      console.log("===== spgatewayCallback: create_mpg_aes_decrypt、data =====");
-      console.log(data);
-      let sub_date = new Date()
-      let sub_expired_date = sub_date.setDate(sub_date.getDate() + 30)
-      let subscription = await Subscription.findAll({ where: { sn: data['Result']['MerchantOrderNo'] } })
-      subscription.update({
-        ...req.body,
-        payment_ststus: 1,
-        sub_date: sub_date,
-        sub_expired_date: sub_expired_date
-      })
-
-      return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
+      if (req.query.from === 'NotifyURL') {
+        res.status(200).json({ status: 'success', data, message: 'Get the NotifyURL.' })
+      }
+      if (req.query.from === 'ReturnURL') {
+        const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
+        let sub_date = moment().toDate()
+        let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
+        let subscription = await Subscription.findOne({
+          where: { sn: data['Result']['MerchantOrderNo'] },
+          include: [{model: User, attributes: [ 'name' ]}]
+        })
+        await Payment.create({
+          SubscriptionId: subscription.id,
+          params: req.body.Status,
+          amount: data.Result.Amt,
+          paidAt: new Date(),
+          sn: data.Result.MerchantOrderNo
+        })
+        if (req.body.Status === 'SUCCESS') {
+          await subscription.update({
+            ...req.body,
+            payment_status: 1,
+            sub_date: sub_date,
+            sub_expired_date: sub_expired_date
+          })
+          await sendEmail(req, res, subscription, data)
+        }
+        return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
+      }
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -237,7 +249,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(403).json({ status: 'error', message: 'You are not allow access this page.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -254,10 +266,10 @@ let userController = {
   putProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id) || req.user.role !== 'Admin') {
-        return res.status(403).json({ status: 'error', message: 'You are not allow edit this profile.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow edit this profile.' })
       }
       validMessage(req, res)
-      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+      const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       let user = await User.findByPk(req.params.user_id)
       const { file } = req
       // 如果上有照片
@@ -283,6 +295,7 @@ let userController = {
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },

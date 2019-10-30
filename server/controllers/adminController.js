@@ -6,7 +6,6 @@ const moment = require('moment')
 const Op = sequelize.Op
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
-const Category = db.Category
 const Comment = db.Comment
 const Order = db.Order
 const Meal = db.Meal
@@ -50,7 +49,7 @@ let adminController = {
       })
 
       restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
-      res.status(202).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
+      res.status(200).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -60,7 +59,7 @@ let adminController = {
     try {
       const restaurant = await Restaurant.findByPk(req.params.restaurant_id)
       if (restaurant) {
-        return res.status(202).json({ status: 'success', restaurant, message: 'Successfully get restautant' })
+        return res.status(200).json({ status: 'success', restaurant, message: 'Successfully get restautant' })
       }
       return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
     } catch (error) {
@@ -234,19 +233,18 @@ let adminController = {
       let pages = Math.ceil((count) / pageLimit)
       res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
   // admin 的取消路由
   putCancel: async (req, res) => {
     try {
-      let start = moment().startOf('day').toDate()
-      // 先取得本訂單，需驗證剩下多少數量，取得數量
-      let order = await Order.findByPk(req.params.order_id, {
-        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
+      let order = await Order.findByPk(req.params.order_id,{
+        include: [{ model: Meal, as: 'meals' }]
       })
-      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      
+      let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
