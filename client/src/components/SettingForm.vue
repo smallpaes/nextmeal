@@ -2,7 +2,7 @@
   <form
     class="form-content needs-validation rounded"
     novalidate
-    @submit.prevent.stop="getLocation"
+    @submit.prevent.stop="getLocation('user')"
   >
     <!--Input data-->
     <div
@@ -60,21 +60,6 @@
           請選擇一種偏好餐廳
         </div>
       </div>
-      <!-- <div class="form-group">
-        <input
-          id="dob"
-          v-model="dob"
-          type="date"
-          class="form-control pr-0"
-          :max="Date.now() | dateTransform"
-          required
-        >
-        <small
-          id="dob-reminder"
-          v-if="!dob"
-          class="form-text text-left"
-        >填寫出生年月日</small>
-      </div> -->
       <CustomDatePicker
         v-model="user"
         :has-label="false"
@@ -83,6 +68,7 @@
         <button
           class="btn mt-1"
           type="submit"
+          :disabled="isProcessing"
         >
           送出
         </button>
@@ -95,9 +81,9 @@
       class="form-content-top rounded-top"
     >
       <GMap
-        :center="{lat: userLocation.lat, lng: userLocation.lng}"
+        :center="{lat: user.lat, lng: user.lng}"
         :street-view-control="false"
-        :locations="[userLocation]"
+        :locations="[user]"
         :map-type-control="false"
         :fullscreen-control="true"
         :zoom-control="true"
@@ -107,12 +93,14 @@
       <div class="form-buttons d-flex justify-content-center mt-3">
         <button
           class="btn btn-update"
+          :disabled="isProcessing"
           @click.stop.prevent="handleSubmit"
         >
           位置正確
         </button>
         <button
           class="btn ml-2"
+          :disabled="isProcessing"
           @click.prevent.stop="showMap = false"
         >
           修改地址
@@ -123,9 +111,8 @@
 </template>
 
 <script>
-import { dateTransformFilter } from '../utils/mixins'
+import { dateTransformFilter, getGeoMethods } from '../utils/mixins'
 import CustomDatePicker from '../components/CustomDatePicker'
-import axios from 'axios'
 import GMap from '../components/GMap'
 
 export default {
@@ -133,11 +120,15 @@ export default {
     GMap,
     CustomDatePicker
   },
-  mixins: [dateTransformFilter],
+  mixins: [dateTransformFilter, getGeoMethods],
   props: {
     categories: {
       type: Array,
       required: true
+    },
+    initialProcessing: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -145,7 +136,11 @@ export default {
       user: {
         address: '',
         prefer: '',
-        dob: ''
+        dob: '',
+        name: '您的預設位置',
+        lat: '',
+        lng: '',
+        location: ''
       },
       warningMessage: '',
 
@@ -154,60 +149,31 @@ export default {
         address: '請輸入地址'
       },
       showMap: false,
-      userLocation: {
-        name: '您的預設位置',
-        lat: '',
-        lng: '',
-        location: ''
-      }
+      isProcessing: this.initialProcessing
+    }
+  },
+  watch: {
+    initialProcessing (isProcessing) {
+      this.isProcessing = isProcessing
     }
   },
   methods: {
-    async getLocation (e) {
-      // Get geocoding location
-      try {
-        const BASE_URL = 'https://maps.googleapis.com/maps/api/geocode'
-        const language = 'zh-TW'
-        const addressInput = document.getElementById('address')
-        const activeDistricts = ['信義區', '大安區', '中山區', '松山區']
-        const { data } = await axios.get(`${BASE_URL}/json?address=${this.address}&language=${language}&components=country:TW&key=${this.apiKey}`)
-
-        // Retrieve district from data
-        const addressComponents = data.results[0].address_components
-        const district = addressComponents.filter(item => activeDistricts.includes(item.long_name))
-
-        // validate returned data from Google Maps API
-        if (data.status !== 'OK' || !district.length || addressComponents.length <= 4) {
-          addressInput.setCustomValidity('invalid')
-          this.validationMsg.address = '請確認為台北市信義、松山、大安、中山區的完整地址'
-        } else {
-          addressInput.setCustomValidity('')
-          this.validationMsg.address = '請輸入地址'
-        }
-
-        // Validate form data
-        if (e.target.checkValidity() === false) {
-          return e.target.classList.add('was-validated')
-        }
-
-        // update locaion data
-        this.userLocation.lat = data.results[0].geometry.location.lat
-        this.userLocation.lng = data.results[0].geometry.location.lng
-        this.userLocation.location = district[0].long_name
-        this.showMap = true
-      } catch (error) {
-        this.warningMessage = 'Oops！設定時有些狀況，請稍後再試！'
-      }
+    afterReceiveGeo () {
+      this.showMap = true
+      // update processing status
+      this.isProcessing = false
     },
     handleSubmit () {
+      // update processing status
+      this.isProcessing = true
       // Send data to parents
       this.$emit('after-setting', {
-        address: this.address,
-        prefer: this.prefer,
-        dob: this.dob,
-        lat: this.userLocation.lat,
-        lng: this.userLocation.lng,
-        location: this.userLocation.location
+        address: this.user.address,
+        prefer: this.user.prefer,
+        dob: this.user.dob,
+        lat: this.user.lat,
+        lng: this.user.lng,
+        location: this.user.location
       })
     }
   }

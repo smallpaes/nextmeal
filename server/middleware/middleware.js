@@ -6,7 +6,7 @@ const Subscription = db.Subscription
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 
-const URL = 'https://f798ad18.ngrok.io'; //本地 domain 不接受，使用 ngrok 工具做臨時網址，取得的網址放這
+const URL = 'http://2d56797a.ngrok.io'; //本地 domain 不接受，使用 ngrok 工具做臨時網址，取得的網址放這
 const MerchantID = 'MS38035958'; // 商店代號
 const HashKey = 'WF1pmVp4AxMgFs13YrlZQPuirCd47ql6'; //API 金鑰
 const HashIV = 'CFPnopI11rY5YolP'; //API 金鑰

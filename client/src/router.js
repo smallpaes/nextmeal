@@ -104,6 +104,11 @@ export default new Router({
       component: () => import('./views/OwnerOrders.vue')
     },
     {
+      path: '/admin',
+      name: 'admin-panel',
+      redirect: '/admin/restaurants'
+    },
+    {
       path: '/admin/restaurants',
       name: 'admin-restaurants',
       component: () => import('./views/AdminRestaurants.vue')

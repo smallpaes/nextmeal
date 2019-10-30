@@ -49,6 +49,8 @@ export const dateTransformFilter = {
 export const getGeoMethods = {
   methods: {
     async getLocation (storeLocation) {
+      // update processing status
+      this.isProcessing = true
       // Get geocoding location
       try {
         const BASE_URL = 'https://maps.googleapis.com/maps/api/geocode'
@@ -74,21 +76,26 @@ export const getGeoMethods = {
         // validate dob
         if ('dob' in this[storeLocation] && !this[storeLocation].dob) {
           document.getElementById('hidden-date-input').setCustomValidity('invalid')
-        } else {
+        } else if ('dob' in this[storeLocation] && this[storeLocation].dob) {
           document.getElementById('hidden-date-input').setCustomValidity('')
         }
 
         // Validate form data
         if (form.checkValidity() === false) {
           form.classList.add('was-validated')
+          // update processing status
+          this.isProcessing = false
           return false
         }
         // update location data
         this[storeLocation].lat = data.results[0].geometry.location.lat
         this[storeLocation].lng = data.results[0].geometry.location.lng
         this[storeLocation].location = district[0].long_name
+        this[storeLocation].address = data.results[0].formatted_address
         this.afterReceiveGeo()
       } catch (error) {
+        // update processing status
+        this.isProcessing = false
         this.warningMessage = 'Oops！設定時有些狀況，請稍後再試！'
       }
     }

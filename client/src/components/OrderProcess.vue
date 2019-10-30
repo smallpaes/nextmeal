@@ -23,7 +23,10 @@
           </h3>
         </div>
       </div>
-      <button class="btn mt-5">
+      <button
+        class="btn mt-5"
+        @click.stop.prevent="$emit('learn-more')"
+      >
         了解更多
       </button>
     </div>

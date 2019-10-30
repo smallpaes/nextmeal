@@ -45,9 +45,12 @@
         </div>
       </div>
       <div class="btn-container">
-        <button class="btn mt-5">
+        <router-link
+          :to="{name: 'signup'}"
+          class="btn mt-5"
+        >
           體驗看看
-        </button>
+        </router-link>
       </div>
     </div>
   </section>

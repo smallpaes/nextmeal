@@ -48,6 +48,7 @@
           <button
             type="submit"
             class="btn mt-1"
+            :disabled="isProcessing"
           >
             登入
           </button>
@@ -67,6 +68,8 @@
 
 <script>
 import TopLogoNavbar from '../components/Navbar/TopLogoNavbar'
+import authorizationAPI from '../apis/authorization'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -75,21 +78,57 @@ export default {
   data () {
     return {
       email: '',
-      password: ''
+      password: '',
+      isProcessing: false
     }
   },
   methods: {
-    handleSubmit (e) {
+    async handleSubmit (e) {
       // Validate form
-      const isValid = this.email && this.password.length > 8 && this.password.length < 12
+      const isValid = this.email && this.password.length >= 8 && this.password.length <= 12
       if (e.target.checkValidity() === false || !isValid) {
-        event.preventDefault()
-        event.stopPropagation()
+        e.target.classList.add('was-validated')
+        return
       }
-      e.target.classList.add('was-validated')
-      // Send api
-      console.log(this.email)
-      console.log(this.password)
+
+      try {
+        // update processing status
+        this.isProcessing = true
+
+        // send log in form to API
+        const { data, statusText } = await authorizationAPI.logIn({
+          email: this.email,
+          password: this.password
+        })
+
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        // store jwt in localstorage
+        localStorage.setItem('token', data.token)
+
+        // redirect admin and owner to respective admin panel
+        if (data.user.role === 'Admin') return this.$router.push('/admin')
+        if (data.user.role === 'Owner') return this.$router.push('/owner')
+
+        // redirect user baed on subscription status
+        if (data.user.subscription_status) return this.$router.push({ name: 'order-tomorrow' })
+        this.$router.push({ name: 'subscribe' })
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+
+        // clear up password field
+        this.password = ''
+
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '帳號或密碼有誤'
+        })
+      }
     }
   }
 }

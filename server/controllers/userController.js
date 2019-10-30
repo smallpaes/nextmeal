@@ -52,7 +52,7 @@ let userController = {
     if (req.body.password !== req.body.passwordCheck) {
       return res.json({ status: 'error', message: 'Two passwords do not match' })
     }
-    const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
+    const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
     try {
       // create user
       const user = await User.create({

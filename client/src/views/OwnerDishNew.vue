@@ -8,7 +8,10 @@
       <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dish-divider">
       <div class="dish-form-container pb-4">
-        <OwnerDishForm @after-submit="handleAfterSubmit">
+        <OwnerDishForm
+          :initial-loading="isLoading"
+          @after-submit="handleAfterSubmit"
+        >
           <template v-slot:header>
             <span>增添</span>
           </template>
@@ -25,6 +28,8 @@
 import SideNavBar from '../components/Navbar/SideNavBar'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishForm from '../components/OwnerDishForm'
+import ownerAPI from '../apis/owner'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -34,13 +39,30 @@ export default {
   },
   data () {
     return {
-      meal: {}
+      isLoading: false
     }
   },
   methods: {
-    handleAfterSubmit (formData) {
-      // Send form data to backend
-      console.log(formData)
+    async handleAfterSubmit (formData) {
+      // update processing status
+      this.isLoading = true
+
+      try {
+        // create a new dish
+        const { data, statusText } = await ownerAPI.dishes.postNew(formData)
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // redirect to dishes page
+        this.$router.push({ name: 'owner-dishes' })
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法建立餐點，請稍後再試'
+        })
+      }
     }
   }
 }

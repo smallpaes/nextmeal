@@ -1,10 +1,10 @@
 <template>
   <div class="row">
-    <a
+    <router-link
       v-for="district in districts"
       :key="district.eng_name"
       class="img-wrapper col-12 col-md-6 col-lg-3 mb-3 px-2"
-      href="#"
+      :to="{name: 'restaurants', query: {dist: district.chinese_name}}"
     >
       <div class="img-container">
         <img
@@ -17,7 +17,7 @@
           {{ district.chinese_name }}
         </h3>
       </div>
-    </a>
+    </router-link>
   </div>
 </template>
 

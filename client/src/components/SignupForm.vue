@@ -75,6 +75,7 @@
         <button
           type="submit"
           class="btn mt-1"
+          :disabled="isProcessing"
         >
           註冊
         </button>
@@ -92,6 +93,9 @@
 </template>
 
 <script>
+import authorizationAPI from '../apis/authorization'
+import { Toast } from '../utils/helpers'
+
 export default {
   data () {
     return {
@@ -101,11 +105,12 @@ export default {
       passwordCheck: '',
       validationMsg: {
         passwordCheck: '請輸入 8-12 位密碼'
-      }
+      },
+      isProcessing: false
     }
   },
   methods: {
-    handleSubmit (e) {
+    async handleSubmit (e) {
       // Validate form
       const passwordCheckInput = document.getElementById('passwordCheck')
 
@@ -121,14 +126,38 @@ export default {
         return e.target.classList.add('was-validated')
       }
 
-      // Send api to check if email already existed
-      // Send data to parents
-      this.$emit('after-signup', {
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        passwordCheck: this.passwordCheck
-      })
+      try {
+        // update processing status
+        this.isProcessing = true
+
+        // Send api to  check if email already existed
+        const { data, statusText } = await authorizationAPI.emailcheck({ email: this.email })
+
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        // Send data to parents
+        this.$emit('after-signup', {
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          passwordCheck: this.passwordCheck
+        })
+
+        // update processing status
+        this.isProcessing = false
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '此帳號已註冊過'
+        })
+      }
     }
   }
 }

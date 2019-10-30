@@ -1,5 +1,7 @@
 <template>
-  <section class="wrapper d-flex vh-100">
+  <section
+    class="wrapper d-flex vh-100"
+  >
     <SideNavBar />
     <section class="dishes flex-fill">
       <router-link
@@ -30,65 +32,8 @@
 import SideNavBar from '../components/Navbar/SideNavBar'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishCard from '../components/OwnerDishCard'
-
-const dummyMeals = {
-  meals: [
-    {
-      id: 1,
-      name: '菜餚一',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 2,
-      name: '菜餚二',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 3,
-      name: '菜餚三',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 4,
-      name: '菜餚四',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 5,
-      name: '菜餚五',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 6,
-      name: '菜餚六',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    }
-  ]
-}
+import ownerAPI from '../apis/owner'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -98,18 +43,40 @@ export default {
   },
   data () {
     return {
-      meals: []
+      meals: [],
+      isLoading: true
     }
   },
   created () {
     this.fetchMeals()
   },
   methods: {
-    fetchMeals () {
-      this.meals = [
-        ...this.meals,
-        ...dummyMeals.meals
-      ]
+    async fetchMeals () {
+      try {
+        // fetch data from API
+        const { data, statusText } = await ownerAPI.dishes.getDishes()
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') {
+          throw new Error(data.message)
+        }
+
+        // store data
+        this.meals = [
+          ...this.meals,
+          ...data.meals
+        ]
+
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得資料，請稍後再試'
+        })
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
-  <a
+  <router-link
     class="card col p-0 mx-2"
-    href="#"
+    :to="{name: 'restaurant', params: {restaurant_id: restaurant.id}}"
   >
     <img
       :src="restaurant.image"
@@ -20,7 +20,7 @@
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora unde corporis aliquid eaque quas iste.
       </p>
     </div>
-  </a>
+  </router-link>
 </template>
 
 <script>

@@ -34,12 +34,29 @@
           計算方式：一個月以 30 天為標準
         </p>
       </div>
+      <form
+        ref="tradeForm"
+        action="https://ccore.newebpay.com/MPG/mpg_gateway"
+        method="POST"
+      >
+        <input
+          v-for="item in tradeInfo"
+          :key="item"
+          :ref="item"
+          type="text"
+          :name="item"
+          hidden
+        >
+      </form>
     </div>
   </section>
 </template>
 
 <script>
 import TopLogoNavbar from '../components/Navbar/TopLogoNavbar'
+import axios from 'axios'
+import userAPI from '../apis/users'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -60,11 +77,12 @@ export default {
           price: 2000,
           quantity: 20
         }
-      ]
+      ],
+      tradeInfo: ['MerchantID', 'TradeInfo', 'TradeSha', 'Version']
     }
   },
   methods: {
-    handleSubscribe (name, quantity, price) {
+    async handleSubscribe (name, quantity, price) {
       // POST to /api/subscribe
       const subscriptionData = {
         sub_balance: quantity,
@@ -72,7 +90,21 @@ export default {
         sub_name: name,
         sub_price: price
       }
-      console.log(subscriptionData)
+
+      try {
+        const { data, statusText } = await axios.post('http://localhost:3000/api/users/subscribe', subscriptionData, {
+          headers: { Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTcyMzI4NjI2fQ.TbDTRqyuf-Sm1ChjL9TvnlUZ-nQ_rlWC22UpZDS4Rb4' }
+        })
+
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // prepare form for 藍新
+        this.tradeInfo.forEach(item => this.$refs[item][0].setAttribute('value', data.tradeInfo[item]))
+        // submit the form
+        this.$refs.tradeForm.submit()
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }

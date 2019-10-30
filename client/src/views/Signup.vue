@@ -8,6 +8,7 @@
     <SettingForm
       v-else
       :categories="categories"
+      :initial-processing="isProcessing"
       @after-setting="handleAfterSetting"
     />
   </section>
@@ -17,6 +18,8 @@
 import TopLogoNavbar from '../components/Navbar/TopLogoNavbar'
 import SignupForm from '../components/SignupForm'
 import SettingForm from '../components/SettingForm'
+import authorizationAPI from '../apis/authorization'
+import { Toast } from '../utils/helpers'
 
 const dummyCategories = {
   category: ['美式餐廳', '法式餐廳', '義式餐廳']
@@ -32,7 +35,8 @@ export default {
     return {
       signupData: null,
       isSigningUp: true,
-      categories: []
+      categories: [],
+      isProcessing: false
     }
   },
   created () {
@@ -47,12 +51,35 @@ export default {
       this.signupData = formData
       this.isSigningUp = false
     },
-    handleAfterSetting (formData) {
+    async handleAfterSetting (formData) {
       const userData = { ...this.signupData, ...formData }
-      // Send signup and setting data to backend
-      console.log(userData)
-      // Redirect to subscribe page
-      this.$router.push({ name: 'subscribe' })
+      try {
+        // update processing status
+        this.isProcessing = true
+
+        // send sign up form to API
+        const { data, statusText } = await authorizationAPI.signup(userData)
+
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        // store jwt in localstorage
+        localStorage.setItem('token', data.token)
+
+        // redirect to subscribe page
+        this.$router.push({ name: 'subscribe' })
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: error.message
+        })
+      }
     }
   }
 }

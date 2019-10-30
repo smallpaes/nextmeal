@@ -30,17 +30,20 @@
       <div class="form-group col-md-6">
         <label for="category">類別</label>
         <select
-          v-model.trim="restaurant.Category.name"
+          v-model.trim="restaurant.Category.id"
           class="form-control"
           required
         >
-          <option selected>
+          <option
+            value=""
+            selected
+          >
             餐廳類別
           </option>
           <option
             v-for="category in categories"
             :key="category.id"
-            :value="category.name"
+            :value="category.id"
             :selected="category.name === restaurant.Category.name"
           >
             {{ category.name }}
@@ -57,8 +60,7 @@
         <label for="opening-hour">開始營業時間</label>
         <input
           id="opening-hour"
-
-          :value="restaurant.openingHour"
+          v-model.trim="restaurant.openingHour"
           type="time"
           class="form-control"
           required
@@ -174,6 +176,7 @@
       <button
         class="btn"
         :class="{'btn-update': $route.name === 'admin-restaurant-edit'}"
+        :disabled="isProcessing"
         @click.stop.prevent="getLocation('restaurant')"
       >
         更新
@@ -181,7 +184,8 @@
       <button
         v-if="$route.name ==='admin-restaurant-edit'"
         class="btn"
-        @click.stop.prevent="deleteRestaurant"
+        :disabled="isProcessing"
+        @click.stop.prevent="$emit('after-delete')"
       >
         刪除
       </button>
@@ -192,39 +196,34 @@
 <script>
 import { getGeoMethods, handleFileChangeMethod } from '../utils/mixins'
 
-const dummyRestaurant = {
-  restaurant: {
-    name: '餐廳一號',
-    Category: {
-      id: 1,
-      name: '美式餐廳'
-    },
-    opening_hour: '11:00:00',
-    closing_hour: '14:00:00',
-    location: '信義區',
-    address: '台北市大安區延吉街50號',
-    tel: '02-2222-2222',
-    description: '火鍋店',
-    image: 'https://via.placeholder.com/200x200/d3d3d3'
-  },
-  categories: [
-    {
-      id: 1,
-      name: '美式餐廳'
-    },
-    {
-      id: 2,
-      name: '法式餐廳'
-    },
-    {
-      id: 3,
-      name: '義式餐廳'
-    }
-  ]
-}
-
 export default {
   mixins: [getGeoMethods, handleFileChangeMethod],
+  props: {
+    initialRestaurant: {
+      type: Object,
+      default: () => ({
+        name: '',
+        Category: {},
+        openingHour: '',
+        closingHour: '',
+        location: '',
+        address: '',
+        tel: '',
+        description: '',
+        image: '',
+        lng: '',
+        lat: ''
+      })
+    },
+    categories: {
+      type: Array,
+      required: true
+    },
+    initialProcessing: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       restaurant: {
@@ -240,60 +239,50 @@ export default {
         lng: '',
         lat: ''
       },
-      categories: [],
-      hasRestaurantData: false,
       warningMessage: '',
       apiKey: process.env.VUE_APP_GOOGLE,
       validationMsg: {
         address: '請輸入地址'
+      },
+      formData: {},
+      isProcessing: false
+    }
+  },
+  watch: {
+    initialRestaurant (restaurant) {
+      this.restaurant = {
+        ...this.restaurant,
+        ...restaurant
       }
+    },
+    initialProcessing (isProcessing) {
+      this.isProcessing = isProcessing
     }
   },
   created () {
-    this.fetchRestaurantData()
+    this.restaurant = {
+      ...this.restaurant,
+      ...this.initialRestaurant
+    }
+    this.isProcessing = this.initialProcessing
   },
   methods: {
-    fetchRestaurantData () {
-      // fetch data from api based on route name
-      console.log(this.$route.name)
-
-      // check if restaurant data alreadt exists
-      if (!dummyRestaurant) {
-        this.hasRestaurantData = false
-        return
-      }
-
-      // retrieve data
-      const {
-        restaurant: { opening_hour: openingHour, closing_hour: closingHour, ...restData },
-        categories
-      } = dummyRestaurant
-
-      // save data
-      this.restaurant = {
-        ...this.restaurant,
-        openingHour,
-        closingHour,
-        ...restData
-      }
-      this.categories = categories
-      this.hasRestaurantData = true
-    },
     afterReceiveGeo () {
-      console.log(this.restaurant.lat, this.restaurant.lng)
-      this.hasRestaurantData ? this.updateRestaurant() : this.createRestaurant()
-    },
-    createRestaurant () {
-      // Send data to POST /api/owner
-      console.log('POST', this.restaurant)
-    },
-    updateRestaurant () {
-      // Send data to PUT /api/owner
-      console.log('PUT', this.restaurant)
-    },
-    deleteRestaurant () {
-      // Send data to DELETE /api/admin/restaurants/:id
-      console.log('DELETE', this.restaurant)
+      const formData = {
+        name: this.restaurant.name,
+        description: this.restaurant.description,
+        image: this.restaurant.image,
+        tel: this.restaurant.tel,
+        address: this.restaurant.address,
+        opening_hour: this.restaurant.openingHour,
+        closing_hour: this.restaurant.closingHour,
+        lat: this.restaurant.lat,
+        lng: this.restaurant.lng,
+        location: this.restaurant.location,
+        CategoryId: this.restaurant.Category.id
+      }
+      // notify parent view
+      this.$emit('after-submit', formData)
     }
   }
 }

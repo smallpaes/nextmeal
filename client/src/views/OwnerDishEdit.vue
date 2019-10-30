@@ -10,6 +10,7 @@
       <div class="dish-form-container pb-4">
         <OwnerDishForm
           :initial-dish="dish"
+          :initial-loading="isLoading"
           @after-submit="handleAfterSubmit"
         >
           <template v-slot:header>
@@ -28,19 +29,8 @@
 import SideNavBar from '../components/Navbar/SideNavBar'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishForm from '../components/OwnerDishForm'
-
-const dummyDish = {
-  dish:
-    {
-      id: 1,
-      name: '菜餚一',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    }
-}
+import ownerAPI from '../apis/owner'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -54,7 +44,9 @@ export default {
         name: '',
         description: '',
         image: ''
-      }
+      },
+      isLoading: true,
+      isProcessing: false
     }
   },
   created () {
@@ -67,15 +59,55 @@ export default {
     next()
   },
   methods: {
-    fetchDishData (dishId) {
-      // fetch meal data from API
-      this.dish.name = dummyDish.dish.name
-      this.dish.description = dummyDish.dish.description
-      this.dish.image = dummyDish.dish.image
+    async fetchDishData (dishId) {
+      // update processing status
+      this.isLoading = true
+
+      try {
+        // fetch dish
+        const { data, statusText } = await ownerAPI.dishes.getEdit({ dishId })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // sotre data
+        this.dish = {
+          ...this.dish,
+          name: data.meal.name,
+          description: data.meal.description,
+          image: data.meal.image
+        }
+        // update processing status
+        this.isLoading = false
+      } catch (error) {
+        // update processing status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得資料，請稍後再試'
+        })
+      }
     },
-    handleAfterSubmit (formData) {
-      // Send form data to backend
-      console.log(formData)
+    async handleAfterSubmit (formData) {
+      // update processing status
+      this.isLoading = true
+
+      try {
+        const { dish_id: dishId } = this.$route.params
+        // update dish data
+        const { data, statusText } = await ownerAPI.dishes.putEdit({ dishId, formData })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // redirect to dishes page
+        this.$router.push({ name: 'owner-dishes' })
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法更新餐點，請稍後再試'
+        })
+      }
     }
   }
 }

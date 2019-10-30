@@ -15,6 +15,8 @@
         v-model.trim="dish.name"
         type="text"
         class="form-control"
+        name="name"
+        :disabled="isLoading"
         required
       >
       <div class="invalid-feedback">
@@ -28,13 +30,15 @@
         id="description"
         v-model="dish.description"
         class="form-control"
+        :disabled="isLoading"
+        name="description"
         minlength="10"
         maxlength="100"
         rows="2"
         required
       />
       <div class="invalid-feedback">
-        請輸入餐點簡介
+        請輸入 1-100 字餐點簡介
       </div>
     </div>
     <!--Image upload-->
@@ -46,8 +50,10 @@
       <input
         id="file"
         type="file"
+        :disabled="isLoading"
         class="file-input"
         accept=".png, .jpg, .jpeg"
+        name="image"
         @change="handleFileChange($event,'dish')"
       >
       <!--Preview image-->
@@ -61,6 +67,7 @@
           alt="餐點照片"
         >
         <span
+          v-if="!isLoading"
           class="close-btn"
           aria-hidden="true"
           @click="dish.image = ''"
@@ -82,6 +89,7 @@
       <button
         class="btn"
         type="submit"
+        :disabled="isLoading"
       >
         <slot name="submitBtn" />
       </button>
@@ -102,6 +110,10 @@ export default {
         description: '',
         image: ''
       })
+    },
+    initialLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -110,7 +122,8 @@ export default {
         name: '',
         description: '',
         image: ''
-      }
+      },
+      isLoading: false
     }
   },
   watch: {
@@ -119,6 +132,9 @@ export default {
         ...this.dish,
         ...dish
       }
+    },
+    initialLoading (isLoading) {
+      this.isLoading = isLoading
     }
   },
   created () {
@@ -126,6 +142,7 @@ export default {
       ...this.dish,
       ...this.initialDish
     }
+    this.isLoading = this.initialLoading
   },
   methods: {
     handleSubmit (e) {
@@ -135,8 +152,9 @@ export default {
         form.classList.add('was-validated')
         return
       }
-
-      const formData = { ...this.dish }
+      // prepare a FormData
+      const formData = new FormData(form)
+      // notify and send to parent
       this.$emit('after-submit', formData)
     }
   }

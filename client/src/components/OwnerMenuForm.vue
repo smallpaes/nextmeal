@@ -53,6 +53,7 @@
       <button
         class="btn"
         type="submit"
+        :disabled="isLoading"
       >
         更新
       </button>
@@ -61,10 +62,8 @@
 </template>
 
 <script>
-const dummyUpdatedMeal = {
-  name: '菜餚二',
-  image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260'
-}
+import ownerAPI from '../apis/owner'
+import { Toast } from '../utils/helpers'
 
 export default {
   props: {
@@ -80,24 +79,56 @@ export default {
   data () {
     return {
       quantity: this.initialMeal.quantity,
-      id: this.initialMeal.id
+      id: -1,
+      isLoading: false
     }
   },
+  watch: {
+    initialMeal (meal) {
+      this.id = meal.id
+    }
+  },
+  created () {
+    this.id = this.initialMeal.id
+  },
   methods: {
-    handleSubmit (e) {
+    async handleSubmit (e) {
       // form validation
       if (e.target.checkValidity() === false) {
         return e.target.classList.add('was-validated')
       }
-      // send the dish to api
+      // prepare form data
       const formData = {
-        current_meal_id: this.initialMeal.id,
-        updated_meal_id: this.id,
+        id: this.id,
         quantity: this.quantity
       }
-      console.log(formData)
-      // send dish name and image from response to parent
-      this.$emit('after-submit', dummyUpdatedMeal)
+
+      // update loading status
+      this.isLoading = true
+
+      try {
+        // send the updated data
+        const { data, statusText } = await ownerAPI.menu.putMenu(formData)
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // send dish name and image from response to parent
+        this.$emit('after-submit', { ...formData, name: data.meal.name, image: data.meal.image })
+        // notify for successful update
+        Toast.fire({
+          type: 'success',
+          title: '成功更新下週菜單！'
+        })
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法更新下週菜單，請稍後再試'
+        })
+      }
     }
   }
 }

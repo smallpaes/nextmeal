@@ -16,6 +16,7 @@
     "moment": "^2.24.0",
     "popper.js": "^1.15.0",
     "sass-loader": "^7.1.0",
+    "sweetalert2": "^8.18.6",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
     "vue2-datepicker": "^2.13.2",

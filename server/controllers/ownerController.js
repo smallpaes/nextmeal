@@ -91,6 +91,7 @@ let ownerController = {
         })
       }
     } catch (error) {
+      console.log(error.message)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -101,6 +102,7 @@ let ownerController = {
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
       }
+      console.log(req.body)
       const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       // validMessage(req, res)
       const { file } = req

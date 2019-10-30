@@ -33,30 +33,8 @@ import SideNavBar from '../components/Navbar/SideNavBar'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerMenuCard from '../components/OwnerMenuCard'
 import OwnerMenuForm from '../components/OwnerMenuForm'
-
-const dummyMeal = {
-  meals: [
-    {
-      id: 1,
-      name: '菜餚一',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    }
-  ],
-  options: [
-    {
-      id: 1,
-      name: '菜餚一'
-    },
-    {
-      id: 2,
-      name: '菜餚二'
-    }
-  ]
-}
+import ownerAPI from '../apis/owner'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -77,15 +55,14 @@ export default {
         nextServing: false
       },
       options: [],
-      days: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
+      days: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
+      isLoading: true
     }
   },
   created () {
     const { ran } = this.$route.query
     // redirect to 404 page when query string is not valid
-    if (!ran || (ran !== 'thisWeek' && ran !== 'nextWeek')) {
-      this.$router.push('/')
-    }
+    if (!ran || (ran !== 'thisWeek' && ran !== 'nextWeek')) this.$router.push({ name: 'not-found' })
     this.fetchMeal(ran)
   },
   beforeRouteUpdate (to, from, next) {
@@ -97,10 +74,26 @@ export default {
     next()
   },
   methods: {
-    fetchMeal (range) {
-      // fetch data from API
-      this.meal = dummyMeal.meals[0]
-      this.options = dummyMeal.options
+    async fetchMeal (range) {
+      try {
+        // fetch data from API
+        const { data, statusText } = await ownerAPI.menu.getMenu({ ran: range })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // store data
+        this.meal = data.meals[0]
+        if (data.options) this.options = [...this.options, ...data.options]
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法本週菜單，請稍後再試'
+        })
+      }
     },
     handleEditMeal () {
       // get form position
@@ -110,6 +103,7 @@ export default {
       window.scrollTo({ top: top, behavior: 'smooth' })
     },
     handleAfterSubmit (updatedMealData) {
+      console.log(updatedMealData)
       // update meal data
       this.meal = {
         ...this.meal,
