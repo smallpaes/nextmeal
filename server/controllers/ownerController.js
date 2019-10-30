@@ -348,7 +348,6 @@ let ownerController = {
         return res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -356,12 +355,12 @@ let ownerController = {
   getOrders: async (req, res) => {
     try {
       //算出今天開始、結束日期
-      const start = moment().startOf('day').format()
-      const end = moment().endOf('day').format()
+      const start = moment().startOf('day').toDate()
+      const end = moment().endOf('day').toDate()
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       let orders = await Order.findAll({
         where: {
-          order_status: { [Op.like]: '未領取' },
+          order_status: { [Op.like]: '今日' },
           require_date: {
             // 大於開始日
             [Op.gte]: start,

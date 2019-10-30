@@ -39,6 +39,36 @@ export default new Router({
       component: () => import('./views/Subscribe.vue')
     },
     {
+      path: '/order/tomorrow',
+      name: 'order-tomorrow',
+      component: () => import('./views/OrdersTomorrow.vue')
+    },
+    {
+      path: '/order/new',
+      name: 'order-new',
+      component: () => import('./views/OrderNew.vue')
+    },
+    {
+      path: '/order/:order_id/edit',
+      name: 'order-edit',
+      component: () => import('./views/OrderEdit.vue')
+    },
+    {
+      path: '/order/:order_id',
+      name: 'order',
+      component: () => import('./views/Order.vue')
+    },
+    {
+      path: '/user',
+      name: 'user-profile',
+      component: () => import('./views/UserProfile.vue')
+    },
+    {
+      path: '/user/orders',
+      name: 'user-order',
+      component: () => import('./views/UserOrders.vue')
+    },
+    {
       path: '/owner',
       name: 'owner-info',
       component: () => import('./views/OwnerInfo.vue')
@@ -72,6 +102,16 @@ export default new Router({
       path: '/admin/restaurants/:restaurant_id',
       name: 'admin-restaurant-edit',
       component: () => import('./views/AdminRestaurantEdit.vue')
+    },
+    {
+      path: '/admin/users',
+      name: 'admin-users',
+      component: () => import('./views/AdminUsers.vue')
+    },
+    {
+      path: '/admin/users/:user_id',
+      name: 'admin-user-edit',
+      component: () => import('./views/AdminUserEdit.vue')
     },
     {
       path: '*',

@@ -28,7 +28,7 @@
       <div class="form-group">
         <input
           id="address"
-          v-model="address"
+          v-model="user.address"
           type="text"
           class="form-control"
           placeholder="預設所在地址"
@@ -41,7 +41,7 @@
       </div>
       <div class="form-group">
         <select
-          v-model="prefer"
+          v-model="user.prefer"
           class="form-control"
           required
         >
@@ -60,7 +60,7 @@
           請選擇一種偏好餐廳
         </div>
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <input
           id="dob"
           v-model="dob"
@@ -71,10 +71,14 @@
         >
         <small
           id="dob-reminder"
-          class="form-text text-left"
           v-if="!dob"
+          class="form-text text-left"
         >填寫出生年月日</small>
-      </div>
+      </div> -->
+      <CustomDatePicker
+        v-model="user"
+        :has-label="false"
+      />
       <div class="btn-container text-center">
         <button
           class="btn mt-1"
@@ -120,12 +124,14 @@
 
 <script>
 import { dateTransformFilter } from '../utils/mixins'
+import CustomDatePicker from '../components/CustomDatePicker'
 import axios from 'axios'
 import GMap from '../components/GMap'
 
 export default {
   components: {
-    GMap
+    GMap,
+    CustomDatePicker
   },
   mixins: [dateTransformFilter],
   props: {
@@ -136,10 +142,13 @@ export default {
   },
   data () {
     return {
+      user: {
+        address: '',
+        prefer: '',
+        dob: ''
+      },
       warningMessage: '',
-      address: '',
-      prefer: '',
-      dob: '',
+
       apiKey: process.env.VUE_APP_GOOGLE,
       validationMsg: {
         address: '請輸入地址'
@@ -235,5 +244,4 @@ export default {
       min-width: 170px;
     }
 }
-
 </style>

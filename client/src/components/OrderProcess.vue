@@ -59,7 +59,7 @@ export default {
     text-align: center;
 
     &-icon {
-        font-size: size(xl);
+        font-size: size(xxl);
         color: color(tertiary);
     }
 

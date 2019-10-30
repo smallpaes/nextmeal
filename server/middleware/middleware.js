@@ -4,7 +4,10 @@ const crypto = require("crypto"); // 加密
 const db = require('../models')
 const Subscription = db.Subscription
 const Comment = db.Comment
+
 const sequelize = require('sequelize')
+const Op = sequelize.Op
+
 const URL = 'https://f798ad18.ngrok.io'; //本地 domain 不接受，使用 ngrok 工具做臨時網址，取得的網址放這
 const MerchantID = 'MS38035958'; // 商店代號
 const HashKey = 'WF1pmVp4AxMgFs13YrlZQPuirCd47ql6'; //API 金鑰
@@ -109,7 +112,24 @@ let middleware = {
     }
     return array
   },
-
+  validSubsribe: async (req, res, next) => {
+    try {
+      let start = moment().startOf('day').toDate()
+      const subscription = await Subscription.findOne({
+        where: {
+          UserId: req.user.id,
+          payment_status: 1,
+          sub_expired_date: { [Op.gte]: start },
+        },
+        order: [['sub_expired_date', 'DESC']],
+        limit: 1
+      })
+      if (!subscription) return res.status(400).json({ status: 'error', message: 'You need to subscribe next meal now.' })
+      next()
+    } catch (error) {
+      return res.status(500).json({ status: 'error', message: error })
+    }
+  },
   getTradeInfo: (Amt, Desc, email, sn) => {
     console.log("===== getTradeInfo =====");
     console.log(Amt, Desc, email, sn);

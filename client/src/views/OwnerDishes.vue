@@ -12,7 +12,7 @@
       <h1 class="dishes-title">
         餐點資訊
       </h1>
-      <NavPill class="mt-4 ml-1" />
+      <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dishes-divider">
       <div class="dishes-card-container row px-3 pb-4">
         <OwnerDishCard
@@ -28,7 +28,7 @@
 
 <script>
 import SideNavBar from '../components/Navbar/SideNavBar'
-import NavPill from '../components/Navbar/NavPill'
+import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishCard from '../components/OwnerDishCard'
 
 const dummyMeals = {
@@ -93,7 +93,7 @@ const dummyMeals = {
 export default {
   components: {
     SideNavBar,
-    NavPill,
+    OwnerDishNavPill,
     OwnerDishCard
   },
   data () {

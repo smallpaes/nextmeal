@@ -126,14 +126,14 @@
     }
 }
 
-@mixin imgOverlay($amount: 0.8) {
+@mixin imgOverlay($amount: 0.8, $color: color(secondary)) {
     &-overlay {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: transparentize(color(secondary), $amount);
+        background-color: transparentize($color, $amount);
     }
 }
 
@@ -238,7 +238,6 @@
             @content;
         }
     }
-  
 }
 
 @mixin hideScrollBar {
@@ -417,6 +416,18 @@
                     }
                 }
             }
+        }
+    }
+}
+
+@mixin spinAnimation {
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+    
+        to {
+            transform: rotate(360deg)
         }
     }
 }

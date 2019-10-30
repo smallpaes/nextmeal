@@ -7,7 +7,7 @@
             名稱
           </th>
           <th scope="col">
-            類別
+            地區
           </th>
           <th scope="col">
             評分
@@ -27,17 +27,23 @@
           @click="$router.push({name:'admin-restaurant-edit', params: {restaurant_id: restaurant.id}})"
         >
           <td>{{ restaurant.name }}</td>
-          <td>{{ restaurant.Category.name }}</td>
+          <td>{{ restaurant.location }}</td>
           <td>
-            <span class="d-none d-md-inline">&#9733;</span>
-            {{ restaurant.rating }}
+            <span
+              class="d-none d-md-inline pr-1"
+              :class="{'high-rating': restaurant.rating >= 4, 'low-rating': restaurant.rating < 4}"
+            >&#9733;</span>
+            <span
+              class="rating"
+              :class="{'high-rating': restaurant.rating >= 4, 'low-rating': restaurant.rating < 4}"
+            >{{ restaurant.rating }}</span>
           </td>
           <td class="comment">
-            <i class="fas fa-comment-alt mr-1 d-none d-md-inline" />
+            <i class="far fa-comment-alt mr-1 d-none d-md-inline" />
             {{ restaurant.Comments.length }}
           </td>
           <td>
-            <i class="fas fa-clipboard-list mr-1 d-none d-md-inline" />
+            <i class="far fa-chart-bar mr-1 d-none d-md-inline" />
             {{ restaurant.orderCount }}
           </td>
         </tr>
@@ -60,7 +66,7 @@ export default {
 <style lang="scss" scoped>
 $headers: (
     1: '名稱',
-    2: '類別',
+    2: '地區',
     3: '評分',
     4: '評論',
     5: '成交量'
@@ -70,4 +76,12 @@ $headers: (
 @include tableMobile;
 // table layout for large screen
 @include tableFullSize;
+
+.high-rating {
+    color: color(tertiary);
+}
+
+.low-rating {
+    color: color(primary);
+}
 </style>
