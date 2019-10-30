@@ -13,8 +13,8 @@ const defaultRestaurant1 = {
   rating: 4.8,
   location: "大安區",
   address: "台北市大安區臥龍街289號",
-  latitude: '25.017186',
-  longitude: '121.558462',
+  lat: '25.017186',
+  lng: '121.558462',
   description: '一家還不錯的店',
   image: 'https://randomuser.me/api/portraits/lego/1.jpg'
 }

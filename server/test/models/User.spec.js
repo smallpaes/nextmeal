@@ -29,7 +29,7 @@ describe('# UserModel Model', () => {
 
   context('properties', () => {
     ;[
-      'name', 'email', 'password', 'avatar', 'location', 'latitude', 'longitude', 'address', 'dob', 'modifiedAt', 'prefer', 'role'
+      'name', 'email', 'password', 'avatar', 'location', 'lat', 'lng', 'address', 'dob', 'modifiedAt', 'prefer', 'role'
     ].forEach(checkPropertyExists(user))
   });
 
