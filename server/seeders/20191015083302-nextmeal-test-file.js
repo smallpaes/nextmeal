@@ -3,7 +3,12 @@ const faker = require('faker')
 const bcrypt = require('bcryptjs')
 const locations = ['信義區', '大安區', '中山區', '松山區']
 const categories = ['中式料理', '日本料理', '義大利料理', '墨西哥料理', '素食料理', '美式料理', '複合式料理']
+const time_slots = ['11:00', '11:30', '12:00', '12:30', '13:00', '13:30']
 const nowTime = new Date()
+const tmr = new Date()
+tmr.setDate(nowTime.getDate() + 1)
+tmr.setHours(12, 0, 0, 0)
+
 const Sequelize = require('sequelize')
 module.exports = {
   up: (queryInterface, Sequelize) => {
@@ -162,25 +167,6 @@ module.exports = {
         UserId: 6
       }
     ]
-      // Array.from({ length: 4 }).map((d, index) =>
-      //   ({
-      //     name: faker.name.findName(),
-      //     tel: faker.phone.phoneNumber(),
-      //     address: faker.address.streetAddress(),
-      //     opening_hour: '11:00',
-      //     closing_hour: "14:00",
-      //     image: faker.image.imageUrl(),
-      //     description: faker.lorem.text(),
-      //     location: locations[Math.floor(Math.random() * 3) + 1],
-      //     createdAt: new Date(),
-      //     updatedAt: new Date(),
-      //     rating: parseFloat(Math.random() * 5).toFixed(1),
-      //     latitude: faker.address.latitude(),
-      //     longitude: faker.address.longitude(),
-      //     CategoryId: Math.floor(Math.random() * 5) + 1,
-      //     UserId: index + 3
-      //   })
-      // ), {}
     );
 
     // add categories
@@ -216,10 +202,22 @@ module.exports = {
         {
           UserId: Math.ceil(Math.random() * 2),
           order_date: new Date(),
-          require_date: new Date(nowTime.getTime() + (24 * 60 * 60 * 1000)),
-          order_status: '今日',
+          require_date: tmr,
+          order_status: '明日',
           hasComment: Math.round(Math.random()),
           amount: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }))
+      , {});
+
+    // add orderitems
+    queryInterface.bulkInsert("Orderitems",
+      Array.from({ length: 3 }).map((item, index) => (
+        {
+          OrderId: index + 1,
+          MealId: Math.ceil(Math.random() * 4),
+          quantity: Math.ceil(Math.random() * 3),
           createdAt: new Date(),
           updatedAt: new Date()
         }))
@@ -250,6 +248,7 @@ module.exports = {
     queryInterface.bulkDelete('Meals', null, { truncate: true })
     queryInterface.bulkDelete('Subscriptions', null, { truncate: true })
     queryInterface.bulkDelete('Orders', null, { truncate: true })
+    queryInterface.bulkDelete('Orderitems', null, { truncate: true })
     return queryInterface.bulkDelete('Restaurants', null, { truncate: true })
   }
 };
