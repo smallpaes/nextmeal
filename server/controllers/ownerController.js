@@ -165,10 +165,10 @@ let ownerController = {
         include: [Meal],
         attributes: ['id']
       })
-      let mealServeing = restaurant.dataValues.Meals.map(rest => rest.dataValues.isServing).includes(true)
-      if (restaurant.length === 0) {
+      if (restaurant === null) {
         res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant yet.' })
       }
+      let mealServeing = restaurant.dataValues.Meals.map(rest => rest.dataValues.isServing).includes(true)
       // if (restaurant[0].dataValues.Meals.length > 0) {
       //   res.status(422).json({status: 'error', message: 'the multiple meals of feature is not available for the moment.'})
       // }
