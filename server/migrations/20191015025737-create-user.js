@@ -38,10 +38,10 @@ module.exports = {
       address: {
         type: Sequelize.STRING
       },
-      latitude: {
+      lat: {
         type: Sequelize.STRING
       },
-      longitude: {
+      lng: {
         type: Sequelize.STRING
       },
       geometry: {

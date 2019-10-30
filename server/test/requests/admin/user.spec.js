@@ -13,8 +13,8 @@ const defaultUser1 = {
   payment_status: true,
   address: "台北市大安區臥龍街289號",
   prefer: '美式料理',
-  latitude: '25.017186',
-  longitude: '121.558462',
+  lat: '25.017186',
+  lng: '121.558462',
   role: 'Admin',
   order_num: 20
 }
@@ -25,8 +25,8 @@ const defaultUser2 = {
   payment_status: true,
   address: "台北市大安區臥龍街289號",
   prefer: '素食料理',
-  latitude: '25.017186',
-  longitude: '121.558462',
+  lat: '25.017186',
+  lng: '121.558462',
   role: 'Admin',
   order_num: 45
 }
@@ -37,8 +37,8 @@ const defaultUser3 = {
   payment_status: false,
   address: "台北市大安區臥龍街289號",
   prefer: '日式料理',
-  latitude: '25.017186',
-  longitude: '121.558462',
+  lat: '25.017186',
+  lng: '121.558462',
   role: 'Admin',
   order_num: 18
 }
