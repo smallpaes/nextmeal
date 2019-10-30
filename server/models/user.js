@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     modifiedAt: DataTypes.DATE,
     location: DataTypes.STRING,
     address: DataTypes.STRING,
-    lat: DataTypes.STRING,
-    lng: DataTypes.STRING,
+    lat: DataTypes.FLOAT,
+    lng: DataTypes.FLOAT,
     geometry: DataTypes.GEOMETRY('POINT', 4326),
   }, {});
   User.associate = function (models) {
