@@ -155,7 +155,7 @@ export default {
     this.fetchRestaurant(restaurantId, this.currentPage + 1)
   },
   methods: {
-    fetchRestaurant (restaurantId, page) {
+    async fetchRestaurant (restaurantId, page) {
       // Get data from API
       this.restaurant = dummyRestaurantAndDistrict.restaurant || this.restaurant
       this.district = dummyRestaurantAndDistrict.district || this.district

@@ -90,7 +90,7 @@ export default {
         // fetch data from API
         const { data, statusText } = await restaurantsAPI.getHome()
         // error handling
-        if (data.status !== 'success' || statusText !== 'Accepted') {
+        if (data.status !== 'success' || statusText !== 'OK') {
           throw new Error(data.message)
         }
 

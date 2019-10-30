@@ -18,6 +18,7 @@
         <input
           id="name"
           v-model.trim="restaurant.name"
+          :disabled="isProcessing"
           type="text"
           class="form-control"
           required
@@ -32,6 +33,7 @@
         <select
           v-model.trim="restaurant.Category.id"
           class="form-control"
+          :disabled="isProcessing"
           required
         >
           <option
@@ -62,6 +64,7 @@
           id="opening-hour"
           v-model.trim="restaurant.openingHour"
           type="time"
+          :disabled="isProcessing"
           class="form-control"
           required
         >
@@ -75,6 +78,7 @@
         <input
           id="closing-hour"
           v-model.trim="restaurant.closingHour"
+          :disabled="isProcessing"
           type="time"
           class="form-control"
           required
@@ -90,6 +94,7 @@
       <input
         id="address"
         v-model.trim="restaurant.address"
+        :disabled="isProcessing"
         type="text"
         class="form-control"
         placeholder="台北市大安區..."
@@ -105,6 +110,7 @@
       <input
         id="tel"
         v-model.trim="restaurant.tel"
+        :disabled="isProcessing"
         type="tel"
         class="form-control"
         pattern="[0-9]{2}-[0-9]{4}-[0-9]{4}"
@@ -121,6 +127,7 @@
       <textarea
         id="description"
         v-model.trim="restaurant.description"
+        :disabled="isProcessing"
         class="form-control"
         minlength="10"
         maxlength="100"

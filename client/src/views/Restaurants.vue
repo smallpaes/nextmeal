@@ -30,7 +30,7 @@
             探索更多在地餐廳
           </template>
         </Header>
-        <div class="card-wrapper row">
+        <!-- <div class="card-wrapper row">
           <div
             v-for="restaurant in more_restaurants.rows"
             :key="restaurant.id"
@@ -38,7 +38,7 @@
           >
             <RestaurantCard :restaurant="restaurant" />
           </div>
-        </div>
+        </div> -->
         <div class="btn-container">
           <button
             v-if="currentPage !== totalPage"
@@ -85,6 +85,8 @@ import RestaurantCarousel from '../components/RestaurantCarousel'
 import RestaurantCard from '../components/RestaurantCard'
 import GMap from '../components/GMap'
 import Header from '../components/Header'
+import restaurantsAPI from '../apis/restaurants'
+import { Toast } from '../utils/helpers'
 
 const dummyRestaurantAndDistrict = {
   popular_restaurants: [
@@ -275,20 +277,35 @@ export default {
     next()
   },
   methods: {
-    fetchRestaurants (dist, page) {
+    async fetchRestaurants (dist, page) {
       this.isLoading = true
-      // fetch data from api
-      this.popular_restaurants = dummyRestaurantAndDistrict.popular_restaurants || this.popular_restaurants
-      this.more_restaurants.rows = [
-        ...this.more_restaurants.rows,
-        ...dummyRestaurantAndDistrict.more_restaurants.rows
-      ]
-      this.totalPage = this.more_restaurants.pages
-      this.map = dummyRestaurantAndDistrict.map || this.map
-      this.districts = dummyRestaurantAndDistrict.districts || this.districts
-      // update current page number
-      this.currentPage += 1
-      this.isLoading = false
+      try {
+        // fetch data from API
+        const { data, statusText } = await restaurantsAPI.getRestaurants({ dist })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+
+        // fetch data from api
+        this.popular_restaurants = data.popular_restaurants || this.popular_restaurants
+        this.more_restaurants.rows = [
+          ...this.more_restaurants.rows,
+          ...data.more_restaurants.rows
+        ]
+        this.totalPage = data.more_restaurants.pages
+        this.map = data.map || this.map
+        this.districts = data.districts || this.districts
+        // update current page number
+        this.currentPage += 1
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法本週菜單，請稍後再試'
+        })
+      }
     }
   }
 }

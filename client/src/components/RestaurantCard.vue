@@ -14,7 +14,7 @@
       </h5>
       <p class="card-text mt-1">
         <span class="rating">&#9733; {{ restaurant.rating }}</span>
-        <span class="mx-1">|</span>{{ restaurant.category }}
+        <span class="mx-1">|</span>{{ restaurant.Category.name }}
       </p>
       <p class="card-text">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora unde corporis aliquid eaque quas iste.
