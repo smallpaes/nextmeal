@@ -226,17 +226,21 @@ let middleware = {
     }
   },
   avgRating: async (res, restaurant, comment, order) => {
-    let comments = await Comment.findAll({
-      where: { RestaurantId: restaurant.id },
-      attributes: [[sequelize.fn('avg', sequelize.col('rating')), 'average']]
-    })
-    await restaurant.update({
-      rating: comments[0].dataValues.average.toFixed(2) || 0
-    })
-    await order.update({
-      hasComment: 1
-    })
-    return res.status(200).json({ status: 'success', comment, message: 'Successfully post comment.' })
+    try {
+      let comments = await Comment.findAll({
+        where: { RestaurantId: restaurant.id },
+        attributes: [[sequelize.fn('avg', sequelize.col('rating')), 'average']]
+      })
+      await restaurant.update({
+        rating: comments[0].dataValues.average.toFixed(2) || 0
+      })
+      await order.update({
+        hasComment: 1
+      })
+      return res.status(200).json({ status: 'success', comment, message: 'Successfully post comment.' })
+    } catch (error) {
+      return res.status(500).json({ status: 'error', message: error })
+    }
   }
 }
 
