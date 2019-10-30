@@ -343,7 +343,7 @@ let ownerController = {
       }
       if (Number(req.body.quantity) > 0) {
         meal = await meal.update({
-          quantity: req.body.quantity || meal.quantity,
+          nextServing_quantity: req.body.quantity || meal.quantity,
           nextServing: 1
         })
         await nextWeeKMeal.update({
