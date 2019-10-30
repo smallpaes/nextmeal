@@ -24,7 +24,7 @@ let ownerController = {
         }
       })
       if (restaurant.length === 0) {
-        return res.status(200).json({ status: 'success', message: 'You have not restaurant yet.' })
+        return res.status(200).json({ status: 'success', categories, message: 'You have not restaurant yet.' })
       }
 
       const categories = await Category.findAll({
