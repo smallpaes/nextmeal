@@ -55,7 +55,7 @@ let restController = {
       const more_restaurants = {
         count: popular_restaurants.count - 6,
         pages: Math.ceil((popular_restaurants.count - 6) / pageLimit),
-        rows: [popular_restaurants.rows.slice(6)]
+        restaurants: popular_restaurants.rows.slice(6)
       }
       popular_restaurants = popular_restaurants.rows.slice(0, 6)
 
