@@ -142,7 +142,7 @@ let userController = {
         order: [['createdAt', 'DESC']],
         limit: 1
       })
-      if (subscription.length === 0 || subscription[0].payment_status === '0' || subscription[0].sub_expired_date < Date.now()) {
+      if (subscription.length === 0 || subscription[0].payment_status === false || subscription[0].sub_expired_date < Date.now()) {
         return res.status(200).json({
           status: 'success',
           subscription: (subscription) ? subscription : '',
@@ -174,7 +174,7 @@ let userController = {
       if (subscription) {
         const stillSubscribe = subscription.sub_expired_date > Date.now()
         const unSubscribe = subscription.sub_expired_date < Date.now()
-        const paid = subscription.payment_status !== '0'
+        const paid = subscription.payment_status !== false
         const insufficient = subscription.sub_balance <= 0
         const once = (subscription && stillSubscribe && paid && insufficient) ? true : false
         const expired = (subscription && paid && unSubscribe) ? true : false
@@ -233,7 +233,7 @@ let userController = {
         if (req.body.Status === 'SUCCESS') {
           await subscription.update({
             ...req.body,
-            payment_status: 1,
+            payment_status: true,
             sub_date: sub_date,
             sub_expired_date: sub_expired_date
           })

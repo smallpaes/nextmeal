@@ -122,13 +122,13 @@ let adminController = {
       const { name, payment_status } = req.body
       let time = moment().format('YYYY-MM-DD')
       let whereQuery = {}
-      if (payment_status) {
-        if (payment_status === '0') {
-          whereQuery = { sub_expired_date: { [Op.lt]: time } }
-        } else {
-          whereQuery = { payment_status: payment_status, sub_expired_date: { [Op.gte]: time } }
-        }
+
+      if (payment_status === false) {
+        whereQuery = { sub_expired_date: { [Op.lt]: time } }
+      } else {
+        whereQuery = { payment_status: payment_status, sub_expired_date: { [Op.gte]: time } }
       }
+
       let users = await User.findAll({
         where: { name: { [Op.substring]: name || '' } },
         include: [{
@@ -141,7 +141,7 @@ let adminController = {
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
-            'address', 'lat','lng', 'createdAt', 'updatedAt'
+            'address', 'lat', 'lng', 'createdAt', 'updatedAt'
           ]
         },
         order: [[{ model: Subscription }, 'createdAt', 'DESC']]
@@ -149,12 +149,12 @@ let adminController = {
       users = users.map(user => ({
         ...user.dataValues,
         sub_description: (user.dataValues.Subscriptions[0]) ? (
-          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' &&
+          user.dataValues.Subscriptions[0].dataValues.payment_status === true &&
           user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()
         ) ? user.dataValues.Subscriptions[0].dataValues.sub_description : false
           : false,
         subscription_status: (user.dataValues.Subscriptions[0]) ? (
-          user.dataValues.Subscriptions[0].dataValues.payment_status === '1' &&
+          user.dataValues.Subscriptions[0].dataValues.payment_status === true &&
           user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? 'active' : 'inactive'
           : 'inactive'
       }))
@@ -239,16 +239,16 @@ let adminController = {
   // admin 的取消路由
   putCancel: async (req, res) => {
     try {
-      let order = await Order.findByPk(req.params.order_id,{
+      let order = await Order.findByPk(req.params.order_id, {
         include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-      
+
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
-          payment_status: 1,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start }
         },
         order: [['sub_expired_date', 'DESC']],
@@ -264,7 +264,7 @@ let adminController = {
       })
       let meal = await Meal.findByPk(order.meals[0].dataValues.id)
       await meal.update({
-        quantity: meal.quantity + order.amount 
+        quantity: meal.quantity + order.amount
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {

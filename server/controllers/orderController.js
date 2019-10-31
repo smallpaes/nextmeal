@@ -48,7 +48,7 @@ let orderController = {
       let subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: 1,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start },
           sub_balance: { [Op.gt]: 0 }
         },
@@ -124,7 +124,7 @@ let orderController = {
       const subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: 1,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start },
         },
         order: [['sub_expired_date', 'DESC']],

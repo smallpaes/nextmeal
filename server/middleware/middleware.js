@@ -128,7 +128,7 @@ let middleware = {
       const subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: 1,
+          payment_status: trues,
           sub_expired_date: { [Op.gte]: start },
         },
         order: [['sub_expired_date', 'DESC']],
@@ -184,7 +184,7 @@ let middleware = {
         UserId: req.user.id,
         sub_name: req.body.sub_name,
         sub_price: req.body.sub_price,
-        payment_status: 0,
+        payment_status: false,
         sub_description: req.body.sub_description,
         sub_balance: req.body.sub_balance,
         sn: tradeInfo.MerchantOrderNo,
