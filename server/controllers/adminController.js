@@ -251,11 +251,16 @@ let adminController = {
   // admin 的取消路由
   putCancel: async (req, res) => {
     try {
-      let order = await Order.findByPk(req.params.order_id, {
+      let order = await Order.findByPk(req.params.order_id,{
         include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-
+      if (order.order_status === '取消') {
+        return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
+      }
+      if (order.meals.length === 0 || order.meals[0] === undefined) {
+        return res.status(400).json({status: 'error', message: 'information is not correct'})
+      }
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
         where: {
@@ -263,11 +268,9 @@ let adminController = {
           payment_status: true,
           sub_expired_date: { [Op.gte]: start }
         },
-        order: [['sub_expired_date', 'DESC']],
-        limit: 1
+        order: [['sub_expired_date', 'DESC']]
       })
       let returnNum = subscription.sub_balance + order.amount
-      if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       await subscription.update({
         sub_balance: returnNum
       })
@@ -276,7 +279,7 @@ let adminController = {
       })
       let meal = await Meal.findByPk(order.meals[0].dataValues.id)
       await meal.update({
-        quantity: meal.quantity + order.amount
+        quantity: meal.quantity + order.amount 
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
