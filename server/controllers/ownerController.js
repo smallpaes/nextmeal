@@ -147,14 +147,14 @@ let ownerController = {
         include: [Meal],
         attributes: ['id']
       })
-      if (restaurant[0].dataValues.Meals.length === 0 || restaurant.length === 0) {
-        res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant or meal yet.' })
+      if (restaurant.length === 0 || restaurant[0].dataValues.Meals.length === 0) {
+        return res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant or meal yet.' })
       }
       let meals = restaurant.map(rest => rest.dataValues.Meals)
       meals = meals[0].map(meal => meal.dataValues)
-      res.status(200).json({ status: 'success', meals, message: 'Successfully get the dish information.' })
+      return res.status(200).json({ status: 'success', meals, message: 'Successfully get the dish information.' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
 
