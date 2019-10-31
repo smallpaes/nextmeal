@@ -197,9 +197,11 @@ let adminController = {
       let end = moment.utc(date).endOf('day').toDate()
       // 如果 order_status 不是取消，就顯示非取消的 order, 預設為當日非取消的 order 
       let whereQuery = {
-        id: { [Op.substring]: order_id || '' },
         order_status: { [Op.notLike]: '取消' },
         require_date: { [Op.gte]: start, [Op.lte]: end }
+      }
+      if (order_id) {
+        whereQuery['id'] = { [Op.eq]: order_id }
       }
       if (order_status && order_status === '取消') {
         whereQuery['order_status'] = { [Op.substring]: '取消' || '' }
@@ -216,8 +218,8 @@ let adminController = {
         ],
         attributes: [
           'id', 'require_date', 'order_status', 'updatedAt',
-          [sequelize.fn('date_format', sequelize.col('require_date'), '%Y%c%d'), 'date'],
-          [sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time']
+          customQuery.char.date,
+          customQuery.char.time
         ],
         order: [['require_date', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
@@ -232,6 +234,7 @@ let adminController = {
       let pages = Math.ceil((count) / pageLimit)
       res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
