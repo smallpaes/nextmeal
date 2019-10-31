@@ -101,7 +101,6 @@ let orderController = {
       })
       return res.status(200).json({ status: 'success', order_id: order.id, message: 'Successfully order the meal.' })
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -118,7 +117,8 @@ let orderController = {
         ],
         attributes: ['id', 'order_date', 'require_date', 'order_status']
       })
-      if (!order) return res.status(400).json({ status: 'error', order, message: 'getOrder' })
+      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
+      if (!order) return res.status(400).json({ status: 'error', order, message: 'not order yet' })
       order = { ...order.dataValues, meals: order.dataValues.meals[0] }
       return res.status(200).json({ status: 'success', order, message: 'Successfully get the Order' })
     } catch (error) {
@@ -153,6 +153,7 @@ let orderController = {
         attributes: ['id', 'amount', 'order_date', 'require_date']
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
       // 為了給前端 time_slots 取得餐廳開店與關店時間
       let opening_hour = order.meals[0].dataValues.Restaurant.dataValues.opening_hour
       let closing_hour = order.meals[0].dataValues.Restaurant.dataValues.closing_hour
@@ -189,6 +190,7 @@ let orderController = {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
       validMessage(req, res)
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
