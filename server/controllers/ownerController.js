@@ -23,15 +23,17 @@ let ownerController = {
           exclude: ['createdAt', 'updatedAt']
         }
       })
-      if (restaurant.length === 0) {
-        return res.status(200).json({ status: 'success', categories, message: 'You have not restaurant yet.' })
-      }
 
       const categories = await Category.findAll({
         attributes: ['id', 'name']
       })
+
+      if (restaurant.length === 0) {
+        return res.status(200).json({ status: 'success', categories, message: 'You have not restaurant yet.' })
+      }
       res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get the restaurant information.' })
     } catch (error) {
+      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -236,7 +238,7 @@ let ownerController = {
     try {
       let meal = await Meal.findByPk(req.params.dish_id)
       if (!meal) {
-        return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
+        return res.status(422).json({ status: 'error', message: 'meal does not exist' })
       }
 
       res.status(200).json({ status: 'success', meal, message: 'Successfully get the dish information.' })
@@ -293,7 +295,7 @@ let ownerController = {
   getMenu: async (req, res) => {
     try {
       const restaurant = await Restaurant.findOne({
-        where: { UserId: 3 }, attributes: ['id'], include: [{ model: Meal, attributes: ['id', 'name'] }]
+        where: { UserId: req.user.id }, attributes: ['id'], include: [{ model: Meal, attributes: ['id', 'name'] }]
       })
       let whereQuery = {}
       let message = ''
