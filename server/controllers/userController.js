@@ -221,7 +221,7 @@ let userController = {
         let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
         let subscription = await Subscription.findOne({
           where: { sn: data['Result']['MerchantOrderNo'] },
-          include: [{model: User, attributes: [ 'name' ]}]
+          include: [{ model: User, attributes: ['name'] }]
         })
         await Payment.create({
           SubscriptionId: subscription.id,
@@ -355,6 +355,7 @@ let userController = {
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_status === 'cancel') { whereQuery['order_status'] = '取消' }
+      if (order_status === 'history') { whereQuery = { require_date: { [Op.lt]: start } } }
       let orders = await Order.findAndCountAll({
         where: whereQuery,
         include: [{
