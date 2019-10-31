@@ -141,7 +141,7 @@ let adminController = {
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
-            'address', 'lat','lng', 'createdAt', 'updatedAt'
+            'address', 'lat', 'lng', 'createdAt', 'updatedAt'
           ]
         },
         order: [[{ model: Subscription }, 'createdAt', 'DESC']]
@@ -173,7 +173,7 @@ let adminController = {
           'address', 'lat', 'lng'
         ]
       })
-      if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
+      if (!user) return res.status(400).json({ status: 'error', user, message: 'user does not exist' })
       return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -239,11 +239,11 @@ let adminController = {
   // admin 的取消路由
   putCancel: async (req, res) => {
     try {
-      let order = await Order.findByPk(req.params.order_id,{
+      let order = await Order.findByPk(req.params.order_id, {
         include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-      
+
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
         where: {
@@ -264,7 +264,7 @@ let adminController = {
       })
       let meal = await Meal.findByPk(order.meals[0].dataValues.id)
       await meal.update({
-        quantity: meal.quantity + order.amount 
+        quantity: meal.quantity + order.amount
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {

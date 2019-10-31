@@ -1,266 +1,266 @@
-var chai = require('chai')
-var request = require('supertest')
-var sinon = require('sinon')
-var should = chai.should();
-var expect = chai.expect;
+// var chai = require('chai')
+// var request = require('supertest')
+// var sinon = require('sinon')
+// var should = chai.should();
+// var expect = chai.expect;
 
-var app = require('../../../app')
-var helpers = require('../../../_helpers');
-const db = require('../../../models')
-const nowTime = new Date()
-const tmr = new Date()
-tmr.setDate(nowTime.getDate() + 1)
-tmr.setHours(12, 0, 0, 0)
+// var app = require('../../../app')
+// var helpers = require('../../../_helpers');
+// const db = require('../../../models')
+// const nowTime = new Date()
+// const tmr = new Date()
+// tmr.setDate(nowTime.getDate() + 1)
+// tmr.setHours(12, 0, 0, 0)
 
-const defaultRestaurant1 = {
-  name: "Danny的小餐館",
-  rating: 4.8,
-  location: "大安區",
-  address: "台北市大安區臥龍街289號",
-  lat: '25.017186',
-  lng: '121.558462',
-  description: '一家還不錯的店',
-  image: 'https://randomuser.me/api/portraits/lego/1.jpg'
-}
+// const defaultRestaurant1 = {
+//   name: "Danny的小餐館",
+//   rating: 4.8,
+//   location: "大安區",
+//   address: "台北市大安區臥龍街289號",
+//   lat: '25.017186',
+//   lng: '121.558462',
+//   description: '一家還不錯的店',
+//   image: 'https://randomuser.me/api/portraits/lego/1.jpg'
+// }
 
-describe('# Admin::Restaurant request', () => {
+// describe('# Admin::Restaurant request', () => {
 
-  context('go to admin restaurant page', () => {
+//   context('go to admin restaurant page', () => {
 
-    describe('if user not log in', () => {
+//     describe('if user not log in', () => {
 
-      before(async (done) => {
-        done()
-      })
-      it('should get Unauthorized', (done) => {
-        request(app)
-          .get('/api/admin/restaurants')
-          .expect(401)
-          .end((err, res) => {
-            if (err) { return done(err) }
-            res.text.should.include('Unauthorized')
-            done()
-          })
-      })
-    })
+//       before(async (done) => {
+//         done()
+//       })
+//       it('should get Unauthorized', (done) => {
+//         request(app)
+//           .get('/api/admin/restaurants')
+//           .expect(401)
+//           .end((err, res) => {
+//             if (err) { return done(err) }
+//             res.text.should.include('Unauthorized')
+//             done()
+//           })
+//       })
+//     })
 
-    describe('if normal user logs in', () => {
-      before(async () => {
+//     describe('if normal user logs in', () => {
+//       before(async () => {
 
-        this.ensureAuthenticated = sinon.stub(
-          helpers, 'ensureAuthenticated'
-        ).returns(true);
-        this.getUser = sinon.stub(
-          helpers, 'getUser'
-        ).returns({ id: 1, role: 'User' });
+//         this.ensureAuthenticated = sinon.stub(
+//           helpers, 'ensureAuthenticated'
+//         ).returns(true);
+//         this.getUser = sinon.stub(
+//           helpers, 'getUser'
+//         ).returns({ id: 1, role: 'User' });
 
-      })
-      it('should get error message', (done) => {
-        request(app)
-          .get('/api/admin/restaurants')
-          .expect(401)
-          .expect({ status: 'error', message: 'Permission denied' }, done)
-      })
+//       })
+//       it('should get error message', (done) => {
+//         request(app)
+//           .get('/api/admin/restaurants')
+//           .expect(401)
+//           .expect({ status: 'error', message: 'Permission denied' }, done)
+//       })
 
-      after(async () => {
-        this.ensureAuthenticated.restore();
-        this.getUser.restore();
-      })
-    })
-
-
-    describe('if admin user logs in', () => {
-      before(async () => {
-
-        this.ensureAuthenticated = sinon.stub(
-          helpers, 'ensureAuthenticated'
-        ).returns(true);
-        this.getUser = sinon.stub(
-          helpers, 'getUser'
-        ).returns({ id: 1, role: 'Admin' });
-        await db.User.destroy({ where: {}, truncate: true })
-        await db.Restaurant.destroy({ where: {}, truncate: true })
-        await db.Order.destroy({ where: {}, truncate: true })
-        await db.OrderItem.destroy({ where: {}, truncate: true })
-        await db.Restaurant.create(defaultRestaurant1)
-        await db.Meal.create({ quantity: 50 })
-        await db.Order.create({ UserId: 1, require_date: tmr, order_status: '明日' })
-        await db.OrderItem.create({ OrderId: 1, MealId: 1, quantity: 1 })
-
-      })
-
-      it('should see all restaurants desc by order_num and limit 10', (done) => {
-        request(app)
-          .get('/api/admin/restaurants')
-          .expect(200)
-          .end((err, res) => {
-            expect(res.body).to.have.property('restaurants')
-            expect(res.body.restaurants.length).to.be.at.most(10)
-            return done()
-          })
-      })
-
-      // it('should be able to filter restaurants by location', (done) => {
-      //   request(app)
-      //     .get("/api/admin/restaurants?dist=done")
-      //     .expect(200)
-      //     .end(async (err, res) => {
-      //       expect(res.body.restaurants.length).to.be.equal(1)
-      //       return done()
-      //     })
-      // })
-
-      it('should see specific restaurant info', (done) => {
-        request(app)
-          .get('/api/admin/restaurants/1')
-          .expect(200)
-          .end((err, res) => {
-            expect(res.body.status).to.be.equal('success')
-            expect(res.body).to.have.property('restaurant')
-            return done()
-          })
-      })
-
-      it('fail to get specific restaurant info', (done) => {
-        request(app)
-          .get('/api/admin/restaurants/U001')
-          .expect(400)
-          .expect({ status: "error", message: "restaurant does not exist" }, done)
-      })
-
-      it('should be able to update specific restaurant info', (done) => {
-        request(app)
-          .put('/api/admin/restaurants/1')
-          .send('name=john&description=nice&tel=12346478&address=somewhereInTaiwan')
-          .expect(200)
-          .end(async (err, res) => {
-            const restaurant = await db.Restaurant.findByPk(1)
-            expect(restaurant.name).to.be.equal('john')
-            return done()
-          })
-      })
-
-      it('should be able to delete specific restaurant info', (done) => {
-        request(app)
-          .delete('/api/admin/restaurants/1')
-          .expect(200)
-          .end((err, res) => {
-            db.Restaurant.findByPk(1).then(restaurant => {
-              expect(restaurant).to.be.null
-              return done()
-            })
-          })
-      })
-
-      it('fail to delete specific restaurant info', (done) => {
-        request(app)
-          .delete('/api/admin/restaurants/U001')
-          .expect(400)
-          .expect({ status: "error", message: "restaurant does not exist" }, done)
-
-      })
-
-      // it('should see today orders', (done) => {
-      //   request(app)
-      //     .get('/api/admin/orders')
-      //     .expect(200)
-      //     .end((err, res) => {
-      //       expect(res.body.message).to.be.equal('Successfully get Orders.')
-      //       res.body.orders.map(item => {
-      //         expect(item).to.have.property('User')
-      //         // expect(item).to.have.property('meals')
-      //         // expect(item).to.have.property('id')
-      //         // expect(item).to.have.property('require_time')
-      //         // expect(item).to.have.property('order_status')
-      //         // expect(item).to.have.property('date')
-      //         // expect(item).to.have.property('time')
-      //       })
-      //       return done()
-      //     })
-      // })
-
-      it('should see error message when orders can not be found', (done) => {
-        request(app)
-          .get('/api/admin/orders')
-          .expect(200)
-          .end((err, res) => {
-            expect(res.body.message).to.be.equal('can not find any orders')
-            return done()
-          })
-      })
-
-      it('should see specific order info', (done) => {
-        request(app)
-          .get('/api/order/1')
-          .expect(200)
-          .end(async (err, res) => {
-            const order = await db.Order.findByPk(1)
-            expect(order).not.to.be.null
-            expect(res.body.status).to.be.equal('success')
-            return done()
-          })
-      })
-
-      it('fail to see specific order info', (done) => {
-        request(app)
-          .get('/api/order/U001')
-          .expect(400)
-          .expect({ status: "error", order: null, message: "order does not exist" }, done)
-      })
-
-      it('should be able to update specific order info', (done) => {
-        request(app)
-          .put('/api/order/1')
-          .send(`require_date=1991-04-14&quantity=2`)
-          .expect(200)
-          .end(async (err, res) => {
-            const order = await db.Order.findByPk(1)
-            expect(order.require_date).not.to.be.equal(tmr)
-            expect(order).not.to.be.null
-            return done()
-          })
-      })
-
-      it('fail to update specific order info when you are not subscribe', (done) => {
-        request(app)
-          .put('/api/order/U001')
-          .expect(400)
-          .expect({ status: "error", "subscription": null, message: "you are not authorized to do that" }, done)
-      })
-
-      it('should be able to cancel specific order', (done) => {
-        request(app)
-          .put('/api/order/1/cancel')
-          .expect(200)
-          .end(async (err, res) => {
-            // const order = await db.Order.findByPk(1)
-            // expect(order.order_status).to.be.equal('取消')
-            // return done()
-            expect({ status: "error", "subscription": null, message: "you are not authorized to do that" })
-            return done()
-          })
-      })
-
-      it('fail to delete specific order info', (done) => {
-        request(app)
-          .put('/api/order/1/cancel')
-          .expect(400, done)
-      })
+//       after(async () => {
+//         this.ensureAuthenticated.restore();
+//         this.getUser.restore();
+//       })
+//     })
 
 
+//     describe('if admin user logs in', () => {
+//       before(async () => {
 
-      after(async () => {
+//         this.ensureAuthenticated = sinon.stub(
+//           helpers, 'ensureAuthenticated'
+//         ).returns(true);
+//         this.getUser = sinon.stub(
+//           helpers, 'getUser'
+//         ).returns({ id: 1, role: 'Admin' });
+//         await db.User.destroy({ where: {}, truncate: true })
+//         await db.Restaurant.destroy({ where: {}, truncate: true })
+//         await db.Order.destroy({ where: {}, truncate: true })
+//         await db.OrderItem.destroy({ where: {}, truncate: true })
+//         await db.Restaurant.create(defaultRestaurant1)
+//         await db.Meal.create({ quantity: 50 })
+//         await db.Order.create({ UserId: 1, require_date: tmr, order_status: '明日' })
+//         await db.OrderItem.create({ OrderId: 1, MealId: 1, quantity: 1 })
 
-        this.ensureAuthenticated.restore();
-        this.getUser.restore();
-        await db.User.destroy({ where: {}, truncate: true })
-        await db.Restaurant.destroy({ where: {}, truncate: true })
-        // await db.Order.destroy({ where: {}, truncate: true })
-        await db.OrderItem.destroy({ where: {}, truncate: true })
+//       })
 
-      })
-    })
+//       it('should see all restaurants desc by order_num and limit 10', (done) => {
+//         request(app)
+//           .get('/api/admin/restaurants')
+//           .expect(200)
+//           .end((err, res) => {
+//             expect(res.body).to.have.property('restaurants')
+//             expect(res.body.restaurants.length).to.be.at.most(10)
+//             return done()
+//           })
+//       })
+
+//       // it('should be able to filter restaurants by location', (done) => {
+//       //   request(app)
+//       //     .get("/api/admin/restaurants?dist=done")
+//       //     .expect(200)
+//       //     .end(async (err, res) => {
+//       //       expect(res.body.restaurants.length).to.be.equal(1)
+//       //       return done()
+//       //     })
+//       // })
+
+//       it('should see specific restaurant info', (done) => {
+//         request(app)
+//           .get('/api/admin/restaurants/1')
+//           .expect(200)
+//           .end((err, res) => {
+//             expect(res.body.status).to.be.equal('success')
+//             expect(res.body).to.have.property('restaurant')
+//             return done()
+//           })
+//       })
+
+//       it('fail to get specific restaurant info', (done) => {
+//         request(app)
+//           .get('/api/admin/restaurants/U001')
+//           .expect(400)
+//           .expect({ status: "error", message: "restaurant does not exist" }, done)
+//       })
+
+//       it('should be able to update specific restaurant info', (done) => {
+//         request(app)
+//           .put('/api/admin/restaurants/1')
+//           .send('name=john&description=nice&tel=12346478&address=somewhereInTaiwan')
+//           .expect(200)
+//           .end(async (err, res) => {
+//             const restaurant = await db.Restaurant.findByPk(1)
+//             expect(restaurant.name).to.be.equal('john')
+//             return done()
+//           })
+//       })
+
+//       it('should be able to delete specific restaurant info', (done) => {
+//         request(app)
+//           .delete('/api/admin/restaurants/1')
+//           .expect(200)
+//           .end((err, res) => {
+//             db.Restaurant.findByPk(1).then(restaurant => {
+//               expect(restaurant).to.be.null
+//               return done()
+//             })
+//           })
+//       })
+
+//       it('fail to delete specific restaurant info', (done) => {
+//         request(app)
+//           .delete('/api/admin/restaurants/U001')
+//           .expect(400)
+//           .expect({ status: "error", message: "restaurant does not exist" }, done)
+
+//       })
+
+//       // it('should see today orders', (done) => {
+//       //   request(app)
+//       //     .get('/api/admin/orders')
+//       //     .expect(200)
+//       //     .end((err, res) => {
+//       //       expect(res.body.message).to.be.equal('Successfully get Orders.')
+//       //       res.body.orders.map(item => {
+//       //         expect(item).to.have.property('User')
+//       //         // expect(item).to.have.property('meals')
+//       //         // expect(item).to.have.property('id')
+//       //         // expect(item).to.have.property('require_time')
+//       //         // expect(item).to.have.property('order_status')
+//       //         // expect(item).to.have.property('date')
+//       //         // expect(item).to.have.property('time')
+//       //       })
+//       //       return done()
+//       //     })
+//       // })
+
+//       it('should see error message when orders can not be found', (done) => {
+//         request(app)
+//           .get('/api/admin/orders')
+//           .expect(200)
+//           .end((err, res) => {
+//             expect(res.body.message).to.be.equal('can not find any orders')
+//             return done()
+//           })
+//       })
+
+//       it('should see specific order info', (done) => {
+//         request(app)
+//           .get('/api/order/1')
+//           .expect(200)
+//           .end(async (err, res) => {
+//             const order = await db.Order.findByPk(1)
+//             expect(order).not.to.be.null
+//             expect(res.body.status).to.be.equal('success')
+//             return done()
+//           })
+//       })
+
+//       it('fail to see specific order info', (done) => {
+//         request(app)
+//           .get('/api/order/U001')
+//           .expect(400)
+//           .expect({ status: "error", order: null, message: "order does not exist" }, done)
+//       })
+
+//       it('should be able to update specific order info', (done) => {
+//         request(app)
+//           .put('/api/order/1')
+//           .send(`require_date=1991-04-14&quantity=2`)
+//           .expect(200)
+//           .end(async (err, res) => {
+//             const order = await db.Order.findByPk(1)
+//             expect(order.require_date).not.to.be.equal(tmr)
+//             expect(order).not.to.be.null
+//             return done()
+//           })
+//       })
+
+//       it('fail to update specific order info when you are not subscribe', (done) => {
+//         request(app)
+//           .put('/api/order/U001')
+//           .expect(400)
+//           .expect({ status: "error", "subscription": null, message: "you are not authorized to do that" }, done)
+//       })
+
+//       it('should be able to cancel specific order', (done) => {
+//         request(app)
+//           .put('/api/order/1/cancel')
+//           .expect(200)
+//           .end(async (err, res) => {
+//             // const order = await db.Order.findByPk(1)
+//             // expect(order.order_status).to.be.equal('取消')
+//             // return done()
+//             expect({ status: "error", "subscription": null, message: "you are not authorized to do that" })
+//             return done()
+//           })
+//       })
+
+//       it('fail to delete specific order info', (done) => {
+//         request(app)
+//           .put('/api/order/1/cancel')
+//           .expect(400, done)
+//       })
 
 
-  })
-});
+
+//       after(async () => {
+
+//         this.ensureAuthenticated.restore();
+//         this.getUser.restore();
+//         await db.User.destroy({ where: {}, truncate: true })
+//         await db.Restaurant.destroy({ where: {}, truncate: true })
+//         // await db.Order.destroy({ where: {}, truncate: true })
+//         await db.OrderItem.destroy({ where: {}, truncate: true })
+
+//       })
+//     })
+
+
+//   })
+// });
