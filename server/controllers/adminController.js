@@ -24,7 +24,7 @@ let adminController = {
       let restaurants = await Restaurant.findAll({
         where: {
           name: { [Op.substring]: name || '' },
-          CategoryId: { [Op.substring]: category || '' },
+          CategoryId: category ? { [Op.eq]: category } : { [Op.gt]: 0 },
           location: { [Op.substring]: dist || '' }
         },
         include: [
@@ -119,14 +119,16 @@ let adminController = {
 
   getUsers: async (req, res) => {
     try {
-      const { name, payment_status } = req.body
+      const { name, subscription_status } = req.query
       let time = moment().format('YYYY-MM-DD')
       let whereQuery = {}
-
-      if (payment_status === false) {
-        whereQuery = { sub_expired_date: { [Op.lt]: time } }
-      } else {
-        whereQuery = { payment_status: payment_status, sub_expired_date: { [Op.gte]: time } }
+      // 邏輯有瑕疵，尚無法篩選還有兩天以上，但訂單餘額已經為 0 的人為無效訂單。
+      if (subscription_status) {
+        if (subscription_status === 'inactive') {
+          whereQuery = { sub_expired_date: { [Op.lt]: time } }
+        } else {
+          whereQuery = { sub_description: true, sub_expired_date: { [Op.gte]: time } }
+        }
       }
 
       let users = await User.findAll({
@@ -148,11 +150,8 @@ let adminController = {
       })
       users = users.map(user => ({
         ...user.dataValues,
-        sub_description: (user.dataValues.Subscriptions[0]) ? (
-          user.dataValues.Subscriptions[0].dataValues.payment_status === true &&
-          user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()
-        ) ? user.dataValues.Subscriptions[0].dataValues.sub_description : false
-          : false,
+        sub_description: (user.dataValues.Subscriptions[0]) ?
+          user.dataValues.Subscriptions[0].dataValues.sub_description : false,
         subscription_status: (user.dataValues.Subscriptions[0]) ? (
           user.dataValues.Subscriptions[0].dataValues.payment_status === true &&
           user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? 'active' : 'inactive'
