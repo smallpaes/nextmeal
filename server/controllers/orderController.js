@@ -154,13 +154,15 @@ let orderController = {
         attributes: ['id', 'amount', 'order_date', 'require_date']
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
+      if (order.meals.length === 0 || order.meals.dataValues === undefined) {
+        return res.status(400).json({status: 'error', message: 'meal or restaurant does not exist'})
+      }
       // 為了給前端 time_slots 取得餐廳開店與關店時間
-      let opening_hour = order.meals[0].dataValues.Restaurant.dataValues.opening_hour
-      let closing_hour = order.meals[0].dataValues.Restaurant.dataValues.closing_hour
+      let opening_hour = order.meals.dataValues.Restaurant.dataValues.opening_hour
+      let closing_hour = order.meals.dataValues.Restaurant.dataValues.closing_hour
       let time_slots = getTimeStop(opening_hour, closing_hour)
 
-      order = { ...order.dataValues, meals: order.dataValues.meals[0].dataValues }
+      order = { ...order.dataValues, meals: order.dataValues.meals.dataValues }
       // 回傳 subscription 數量，以及餐點剩餘數量
       return res.status(200).json({
         status: 'success',
@@ -168,6 +170,7 @@ let orderController = {
         message: 'Successfully edit Order information.'
       })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
