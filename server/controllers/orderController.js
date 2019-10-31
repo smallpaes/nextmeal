@@ -26,7 +26,7 @@ let orderController = {
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
-        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
+        attributes: ['id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
         order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
@@ -109,7 +109,7 @@ let orderController = {
         ],
         attributes: ['id', 'order_date', 'require_date', 'order_status']
       })
-      if (!order) return res.status(400).json({ status: 'error', order, message: 'getOrder' })
+      if (!order) return res.status(400).json({ status: 'error', order, message: 'order does not exist' })
       order = { ...order.dataValues, meals: order.dataValues.meals[0] }
       return res.status(200).json({ status: 'success', order, message: 'Successfully get the Order' })
     } catch (error) {
