@@ -34,9 +34,11 @@ let restController = {
           offset: page * pageLimit,
           limit: pageLimit
         })
-        more_restaurants.count = more_restaurants.count - 6
-        more_restaurants.pages = Math.ceil((more_restaurants.count) / pageLimit)
-
+        more_restaurants = {
+          count: more_restaurants.count - 6,
+          restaurants: more_restaurants.rows,
+          pages: Math.ceil((more_restaurants.count - 6) / pageLimit)
+        }
         return res.status(200).json({ status: 'success', more_restaurants, message: 'Get all restaurants page info' })
       }
 
