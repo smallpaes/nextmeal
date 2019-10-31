@@ -15,6 +15,15 @@ const { validMessage, getTimeStop, avgRating } = require('../middleware/middlewa
 let orderController = {
   getNew: async (req, res) => {
     try {
+      const time = moment().add(1, 'days').startOf('day').toDate()
+      const order = await Order.findAll({
+        where: {
+          UserId: req.user.id,
+          require_date: { [Op.gte]: time },
+          order_status: { [Op.notLike]: '取消' }
+        }
+      })
+      if (order.length > 1) return res.status(400).json({status: 'error', message: 'you are already ordered today'})
       const location = sequelize.literal(`ST_GeomFromText('POINT(${req.user.lng} ${req.user.lat})')`)
       const distance = sequelize.fn('ST_Distance_Sphere', sequelize.literal('geometry'), location)
       // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
@@ -168,7 +177,7 @@ let orderController = {
       let subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: 1,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start },
         },
         order: [['sub_expired_date', 'DESC']],
@@ -300,7 +309,7 @@ let orderController = {
       let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
-          payment_status: 1,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start }
         },
         order: [['sub_expired_date', 'DESC']],

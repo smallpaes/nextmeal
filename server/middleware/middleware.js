@@ -235,7 +235,7 @@ let middleware = {
         rating: comments[0].dataValues.average.toFixed(2) || 0
       })
       await order.update({
-        hasComment: 1
+        hasComment: true
       })
       return res.status(200).json({ status: 'success', comment, message: 'Successfully post comment.' })
     } catch (error) {
