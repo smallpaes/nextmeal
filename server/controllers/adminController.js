@@ -128,14 +128,14 @@ let adminController = {
   getUsers: async (req, res) => {
     try {
       const { name, subscription_status } = req.query
-      let time = moment().format('YYYY-MM-DD')
+      const start = moment().startOf('day').toDate()
       let whereQuery = {}
       // 邏輯有瑕疵，尚無法篩選還有兩天以上，但訂單餘額已經為 0 的人為無效訂單。
       if (subscription_status) {
         if (subscription_status === 'inactive') {
-          whereQuery = { sub_expired_date: { [Op.lt]: time } }
+          whereQuery = { sub_expired_date: { [Op.lt]: start } }
         } else {
-          whereQuery = { sub_description: true, sub_expired_date: { [Op.gte]: time } }
+          whereQuery = { sub_description: true, sub_expired_date: { [Op.gte]: start } }
         }
       }
 
@@ -147,7 +147,7 @@ let adminController = {
         }],
         attributes: {
           include: [
-            [sequelize.literal(customQuery.Order.UserId), 'orderCount'],
+            [sequelize.literal(customQuery.Order.UserId), 'order_num'],
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
@@ -162,7 +162,7 @@ let adminController = {
           user.dataValues.Subscriptions[0].dataValues.sub_description : false,
         subscription_status: (user.dataValues.Subscriptions[0]) ? (
           user.dataValues.Subscriptions[0].dataValues.payment_status === true &&
-          user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? 'active' : 'inactive'
+          user.dataValues.Subscriptions[0].dataValues.sub_expired_date >= start) ? 'active' : 'inactive'
           : 'inactive'
       }))
       return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
@@ -190,7 +190,10 @@ let adminController = {
   deleteUser: async (req, res) => {
     try {
       let user = await User.findByPk(req.params.user_id)
-      if (!user) return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
+      if (!user) return res.status(200).json({ status: 'success', message: 'user is not exist' })
+      if (user.role === 'Admin' || req.user.id === user.id) {
+        return res.status(200).json({ status: 'success', message: 'you are not allow to do this action' })
+      }
       await user.destroy()
       return res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
     } catch (error) {
