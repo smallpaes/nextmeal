@@ -12,6 +12,7 @@ const { validMessage } = require('../middleware/middleware')
 const moment = require('moment')
 const mealQuantities = 50
 const _ = require('underscore')
+const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 
 let ownerController = {
   getRestaurant: async (req, res) => {
@@ -23,14 +24,13 @@ let ownerController = {
           exclude: ['createdAt', 'updatedAt']
         }
       })
-      if (restaurant.length === 0) {
-        return res.status(200).json({ status: 'success', categories, message: 'You have not restaurant yet.' })
-      }
-
       const categories = await Category.findAll({
         attributes: ['id', 'name']
       })
-      res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get the restaurant information.' })
+      if (restaurant.length === 0) {
+        return res.status(200).json({ status: 'success', categories, message: 'You have not restaurant yet.' })
+      }
+      return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get the restaurant information.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -145,15 +145,19 @@ let ownerController = {
       let restaurant = await Restaurant.findAll({
         where: { UserId: req.user.id },
         include: [Meal],
-        attributes: ['id']
+        attributes: ['id', 'UserId']
       })
       if (restaurant.length === 0 || restaurant[0].dataValues.Meals.length === 0) {
-        return res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant or meal yet.' })
+        return res.status(200).json({ status: 'success', message: 'You haven\'t setting restaurant or meal yet.' })
+      }
+      if (restaurant[0].dataValues.UserId !== req.user.id) {
+        return res.status(200).json({ status: 'success', message: 'You are not allow do this action.' })
       }
       let meals = restaurant.map(rest => rest.dataValues.Meals)
       meals = meals[0].map(meal => meal.dataValues)
       return res.status(200).json({ status: 'success', meals, message: 'Successfully get the dish information.' })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -234,14 +238,18 @@ let ownerController = {
 
   getDish: async (req, res) => {
     try {
-      let meal = await Meal.findByPk(req.params.dish_id)
+      let meal = await Meal.findByPk(req.params.dish_id, {
+        include: [{model: Restaurant, attributes: ['UserId']}]
+      })
       if (!meal) {
         return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
       }
-
-      res.status(200).json({ status: 'success', meal, message: 'Successfully get the dish information.' })
+      if (meal.Restaurant.UserId !== req.user.id) {
+        return res.status(200).json({ status: 'success', message: 'You are not allow do this action.' })
+      }
+      return res.status(200).json({ status: 'success', meal, message: 'Successfully get the dish information.' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
 
@@ -293,12 +301,13 @@ let ownerController = {
   getMenu: async (req, res) => {
     try {
       const restaurant = await Restaurant.findOne({
-        where: { UserId: 3 }, attributes: ['id'], include: [{ model: Meal, attributes: ['id', 'name'] }]
+        where: { UserId: req.user.id }, attributes: ['id'], include: [{ model: Meal, attributes: ['id', 'name'] }]
       })
+      if (!restaurant) return res.status(200).json({ status: 'success', message: 'you have not restaurant yet' })
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
-        return res.status(400).json({ status: 'error', message: 'must query for this week or next week' })
+        return res.status(200).json({ status: 'success', message: 'must query for this week or next week' })
       }
 
       if (req.query.ran === 'thisWeek') {
@@ -362,6 +371,7 @@ let ownerController = {
       const start = moment().startOf('day').toDate()
       const end = moment().endOf('day').toDate()
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
+      if (req.user.id !== restaurant.UserId) return res.status(200).json({status: 'success', message: 'you are not allow do this action'})
       let orders = await Order.findAll({
         where: {
           order_status: { [Op.like]: '今日' },
@@ -378,7 +388,7 @@ let ownerController = {
         ],
         attributes: [
           'id', 'require_date', 'order_status',
-          [sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time'],
+          customQuery.char.time,
         ],
         order: [['require_date', 'ASC']],
       })
@@ -387,7 +397,7 @@ let ownerController = {
         meals: order.dataValues.meals[0]
       }))
       orders = _.mapObject(_.groupBy(orders, 'time'))
-      res.status(200).json({ status: 'success', orders, message: 'getOrders' })
+      res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
