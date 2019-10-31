@@ -118,7 +118,7 @@ let orderController = {
         ],
         attributes: ['id', 'order_date', 'require_date', 'order_status']
       })
-      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
+      if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
       if (!order) return res.status(400).json({ status: 'error', order, message: 'not order yet' })
       order = { ...order.dataValues, meals: order.dataValues.meals[0] }
       return res.status(200).json({ status: 'success', order, message: 'Successfully get the Order' })
@@ -194,7 +194,7 @@ let orderController = {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
+      if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
       validMessage(req, res)
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
@@ -274,6 +274,9 @@ let orderController = {
       }
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (order.hasComment) return res.status(400).json({ status: 'error', message: 'This order has already been commented.' })
+      if (order.meals.length === 0 || order.meals[0] === undefined) {
+        return res.status(400).json({status: 'error', message: 'meal or restaurant does not exist'})
+      }
       validMessage(req, res)
       let restaurant = await Restaurant.findByPk(order.meals[0].Restaurant.id)
       const { file } = req
@@ -300,6 +303,7 @@ let orderController = {
         avgRating(res, restaurant, comment, order)
       }
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -311,10 +315,10 @@ let orderController = {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
-      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
+      if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
       let subscription = await Subscription.findOne({
         where: {
-          UserId: order.UserId,
+          UserId: Number(order.UserId),
           payment_status: true,
           sub_expired_date: { [Op.gte]: start }
         },

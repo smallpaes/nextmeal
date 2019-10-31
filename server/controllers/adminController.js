@@ -7,6 +7,7 @@ const Op = sequelize.Op
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
 const Comment = db.Comment
+const Category = db.Category
 const Order = db.Order
 const Meal = db.Meal
 const User = db.User
@@ -47,7 +48,10 @@ let adminController = {
         // subQuery: false
 
       })
-
+      restaurants = restaurants.map(restaurant => ({
+        ...restaurant.dataValues,
+        orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
+      }))
       restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
       res.status(200).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
     } catch (error) {
@@ -57,12 +61,16 @@ let adminController = {
   // admin 看單一餐廳資訊
   getRestaurant: async (req, res) => {
     try {
-      const restaurant = await Restaurant.findByPk(req.params.restaurant_id)
-      if (restaurant) {
-        return res.status(200).json({ status: 'success', restaurant, message: 'Successfully get restautant' })
+      const restaurant = await Restaurant.findByPk(req.params.restaurant_id, {
+        include: [Category]
+      })
+      if (!restaurant) {
+        return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
       }
-      return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
+      const categories = await Category.findAll()
+      return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get restautant' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -139,7 +147,7 @@ let adminController = {
         }],
         attributes: {
           include: [
-            [sequelize.literal(customQuery.Order.UserId), 'order_num'],
+            [sequelize.literal(customQuery.Order.UserId), 'orderCount'],
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
