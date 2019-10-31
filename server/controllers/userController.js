@@ -355,7 +355,13 @@ let userController = {
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_status === 'cancel') { whereQuery['order_status'] = '取消' }
-      if (order_status === 'history') { whereQuery = { require_date: { [Op.lt]: start } } }
+      if (order_status === 'history') {
+        start = moment().startOf('day').toDate()
+        whereQuery = {
+          UserId: req.user.id,
+          require_date: { [Op.lt]: start }
+        }
+      }
       let orders = await Order.findAndCountAll({
         where: whereQuery,
         include: [{
