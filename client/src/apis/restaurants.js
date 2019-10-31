@@ -4,8 +4,9 @@ export default {
   getHome () {
     return apiHelper.get('/')
   },
-  getRestaurants ({ dist }) {
-    const searchParams = new URLSearchParams({ dist })
+  getRestaurants ({ dist, page }) {
+    const searchParams = new URLSearchParams({ dist, page })
+    console.log(searchParams)
     return apiHelper.get(`/restaurants?${searchParams}`)
   },
   getRestaurant ({ restaurantId, page }) {

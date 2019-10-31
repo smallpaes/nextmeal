@@ -669,6 +669,42 @@ module.exports = {
         rating: parseFloat(Math.random() * 5).toFixed(1),
         CategoryId: Math.floor(Math.random() * 5) + 1,
         UserId: 34
+      },
+      {
+        name: faker.name.findName(),
+        tel: faker.phone.phoneNumber(),
+        address: "台北市信義區松壽路12號",
+        opening_hour: '11:00',
+        closing_hour: "14:00",
+        image: faker.image.imageUrl(),
+        description: faker.lorem.text(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        lat: 25.036691,
+        lng: 121.566490,
+        location: '信義區',
+        geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.566490 25.036691)`),
+        rating: parseFloat(Math.random() * 5).toFixed(1),
+        CategoryId: Math.floor(Math.random() * 5) + 1,
+        UserId: 35
+      },
+      {
+        name: faker.name.findName(),
+        tel: faker.phone.phoneNumber(),
+        address: "台北市信義區松壽路12號",
+        opening_hour: '11:00',
+        closing_hour: "14:00",
+        image: faker.image.imageUrl(),
+        description: faker.lorem.text(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        lat: 25.036691,
+        lng: 121.566490,
+        location: '信義區',
+        geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.566490 25.036691)`),
+        rating: parseFloat(Math.random() * 5).toFixed(1),
+        CategoryId: Math.floor(Math.random() * 5) + 1,
+        UserId: 36
       }
     ]
     );
