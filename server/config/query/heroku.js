@@ -10,5 +10,9 @@ module.exports = {
   char: {
     date: [sequelize.fn('to_char', sequelize.col('require_date'), 'YYMMDD'), 'date'],
     time: [sequelize.fn('to_char', sequelize.col('require_date'), 'HH24:MI'), 'time']
+  },
+  geo: {
+    geometry: 'ST_DistanceSphere',
+    random: 'random()'
   }
 }

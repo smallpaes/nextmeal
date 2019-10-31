@@ -11,6 +11,7 @@ const moment = require('moment')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const { validMessage, getTimeStop, avgRating } = require('../middleware/middleware')
+const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 
 let orderController = {
   getNew: async (req, res) => {
@@ -25,7 +26,7 @@ let orderController = {
       })
       if (order.length > 1) return res.status(400).json({status: 'error', message: 'you are already ordered today'})
       const location = sequelize.literal(`ST_GeomFromText('POINT(${req.user.lng} ${req.user.lat})')`)
-      const distance = sequelize.fn('ST_Distance_Sphere', sequelize.literal('geometry'), location)
+      const distance = sequelize.fn(customQuery.geo.geometry, sequelize.literal('geometry'), location)
       // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
       let restaurants = await Restaurant.findAll({
         where: sequelize.where(distance, { [Op.lte]: 500 }),
@@ -36,7 +37,7 @@ let orderController = {
           required: true
         }],
         attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
-        order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
+        order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
       restaurants = restaurants.map((restaurant, index) => ({
