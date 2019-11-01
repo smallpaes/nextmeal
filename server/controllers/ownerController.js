@@ -10,7 +10,6 @@ const Order = db.Order
 const User = db.User
 const { validMessage } = require('../middleware/middleware')
 const moment = require('moment')
-const mealQuantities = 50
 const _ = require('underscore')
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 
@@ -39,8 +38,8 @@ let ownerController = {
   postRestaurant: async (req, res) => {
     try {
       validMessage(req, res)
-      const { lat, lng } = req.body
-      if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'need a valid address' })
+      let { lat, lng } = req.body
+      if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'need lat and lng' })
       let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
       if (restaurant.length > 0) return res.status(400).json({ status: 'error', message: 'You already have a restaurant.' });
       const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
@@ -174,34 +173,24 @@ let ownerController = {
       if (restaurant === null) {
         res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant yet.' })
       }
-      let mealServeing = restaurant.dataValues.Meals.map(rest => rest.dataValues.isServing).includes(true)
-      // if (restaurant[0].dataValues.Meals.length > 0) {
-      //   res.status(422).json({status: 'error', message: 'the multiple meals of feature is not available for the moment.'})
-      // }
       validMessage(req, res) //驗證表格
       const { file } = req
+      if (!file) return res.status(400).json({ status: 'error', message: 'You need to pick a picture' })
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
         imgur.upload(file.path, async (err, img) => {
-          if (!mealServeing) {
+          if (restaurant.Meals.length === 0) {
             await Meal.create({
               ...req.body,
               image: file ? img.data.link : 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
               RestaurantId: restaurant.id,
-              quantity: mealQuantities,
-              modifiedAt: null,
-              isServing: 1,
-              nextServing: false
+              nextServing: true
             })
           } else {
             await Meal.create({
               ...req.body,
               image: file ? img.data.link : 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
               RestaurantId: restaurant.id,
-              quantity: mealQuantities,
-              modifiedAt: null,
-              isServing: 0,
-              nextServing: 0
             })
           }
           return res.status(200).json({
@@ -209,29 +198,6 @@ let ownerController = {
             message: 'Successfully create a meal with image.'
           })
         })
-      } else {
-        if (!mealServeing) {
-          await Meal.create({
-            ...req.body,
-            image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
-            RestaurantId: restaurant.id,
-            quantity: mealQuantities,
-            modifiedAt: null,
-            isServing: 1,
-            nextServing: 0
-          })
-        } else {
-          await Meal.create({
-            ...req.body,
-            image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
-            RestaurantId: restaurant.id,
-            quantity: mealQuantities,
-            modifiedAt: null,
-            isServing: 0,
-            nextServing: 0
-          })
-        }
-        res.status(200).json({ status: 'success', message: 'Successfully create a meal.' })
       }
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })

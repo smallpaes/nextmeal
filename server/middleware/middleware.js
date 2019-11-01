@@ -128,11 +128,10 @@ let middleware = {
       const subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: trues,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start },
         },
-        order: [['sub_expired_date', 'DESC']],
-        limit: 1
+        order: [['sub_expired_date', 'DESC']]
       })
       if (!subscription) return res.status(400).json({ status: 'error', message: 'You need to subscribe next meal now.' })
       next()
@@ -221,8 +220,7 @@ let middleware = {
         }
       })
     } catch (error) {
-      console.log(error)
-      res.status(400).json({ status: 'error', message: error })
+      return res.status(400).json({ status: 'error', message: error })
     }
   },
   avgRating: async (res, restaurant, comment, order) => {

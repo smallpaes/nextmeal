@@ -283,7 +283,6 @@ let userController = {
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -306,7 +305,6 @@ let userController = {
         }],
         attributes: ['id', 'require_date']
       })
-
       if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
