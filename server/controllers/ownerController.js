@@ -32,6 +32,7 @@ let ownerController = {
       }
       return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get the restaurant information.' })
     } catch (error) {
+      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -239,10 +240,10 @@ let ownerController = {
   getDish: async (req, res) => {
     try {
       let meal = await Meal.findByPk(req.params.dish_id, {
-        include: [{model: Restaurant, attributes: ['UserId']}]
+        include: [{ model: Restaurant, attributes: ['UserId'] }]
       })
       if (!meal) {
-        return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
+        return res.status(422).json({ status: 'error', message: 'meal does not exist' })
       }
       if (meal.Restaurant.UserId !== req.user.id) {
         return res.status(200).json({ status: 'success', message: 'You are not allow do this action.' })
@@ -371,7 +372,7 @@ let ownerController = {
       const start = moment().startOf('day').toDate()
       const end = moment().endOf('day').toDate()
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
-      if (req.user.id !== restaurant.UserId) return res.status(200).json({status: 'success', message: 'you are not allow do this action'})
+      if (req.user.id !== restaurant.UserId) return res.status(200).json({ status: 'success', message: 'you are not allow do this action' })
       let orders = await Order.findAll({
         where: {
           order_status: { [Op.like]: '今日' },

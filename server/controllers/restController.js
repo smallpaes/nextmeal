@@ -76,7 +76,7 @@ let restController = {
         },
         restaurants
       }
-      return res.status(200).json({ 
+      return res.status(200).json({
         status: 'success', popular_restaurants,
         more_restaurants, map, districts,
         message: 'Successfully get all restaurants page info'
@@ -87,7 +87,7 @@ let restController = {
   },
 
   getRestaurant: async (req, res) => {
-    try {      
+    try {
       let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
       let restaurant, district
       if (req.params.restaurant_id) {
@@ -108,7 +108,7 @@ let restController = {
         }
         let comments = await Comment.findAndCountAll({
           where: { RestaurantId: req.params.restaurant_id },
-          include: [{model: User, attributes: ['id', 'name', 'avatar']}], //使用者名稱、照片、評分、評論內容
+          include: [{ model: User, attributes: ['id', 'name', 'avatar'] }], //使用者名稱、照片、評分、評論內容
           attributes: ['id', 'user_text', 'res_text', 'rating', 'createdAt'],
           offset: (page - 1) * commentLimit,
           limit: commentLimit

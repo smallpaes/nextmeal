@@ -120,23 +120,28 @@ describe('# Admin::User request', () => {
           })
       })
 
-      it('should be able to filter user by payment_status', (done) => {
-        request(app)
-          .get('/api/admin/users?payment_status=true')
-          .expect(200)
-          .end(async (err, res) => {
-            expect(res.body.users.length).to.be.equal(1)
-            return done()
-          })
-      })
+      // it('should be able to filter user by payment_status', (done) => {
+      //   request(app)
+      //     .get('/api/admin/users?payment_status=true')
+      //     .expect(200)
+      //     .end(async (err, res) => {
+      //       expect(res.body.users.length).to.be.equal(1)
+      //       return done()
+      //     })
+      // })
 
       it('should see specific user info', (done) => {
         request(app)
           .get('/api/admin/users/1')
           .expect(200)
           .end((err, res) => {
-            expect(res.body).to.have.property('name')
-            expect(res.body).to.have.property('location')
+            expect(res.body.user).to.have.property('name')
+            expect(res.body.user).to.have.property('location')
+            expect(res.body.user).to.have.property('lat')
+            expect(res.body.user).to.have.property('lng')
+            expect(res.body.user).to.have.property('address')
+            expect(res.body.user).to.have.property('role')
+            expect(res.body.user).to.have.property('email')
             return done()
           })
       })
@@ -145,13 +150,13 @@ describe('# Admin::User request', () => {
         request(app)
           .get('/api/admin/users/U100')
           .expect(400)
-          .expect({ status: "error", message: "user does not exist" }, done)
+          .expect({ status: "error", user: null, message: "user does not exist" }, done)
       })
 
       it('should be able to update specific user info', (done) => {
         request(app)
-          .put('/api/admin/users/1')
-          .send('name=john')
+          .put('/api/users/1/edit')
+          .send('name=john&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121')
           .expect(200)
           .end(async (err, res) => {
             const user = await db.User.findByPk(1)
@@ -159,19 +164,6 @@ describe('# Admin::User request', () => {
             return done()
           })
       })
-
-      it('should be able to delete specific user info', (done) => {
-        request(app)
-          .delete('/api/admin/users/1')
-          .expect(200)
-          .end((err, res) => {
-            db.User.findByPk(1).then(user => {
-              expect(user).to.be.null
-              return done()
-            })
-          })
-      })
-
 
 
       after(async () => {

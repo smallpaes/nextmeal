@@ -24,7 +24,7 @@ let orderController = {
           order_status: { [Op.notLike]: '取消' }
         }
       })
-      if (order.length > 1) return res.status(400).json({status: 'error', message: 'you are already ordered today'})
+      if (order.length > 1) return res.status(400).json({ status: 'error', message: 'you are already ordered today' })
       const location = sequelize.literal(`ST_GeomFromText('POINT(${req.user.lng} ${req.user.lat})')`)
       const distance = sequelize.fn(customQuery.geo.geometry, sequelize.literal('geometry'), location)
       // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
@@ -36,7 +36,7 @@ let orderController = {
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
-        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
+        attributes: ['id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
         order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
@@ -155,7 +155,7 @@ let orderController = {
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (order.meals.length === 0 || order.meals.dataValues === undefined) {
-        return res.status(400).json({status: 'error', message: 'meal or restaurant does not exist'})
+        return res.status(400).json({ status: 'error', message: 'meal or restaurant does not exist' })
       }
       // 為了給前端 time_slots 取得餐廳開店與關店時間
       let opening_hour = order.meals.dataValues.Restaurant.dataValues.opening_hour
@@ -275,7 +275,7 @@ let orderController = {
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (order.hasComment) return res.status(400).json({ status: 'error', message: 'This order has already been commented.' })
       if (order.meals.length === 0 || order.meals[0] === undefined) {
-        return res.status(400).json({status: 'error', message: 'meal or restaurant does not exist'})
+        return res.status(400).json({ status: 'error', message: 'meal or restaurant does not exist' })
       }
       validMessage(req, res)
       let restaurant = await Restaurant.findByPk(order.meals[0].Restaurant.id)

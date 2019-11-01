@@ -249,7 +249,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
+        return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -265,8 +265,8 @@ let userController = {
   },
   putProfile: async (req, res) => {
     try {
-      if (req.user.id !== Number(req.params.user_id) || req.user.role !== 'Admin') {
-        return res.status(400).json({ status: 'error', message: 'You are not allow edit this profile.' })
+      if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
+        return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
       }
       validMessage(req, res)
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
