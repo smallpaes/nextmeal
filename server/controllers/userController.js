@@ -252,7 +252,7 @@ let userController = {
 
   putProfile: async (req, res) => {
     try {
-      if (req.user.id !== Number(req.params.user_id) || req.user.role !== 'Admin') {
+      if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
         return res.status(400).json({ status: 'error', message: 'You are not allow edit this profile.' })
       }
       validMessage(req, res)
