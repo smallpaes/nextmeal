@@ -25,7 +25,7 @@
             :key="option"
             :value="option"
           >
-            {{ option }}
+            {{ option | transformName }}
           </option>
         </select>
       </div>
@@ -72,6 +72,13 @@ import moment from 'moment'
 export default {
   components: {
     CustomDatePicker
+  },
+  filters: {
+    transformName (name) {
+      if (name === 'active') return '已訂購'
+      if (name === 'inactive') return '未訂購'
+      return name
+    }
   },
   props: {
     hasOption: {

@@ -35,60 +35,6 @@ import PlaceholderMessage from '../components/Placeholder/Message'
 import adminAPI from '../apis/admin'
 import { Toast } from '../utils/helpers'
 
-const dummyUsers = {
-  users: [
-    {
-      id: 1,
-      name: 'user1',
-      role: 'Owner',
-      subscription_status: true,
-      sub_description: '10',
-      order_num: 20
-    },
-    {
-      id: 2,
-      name: 'user2',
-      role: 'User',
-      subscription_status: true,
-      sub_description: '20',
-      order_num: 20
-    },
-    {
-      id: 3,
-      name: 'user3',
-      role: 'User',
-      subscription_status: true,
-      sub_description: '10',
-      order_num: 20
-    },
-    {
-      id: 4,
-      name: 'user4',
-      role: 'Owner',
-      subscription_status: false,
-      sub_description: null,
-      order_num: 30
-    },
-    {
-      id: 5,
-      name: 'user5',
-      role: 'Owner',
-      subscription_status: true,
-      sub_description: '20',
-      order_num: 20
-    },
-    {
-      id: 6,
-      name: 'user6',
-      role: 'Owner',
-      subscription_status: true,
-      sub_description: '10',
-      order_num: 20
-    }
-  ],
-  subscription_status: ['已訂閱', '未訂閱']
-}
-
 export default {
   components: {
     AdminSideNavBar,
@@ -99,26 +45,26 @@ export default {
   data () {
     return {
       users: [],
-      subscriptionStatus: [],
+      subscriptionStatus: ['active', 'inactive'],
       currentSearchInput: '',
       currentFilterOption: '',
       isLoading: true
     }
   },
   created () {
-    const { payment_status: paymentStatus = '', name = '' } = this.$route.query
-    this.fetchUsers({ paymentStatus, name })
+    const { subscription_status: subscriptionStatus = '', name = '' } = this.$route.query
+    this.fetchUsers({ subscriptionStatus, name })
   },
   beforeRouteUpdate (to, from, next) {
-    const { payment_status: paymentStatus = '', name = '' } = to.query
-    this.fetchUsers({ paymentStatus, name })
+    const { subscription_status: subscriptionStatus = '', name = '' } = to.query
+    this.fetchUsers({ subscriptionStatus, name })
     next()
   },
   methods: {
-    async fetchUsers ({ paymentStatus, name }) {
+    async fetchUsers ({ subscriptionStatus, name }) {
       try {
         // fetch data from API
-        const { data, statusText } = await adminAPI.users.getUsers({ paymentStatus, name })
+        const { data, statusText } = await adminAPI.users.getUsers({ subscriptionStatus, name })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
@@ -138,11 +84,11 @@ export default {
     },
     handleAfterSearch (searchInput) {
       this.currentSearchInput = searchInput
-      this.fetchUsers({ paymentStatus: this.currentFilterOption, name: this.currentSearchInput })
+      this.fetchUsers({ subscriptionStatus: this.currentFilterOption, name: this.currentSearchInput })
     },
     handleAfterFilter (selectedOption) {
       this.currentFilterOption = selectedOption
-      this.fetchUsers({ paymentStatus: this.currentFilterOption, name: this.currentSearchInput })
+      this.fetchUsers({ subscriptionStatus: this.currentFilterOption, name: this.currentSearchInput })
     }
   }
 }

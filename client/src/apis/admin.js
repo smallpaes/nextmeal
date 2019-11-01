@@ -31,14 +31,23 @@ export default {
         headers: { Authorization: `Bearer ${getToken()}` }
       })
     },
-    getUsers ({ paymentStatus, name }) {
-      const searchParams = new URLSearchParams({ paymentStatus, name })
+    getUsers ({ subscriptionStatus, name }) {
+      const searchParams = new URLSearchParams({ 'subscription_status': subscriptionStatus, name })
+      console.log(searchParams.toString())
       return apiHelper.get(`/admin/users?${searchParams.toString()}`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       })
     },
     deleteUser ({ userId }) {
       return apiHelper.delete(`/admin/users/${userId}`, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      })
+    }
+  },
+  orders: {
+    getOrders ({ id, date, status, page }) {
+      const searchParams = new URLSearchParams({ page, 'order_id': id, date, 'order_status': encodeURIComponent(status) })
+      return apiHelper.get(`/admin/orders?${searchParams.toString()}`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       })
     }

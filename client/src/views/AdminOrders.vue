@@ -115,12 +115,13 @@ export default {
       currentFilterOption: '',
       currentDate: '',
       currentPage: 0,
-      totalPage: null
+      totalPage: null,
+      isProcessing: true
     }
   },
   created () {
     const { order_id: orderId, order_status: orderStatus, date } = this.$route.query
-    this.currentFilterOption = orderStatus || '非取消'
+    this.currentFilterOption = orderStatus || '未取消'
     this.currentDate = date || new Date()
     this.currentSearchInput = orderId || ''
     this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage + 1)
@@ -131,23 +132,43 @@ export default {
     // clear existing data
     this.orders = []
     const { order_id: orderId, order_status: orderStatus, date } = to.query
-    this.currentFilterOption = orderStatus || '非取消'
+    this.currentFilterOption = orderStatus || '未取消'
     this.currentDate = date || new Date()
     this.currentSearchInput = orderId || ''
     this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage + 1)
     next()
   },
   methods: {
-    fetchOrders (id, date, status, page) {
-      // fetch data from API
-      this.orders = [...this.orders, ...dummyOrders.orders]
-      this.totalPage = dummyOrders.pages
+    async fetchOrders (id, date, status, page) {
+      try {
+        // update processing status
+        this.isProcessing = false
+        // fetch data from API
+        const { data, statusText } = await adminAPI.orders.getOrders({ id, date, status, page })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // fetch data from API
+        this.orders = [...this.orders, ...data.orders]
+        this.totalPage = data.pages
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得訂單資料，請稍後再試'
+        })
+      }
     },
     handleAfterFilter (data) {
       this.currentPage = 0
       this.currentSearchInput = data.order_id
       this.currentFilterOption = data.order_status
       this.currentDate = data.date
+      this.order = []
+      console.log(data)
       this.$router.push({ name: 'admin-orders', query: data })
     },
     handleAfterCancel (orderId) {

@@ -289,6 +289,7 @@ let userController = {
 
   getTomorrow: async (req, res) => {
     try {
+      console.log('start')
       let start = moment().add(1, 'days').startOf('day').toDate()
       let end = moment().add(1, 'days').endOf('day').toDate()
       let order = await Order.findAll({
@@ -309,6 +310,7 @@ let userController = {
       if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
+      console.log('error')
       return res.status(500).json({ status: 'error', message: error })
     }
   },

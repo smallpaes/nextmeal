@@ -204,6 +204,7 @@ let adminController = {
   getOrders: async (req, res) => {
     try {
       const { page, order_id, order_status, date } = req.query
+      console.log(page, order_id, order_status, date)
       let start = moment.utc(date).startOf('day').toDate()
       let end = moment.utc(date).endOf('day').toDate()
       // 如果 order_status 不是取消，就顯示非取消的 order, 預設為當日非取消的 order 
@@ -236,7 +237,7 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (orders.rows.length < 1) return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+      if (orders.rows.length < 1) return res.status(200).json({ status: 'success', orders, message: 'can not find any orders' })
       const count = orders.count
       orders = orders.rows.map(order => ({
         ...order.dataValues,
@@ -245,6 +246,7 @@ let adminController = {
       let pages = Math.ceil((count) / pageLimit)
       return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
