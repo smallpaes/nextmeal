@@ -32,7 +32,7 @@ let ownerController = {
       }
       return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get the restaurant information.' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
 
@@ -40,7 +40,7 @@ let ownerController = {
     try {
       validMessage(req, res)
       const { lat, lng } = req.body
-      if (!lat || !lng) return res.status(200).json({ status: 'seccess', message: 'need a valid address' })
+      if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'need a valid address' })
       let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
       if (restaurant.length > 0) return res.status(400).json({ status: 'error', message: 'You already have a restaurant.' });
       const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
@@ -100,7 +100,7 @@ let ownerController = {
     try {
       validMessage(req, res)
       const { lat, lng } = req.body
-      if (!lat || !lng) return res.status(200).json({ status: 'seccess', message: 'can not find address' })
+      if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'can not find address' })
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
@@ -151,10 +151,10 @@ let ownerController = {
         attributes: ['id', 'UserId']
       })
       if (restaurant.length === 0 || restaurant[0].dataValues.Meals.length === 0) {
-        return res.status(200).json({ status: 'success', message: 'You haven\'t setting restaurant or meal yet.' })
+        return res.status(400).json({ status: 'error', message: 'You haven\'t setting restaurant or meal yet.' })
       }
       if (restaurant[0].dataValues.UserId !== req.user.id) {
-        return res.status(200).json({ status: 'success', message: 'You are not allow do this action.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow do this action.' })
       }
       let meals = restaurant.map(rest => rest.dataValues.Meals)
       meals = meals[0].map(meal => meal.dataValues)
@@ -309,7 +309,7 @@ let ownerController = {
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
-        return res.status(200).json({ status: 'success', message: 'must query for this week or next week' })
+        return res.status(400).json({ status: 'error', message: 'must query for this week or next week' })
       }
 
       if (req.query.ran === 'thisWeek') {
@@ -346,7 +346,7 @@ let ownerController = {
       }
       //要修改的 meal
       let meal = await Meal.findByPk(req.body.id)
-      if (!meal) return res.status(200).json({ status: 'success', meal, message: 'null' })
+      if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist' })
       if (Number(req.body.quantity) > 0) {
         // 如果有先更新成 false
         let originNextWeeK = await Meal.findOne({

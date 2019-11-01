@@ -70,8 +70,7 @@ let adminController = {
       const categories = await Category.findAll()
       return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get restautant' })
     } catch (error) {
-      console.log(error)
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
   // admin 修改餐廳資訊
@@ -190,7 +189,7 @@ let adminController = {
   deleteUser: async (req, res) => {
     try {
       let user = await User.findByPk(req.params.user_id)
-      if (!user) return res.status(200).json({ status: 'success', message: 'user is not exist' })
+      if (!user) return res.status(400).json({ status: 'success', message: 'user is not exist' })
       if (user.role === 'Admin' || req.user.id === user.id) {
         return res.status(200).json({ status: 'success', message: 'you are not allow to do this action' })
       }
@@ -243,9 +242,9 @@ let adminController = {
         meals: order.dataValues.meals[0]
       }))
       let pages = Math.ceil((count) / pageLimit)
-      res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
+      return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
   // admin 的取消路由

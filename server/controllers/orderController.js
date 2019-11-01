@@ -65,13 +65,13 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']]
       })
       // 找不到 meal、庫存不足、order點超過庫存
-      if (!subscription) return res.status(200).json({ status: 'success', message: 'you are not authorized to do that' })
-      if (!meal) return res.status(200).json({ status: 'success', message: 'the meal does not exist.' })
+      if (!subscription) return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
+      if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.' })
       // if (!meal.isServing) return res.status(400).json({ status: 'error', message: 'the meal does not serving today.' }) 
       validMessage(req, res)
       const regex = new RegExp('^([0-1]?[0-9]|2[0-4]):([0-5][0-9])?$')
       const timeValid = regex.test(req.body.require_date)
-      if (!timeValid) return res.status(200).json({ status: 'success', message: 'this is not correct time formats for nextmeal need'})
+      if (!timeValid) return res.status(400).json({ status: 'error', message: 'this is not correct time formats for nextmeal need'})
       const quantity = Number(req.body.quantity)
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
@@ -270,17 +270,17 @@ let orderController = {
           include: [{ model: Restaurant, attributes: ['id'] }]
         }]
       })
-      if (!order) return res.status(200).json({ status: 'success', message: 'order does not exist' })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (req.user.id !== Number(order.UserId)) {
-        return res.status(200).json({ status: 'success', message: 'You are not allow to get this information.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
       }
       if (order.hasComment) return res.status(200).json({ status: 'success', message: 'This order has already been commented.' })
       if (order.meals.length === 0 || order.meals[0] === undefined) {
-        return res.status(200).json({status: 'success', message: 'meal or restaurant does not exist'})
+        return res.status(400).json({status: 'error', message: 'meal or restaurant does not exist'})
       }
       validMessage(req, res)
       let restaurant = await Restaurant.findByPk(order.meals[0].RestaurantId)
-      if (!restaurant) return res.status(200).json({status: 'success', message: 'restaurant does not exist'})
+      if (!restaurant) return res.status(400).json({status: 'error', message: 'restaurant does not exist'})
       const { file } = req
       // 驗證表單
       if (file) {
