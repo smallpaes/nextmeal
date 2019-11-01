@@ -197,8 +197,8 @@ let orderController = {
       let order = await Order.findByPk(req.params.order_id, {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
-      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       validMessage(req, res)
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')

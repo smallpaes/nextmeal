@@ -237,7 +237,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(200).json({ status: 'success', message: 'You are not allow access this page.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
