@@ -135,24 +135,12 @@ let userController = {
     const category = categories.map(item => item.name)
     return res.json({ category })
   },
-  getSubscription: async (req, res) => {
-    try {
-      let subscription = await Subscription.findAll({
-        where: { UserId: req.user.id },
-        order: [['createdAt', 'DESC']],
-        limit: 1
-      })
-      if (subscription.length === 0 || subscription[0].payment_status === false || subscription[0].sub_expired_date < Date.now()) {
-        return res.status(200).json({
-          status: 'success',
-          subscription: (subscription) ? subscription : '',
-          message: 'you should subscribe the NextMeal now'
-        })
-      }
-      return res.status(200).json({ status: 'success', subscription, message: 'you are already subscribe the NextMeal' })
-    } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
-    }
+  getSubscription: (req, res) => {
+    return res.status(200).json({
+      status: 'success',
+      plan,
+      message: 'you should subscribe the NextMeal now'
+    })
   },
 
   postSubscription: async (req, res) => {
@@ -249,7 +237,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
+        return res.status(200).json({ status: 'success', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -257,12 +245,12 @@ let userController = {
           exclude: ['password']
         }
       })
-
       return res.status(200).json({ status: 'success', user, categories, districts, message: 'get personal profile page.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
   },
+
   putProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {

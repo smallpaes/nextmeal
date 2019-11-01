@@ -32,19 +32,19 @@ let ownerController = {
       }
       return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get the restaurant information.' })
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
 
   postRestaurant: async (req, res) => {
     try {
+      validMessage(req, res)
+      const { lat, lng } = req.body
+      if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'need a valid address' })
       let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
       if (restaurant.length > 0) return res.status(400).json({ status: 'error', message: 'You already have a restaurant.' });
-      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
-
+      const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
       const { file } = req
-      validMessage(req, res)
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
         imgur.upload(file.path, async (err, img) => {
@@ -59,8 +59,8 @@ let ownerController = {
             address: req.body.address,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            lat: req.body.lat,
-            lng: req.body.lng,
+            lat: lat,
+            lng: lng,
             geometry: point,
             UserId: req.user.id
           })
@@ -81,8 +81,8 @@ let ownerController = {
           address: req.body.address,
           opening_hour: req.body.opening_hour,
           closing_hour: req.body.closing_hour,
-          lat: req.body.lat,
-          lng: req.body.lng,
+          lat: lat,
+          lng: lng,
           geometry: point,
           UserId: req.user.id
         })
@@ -98,12 +98,14 @@ let ownerController = {
 
   putRestaurant: async (req, res) => {
     try {
+      validMessage(req, res)
+      const { lat, lng } = req.body
+      if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'can not find address' })
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
       }
-      const point = sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
-      validMessage(req, res)
+      const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
       const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
@@ -117,8 +119,8 @@ let ownerController = {
             CategoryId: req.body.CategoryId,
             opening_hour: req.body.opening_hour,
             closing_hour: req.body.closing_hour,
-            lat: req.body.lat,
-            lng: req.body.lng,
+            lat: lat,
+            lng: lng,
             geometry: point,
           })
           return res.status(200).json({
@@ -149,16 +151,15 @@ let ownerController = {
         attributes: ['id', 'UserId']
       })
       if (restaurant.length === 0 || restaurant[0].dataValues.Meals.length === 0) {
-        return res.status(200).json({ status: 'success', message: 'You haven\'t setting restaurant or meal yet.' })
+        return res.status(400).json({ status: 'error', message: 'You haven\'t setting restaurant or meal yet.' })
       }
       if (restaurant[0].dataValues.UserId !== req.user.id) {
-        return res.status(200).json({ status: 'success', message: 'You are not allow do this action.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow do this action.' })
       }
       let meals = restaurant.map(rest => rest.dataValues.Meals)
       meals = meals[0].map(meal => meal.dataValues)
       return res.status(200).json({ status: 'success', meals, message: 'Successfully get the dish information.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -308,7 +309,7 @@ let ownerController = {
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
-        return res.status(200).json({ status: 'success', message: 'must query for this week or next week' })
+        return res.status(400).json({ status: 'error', message: 'must query for this week or next week' })
       }
 
       if (req.query.ran === 'thisWeek') {
@@ -335,35 +336,36 @@ let ownerController = {
   putMenu: async (req, res) => {
     try {
       validMessage(req, res) //驗證表格
-      let meal = await Meal.findByPk(req.body.id, {
-        include: [Restaurant]
-      })
-      let nextWeeKMeal = await Meal.findOne({
-        where: { nextServing: 1 },
-        include: [{ model: Restaurant, where: { id: meal.Restaurant.id } }]
-      })
-      const today = new Date().getDay()
-      // 修改 nextServing 為真，而且可以更改數量
       if (Number(req.body.quantity) < 1) {
         return res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
       }
-      if (!meal) return res.status(200).json({ status: 'success', meal, message: 'null' })
+      const today = new Date().getDay()
+      // 修改 nextServing 為真，而且可以更改數量
       if (today >= 6) {
         return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
+      //要修改的 meal
+      let meal = await Meal.findByPk(req.body.id)
+      if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist' })
       if (Number(req.body.quantity) > 0) {
+        // 如果有先更新成 false
+        let originNextWeeK = await Meal.findOne({
+          where: { nextServing: true },
+          include: [{ model: Restaurant, where: { id: meal.RestaurantId } }]
+        })
+        if (originNextWeeK) {
+          await originNextWeeK.update({
+            nextServing: false
+          })
+        }
         meal = await meal.update({
           nextServing_quantity: req.body.quantity || meal.quantity,
-          nextServing: 1
-        })
-        await nextWeeKMeal.update({
-          nextServing: 0
+          nextServing: true
         })
         return res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
 
@@ -372,7 +374,7 @@ let ownerController = {
       //算出今天開始、結束日期
       const start = moment().startOf('day').toDate()
       const end = moment().endOf('day').toDate()
-      let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
+      const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       if (req.user.id !== restaurant.UserId) return res.status(200).json({ status: 'success', message: 'you are not allow do this action' })
       let orders = await Order.findAll({
         where: {
@@ -399,9 +401,9 @@ let ownerController = {
         meals: order.dataValues.meals[0]
       }))
       orders = _.mapObject(_.groupBy(orders, 'time'))
-      res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders' })
+      return res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   }
 }

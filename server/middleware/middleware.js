@@ -102,7 +102,7 @@ let middleware = {
   ],
   validComment: [
     check('user_text')
-      .not().isEmpty().withMessage('Require_date should be not empty'),
+      .not().isEmpty().withMessage('user_text should be not empty'),
     check('rating')
       .not().isEmpty().withMessage('You are not rating the restaurant yet.'),
   ],

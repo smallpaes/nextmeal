@@ -70,8 +70,7 @@ let adminController = {
       const categories = await Category.findAll()
       return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get restautant' })
     } catch (error) {
-      console.log(error)
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
   // admin 修改餐廳資訊
@@ -128,14 +127,14 @@ let adminController = {
   getUsers: async (req, res) => {
     try {
       const { name, subscription_status } = req.query
-      let time = moment().format('YYYY-MM-DD')
+      const start = moment().startOf('day').toDate()
       let whereQuery = {}
       // 邏輯有瑕疵，尚無法篩選還有兩天以上，但訂單餘額已經為 0 的人為無效訂單。
       if (subscription_status) {
         if (subscription_status === 'inactive') {
-          whereQuery = { sub_expired_date: { [Op.lt]: time } }
+          whereQuery = { sub_expired_date: { [Op.lt]: start } }
         } else {
-          whereQuery = { sub_description: true, sub_expired_date: { [Op.gte]: time } }
+          whereQuery = { sub_description: true, sub_expired_date: { [Op.gte]: start } }
         }
       }
 
@@ -147,7 +146,7 @@ let adminController = {
         }],
         attributes: {
           include: [
-            [sequelize.literal(customQuery.Order.UserId), 'orderCount'],
+            [sequelize.literal(customQuery.Order.UserId), 'order_num'],
           ],
           exclude: [
             'password', 'prefer', 'dob', 'modifiedAt', 'location',
@@ -162,7 +161,7 @@ let adminController = {
           user.dataValues.Subscriptions[0].dataValues.sub_description : false,
         subscription_status: (user.dataValues.Subscriptions[0]) ? (
           user.dataValues.Subscriptions[0].dataValues.payment_status === true &&
-          user.dataValues.Subscriptions[0].dataValues.sub_expired_date > Date.now()) ? 'active' : 'inactive'
+          user.dataValues.Subscriptions[0].dataValues.sub_expired_date >= start) ? 'active' : 'inactive'
           : 'inactive'
       }))
       return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
@@ -190,7 +189,10 @@ let adminController = {
   deleteUser: async (req, res) => {
     try {
       let user = await User.findByPk(req.params.user_id)
-      if (!user) return res.status(400).json({ status: 'error', message: 'user is not exist or you are not able to do this action.' })
+      if (!user) return res.status(400).json({ status: 'success', message: 'user is not exist' })
+      if (user.role === 'Admin' || req.user.id === user.id) {
+        return res.status(200).json({ status: 'success', message: 'you are not allow to do this action' })
+      }
       await user.destroy()
       return res.status(200).json({ status: 'success', message: 'Successfully delete this user.' })
     } catch (error) {
@@ -240,19 +242,24 @@ let adminController = {
         meals: order.dataValues.meals[0]
       }))
       let pages = Math.ceil((count) / pageLimit)
-      res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
+      return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
   // admin 的取消路由
   putCancel: async (req, res) => {
     try {
-      let order = await Order.findByPk(req.params.order_id, {
+      let order = await Order.findByPk(req.params.order_id,{
         include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-
+      if (order.order_status === '取消') {
+        return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
+      }
+      if (order.meals.length === 0 || order.meals[0] === undefined) {
+        return res.status(400).json({status: 'error', message: 'information is not correct'})
+      }
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
         where: {
@@ -260,11 +267,9 @@ let adminController = {
           payment_status: true,
           sub_expired_date: { [Op.gte]: start }
         },
-        order: [['sub_expired_date', 'DESC']],
-        limit: 1
+        order: [['sub_expired_date', 'DESC']]
       })
       let returnNum = subscription.sub_balance + order.amount
-      if (order.order_status === '取消') return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       await subscription.update({
         sub_balance: returnNum
       })
@@ -273,7 +278,7 @@ let adminController = {
       })
       let meal = await Meal.findByPk(order.meals[0].dataValues.id)
       await meal.update({
-        quantity: meal.quantity + order.amount
+        quantity: meal.quantity + order.amount 
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
