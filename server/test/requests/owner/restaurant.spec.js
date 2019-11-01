@@ -3,7 +3,7 @@ var request = require('supertest')
 var sinon = require('sinon')
 var should = chai.should();
 var expect = chai.expect;
-
+const today = (new Date()).getDay()
 var app = require('../../../app')
 var helpers = require('../../../_helpers');
 const db = require('../../../models')
@@ -175,18 +175,27 @@ describe('# Admin::Owner request', () => {
             return done()
           })
       })
+      if (today >= 6) {
+        it('should not be able to update next week menu info after Saturday', (done) => {
+          request(app)
+            .put('/api/owner/menu')
+            .send('quantity=60&id=1')
+            .expect(400, done)
+        })
 
-      it('should be able to update next week menu info by Saturday', (done) => {
-        request(app)
-          .put('/api/owner/menu')
-          .send('quantity=60&id=1')
-          .expect(200, done)
-          .end(async (err, res) => {
-            const meal = await db.Meal.findByPk(1)
-            expect(meal.nextServing_quantity).to.be.equal(60)
-            return done()
-          })
-      })
+      } else {
+        it('should be able to update next week menu info by Saturday', (done) => {
+          request(app)
+            .put('/api/owner/menu')
+            .send('quantity=60&id=1')
+            .expect(200)
+            .end(async (err, res) => {
+              const meal = await db.Meal.findByPk(1)
+              expect(meal.nextServing_quantity).to.be.equal(60)
+              return done()
+            })
+        })
+      }
 
       it('should be able to delete specific meal info', (done) => {
         request(app)
