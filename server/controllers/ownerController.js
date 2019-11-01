@@ -362,6 +362,7 @@ let ownerController = {
         return res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },
