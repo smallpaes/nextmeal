@@ -82,6 +82,7 @@ describe('# Admin::Restaurant request', () => {
         await db.Restaurant.destroy({ where: {}, truncate: true })
         await db.Order.destroy({ where: {}, truncate: true })
         await db.OrderItem.destroy({ where: {}, truncate: true })
+        await db.Meal.destroy({ where: {}, truncate: true })
         await db.Restaurant.create(defaultRestaurant1)
         await db.Meal.create({ quantity: 50 })
         await db.Order.create({ UserId: 1, require_date: tmr, order_status: '明日' })
@@ -195,18 +196,22 @@ describe('# Admin::Restaurant request', () => {
           .get('/api/order/1')
           .expect(200)
           .end(async (err, res) => {
-            const order = await db.Order.findByPk(1)
-            expect(order).not.to.be.null
             expect(res.body.status).to.be.equal('success')
+            expect(res.body.message).to.be.equal('Successfully get the Order')
+            expect(res.body).to.have.property('order')
             return done()
           })
       })
 
       it('fail to see specific order info', (done) => {
         request(app)
-          .get('/api/order/U001')
+          .get('/api/order/2')
           .expect(400)
-          .expect({ status: "error", order: null, message: "order does not exist" }, done)
+          .end(async (err, res) => {
+            expect(res.body.status).to.be.equal('error')
+            expect(res.body.message).to.be.equal('order does not exist')
+            return done()
+          })
       })
 
       it('should be able to update specific order info', (done) => {
@@ -229,14 +234,11 @@ describe('# Admin::Restaurant request', () => {
           .expect({ status: "error", "subscription": null, message: "you are not authorized to do that" }, done)
       })
 
-      it('should be able to cancel specific order', (done) => {
+      it('should not be able to cancel specific order(not a subscribe user)', (done) => {
         request(app)
           .put('/api/order/1/cancel')
           .expect(200)
           .end(async (err, res) => {
-            // const order = await db.Order.findByPk(1)
-            // expect(order.order_status).to.be.equal('取消')
-            // return done()
             expect({ status: "error", "subscription": null, message: "you are not authorized to do that" })
             return done()
           })
@@ -256,7 +258,7 @@ describe('# Admin::Restaurant request', () => {
         this.getUser.restore();
         await db.User.destroy({ where: {}, truncate: true })
         await db.Restaurant.destroy({ where: {}, truncate: true })
-        // await db.Order.destroy({ where: {}, truncate: true })
+        await db.Order.destroy({ where: {}, truncate: true })
         await db.OrderItem.destroy({ where: {}, truncate: true })
 
       })
