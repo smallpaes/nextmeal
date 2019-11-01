@@ -102,7 +102,7 @@ let middleware = {
   ],
   validComment: [
     check('user_text')
-      .not().isEmpty().withMessage('Require_date should be not empty'),
+      .not().isEmpty().withMessage('user_text should be not empty'),
     check('rating')
       .not().isEmpty().withMessage('You are not rating the restaurant yet.'),
   ],
@@ -142,7 +142,7 @@ let middleware = {
       const subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: 1,
+          payment_status: trues,
           sub_expired_date: { [Op.gte]: start },
         },
         order: [['sub_expired_date', 'DESC']],
@@ -198,7 +198,7 @@ let middleware = {
         UserId: req.user.id,
         sub_name: req.body.sub_name,
         sub_price: req.body.sub_price,
-        payment_status: 0,
+        payment_status: false,
         sub_description: req.body.sub_description,
         sub_balance: req.body.sub_balance,
         sn: tradeInfo.MerchantOrderNo,
@@ -249,7 +249,7 @@ let middleware = {
         rating: comments[0].dataValues.average.toFixed(2) || 0
       })
       await order.update({
-        hasComment: 1
+        hasComment: true
       })
       return res.status(200).json({ status: 'success', comment, message: 'Successfully post comment.' })
     } catch (error) {

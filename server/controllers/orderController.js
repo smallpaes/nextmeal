@@ -11,12 +11,22 @@ const moment = require('moment')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const { validMessage, getTimeStop, avgRating } = require('../middleware/middleware')
+const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 
 let orderController = {
   getNew: async (req, res) => {
     try {
+      const time = moment().add(1, 'days').startOf('day').toDate()
+      const order = await Order.findAll({
+        where: {
+          UserId: req.user.id,
+          require_date: { [Op.gte]: time },
+          order_status: { [Op.notLike]: '取消' }
+        }
+      })
+      if (order.length > 1) return res.status(400).json({status: 'error', message: 'you are already ordered today'})
       const location = sequelize.literal(`ST_GeomFromText('POINT(${req.user.lng} ${req.user.lat})')`)
-      const distance = sequelize.fn('ST_Distance_Sphere', sequelize.literal('geometry'), location)
+      const distance = sequelize.fn(customQuery.geo.geometry, sequelize.literal('geometry'), location)
       // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
       let restaurants = await Restaurant.findAll({
         where: sequelize.where(distance, { [Op.lte]: 500 }),
@@ -27,7 +37,7 @@ let orderController = {
           required: true
         }],
         attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
-        order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
+        order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
       restaurants = restaurants.map((restaurant, index) => ({
@@ -48,18 +58,20 @@ let orderController = {
       let subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: 1,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start },
           sub_balance: { [Op.gt]: 0 }
         },
-        order: [['sub_expired_date', 'DESC']],
-        limit: 1
+        order: [['sub_expired_date', 'DESC']]
       })
       // 找不到 meal、庫存不足、order點超過庫存
       if (!subscription) return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
       if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.' })
       // if (!meal.isServing) return res.status(400).json({ status: 'error', message: 'the meal does not serving today.' }) 
       validMessage(req, res)
+      const regex = new RegExp('^([0-1]?[0-9]|2[0-4]):([0-5][0-9])?$')
+      const timeValid = regex.test(req.body.require_date)
+      if (!timeValid) return res.status(400).json({ status: 'error', message: 'this is not correct time formats for nextmeal need'})
       const quantity = Number(req.body.quantity)
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
@@ -92,7 +104,6 @@ let orderController = {
       })
       return res.status(200).json({ status: 'success', order_id: order.id, message: 'Successfully order the meal.' })
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -109,7 +120,8 @@ let orderController = {
         ],
         attributes: ['id', 'order_date', 'require_date', 'order_status']
       })
-      if (!order) return res.status(400).json({ status: 'error', order, message: 'getOrder' })
+      if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
+      if (!order) return res.status(400).json({ status: 'error', order, message: 'not order yet' })
       order = { ...order.dataValues, meals: order.dataValues.meals[0] }
       return res.status(200).json({ status: 'success', order, message: 'Successfully get the Order' })
     } catch (error) {
@@ -124,7 +136,7 @@ let orderController = {
       const subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: 1,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start },
         },
         order: [['sub_expired_date', 'DESC']],
@@ -144,12 +156,15 @@ let orderController = {
         attributes: ['id', 'amount', 'order_date', 'require_date']
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      if (order.meals.length === 0 || order.meals.dataValues === undefined) {
+        return res.status(400).json({status: 'error', message: 'meal or restaurant does not exist'})
+      }
       // 為了給前端 time_slots 取得餐廳開店與關店時間
-      let opening_hour = order.meals[0].dataValues.Restaurant.dataValues.opening_hour
-      let closing_hour = order.meals[0].dataValues.Restaurant.dataValues.closing_hour
+      let opening_hour = order.meals.dataValues.Restaurant.dataValues.opening_hour
+      let closing_hour = order.meals.dataValues.Restaurant.dataValues.closing_hour
       let time_slots = getTimeStop(opening_hour, closing_hour)
 
-      order = { ...order.dataValues, meals: order.dataValues.meals[0].dataValues }
+      order = { ...order.dataValues, meals: order.dataValues.meals.dataValues }
       // 回傳 subscription 數量，以及餐點剩餘數量
       return res.status(200).json({
         status: 'success',
@@ -157,6 +172,7 @@ let orderController = {
         message: 'Successfully edit Order information.'
       })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -168,7 +184,7 @@ let orderController = {
       let subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: 1,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start },
         },
         order: [['sub_expired_date', 'DESC']],
@@ -180,6 +196,7 @@ let orderController = {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
       validMessage(req, res)
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
@@ -241,7 +258,6 @@ let orderController = {
       order = { ...order.dataValues, meals: order.dataValues.meals[0] }
       return res.status(200).json({ status: 'success', order, message: 'Successfully get user comment page\'s  information.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -254,13 +270,17 @@ let orderController = {
           include: [{ model: Restaurant, attributes: ['id'] }]
         }]
       })
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (req.user.id !== Number(order.UserId)) {
         return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
       }
-      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-      if (order.hasComment) return res.status(400).json({ status: 'error', message: 'This order has already been commented.' })
+      if (order.hasComment) return res.status(200).json({ status: 'success', message: 'This order has already been commented.' })
+      if (order.meals.length === 0 || order.meals[0] === undefined) {
+        return res.status(400).json({status: 'error', message: 'meal or restaurant does not exist'})
+      }
       validMessage(req, res)
-      let restaurant = await Restaurant.findByPk(order.meals[0].Restaurant.id)
+      let restaurant = await Restaurant.findByPk(order.meals[0].RestaurantId)
+      if (!restaurant) return res.status(400).json({status: 'error', message: 'restaurant does not exist'})
       const { file } = req
       // 驗證表單
       if (file) {
@@ -271,7 +291,7 @@ let orderController = {
             rating: req.body.rating,
             image: await file ? img.data.link : null,
             UserId: req.user.id,
-            RestaurantId: order.meals[0].Restaurant.id
+            RestaurantId: order.meals[0].RestaurantId
           })
           avgRating(res, restaurant, comment, order)
         })
@@ -280,7 +300,7 @@ let orderController = {
           user_text: req.body.user_text,
           rating: req.body.rating,
           UserId: req.user.id,
-          RestaurantId: order.meals[0].Restaurant.id
+          RestaurantId: order.meals[0].RestaurantId
         })
         avgRating(res, restaurant, comment, order)
       }
@@ -296,11 +316,11 @@ let orderController = {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
-      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
+      if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
       let subscription = await Subscription.findOne({
         where: {
-          UserId: order.UserId,
-          payment_status: 1,
+          UserId: Number(order.UserId),
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start }
         },
         order: [['sub_expired_date', 'DESC']],

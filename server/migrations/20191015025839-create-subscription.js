@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       payment_status: {
-        type: Sequelize.STRING,
+        type: Sequelize.BOOLEAN,
       },
       sn: {
         type: Sequelize.STRING
