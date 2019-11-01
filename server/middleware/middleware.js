@@ -106,6 +106,20 @@ let middleware = {
     check('rating')
       .not().isEmpty().withMessage('You are not rating the restaurant yet.'),
   ],
+  validUserProfile: [
+    check('name')
+      .not().isEmpty().withMessage('name should be not empty'),
+    check('email')
+      .not().isEmpty().withMessage('email should be not empty'),
+    check('location')
+      .not().isEmpty().withMessage('location should be not empty'),
+    check('address')
+      .not().isEmpty().withMessage('address should be not empty'),
+    check('dob')
+      .not().isEmpty().withMessage('birthday should be not empty'),
+    check('prefer')
+      .not().isEmpty().withMessage('prefer should be not empty'),
+  ],
   validMessage: (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {

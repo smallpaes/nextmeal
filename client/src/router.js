@@ -94,6 +94,11 @@ export default new Router({
       component: () => import('./views/OwnerMenu.vue')
     },
     {
+      path: '/owner/orders',
+      name: 'owner-orders',
+      component: () => import('./views/OwnerOrders.vue')
+    },
+    {
       path: '/admin/restaurants',
       name: 'admin-restaurants',
       component: () => import('./views/AdminRestaurants.vue')
@@ -112,6 +117,11 @@ export default new Router({
       path: '/admin/users/:user_id',
       name: 'admin-user-edit',
       component: () => import('./views/AdminUserEdit.vue')
+    },
+    {
+      path: '/admin/orders',
+      name: 'admin-orders',
+      component: () => import('./views/AdminOrders.vue')
     },
     {
       path: '*',
