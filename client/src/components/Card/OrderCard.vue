@@ -22,10 +22,10 @@
     <div class="card-right">
       <div class="card-right-top shadow-sm rounded text-center ml-auto">
         <h5 class="card-date">
-          {{ order.require_date | timeTransform }}
+          {{ order.require_date | dateTransform }}
         </h5>
         <h3 class="card-time">
-          {{ order.require_date.split('T')[1].slice(0,5) }}
+          {{ order.require_date | timeTransform }}
         </h3>
       </div>
       <router-link
@@ -49,8 +49,11 @@
 import moment from 'moment'
 export default {
   filters: {
+    dateTransform (timestamp) {
+      return moment(new Date(timestamp)).format('MM/DD')
+    },
     timeTransform (timestamp) {
-      return moment(timestamp).format('MM/DD')
+      return moment(new Date(timestamp)).format('HH:mm')
     }
   },
   props: {

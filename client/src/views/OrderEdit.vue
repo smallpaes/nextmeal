@@ -34,6 +34,7 @@
             class="order-display mt-3"
             :order-info="{quantity: order.meal.quantity + order.orderData.quantity, timeSlots: order.timeSlots}"
             :initial-order="order.orderData"
+            :initial-processing="isProcessing"
             @after-submit="handleAfterSubmit"
           >
             <template #submit>
@@ -53,32 +54,9 @@ import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import MealHorizontalCard from '../components/Card/MealHorizontalCard'
 import OrderForm from '../components/OrderForm'
 import Footer from '../components/Footer'
-
-const dummyOrder = {
-  order: {
-    id: 1,
-    amount: 9,
-    require_date: '2019-10-27T13:30:00.000Z',
-    meals: {
-      id: 2,
-      name: '巨無霸套餐',
-      description: '來自德州的巨無霸牛肉漢堡與特製醬料，搭配據杯可樂與現削現炸地瓜薯條，滿足你的味蕾',
-      image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-      quantity: 20,
-      Restaurant: {
-        id: 1,
-        name: '美國家鄉菜',
-        rating: 4.8,
-        distance: 220
-      }
-    },
-    OrderItem: {
-      OrderId: 2,
-      Meal: 2
-    }
-  },
-  time_slots: ['11:00', '11:30', '12:00', '12:30', '13:00', '13:30']
-}
+import orderAPI from '../apis/order'
+import { Toast } from '../utils/helpers'
+import moment from 'moment'
 
 export default {
   components: {
@@ -94,7 +72,25 @@ export default {
         image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
         height: 450
       },
-      order: {}
+      order: {
+        restaurant: {
+          name: '',
+          rating: -1
+        },
+        meal: {
+          name: '',
+          description: '',
+          image: '',
+          quantity: -1
+        },
+        orderData: {
+          quantity: -1,
+          time: ''
+        },
+        timeSlots: []
+      },
+      isLoading: true,
+      isProcessing: false
     }
   },
   created () {
@@ -102,24 +98,54 @@ export default {
     this.fetchOrder(orderId)
   },
   methods: {
-    fetchOrder (orderId) {
-      // fetch order data from API
+    async fetchOrder (orderId) {
+      try {
+        // fetch order data from API
+        const { data, statusText } = await orderAPI.getEditOrder({ orderId })
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // retrieve data
+        const { order: { meals: { Restaurant: restaurant, ...meal }, amount: quantity, require_date: requireDate }, time_slots: timeSlots } = data
+        const orderData = {
+          quantity,
+          time: moment(new Date(requireDate)).format('HH:mm')
+        }
 
-      // retrieve data
-      const { order: { meals: { Restaurant: restaurant, ...meal }, amount: quantity, require_date: requireDate }, time_slots: timeSlots } = dummyOrder
-      const orderData = {
-        quantity,
-        time: requireDate.split('T')[1].slice(0, 5)
+        // save data
+        this.order = { ...this.order, restaurant, meal, orderData, timeSlots }
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得訂單資料，請稍後再試'
+        })
+        // redirect back to order tomorrow page
+        this.$router.push({ name: 'order-tomorrow' })
       }
-
-      // save data
-      this.order = { ...this.order, restaurant, meal, orderData, timeSlots }
     },
-    handleAfterSubmit (formData) {
-      // PUT /api/order/:order_id
-      console.log(formData)
-      // redirect to order detail page
-      this.$router.push({ name: 'order', params: { order_id: this.$route.params.order_id } })
+    async handleAfterSubmit (formData) {
+      try {
+        // send updated order data
+        const { data, statusText } = await orderAPI.putEditOrder({ orderId: this.$route.params.order_id, formData })
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // redirect to order detail page
+        this.$router.push({ name: 'order', params: { order_id: this.$route.params.order_id } })
+      } catch (error) {
+        // update loading status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法更新訂購資料，請稍後再試'
+        })
+        // redirect back to last page
+        this.$router.go(-1)
+      }
     }
   }
 }

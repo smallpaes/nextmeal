@@ -15,6 +15,7 @@
       <p class="card-text mt-1">
         <span class="rating">&#9733; {{ order.restaurant.rating }}</span>
         <span class="mx-1">|</span>{{ order.restaurant.name }}
+        <slot name="distance" />
       </p>
       <slot name="indicator" />
       <p class="card-text">

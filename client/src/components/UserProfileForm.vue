@@ -1,5 +1,6 @@
 <template>
   <form
+    ref="form"
     class="form p-3 rounded shadow-sm needs-validation"
     novalidate
   >
@@ -26,6 +27,7 @@
           v-model.trim="user.name"
           type="text"
           class="form-control"
+          name="name"
           required
         >
         <div class="invalid-feedback">
@@ -40,6 +42,7 @@
           v-model.trim="user.email"
           type="email"
           class="form-control"
+          name="email"
           required
         >
         <div class="invalid-feedback">
@@ -52,28 +55,61 @@
       <CustomSelectInput
         v-model="user"
         class="col-md-6"
-        :categories="categories"
-      />
+        :options="categories"
+        :name="'prefer'"
+      >
+        <template v-slot:label>
+          喜好餐廳
+        </template>
+        <template v-slot:option>
+          餐廳類別
+        </template>
+        <template v-slot:invalid>
+          請選擇類別
+        </template>
+      </CustomSelectInput>
       <!--Date of birth-->
       <CustomDatePicker
         v-model="user"
+        name="dob"
         class="px-1 col-md-6 p-0"
       />
     </div>
-    <!--Address-->
-    <div class="form-group">
-      <label for="address">地址</label>
-      <input
-        id="address"
-        v-model.trim="user.address"
-        type="text"
-        class="form-control"
-        placeholder="台北市大安區..."
-        required
-      >
-      <div class="invalid-feedback">
-        {{ validationMsg.address }}
+    <div class="form-row">
+      <!--Address-->
+      <div class="form-group col-12 col-md">
+        <label for="address">地址</label>
+        <input
+          id="address"
+          v-model.trim="user.address"
+          type="text"
+          class="form-control"
+          placeholder="台北市大安區..."
+          name="address"
+          required
+        >
+        <div class="invalid-feedback">
+          {{ validationMsg.address }}
+        </div>
       </div>
+      <!--Role-->
+      <CustomSelectInput
+        v-if="roles.length > 0"
+        v-model="user"
+        class="col-12 col-md"
+        :options="roles"
+        :name="'role'"
+      >
+        <template v-slot:label>
+          用戶權限
+        </template>
+        <template v-slot:option>
+          選擇權限
+        </template>
+        <template v-slot:invalid>
+          請選擇權限
+        </template>
+      </CustomSelectInput>
     </div>
     <!--Image upload-->
     <p class="mb-2">
@@ -85,6 +121,7 @@
         id="file"
         type="file"
         class="file-input"
+        name="avatar"
         accept=".png, .jpg, .jpeg"
         @change="handleFileChange($event, 'user')"
       >
@@ -121,6 +158,7 @@
         class="btn"
         :class="{'btn-update': $route.name === 'admin-user-edit'}"
         type="submit"
+        :disabled="isProcessing"
         @click.stop.prevent="getLocation('user')"
       >
         更新
@@ -128,7 +166,8 @@
       <button
         v-if="$route.name ==='admin-user-edit'"
         class="btn"
-        @click.stop.prevent="deleteUser"
+        :disabled="isProcessing"
+        @click.stop.prevent="$emit('after-delete')"
       >
         刪除
       </button>
@@ -141,41 +180,30 @@ import CustomDatePicker from '../components/CustomDatePicker'
 import CustomSelectInput from '../components/CustomSelectInput'
 import { getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter } from '../utils/mixins'
 
-const dummyUser = {
-  user: {
-    name: 'Mike',
-    email: 'mike@example',
-    role: 'Admin',
-    prefer: '義式餐廳',
-    dob: '1999-02-30',
-    image: 'https://cdn.pixabay.com/photo/2016/11/19/15/20/animal-1839808_1280.jpg',
-    address: '台北市大安區延吉街103號',
-    location: '大安區',
-    lng: 122.2,
-    lat: 22.5
-  },
-  categories: [
-    {
-      id: 1,
-      name: '美式餐廳'
-    },
-    {
-      id: 2,
-      name: '法式餐廳'
-    },
-    {
-      id: 3,
-      name: '義式餐廳'
-    }
-  ]
-}
-
 export default {
   components: {
     CustomDatePicker,
     CustomSelectInput
   },
   mixins: [getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter],
+  props: {
+    initialUser: {
+      type: Object,
+      required: true
+    },
+    categories: {
+      type: Array,
+      required: true
+    },
+    roles: {
+      type: Array,
+      default: () => []
+    },
+    initialProcessing: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       user: {
@@ -189,38 +217,47 @@ export default {
         lat: '',
         location: ''
       },
-      categories: [],
       warningMessage: '',
       apiKey: process.env.VUE_APP_GOOGLE,
       validationMsg: {
         address: '請輸入地址'
+      },
+      isProcessing: false
+    }
+  },
+  watch: {
+    initialUser (user) {
+      this.user = {
+        ...this.user,
+        ...user
       }
+    },
+    categories (categories) {
+      this.categories = categories
+    },
+    roles (roles) {
+      this.roles = roles
+    },
+    initialProcessing (isProcessing) {
+      this.isProcessing = isProcessing
     }
   },
   created () {
-    this.fetchUserData()
+    this.user = {
+      ...this.user,
+      ...this.initialUser
+    }
   },
   methods: {
-    fetchUserData () {
-      // fetch data from api based on route name
-      console.log(this.$route.name)
-
-      // save data
-      this.user = {
-        ...this.user,
-        ...dummyUser.user
-      }
-      this.categories = dummyUser.categories
-    },
-    afterReceiveGeo () {
-      console.log(this.user.lat, this.user.lng)
-      // Send POST request based on route name
-      // PUT api/user/ or api/admin/users/
-      console.log(this.$route.path)
-    },
-    deleteUser () {
-      // Send data to DELETE /api/admin/users/:id
-      console.log('DELETE', this.user)
+    async afterReceiveGeo () {
+      // prepare formData
+      const form = this.$refs.form
+      const formData = new FormData(form)
+      // set extra data to formData
+      const formKeys = ['dob', 'prefer', 'lat', 'lng', 'location', 'role']
+      formKeys.forEach(key => formData.set(key, this.user[key]))
+      // pass data to parent
+      this.$emit('after-submit', formData)
     }
   }
 }

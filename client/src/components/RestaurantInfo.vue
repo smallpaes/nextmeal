@@ -6,7 +6,7 @@
     <p class="info-sub-title">
       <span class="rating">&#9733; {{ restaurant.rating }}</span>
       <span class="mx-2">|</span>
-      {{ restaurant.category.name }}
+      {{ restaurant.Category.name }}
     </p>
     <div class="divider my-4" />
     <p class="info-description">

@@ -16,7 +16,13 @@
           訂單狀態
         </template>
       </AdminFilterPanel>
-      <AdminUsersTable :users="users" />
+      <AdminUsersTable
+        v-if="users.length > 0"
+        :users="users"
+      />
+      <PlaceholderMessage v-else>
+        <i class="fas fa-search mr-2" />沒有符合的結果
+      </PlaceholderMessage>
     </section>
   </section>
 </template>
@@ -25,6 +31,9 @@
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminUsersTable from '../components/AdminUsersTable.vue'
+import PlaceholderMessage from '../components/Placeholder/Message'
+import adminAPI from '../apis/admin'
+import { Toast } from '../utils/helpers'
 
 const dummyUsers = {
   users: [
@@ -84,35 +93,56 @@ export default {
   components: {
     AdminSideNavBar,
     AdminFilterPanel,
-    AdminUsersTable
+    AdminUsersTable,
+    PlaceholderMessage
   },
   data () {
     return {
       users: [],
       subscriptionStatus: [],
       currentSearchInput: '',
-      currentFilterOption: ''
+      currentFilterOption: '',
+      isLoading: true
     }
   },
   created () {
-    this.fetchUsers()
+    const { payment_status: paymentStatus = '', name = '' } = this.$route.query
+    this.fetchUsers({ paymentStatus, name })
   },
-  beforeRouteUpdate () {
-    this.fetchUsers()
+  beforeRouteUpdate (to, from, next) {
+    const { payment_status: paymentStatus = '', name = '' } = to.query
+    this.fetchUsers({ paymentStatus, name })
+    next()
   },
   methods: {
-    fetchUsers (name, status) {
-      // fetch data from API
-      this.users = dummyUsers.users
-      this.subscriptionStatus = dummyUsers.subscription_status || this.subscriptionStatus
+    async fetchUsers ({ paymentStatus, name }) {
+      try {
+        // fetch data from API
+        const { data, statusText } = await adminAPI.users.getUsers({ paymentStatus, name })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // store data
+        this.users = data.users
+        this.subscriptionStatus = data.subscription_status || this.subscriptionStatus
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得用戶資料，請稍後再試'
+        })
+      }
     },
     handleAfterSearch (searchInput) {
       this.currentSearchInput = searchInput
-      this.fetchUsers(this.currentSearchInput, this.currentFilterOption)
+      this.fetchUsers({ paymentStatus: this.currentFilterOption, name: this.currentSearchInput })
     },
     handleAfterFilter (selectedOption) {
       this.currentFilterOption = selectedOption
-      this.fetchUsers(this.currentSearchInput, this.currentFilterOption)
+      this.fetchUsers({ paymentStatus: this.currentFilterOption, name: this.currentSearchInput })
     }
   }
 }

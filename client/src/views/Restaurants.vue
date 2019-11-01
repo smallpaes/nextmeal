@@ -32,7 +32,7 @@
         </Header>
         <div class="card-wrapper row">
           <div
-            v-for="restaurant in more_restaurants.rows"
+            v-for="restaurant in more_restaurants.restaurants"
             :key="restaurant.id"
             class="col-12 col-md-6 col-lg-4 p-2"
           >
@@ -102,7 +102,7 @@ export default {
     return {
       popular_restaurants: [],
       more_restaurants: {
-        rows: []
+        restaurants: []
       },
       map: {},
       districts: [],
@@ -121,7 +121,7 @@ export default {
     // Reset current page
     this.currentPage = 0
     // Clear existing restaurants
-    this.more_restaurants.rows = []
+    this.more_restaurants.restaurants = []
     // Get the district name
     const { dist } = to.query
     this.currentDistrict = dist || '信義區'
@@ -140,9 +140,9 @@ export default {
 
         // fetch data from api
         this.popular_restaurants = data.popular_restaurants || this.popular_restaurants
-        this.more_restaurants.rows = [
-          ...this.more_restaurants.rows,
-          ...data.more_restaurants.rows[0]
+        this.more_restaurants.restaurants = [
+          ...this.more_restaurants.restaurants,
+          ...data.more_restaurants.restaurants
         ]
         this.totalPage = data.more_restaurants.pages
 

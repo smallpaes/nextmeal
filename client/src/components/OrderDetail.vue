@@ -12,7 +12,7 @@
             訂單編號
           </h5>
           <h2 class="detail-content-description">
-            {{ order.MealId }}
+            #{{ order.OrderId }}
           </h2>
         </div>
         <div class="col-md-6 my-3">

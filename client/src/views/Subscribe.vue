@@ -17,6 +17,7 @@
             :key="plan.id"
             type="button"
             class="subscribe-choice"
+            :disabled="isProcessing"
             @click.stop="handleSubscribe(plan.name, plan.quantity, plan.price)"
           >
             <h4 class="subscribe-choice-header">
@@ -54,8 +55,7 @@
 
 <script>
 import TopLogoNavbar from '../components/Navbar/TopLogoNavbar'
-import axios from 'axios'
-import userAPI from '../apis/users'
+import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
 
 export default {
@@ -78,24 +78,25 @@ export default {
           quantity: 20
         }
       ],
-      tradeInfo: ['MerchantID', 'TradeInfo', 'TradeSha', 'Version']
+      tradeInfo: ['MerchantID', 'TradeInfo', 'TradeSha', 'Version'],
+      isProcessing: false
     }
   },
   methods: {
     async handleSubscribe (name, quantity, price) {
-      // POST to /api/subscribe
+      // prepare data for subscription
       const subscriptionData = {
         sub_balance: quantity,
-        sub_description: `${quantity} 餐`,
+        sub_description: `一個月${quantity}餐`,
         sub_name: name,
         sub_price: price
       }
 
       try {
-        const { data, statusText } = await axios.post('http://localhost:3000/api/users/subscribe', subscriptionData, {
-          headers: { Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNTcyMzI4NjI2fQ.TbDTRqyuf-Sm1ChjL9TvnlUZ-nQ_rlWC22UpZDS4Rb4' }
-        })
-
+        // update processing status
+        this.isProcessing = true
+        // create new subscription
+        const { data, statusText } = await usersAPI.postSubscribe({ formData: subscriptionData })
         // error handling
         if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
         // prepare form for 藍新
@@ -103,7 +104,13 @@ export default {
         // submit the form
         this.$refs.tradeForm.submit()
       } catch (error) {
-        console.log(error)
+        // update loading status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '訂閱失敗，請稍後再試'
+        })
       }
     }
   }

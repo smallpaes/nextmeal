@@ -82,7 +82,7 @@ export default {
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
         this.meal = data.meals[0]
-        if (data.options) this.options = [...this.options, ...data.options]
+        if (data.options) this.options = data.options
         // update loading status
         this.isLoading = false
       } catch (error) {
@@ -91,7 +91,7 @@ export default {
         // fire error messages
         Toast.fire({
           type: 'error',
-          title: '無法本週菜單，請稍後再試'
+          title: '無法取得本週菜單，請稍後再試'
         })
       }
     },
@@ -103,7 +103,6 @@ export default {
       window.scrollTo({ top: top, behavior: 'smooth' })
     },
     handleAfterSubmit (updatedMealData) {
-      console.log(updatedMealData)
       // update meal data
       this.meal = {
         ...this.meal,

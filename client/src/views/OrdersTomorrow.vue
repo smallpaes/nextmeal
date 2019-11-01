@@ -33,7 +33,7 @@
               </template>
               <template v-slot:footer>
                 <router-link
-                  :to="{name: 'order', query: {order_id: meal.order.id}}"
+                  :to="{name: 'order', params: {order_id: meal.order.id}}"
                   class="btn"
                 >
                   查看訂單
@@ -82,22 +82,8 @@ import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import MealVerticalCard from '../components/Card/MealVerticalCard'
 import NewOrderCard from '../components/Card/NewOrderCard'
 import Footer from '../components/Footer'
-
-const dummyOrders = [
-  {
-    id: 1,
-    meal: {
-      name: '宮保雞丁套餐',
-      description: '祖傳90年四川辣椒大火快炒放山雞,搭配健康糙米飯與新竹貢丸攤,午餐另外附贈知名淡水阿婆酸梅湯,幫助餐後解膩!祖傳90年四川辣椒大火快炒放山雞,搭配健康糙米飯與新竹貢丸攤!午餐另外附贈知名淡',
-      image: 'https://images.pexels.com/photos/1860204/pexels-photo-1860204.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-      restaurant: {
-        id: 2,
-        name: '四川家鄉菜',
-        rating: 4.4
-      }
-    }
-  }
-]
+import usersAPI from '../apis/users'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -126,21 +112,36 @@ export default {
       image: {
         order: 'https://cdn.pixabay.com/photo/2017/06/11/17/03/dumplings-2392893_1280.jpg',
         commingSoon: 'https://images.unsplash.com/photo-1549409466-c6449df8e23b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=4000&q=80'
-      }
+      },
+      isLoading: true
     }
   },
   created () {
     this.fetchOrders()
   },
   methods: {
-    fetchOrders () {
-      // fetch order data from API
-      const { id: lunchOrderId, meal: { restaurant: lunchRestaurant, ...lunchMeal } } = dummyOrders[0]
-      this.lunch.order = { id: lunchOrderId, restaurant: lunchRestaurant, meal: lunchMeal }
-
-      // upcoming dinner order
-      //   const { id: dinnerOrderId, meal: { restaurant: dinnerRestaurant, ...dinnerMeal } } = dummyOrders[1]
-      //   this.dinner.order = { id: dinnerOrderId, restaurant: dinnerRestaurant, meal: dinnerMeal }
+    async fetchOrders () {
+      try {
+        // fetch order data
+        const { data, statusText } = await usersAPI.getOrdersTomorrow()
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // store order data if order exists
+        if (data.order.length > 0) {
+          const { id: lunchOrderId, meals: [{ Restaurant: lunchRestaurant, ...lunchMeal }] } = data.order[0]
+          this.lunch.order = { id: lunchOrderId, restaurant: lunchRestaurant, meal: lunchMeal }
+        }
+        // update loading status
+        this.isProcessing = false
+      } catch (error) {
+        // update loading status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得餐點資料，請稍後再試'
+        })
+      }
     }
   }
 }

@@ -11,15 +11,6 @@ export const timeTransformFilter = {
   }
 }
 
-export const isAfterTodayMethod = {
-  methods: {
-    isAfterToday (date) {
-      const today = moment()
-      return moment(date).isAfter(today, 'date')
-    }
-  }
-}
-
 export const dateFormatterFilter = {
   methods: {
     dateFormatter (date) {

@@ -49,9 +49,9 @@ export default {
   methods: {
     async fetchRestaurantData (restaurantId) {
       try {
-        const { data, statusText } = await adminAPI.restaurants.get({ restaurantId })
+        const { data, statusText } = await adminAPI.restaurants.getRestaurant({ restaurantId })
         // error handling
-        if (data.status !== 'success' || statusText !== 'Accepted') throw new Error(data.message)
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
 
         // retrieve data
         const {
@@ -72,6 +72,7 @@ export default {
         // update loading status
         this.isLoading = false
       } catch (error) {
+        console.log(error.message)
         // update loading status
         this.isLoading = false
         // fire error messages
@@ -87,7 +88,7 @@ export default {
         this.isProcessing = true
 
         // admin page
-        const { data, statusText } = await adminAPI.restaurants.put({ restaurantId: this.restaurantId, formData })
+        const { data, statusText } = await adminAPI.restaurants.putRestaurant({ restaurantId: this.restaurantId, formData })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         this.$router.push('/admin')
@@ -107,7 +108,7 @@ export default {
         // update processing status
         this.isProcessing = true
         // delete restaurant
-        const { data, statusText } = await adminAPI.restaurants.delete({ restaurantId })
+        const { data, statusText } = await adminAPI.restaurants.deleteRestaurant({ restaurantId })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // redirect to admin restaurant page

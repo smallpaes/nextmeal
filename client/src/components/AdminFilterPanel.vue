@@ -50,7 +50,6 @@
           type="text"
           class="form-control"
           :placeholder="inputPlaceholder"
-          required
         >
         <div class="input-group-append">
           <button

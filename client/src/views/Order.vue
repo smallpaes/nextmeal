@@ -54,6 +54,7 @@
             <button
               class="btn btn-cancel"
               type="button"
+              :disabled="isProcessing"
               @click.stop.prevent="deleteOrder"
             >
               取消訂單
@@ -73,34 +74,9 @@ import MealHorizontalCard from '../components/Card/MealHorizontalCard'
 import OrderDetail from '../components/OrderDetail'
 import OrderRestaurantDetail from '../components/OrderRestaurantDetail'
 import Footer from '../components/Footer'
-import { isAfterTodayMethod } from '../utils/mixins'
-
-const dummyOrder = {
-  id: 1,
-  require_date: '2019-10-28T11:30:00.000Z',
-  meals: {
-    id: 2,
-    name: '巨無霸套餐',
-    description: '來自德州的巨無霸牛肉漢堡與特製醬料，搭配據杯可樂與現削現炸地瓜薯條，滿足你的味蕾',
-    image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-    quantity: 20,
-    Restaurant: {
-      id: 1,
-      name: '美國家鄉菜',
-      rating: 4.8,
-      distance: 220,
-      tel: '2333-3333',
-      address: '台北市大安區延吉街100號',
-      lat: 25.0340,
-      lng: 121.5645
-    },
-    OrderItem: {
-      OrderId: 2,
-      MealId: 2,
-      quantity: 3
-    }
-  }
-}
+import orderAPI from '../apis/order'
+import { Toast } from '../utils/helpers'
+import moment from 'moment'
 
 export default {
   components: {
@@ -111,14 +87,35 @@ export default {
     OrderRestaurantDetail,
     Footer
   },
-  mixins: [isAfterTodayMethod],
   data () {
     return {
       banner: {
         image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
         height: 450
       },
-      order: {}
+      order: {
+        restaurant: {
+          name: '',
+          rating: -1,
+          distance: -1,
+          lat: -1,
+          lng: -1
+        },
+        meal: {
+          id: -1,
+          name: '',
+          description: '',
+          image: '',
+          quantity: -1
+        },
+        orderDetail: {
+          time: '',
+          date: ''
+        },
+        isEditable: false
+      },
+      isLoading: true,
+      isProcessing: false
     }
   },
   beforeRouteUpdate (to, from, next) {
@@ -131,29 +128,61 @@ export default {
     this.fetchOrder(orderId)
   },
   methods: {
-    fetchOrder (orderId) {
-      // fetch order data from API
+    async fetchOrder (orderId) {
+      try {
+        // fetch order data from API
+        const { data, statusText } = await orderAPI.getOrder({ orderId })
+        console.log(data)
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
 
-      // retrieve data
-      const { meals: { Restaurant: restaurant, OrderItem, ...meal }, require_date: requireDate } = dummyOrder
-      // save data
-      this.order = {
-        ...this.order,
-        restaurant,
-        meal,
-        orderDetail: {
-          ...OrderItem,
-          time: requireDate.split('T')[1].slice(0, 5),
-          date: requireDate.split('T')[0].slice(0, 10)
-        },
-        isEditable: this.isAfterToday(requireDate.split('T')[0].slice(0, 10))
+        // retrieve data
+        const { meals: { Restaurant: restaurant, OrderItem, ...meal }, require_date: requireDate, order_status: orderStatus } = data.order
+        // save data
+        this.order = {
+          ...this.order,
+          restaurant,
+          meal,
+          orderDetail: {
+            ...OrderItem,
+            time: moment(new Date(requireDate)).format('HH:mm'),
+            date: moment(new Date(requireDate)).format('YYYY-MM-DD')
+          },
+          isEditable: orderStatus === '明日'
+        }
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得訂單資料，請稍後再試'
+        })
+        // redirect back to last page
+        this.$router.go(-1)
       }
     },
-    deleteOrder () {
-      // PUT /api/order/:order_id/cancel
-      console.log(this.$route.params.order_id)
-      // redirect back to /user/order/tomorrow
-      this.$router.push({ name: 'order-tomorrow' })
+    async deleteOrder () {
+      try {
+        // update processing status
+        this.isProcessing = true
+        // cancel order
+        const { data, statusText } = await orderAPI.putCancelOrder({ orderId: this.$route.params.order_id })
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // redirect back to /user/order/tomorrow
+        this.$router.push({ name: 'order-tomorrow' })
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取消資料，請稍後再試'
+        })
+      }
     }
   }
 }

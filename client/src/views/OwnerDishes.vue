@@ -56,9 +56,7 @@ export default {
         // fetch data from API
         const { data, statusText } = await ownerAPI.dishes.getDishes()
         // error handling
-        if (data.status !== 'success' || statusText !== 'OK') {
-          throw new Error(data.message)
-        }
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
 
         // store data
         this.meals = [

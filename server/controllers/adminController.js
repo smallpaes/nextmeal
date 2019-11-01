@@ -20,6 +20,7 @@ let adminController = {
   getRestaurants: async (req, res) => {
     try {
       const { name, category, dist } = req.query
+      console.log(name, dist)
       // let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
       let restaurants = await Restaurant.findAll({
         where: {
@@ -47,7 +48,7 @@ let adminController = {
         // subQuery: false
 
       })
-
+      console.log(restaurants)
       restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
       res.status(200).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
     } catch (error) {

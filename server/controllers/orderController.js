@@ -27,7 +27,7 @@ let orderController = {
           required: true
         }],
         attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
-        order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
+        //order: sequelize.literal('rand()'), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
       restaurants = restaurants.map((restaurant, index) => ({
@@ -296,7 +296,7 @@ let orderController = {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
-      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
+      if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
       let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
