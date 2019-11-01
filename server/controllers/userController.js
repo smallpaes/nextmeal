@@ -1,5 +1,5 @@
 const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const db = require('../models')
 const Subscription = db.Subscription
