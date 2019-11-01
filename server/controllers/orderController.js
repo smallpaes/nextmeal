@@ -243,6 +243,7 @@ let orderController = {
   },
   getComment: async (req, res) => {
     try {
+      // 11/1 加入hasComment 後續判斷要使用 by Danny
       let order = await Order.findByPk(req.params.order_id, {
         include: [{
           model: Meal,
@@ -250,12 +251,13 @@ let orderController = {
           include: [{ model: Restaurant, attributes: ['id', 'name'] }],
           attributes: ['name', 'image', 'description']
         }],
-        attributes: ['order_date', 'require_date', 'amount', 'UserId']
+        attributes: ['order_date', 'require_date', 'amount', 'UserId', 'hasComment']
       })
+      // 11/1 調整判斷的順序 by Danny
+      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (req.user.id !== Number(order.UserId)) {
         return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
       }
-      if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (order.hasComment) return res.status(400).json({ status: 'error', message: 'This order has already been commented.' })
       order = { ...order.dataValues, meals: order.dataValues.meals[0] }
       return res.status(200).json({ status: 'success', order, message: 'Successfully get user comment page\'s  information.' })

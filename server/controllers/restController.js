@@ -103,6 +103,11 @@ let restController = {
               'CategoryId'
             ]
           })
+          // 加入處理沒找到餐廳時的情況 11/1 by Danny
+          if (!restaurant) {
+            res.status(400).json({ status: 'error', message: 'Can not find the restaurant' })
+          }
+
           // 餐廳行政區資訊
           district = districts.find(dist => { return dist.chinese_name === restaurant.location })
         }
