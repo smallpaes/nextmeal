@@ -1,5 +1,5 @@
 const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
@@ -32,7 +32,10 @@ let orderController = {
         where: sequelize.where(distance, { [Op.lte]: 500 }),
         include: [{
           model: Meal,
-          where: { isServing: true },
+          where: {
+            isServing: true,
+            quantity: { [Op.gt]: 0 }
+          },
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
