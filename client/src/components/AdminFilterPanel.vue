@@ -3,9 +3,12 @@
     class="form p-3 rounded-sm shadow-sm mb-3"
     @submit.stop.prevent="$emit('after-search', searchInput)"
   >
-    <div class="form-row">
+    <div class="form-row align-items-center">
       <!--Option filter-->
-      <div class="form-group form-select-control col-sm-6">
+      <div
+        v-if="hasOption"
+        class="form-group form-select-control col-sm-6 col-md my-1"
+      >
         <select
           v-model.trim="selectedOption"
           class="form-control"
@@ -26,8 +29,21 @@
           </option>
         </select>
       </div>
+      <!--Date Picker-->
+      <CustomDatePicker
+        v-if="hasDate"
+        v-model="selectedDate"
+        :last-date="getTomorrowDate"
+        :has-label="false"
+        class="col-sm-6 my-1 col-md pl-md-2 pr-md-0"
+        @handle-date="$emit('after-date-pick', $event)"
+      />
       <!--Input search-->
-      <div class="input-group col-sm-6 m-0">
+      <div
+        v-if="hasSearch"
+        class="input-group col pl-1 my-1  input-search-group"
+        :class="{'pl-sm-2': !hasDate, 'pl-sm-0': hasDate, 'pl-md-2': hasDate}"
+      >
         <input
           id="searchInput"
           v-model.trim="searchInput"
@@ -51,8 +67,30 @@
 </template>
 
 <script>
+import CustomDatePicker from '../components/CustomDatePicker'
+import moment from 'moment'
+
 export default {
+  components: {
+    CustomDatePicker
+  },
   props: {
+    hasOption: {
+      type: Boolean,
+      default: true
+    },
+    hasSearch: {
+      type: Boolean,
+      default: true
+    },
+    hasDate: {
+      type: Boolean,
+      default: false
+    },
+    totalFileds: {
+      type: Number,
+      default: 2
+    },
     options: {
       type: Array,
       required: true
@@ -65,7 +103,15 @@ export default {
   data () {
     return {
       searchInput: '',
-      selectedOption: ''
+      selectedOption: '',
+      selectedDate: {
+        dob: moment().format('YYYY-MM-DD')
+      }
+    }
+  },
+  computed: {
+    getTomorrowDate: function () {
+      return moment().add(1, 'd')
     }
   }
 }

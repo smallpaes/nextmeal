@@ -24,7 +24,6 @@ const pageLimit = 6
 const moment = require('moment')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-
 let userController = {
   emailCheck: async (req, res) => {
     try {
