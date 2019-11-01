@@ -296,7 +296,8 @@ let orderController = {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
-      if (req.user.id !== order.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
+
+      if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
       let subscription = await Subscription.findOne({
         where: {
           UserId: order.UserId,
