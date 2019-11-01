@@ -1,6 +1,5 @@
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
-
 const db = require('../models')
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
@@ -24,7 +23,6 @@ const pageLimit = 6
 const moment = require('moment')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-
 let userController = {
   emailCheck: async (req, res) => {
     try {
