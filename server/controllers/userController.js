@@ -17,6 +17,7 @@ const {
   sendEmail
 } = require('../middleware/middleware')
 const districts = require('../location/district.json')
+const plan = require('../location/plan.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const pageLimit = 6
@@ -246,10 +247,9 @@ let userController = {
       })
       return res.status(200).json({ status: 'success', user, categories, districts, message: 'get personal profile page.' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
-
   putProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {

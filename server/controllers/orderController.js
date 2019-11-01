@@ -275,7 +275,11 @@ let orderController = {
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (req.user.id !== Number(order.UserId)) {
-        return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
+        return res.status(200).json({ status: 'success', message: 'You are not allow to get this information.' })
+      }
+      if (order.hasComment) return res.status(200).json({ status: 'success', message: 'This order has already been commented.' })
+      if (order.meals.length === 0 || order.meals[0] === undefined) {
+        return res.status(200).json({status: 'success', message: 'meal or restaurant does not exist'})
       }
       if (order.hasComment) return res.status(200).json({ status: 'success', message: 'This order has already been commented.' })
       if (order.meals.length === 0 || order.meals[0] === undefined) {
