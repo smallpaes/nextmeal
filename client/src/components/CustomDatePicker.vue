@@ -1,5 +1,5 @@
 <template>
-  <div class="form-group form-calendar-group col-md-6 p-0">
+  <div class="form-group form-calendar-group">
     <label
       v-if="hasLabel"
       for="hidden-date-input"
@@ -17,9 +17,10 @@
       input-class="form-control form-calendar"
       width="100%"
       :input-attr="inputAttribute"
-      :not-after="new Date()"
+      :not-after="lastDate"
       :not-before="new Date('1900', '12', '12')"
       :editable="editable"
+      @input="$emit('handle-date', value)"
     />
     <div class="invalid-feedback">
       請選擇日期
@@ -29,6 +30,7 @@
 
 <script>
 import DatePicker from 'vue2-datepicker'
+import moment from 'moment'
 export default {
   components: {
     DatePicker
@@ -41,6 +43,10 @@ export default {
     hasLabel: {
       type: Boolean,
       default: true
+    },
+    lastDate: {
+      type: Object,
+      default: () => moment()
     }
   },
   data () {

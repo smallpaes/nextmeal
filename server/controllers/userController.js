@@ -1,5 +1,5 @@
 const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 const db = require('../models')
 const Subscription = db.Subscription
@@ -24,7 +24,6 @@ const pageLimit = 6
 const moment = require('moment')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-
 let userController = {
   emailCheck: async (req, res) => {
     try {
@@ -135,24 +134,12 @@ let userController = {
     const category = categories.map(item => item.name)
     return res.json({ category })
   },
-  getSubscription: async (req, res) => {
-    try {
-      let subscription = await Subscription.findAll({
-        where: { UserId: req.user.id },
-        order: [['createdAt', 'DESC']],
-        limit: 1
-      })
-      if (subscription.length === 0 || subscription[0].payment_status === '0' || subscription[0].sub_expired_date < Date.now()) {
-        return res.status(200).json({
-          status: 'success',
-          subscription: (subscription) ? subscription : '',
-          message: 'you should subscribe the NextMeal now'
-        })
-      }
-      return res.status(200).json({ status: 'success', subscription, message: 'you are already subscribe the NextMeal' })
-    } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
-    }
+  getSubscription: (req, res) => {
+    return res.status(200).json({
+      status: 'success',
+      plan,
+      message: 'you should subscribe the NextMeal now'
+    })
   },
 
   postSubscription: async (req, res) => {
@@ -174,7 +161,7 @@ let userController = {
       if (subscription) {
         const stillSubscribe = subscription.sub_expired_date > Date.now()
         const unSubscribe = subscription.sub_expired_date < Date.now()
-        const paid = subscription.payment_status !== '0'
+        const paid = subscription.payment_status !== false
         const insufficient = subscription.sub_balance <= 0
         const once = (subscription && stillSubscribe && paid && insufficient) ? true : false
         const expired = (subscription && paid && unSubscribe) ? true : false
@@ -221,7 +208,7 @@ let userController = {
         let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
         let subscription = await Subscription.findOne({
           where: { sn: data['Result']['MerchantOrderNo'] },
-          include: [{model: User, attributes: [ 'name' ]}]
+          include: [{ model: User, attributes: ['name'] }]
         })
         await Payment.create({
           SubscriptionId: subscription.id,
@@ -233,7 +220,7 @@ let userController = {
         if (req.body.Status === 'SUCCESS') {
           await subscription.update({
             ...req.body,
-            payment_status: 1,
+            payment_status: true,
             sub_date: sub_date,
             sub_expired_date: sub_expired_date
           })
@@ -249,7 +236,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
+        return res.status(200).json({ status: 'success', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -257,12 +244,12 @@ let userController = {
           exclude: ['password']
         }
       })
-
       return res.status(200).json({ status: 'success', user, categories, districts, message: 'get personal profile page.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
   },
+
   putProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id) || req.user.role !== 'Admin') {
@@ -355,6 +342,13 @@ let userController = {
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_status === 'cancel') { whereQuery['order_status'] = '取消' }
+      if (order_status === 'history') {
+        start = moment().startOf('day').toDate()
+        whereQuery = {
+          UserId: req.user.id,
+          require_date: { [Op.lt]: start }
+        }
+      }
       let orders = await Order.findAndCountAll({
         where: whereQuery,
         include: [{
