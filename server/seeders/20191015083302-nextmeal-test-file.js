@@ -752,7 +752,7 @@ module.exports = {
       , {});
 
     // add orderitems
-    queryInterface.bulkInsert("Orderitems",
+    queryInterface.bulkInsert("OrderItems",
       Array.from({ length: 3 }).map((item, index) => (
         {
           OrderId: index + 1,

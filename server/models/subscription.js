@@ -8,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     sub_date: DataTypes.DATE,
     sub_expired_date: DataTypes.DATE,
     payment_status: {
-      type:DataTypes.STRING,
-      defaultValue:0
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
     sn: DataTypes.STRING,
     sub_balance: DataTypes.FLOAT
