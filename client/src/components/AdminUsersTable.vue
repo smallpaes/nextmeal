@@ -7,13 +7,13 @@
             名稱
           </th>
           <th scope="col">
-            類別
+            用戶權限
           </th>
           <th scope="col">
-            狀態
+            訂閱狀態
           </th>
           <th scope="col">
-            方案
+            訂閱方案
           </th>
           <th scope="col">
             點餐量
@@ -70,9 +70,9 @@ export default {
 <style lang="scss" scoped>
 $headers: (
     1: '名稱',
-    2: '類別',
-    3: '狀態',
-    4: '方案',
+    2: '用戶權限',
+    3: '訂閱狀態',
+    4: '訂閱方案',
     5: '點餐量'
 );
 

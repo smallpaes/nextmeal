@@ -13,6 +13,7 @@ const commentLimit = 4
 let restController = {
   getRestaurants: async (req, res) => {
     try {
+      if (!req.query.dist) return res.status(200).json({ status: 'error', more_restaurants, message: 'need to query dist some where' })
       // 設定尋找需求
       let page = Number(req.query.page)
       let wherequery = {}
@@ -25,7 +26,7 @@ let restController = {
           where: wherequery,
           include: [{ model: Category, attributes: ['name', 'image'] }],
           attributes: [
-            'id', 'image', 'name', 'rating','description',
+            'id', 'image', 'name', 'rating', 'description',
             [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
             'CategoryId'
           ],
@@ -36,7 +37,7 @@ let restController = {
         more_restaurants.count = more_restaurants.count - 6
         more_restaurants.pages = Math.ceil((more_restaurants.count) / pageLimit)
 
-        return res.json({ status: 'success', more_restaurants, message: 'Get all restaurants page info' })
+        return res.status(200).json({ status: 'success', more_restaurants, message: 'Get all restaurants page info' })
       }
 
       // 第一次進入抓熱門、更多(近來就算第一頁)
@@ -54,7 +55,7 @@ let restController = {
       const more_restaurants = {
         count: popular_restaurants.count - 6,
         pages: Math.ceil((popular_restaurants.count - 6) / pageLimit),
-        rows: [popular_restaurants.rows.slice(6)]
+        restaurants: popular_restaurants.rows.slice(6)
       }
       popular_restaurants = popular_restaurants.rows.slice(0, 6)
 
@@ -62,7 +63,7 @@ let restController = {
       const district = districts.find(dist => { return dist.chinese_name === req.query.dist })
       const restaurants = await Restaurant.findAll({
         where: wherequery,
-        attributes: ['id', 'name', 'latitude', 'longitude'],
+        attributes: ['id', 'name', 'lat', 'lng'],
       })
       const map = {
         center: {
@@ -73,7 +74,7 @@ let restController = {
         },
         restaurants
       }
-      return res.status(202).json({ 
+      return res.status(200).json({ 
         status: 'success', popular_restaurants,
         more_restaurants, map, districts,
         message: 'Successfully get all restaurants page info'
@@ -95,7 +96,7 @@ let restController = {
             attributes: [
               'id', 'image', 'name', 'rating',
               'description', 'tel', 'address',
-              'opening_hour', 'closing_hour', 'location', 'latitude', 'longitude',
+              'opening_hour', 'closing_hour', 'location', 'lat', 'lng',
               [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
               'CategoryId'
             ]
@@ -111,7 +112,7 @@ let restController = {
           limit: commentLimit
         })
         comments.pages = Math.ceil((comments.count) / commentLimit)
-        return res.status(202).json({
+        return res.status(200).json({
           status: 'success',
           restaurant,
           comments,

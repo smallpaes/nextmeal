@@ -244,5 +244,4 @@ export default {
       min-width: 170px;
     }
 }
-
 </style>
