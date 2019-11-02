@@ -133,7 +133,14 @@ describe('# Admin::Restaurant request', () => {
       it('should be able to update specific restaurant info', (done) => {
         request(app)
           .put('/api/admin/restaurants/1')
-          .send('name=john&description=niceRestaurant22&tel=04-2657-6055&address=somewhereInTaiwan')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'john')
+          .field('description', 'niceRestaurant22')
+          .field('tel', '04-2657-6055')
+          .field('address', 'somewhereInTaiwan')
+          .field('lat', 25)
+          .field('lng', 121)
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)
