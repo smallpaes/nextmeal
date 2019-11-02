@@ -32,7 +32,7 @@ module.exports = {
       email: 'user1@example.com',
       password: bcrypt.hashSync('12345678', 10),
       avatar: faker.image.avatar(),
-      role: 'user',
+      role: 'User',
       address: '台北市大安區羅斯福路四段113巷',
       lat: 25.011280,
       lng: 121.538819,
