@@ -6,6 +6,7 @@ var expect = chai.expect;
 const today = (new Date()).getDay()
 var app = require('../../../app')
 var helpers = require('../../../_helpers');
+const imageUrl = 'https://randomuser.me/api/portraits/lego/1.jpg'
 const db = require('../../../models')
 const defaultRestaurant1 = {
   name: 'Danny的小廚房',
@@ -85,12 +86,19 @@ describe('# Admin::Owner request', () => {
       it('should be able to post a new restaurant', (done) => {
         request(app)
           .post('/api/owner')
-          .send('name=john&description=niceRestaurant22&tel=04-2657-6055&address=somewhereInTaiwan&lat=25&lng=121')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'dannyRest')
+          .field('description', 'niceRestaurant22')
+          .field('tel', '04-2657-6055')
+          .field('address', 'somewhereInTaiwan')
+          .field('lat', 25)
+          .field('lng', 121)
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .expect({ status: 'success', message: 'successfully add a new restaurant' })
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)
-            expect(restaurant.name).to.be.equal('dannyRestaurant')
+            expect(restaurant.name).to.be.equal('dannyRest')
             return done()
           })
       })
@@ -108,11 +116,18 @@ describe('# Admin::Owner request', () => {
       it('should be able to update restaurant info', (done) => {
         request(app)
           .put('/api/owner')
-          .send('name=MikeRestaurant&description=sometext&tel=12345678&address=somewhere&lat=25&lng=121')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'MikeRest')
+          .field('description', 'niceRestaurant22')
+          .field('tel', '04-2657-6055')
+          .field('address', 'somewhereInTaiwan')
+          .field('lat', 25)
+          .field('lng', 121)
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)
-            expect(restaurant.name).to.be.equal('MikeRestaurant')
+            expect(restaurant.name).to.be.equal('MikeRest')
             expect(res.body.status).to.be.equal('success')
             return done()
           })
@@ -135,11 +150,14 @@ describe('# Admin::Owner request', () => {
       it('should be able to post a new meal', (done) => {
         request(app)
           .post('/api/owner/dishes')
-          .send('name=tomatosoup&description=handmade')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'tomato')
+          .field('description', 'handmadesouppp')
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
             const meal = await db.Meal.findByPk(2)
-            expect(meal.name).to.be.equal('tomatosoup')
+            expect(meal.name).to.be.equal('tomato')
             expect(res.body.status).to.be.equal('success')
             return done()
           })
@@ -151,7 +169,7 @@ describe('# Admin::Owner request', () => {
           .expect(200)
           .end(async (err, res) => {
             const meal = await db.Meal.findByPk(2)
-            expect(meal.name).to.be.equal('tomatosoup')
+            expect(meal.name).to.be.equal('tomato')
             return done()
           })
       })
@@ -167,11 +185,14 @@ describe('# Admin::Owner request', () => {
       it('should be able to update specific meal info', (done) => {
         request(app)
           .put('/api/owner/dishes/2/edit')
-          .send('name=tomatosoup2&description=handmade')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'tomatoso')
+          .field('description', 'handmadesouppp')
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
             const meal = await db.Meal.findByPk(2)
-            expect(meal.name).to.be.equal('tomatosoup2')
+            expect(meal.name).to.be.equal('tomatoso')
             return done()
           })
       })
@@ -179,7 +200,7 @@ describe('# Admin::Owner request', () => {
         it('should not be able to update next week menu info after Saturday', (done) => {
           request(app)
             .put('/api/owner/menu')
-            .send('quantity=60&id=1')
+            .send('quantity=40&id=1')
             .expect(400, done)
         })
 
@@ -187,11 +208,11 @@ describe('# Admin::Owner request', () => {
         it('should be able to update next week menu info by Saturday', (done) => {
           request(app)
             .put('/api/owner/menu')
-            .send('quantity=60&id=1')
+            .send('quantity=40&id=1')
             .expect(200)
             .end(async (err, res) => {
               const meal = await db.Meal.findByPk(1)
-              expect(meal.nextServing_quantity).to.be.equal(60)
+              expect(meal.nextServing_quantity).to.be.equal(40)
               return done()
             })
         })
