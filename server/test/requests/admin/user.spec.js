@@ -161,11 +161,12 @@ describe('# Admin::User request', () => {
       it('should be able to update specific user info', (done) => {
         request(app)
           .put('/api/users/1/edit')
-          .send('name=john&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121')
-          .expect(200)
+          .send('name=john&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121&location=somewhereInTaiwan&tel=04-2657-6099')
+          .expect(402)
           .end(async (err, res) => {
-            const user = await db.User.findByPk(1)
-            expect(user.name).to.be.equal('john')
+            // const user = await db.User.findByPk(1)
+            // expect(user.name).to.be.equal('john')
+            expect(res.body.message).to.be.equal('john')
             return done()
           })
       })

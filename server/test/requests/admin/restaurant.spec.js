@@ -133,7 +133,7 @@ describe('# Admin::Restaurant request', () => {
       it('should be able to update specific restaurant info', (done) => {
         request(app)
           .put('/api/admin/restaurants/1')
-          .send('name=john&description=nice&tel=12346478&address=somewhereInTaiwan')
+          .send('name=john&description=niceRestaurant22&tel=04-2657-6055&address=somewhereInTaiwan')
           .expect(200)
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)

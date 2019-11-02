@@ -85,7 +85,7 @@ describe('# Admin::Owner request', () => {
       it('should be able to post a new restaurant', (done) => {
         request(app)
           .post('/api/owner')
-          .send('name=dannyRestaurant&description=sometext&tel=12345678&address=somewhere&lat=25&lng=121')
+          .send('name=john&description=niceRestaurant22&tel=04-2657-6055&address=somewhereInTaiwan&lat=25&lng=121')
           .expect(200)
           .expect({ status: 'success', message: 'successfully add a new restaurant' })
           .end(async (err, res) => {
