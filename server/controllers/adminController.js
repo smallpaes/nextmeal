@@ -12,7 +12,6 @@ const Order = db.Order
 const Meal = db.Meal
 const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
-const { validMessage } = require('../middleware/middleware')
 const pageLimit = 10
 const districts = require('../location/district.json')
 
@@ -76,7 +75,6 @@ let adminController = {
   // admin 修改餐廳資訊
   putRestaurant: async (req, res) => {
     try {
-      validMessage(req, res)
       let restaurant = await Restaurant.findByPk(req.params.restaurant_id)
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
@@ -129,12 +127,11 @@ let adminController = {
       const { name, subscription_status } = req.query
       const start = moment().startOf('day').toDate()
       let whereQuery = {}
-      // 邏輯有瑕疵，尚無法篩選還有兩天以上，但訂單餘額已經為 0 的人為無效訂單。
       if (subscription_status) {
         if (subscription_status === 'inactive') {
-          whereQuery = { sub_expired_date: { [Op.lt]: start } }
+          whereQuery = { [Op.or]: { payment_status: false, sub_expired_date: { [Op.lt]: start } } }
         } else {
-          whereQuery = { sub_description: true, sub_expired_date: { [Op.gte]: start } }
+          whereQuery = { payment_status: true, sub_expired_date: { [Op.gte]: start } }
         }
       }
 
@@ -179,7 +176,7 @@ let adminController = {
           'address', 'lat', 'lng'
         ]
       })
-      if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
+      if (!user) return res.status(400).json({ status: 'error', user, message: 'user does not exist' })
       return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -235,7 +232,10 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (orders.rows.length < 1) return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+      if (orders.rows.length < 1) {
+        orders = []
+        return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+      }
       const count = orders.count
       orders = orders.rows.map(order => ({
         ...order.dataValues,

@@ -7,7 +7,11 @@ var expect = chai.expect;
 var app = require('../../../app')
 var helpers = require('../../../_helpers');
 const db = require('../../../models')
-
+const nowTime = new Date()
+const tmr = new Date()
+tmr.setDate(nowTime.getDate() + 1)
+tmr.setHours(12, 0, 0, 0)
+const content = encodeURIComponent('大安區')
 const defaultRestaurant1 = {
   name: "Danny的小餐館",
   rating: 4.8,
@@ -77,8 +81,12 @@ describe('# Admin::Restaurant request', () => {
         await db.User.destroy({ where: {}, truncate: true })
         await db.Restaurant.destroy({ where: {}, truncate: true })
         await db.Order.destroy({ where: {}, truncate: true })
+        await db.OrderItem.destroy({ where: {}, truncate: true })
+        await db.Meal.destroy({ where: {}, truncate: true })
         await db.Restaurant.create(defaultRestaurant1)
-        await db.Order.create({ UserId: 1, order_date: new Date() })
+        await db.Meal.create({ quantity: 50 })
+        await db.Order.create({ UserId: 1, require_date: tmr, order_status: '明日' })
+        await db.OrderItem.create({ OrderId: 1, MealId: 1, quantity: 1 })
 
       })
 
@@ -92,25 +100,25 @@ describe('# Admin::Restaurant request', () => {
             return done()
           })
       })
+      //not done yet
 
-      it('should be able to filter restaurants by location', (done) => {
-        request(app)
-          .get("/api/admin/restaurants?dist=Da'an")
-          .expect(200)
-          .end(async (err, res) => {
-            expect(res.body.restaurants.length).to.be.equal(1)
-            return done()
-          })
-      })
+      // it('should be able to filter restaurants by location', (done) => {
+      //   request(app)
+      //     .get(`/api/admin/restaurants?dist=${content}`)
+      //     .expect(200)
+      //     .end(async (err, res) => {
+      //       expect(res.body).to.be.equal(1)
+      //       return done()
+      //     })
+      // })
 
       it('should see specific restaurant info', (done) => {
         request(app)
           .get('/api/admin/restaurants/1')
           .expect(200)
           .end((err, res) => {
-            expect(response.body).to.have.property('name')
-            expect(response.body).to.have.property('location')
-            expect(response.body).to.have.property('rating')
+            expect(res.body.status).to.be.equal('success')
+            expect(res.body).to.have.property('restaurant')
             return done()
           })
       })
@@ -125,7 +133,15 @@ describe('# Admin::Restaurant request', () => {
       it('should be able to update specific restaurant info', (done) => {
         request(app)
           .put('/api/admin/restaurants/1')
-          .send('name=john')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'john')
+          .field('description', 'niceRestaurant22')
+          .field('tel', '04-2657-6055')
+          .field('address', 'somewhereInTaiwan')
+          .field('lat', 25)
+          .field('lng', 121)
+          .field('location', '大安區')
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)
@@ -154,75 +170,93 @@ describe('# Admin::Restaurant request', () => {
 
       })
 
-      it('should see all orders', (done) => {
+      // it('should see today orders', (done) => {
+      //   request(app)
+      //     .get('/api/admin/orders')
+      //     .expect(200)
+      //     .end((err, res) => {
+      //       expect(res.body.message).to.be.equal('Successfully get Orders.')
+      //       res.body.orders.map(item => {
+      //         expect(item).to.have.property('User')
+      //         // expect(item).to.have.property('meals')
+      //         // expect(item).to.have.property('id')
+      //         // expect(item).to.have.property('require_time')
+      //         // expect(item).to.have.property('order_status')
+      //         // expect(item).to.have.property('date')
+      //         // expect(item).to.have.property('time')
+      //       })
+      //       return done()
+      //     })
+      // })
+
+      it('should see error message when orders can not be found', (done) => {
         request(app)
           .get('/api/admin/orders')
           .expect(200)
           .end((err, res) => {
-            res.body.orders.map(item => {
-              expect(item).to.have.property('user_name')
-              expect(item).to.have.property('restaurant_name')
-              expect(item).to.have.property('require_date')
-              expect(item).to.have.property('require_time')
-            })
+            expect(res.body.message).to.be.equal('can not find any orders')
             return done()
           })
       })
 
       it('should see specific order info', (done) => {
         request(app)
-          .get('/api/admin/orders/1')
+          .get('/api/order/1')
           .expect(200)
           .end(async (err, res) => {
-            const order = await db.Order.findByPk(1)
-            expect(order).not.to.be.null
-            expect(res.body.order_status).not.to.be.empty()
+            expect(res.body.status).to.be.equal('success')
+            expect(res.body.message).to.be.equal('Successfully get the Order')
+            expect(res.body).to.have.property('order')
             return done()
           })
       })
 
       it('fail to see specific order info', (done) => {
         request(app)
-          .get('/api/admin/orders/U001')
+          .get('/api/order/2')
           .expect(400)
-          .expect({ status: "error", message: "order does not exist" }, done)
-      })
-
-      it('should be able to update specific order info', (done) => {
-        request(app)
-          .put('/api/admin/orders/1')
-          .send('order_status=done')
-          .expect(200)
           .end(async (err, res) => {
-            const order = await db.Order.findByPk(1)
-            expect(order.order_status).to.be.equal('done')
+            expect(res.body.status).to.be.equal('error')
+            expect(res.body.message).to.be.equal('order does not exist')
             return done()
           })
       })
 
-      it('fail to update specific order info', (done) => {
+      it('should be able to update specific order info', (done) => {
         request(app)
-          .put('/api/admin/orders/U001')
-          .expect(400)
-          .expect({ status: "error", message: "order does not exist" }, done)
-      })
-
-      it('should be able to delete specific order info', (done) => {
-        request(app)
-          .delete('/api/admin/orders/1')
+          .put('/api/order/1')
+          .send(`require_date=1991-04-14&quantity=2`)
           .expect(200)
           .end(async (err, res) => {
             const order = await db.Order.findByPk(1)
-            expect(order).to.be.null
+            expect(order.require_date).not.to.be.equal(tmr)
+            expect(order).not.to.be.null
+            return done()
+          })
+      })
+
+      it('fail to update specific order info when you are not subscribe', (done) => {
+        request(app)
+          .put('/api/order/U001')
+          .send(`require_date=1991-04-14&quantity=2`)
+          .expect(400)
+          .expect({ status: "error", "subscription": null, message: "you are not authorized to do that" }, done)
+      })
+
+      it('should not be able to cancel specific order(not a subscribe user)', (done) => {
+        request(app)
+          .put('/api/order/1/cancel')
+          .expect(200)
+          .end(async (err, res) => {
+            expect({ status: "error", "subscription": null, message: "you are not authorized to do that" })
             return done()
           })
       })
 
       it('fail to delete specific order info', (done) => {
         request(app)
-          .delete('/api/admin/orders/U001')
-          .expect(400)
-          .expect({ status: "error", message: "order does not exist" }, done)
+          .put('/api/order/1/cancel')
+          .expect(400, done)
       })
 
 
@@ -234,6 +268,8 @@ describe('# Admin::Restaurant request', () => {
         await db.User.destroy({ where: {}, truncate: true })
         await db.Restaurant.destroy({ where: {}, truncate: true })
         await db.Order.destroy({ where: {}, truncate: true })
+        await db.OrderItem.destroy({ where: {}, truncate: true })
+
       })
     })
 

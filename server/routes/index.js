@@ -1,4 +1,4 @@
-const { ensureAuthenticated, isAuthAdmin, getUser } = require('../config/auth')
+const { ensureAuthenticated, isAuthAdmin, getUser, isAuthOwner } = require('../config/auth')
 const mainRoute = require('./mainRoute')
 const restRoute = require('./restRoute')
 const userRoute = require('./userRoute')
@@ -11,6 +11,6 @@ module.exports = (app) => {
   app.use('/api/restaurants', restRoute)
   app.use('/api/users', userRoute)
   app.use('/api/admin', ensureAuthenticated, getUser, isAuthAdmin, adminRoute)
-  app.use('/api/owner', ensureAuthenticated, getUser, ownerRoute)
+  app.use('/api/owner', ensureAuthenticated, getUser, isAuthOwner, ownerRoute)
   app.use('/api/order', ensureAuthenticated, getUser, orderRoute)
 }

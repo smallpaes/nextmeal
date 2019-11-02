@@ -32,7 +32,7 @@ module.exports = {
       email: 'user1@example.com',
       password: bcrypt.hashSync('12345678', 10),
       avatar: faker.image.avatar(),
-      role: 'user',
+      role: 'User',
       address: '台北市大安區羅斯福路四段113巷',
       lat: 25.011280,
       lng: 121.538819,
@@ -204,7 +204,7 @@ module.exports = {
           order_date: new Date(),
           require_date: tmr,
           order_status: '明日',
-          hasComment: Math.round(Math.random()),
+          hasComment: false,
           amount: 1,
           createdAt: new Date(),
           updatedAt: new Date()
@@ -234,7 +234,7 @@ module.exports = {
           sub_balance: 10,
           sub_date: new Date(),
           sub_expired_date: new Date(nowTime.getTime() + (24 * 60 * 60 * 30 * 1000)),
-          payment_status: Math.floor(Math.random() * 2),
+          payment_status: true,
           sn: Date.now() + index,
           createdAt: new Date(),
           updatedAt: new Date()
