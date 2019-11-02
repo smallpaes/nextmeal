@@ -133,7 +133,7 @@ describe('# User: request', () => {
       it('should be able to update user info', (done) => {
         request(app)
           .put('/api/users/1/edit')
-          .send('name=John&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121')
+          .send('name=John&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121&location=大安區')
           .expect(200, done)
       })
 
