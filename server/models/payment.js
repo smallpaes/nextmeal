@@ -11,5 +11,6 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     Payment.belongsTo(models.Subscription)
   };
+
   return Payment;
 };
