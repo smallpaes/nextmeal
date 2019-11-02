@@ -1,5 +1,5 @@
 const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = 'ab87cc234aa7cd6'
+const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const db = require('../models')
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
@@ -32,7 +32,10 @@ let orderController = {
         where: sequelize.where(distance, { [Op.lte]: 500 }),
         include: [{
           model: Meal,
-          where: { isServing: true },
+          where: {
+            isServing: true,
+            quantity: { [Op.gt]: 0 }
+          },
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
@@ -272,7 +275,11 @@ let orderController = {
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
       if (req.user.id !== Number(order.UserId)) {
-        return res.status(400).json({ status: 'error', message: 'You are not allow to get this information.' })
+        return res.status(200).json({ status: 'success', message: 'You are not allow to get this information.' })
+      }
+      if (order.hasComment) return res.status(200).json({ status: 'success', message: 'This order has already been commented.' })
+      if (order.meals.length === 0 || order.meals[0] === undefined) {
+        return res.status(200).json({status: 'success', message: 'meal or restaurant does not exist'})
       }
       if (order.hasComment) return res.status(200).json({ status: 'success', message: 'This order has already been commented.' })
       if (order.meals.length === 0 || order.meals[0] === undefined) {

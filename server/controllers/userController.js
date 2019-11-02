@@ -17,6 +17,7 @@ const {
   sendEmail
 } = require('../middleware/middleware')
 const districts = require('../location/district.json')
+const plan = require('../location/plan.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const pageLimit = 6
@@ -246,13 +247,12 @@ let userController = {
       })
       return res.status(200).json({ status: 'success', user, categories, districts, message: 'get personal profile page.' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
-
   putProfile: async (req, res) => {
     try {
-      if (req.user.id !== Number(req.params.user_id) || req.user.role !== 'Admin') {
+      if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
         return res.status(400).json({ status: 'error', message: 'You are not allow edit this profile.' })
       }
       validMessage(req, res)
@@ -282,7 +282,6 @@ let userController = {
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -305,7 +304,6 @@ let userController = {
         }],
         attributes: ['id', 'require_date']
       })
-
       if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {

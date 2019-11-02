@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer"); // 寄送 mail
 const db = require('../models')
 const Subscription = db.Subscription
 const Comment = db.Comment
+const Category = db.Category
 
 const sequelize = require('sequelize')
 const Op = sequelize.Op
@@ -57,68 +58,76 @@ const create_mpg_sha_encrypt = (TradeInfo) => {
 let middleware = {
   creatUser: [
     check('email')
-      .not().isEmpty().withMessage('Email should be not empty')
       .isEmail().withMessage('This is not Email address'),
   ],
   validRestaurantForm: [
     check('name')
-      .not().isEmpty().withMessage('Name should be not empty'),
+      .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
     check('description')
-      .not().isEmpty().withMessage('Description should be not empty'),
+      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 1-100 words'),
     check('tel')
-      .not().isEmpty().withMessage('Phone should be not empty'),
+      .custom((tel, { req }) => {
+        const valid = /^0[2-9]-\d{4}-\d{3,4}$/
+        const phoneValid = valid.test(tel)
+        if (phoneValid) {
+          return true
+        }
+        throw new Error('Telephone number should be 02-2222-2222')
+      }),
     check('address')
       .not().isEmpty().withMessage('Address should be not empty')
   ],
-  validMenuForm: [
-    check('quantity')
-      .not().isEmpty().withMessage('Quantity should be not empty'),
-  ],
   validDishForm: [
     check('name')
-      .not().isEmpty().withMessage('Name should be not empty'),
+      .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
     check('description')
-      .not().isEmpty().withMessage('Description should be not empty'),
+      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 1-100 words'),
   ],
-  validUserProfile: [
-    check('name')
-      .not().isEmpty().withMessage('Name should be not empty'),
-    check('email')
-      .not().isEmpty().withMessage('Email should be not empty')
-      .isEmail().withMessage('This is not Email address'),
-    check('address')
-      .not().isEmpty().withMessage('Address should be not empty'),
-    check('dob')
-      .not().isEmpty().withMessage('Birthday should be not empty'),
-    check('prefer')
-      .not().isEmpty().withMessage('Prefer should be not empty'),
+  validMenuForm: [
+    check('quantity')
+      .isInt({ min: 1, max: 50 }).withMessage('Quantity should be between 1-50'),
   ],
   validOrderForm: [
     check('require_date')
       .not().isEmpty().withMessage('Require_date should be not empty'),
     check('quantity')
-      .not().isEmpty().withMessage('Quantity should be not empty')
-      .isInt().withMessage('Quantity should be a integer'),
+      .isInt({ min: 1, max: 50 }).withMessage('Quantity should be between 1-50'),
   ],
   validComment: [
     check('user_text')
-      .not().isEmpty().withMessage('user_text should be not empty'),
+      .isLength({ min: 10, max: 100 }).withMessage('user_text should be between 1-100 words'),
     check('rating')
-      .not().isEmpty().withMessage('You are not rating the restaurant yet.'),
+      .isInt({ min: 1, max: 5 }).withMessage('You are not rating the restaurant 1-5 stars'),
   ],
   validUserProfile: [
     check('name')
-      .not().isEmpty().withMessage('name should be not empty'),
+      .isLength({ min: 1, max: 6 }).withMessage('Name should be between 1-6'),
     check('email')
-      .not().isEmpty().withMessage('email should be not empty'),
+      .isEmail().withMessage('This is not Email address'),
     check('location')
-      .not().isEmpty().withMessage('location should be not empty'),
+      .not().isEmpty().withMessage('Location should be not empty'),
     check('address')
-      .not().isEmpty().withMessage('address should be not empty'),
+      .not().isEmpty().withMessage('Address should be not empty'),
+    check('tel')
+      .custom((tel, { req }) => {
+        const valid = /^0[2-9]-\d{4}-\d{3,4}$/
+        const phoneValid = valid.test(tel)
+        if (phoneValid) {
+          return true
+        }
+        throw new Error('Phone number should be 09-2222-2222')
+      }),
     check('dob')
-      .not().isEmpty().withMessage('birthday should be not empty'),
+      .custom((dob, { req }) => {
+        const valid = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/
+        const dobValid = valid.test(dob)
+        if (dobValid) {
+          return true
+        }
+        throw new Error('Birthday format should be YYYY-MM-DD')
+      }),
     check('prefer')
-      .not().isEmpty().withMessage('prefer should be not empty'),
+      .not().isEmpty().withMessage('Prefer should be not empty'),
   ],
   validMessage: (req, res) => {
     const errors = validationResult(req)
@@ -142,11 +151,10 @@ let middleware = {
       const subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
-          payment_status: trues,
+          payment_status: true,
           sub_expired_date: { [Op.gte]: start },
         },
-        order: [['sub_expired_date', 'DESC']],
-        limit: 1
+        order: [['sub_expired_date', 'DESC']]
       })
       if (!subscription) return res.status(400).json({ status: 'error', message: 'You need to subscribe next meal now.' })
       next()
@@ -235,8 +243,7 @@ let middleware = {
         }
       })
     } catch (error) {
-      console.log(error)
-      res.status(400).json({ status: 'error', message: error })
+      return res.status(400).json({ status: 'error', message: error })
     }
   },
   avgRating: async (res, restaurant, comment, order) => {

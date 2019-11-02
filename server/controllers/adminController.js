@@ -129,12 +129,11 @@ let adminController = {
       const { name, subscription_status } = req.query
       const start = moment().startOf('day').toDate()
       let whereQuery = {}
-      // 邏輯有瑕疵，尚無法篩選還有兩天以上，但訂單餘額已經為 0 的人為無效訂單。
       if (subscription_status) {
         if (subscription_status === 'inactive') {
-          whereQuery = { sub_expired_date: { [Op.lt]: start } }
+          whereQuery = { [Op.or]: { payment_status: false, sub_expired_date: { [Op.lt]: start } } }
         } else {
-          whereQuery = { sub_description: true, sub_expired_date: { [Op.gte]: start } }
+          whereQuery = { payment_status: true, sub_expired_date: { [Op.gte]: start } }
         }
       }
 
@@ -235,7 +234,10 @@ let adminController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (orders.rows.length < 1) return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+      if (orders.rows.length < 1) {
+        orders = []
+        return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+      }
       const count = orders.count
       orders = orders.rows.map(order => ({
         ...order.dataValues,
