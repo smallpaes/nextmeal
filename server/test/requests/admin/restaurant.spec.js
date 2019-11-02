@@ -140,6 +140,7 @@ describe('# Admin::Restaurant request', () => {
           .field('address', 'somewhereInTaiwan')
           .field('lat', 25)
           .field('lng', 121)
+          .field('location', '大安區')
           .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {

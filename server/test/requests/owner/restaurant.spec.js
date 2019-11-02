@@ -93,6 +93,7 @@ describe('# Admin::Owner request', () => {
           .field('address', 'somewhereInTaiwan')
           .field('lat', 25)
           .field('lng', 121)
+          .field('location', '大安區')
           .attach('image', 'server/test/check.png')
           .expect(200)
           .expect({ status: 'success', message: 'successfully add a new restaurant' })
@@ -123,6 +124,7 @@ describe('# Admin::Owner request', () => {
           .field('address', 'somewhereInTaiwan')
           .field('lat', 25)
           .field('lng', 121)
+          .field('location', '大安區')
           .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
