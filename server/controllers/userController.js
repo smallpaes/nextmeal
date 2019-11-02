@@ -113,7 +113,7 @@ let userController = {
       }
       // generate and provide user with a token
       const payload = { id: user.id }
-      const token = jwt.sign(payload, 'NextmealProject')
+      const token = jwt.sign(payload, process.env.JWT_SECRET)
       return res.status(200).json({
         status: 'success', message: 'Successfully log in', token,
         user: {
