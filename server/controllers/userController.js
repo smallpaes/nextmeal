@@ -10,7 +10,6 @@ const Order = db.Order
 const User = db.User
 const Meal = db.Meal
 const {
-  validMessage,
   getTradeInfo,
   createSubscription,
   create_mpg_aes_decrypt,
@@ -30,7 +29,6 @@ let userController = {
     try {
       //check if email has been used
       const { email } = req.body
-      validMessage(req, res)
 
       const user = await User.findOne({ where: { email } })
       //if user exsist , return error
@@ -255,7 +253,6 @@ let userController = {
       if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
         return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
       }
-      validMessage(req, res)
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       let user = await User.findByPk(req.params.user_id)
       const { file } = req

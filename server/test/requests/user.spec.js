@@ -140,7 +140,7 @@ describe('# User: request', () => {
       it('should not be able to update  other users info', (done) => {
         request(app)
           .put('/api/users/2/edit')
-          .send('name=switch')
+          .send('name=John&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121')
           .expect(400)
           .expect({ status: 'error', message: 'you are not authorized to do that' }, done)
       })

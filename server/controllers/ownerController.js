@@ -8,7 +8,6 @@ const Category = db.Category
 const Meal = db.Meal
 const Order = db.Order
 const User = db.User
-const { validMessage } = require('../middleware/middleware')
 const moment = require('moment')
 const _ = require('underscore')
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
@@ -37,7 +36,6 @@ let ownerController = {
 
   postRestaurant: async (req, res) => {
     try {
-      validMessage(req, res)
       let { lat, lng } = req.body
       if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'need lat and lng' })
       let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
@@ -97,7 +95,6 @@ let ownerController = {
 
   putRestaurant: async (req, res) => {
     try {
-      validMessage(req, res)
       const { lat, lng } = req.body
       if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'can not find address' })
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
@@ -173,7 +170,6 @@ let ownerController = {
       if (restaurant === null) {
         res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant yet.' })
       }
-      validMessage(req, res) //驗證表格
       const { file } = req
       if (!file) return res.status(400).json({ status: 'error', message: 'You need to pick a picture' })
       if (file) {
@@ -230,8 +226,6 @@ let ownerController = {
         return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
       }
       if (meal.Restaurant.UserId !== req.user.id) return res.status(422).json({ status: 'error', message: 'You are not allow this action.' })
-
-      validMessage(req, res) //驗證表格
       const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
@@ -301,7 +295,6 @@ let ownerController = {
 
   putMenu: async (req, res) => {
     try {
-      validMessage(req, res) //驗證表格
       if (Number(req.body.quantity) < 1) {
         return res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
       }

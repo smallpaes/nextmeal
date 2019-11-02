@@ -234,7 +234,7 @@ module.exports = {
           sub_balance: 10,
           sub_date: new Date(),
           sub_expired_date: new Date(nowTime.getTime() + (24 * 60 * 60 * 30 * 1000)),
-          payment_status: Math.floor(Math.random() * 2),
+          payment_status: true,
           sn: Date.now() + index,
           createdAt: new Date(),
           updatedAt: new Date()

@@ -12,7 +12,6 @@ const Order = db.Order
 const Meal = db.Meal
 const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
-const { validMessage } = require('../middleware/middleware')
 const pageLimit = 10
 const districts = require('../location/district.json')
 
@@ -76,7 +75,6 @@ let adminController = {
   // admin 修改餐廳資訊
   putRestaurant: async (req, res) => {
     try {
-      validMessage(req, res)
       let restaurant = await Restaurant.findByPk(req.params.restaurant_id)
       if (!restaurant) {
         return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })

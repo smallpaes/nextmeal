@@ -10,7 +10,7 @@ const Meal = db.Meal
 const moment = require('moment')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
-const { validMessage, getTimeStop, avgRating } = require('../middleware/middleware')
+const { getTimeStop, avgRating } = require('../middleware/middleware')
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 
 let orderController = {
@@ -71,7 +71,6 @@ let orderController = {
       if (!subscription) return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
       if (!meal) return res.status(400).json({ status: 'error', message: 'the meal does not exist.' })
       // if (!meal.isServing) return res.status(400).json({ status: 'error', message: 'the meal does not serving today.' }) 
-      validMessage(req, res)
       const regex = new RegExp('^([0-1]?[0-9]|2[0-4]):([0-5][0-9])?$')
       const timeValid = regex.test(req.body.require_date)
       if (!timeValid) return res.status(400).json({ status: 'error', message: 'this is not correct time formats for nextmeal need' })
@@ -195,14 +194,13 @@ let orderController = {
         order: [['sub_expired_date', 'DESC']],
         limit: 1
       })
-      if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'you are not authorized to do that' })
+      if (!subscription) return res.status(400).json({ status: 'error', subscription: null, message: 'you are not authorized to do that' })
       // 取得 order 數量
       let order = await Order.findByPk(req.params.order_id, {
         include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
       })
       if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-      validMessage(req, res)
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
       tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
@@ -289,7 +287,6 @@ let orderController = {
       if (order.meals.length === 0 || order.meals[0] === undefined) {
         return res.status(400).json({ status: 'error', message: 'meal or restaurant does not exist' })
       }
-      validMessage(req, res)
       let restaurant = await Restaurant.findByPk(order.meals[0].RestaurantId)
       if (!restaurant) return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
       const { file } = req
