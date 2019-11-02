@@ -7,10 +7,13 @@ export default {
       password
     })
   },
-  signup (formData) {
+  postSignup (formData) {
     return apiHelper.post('/users/signup', formData)
   },
   emailcheck ({ email }) {
     return apiHelper.post('/users/emailcheck', { email })
+  },
+  getSignup () {
+    return apiHelper.get(`/users/signup`)
   }
 }

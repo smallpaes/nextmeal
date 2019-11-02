@@ -5,9 +5,12 @@
         :src="currentUser.avatar | placeholderImage"
         alt="user avatar"
       >
-      <h5 class="mt-3 mb-0 profile-card-top-name">
+      <h5 class="mt-3 profile-card-top-name">
         {{ currentUser.name }}
       </h5>
+      <small class="profile-top-balance">
+        {{ currentUser.subscriptionStatus | getSubscriptionStatus }} | 剩餘 {{ currentUser.subscriptionBalance }} 餐
+      </small>
     </div>
     <hr class="m-0">
     <div class="profile-card-bottom">
@@ -38,19 +41,18 @@
 
 <script>
 import { placeholderImageFilter } from '../utils/mixins'
-const dummyStoreUser = {
-  id: 3,
-  name: 'Mike',
-  role: 'Admin',
-  avatar: 'https://cdn.pixabay.com/photo/2016/11/19/15/20/animal-1839808_1280.jpg'
-}
+import { mapState } from 'vuex'
 
 export default {
-  mixins: [placeholderImageFilter],
-  data () {
-    return {
-      currentUser: dummyStoreUser
+  filters: {
+    getSubscriptionStatus: status => {
+      if (status) return '訂閱中'
+      return '未訂閱'
     }
+  },
+  mixins: [placeholderImageFilter],
+  computed: {
+    ...mapState(['currentUser'])
   }
 }
 </script>

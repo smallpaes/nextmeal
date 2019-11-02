@@ -52,11 +52,16 @@
                   <span class="card-indicator">{{ meal.indicator }}餐</span>
                 </h5>
                 <router-link
+                  v-if="currentUser.subscriptionBalance > 0"
                   :to="{name: 'order-new'}"
                   class="btn"
                 >
                   訂購
                 </router-link>
+                <span
+                  v-else
+                  class="card-warning"
+                ><i class="far fa-surprise mr-1" />無餘額囉</span>
               </template>
               <template
                 v-else
@@ -84,6 +89,7 @@ import NewOrderCard from '../components/Card/NewOrderCard'
 import Footer from '../components/Footer'
 import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -115,6 +121,9 @@ export default {
       },
       isLoading: true
     }
+  },
+  computed: {
+    ...mapState(['currentUser'])
   },
   created () {
     this.fetchOrders()

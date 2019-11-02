@@ -142,7 +142,7 @@ export default {
         })
       }
     },
-    async handleAfterSubmit (formData) {
+    async handleAfterSubmit ({ formData }) {
       try {
         // update processing status
         this.isProcessing = true

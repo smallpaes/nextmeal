@@ -35,6 +35,7 @@
             :order-info="{quantity: order.meal.quantity + order.orderData.quantity, timeSlots: order.timeSlots}"
             :initial-order="order.orderData"
             :initial-processing="isProcessing"
+            :current-user="currentUser"
             @after-submit="handleAfterSubmit"
           >
             <template #submit>
@@ -57,6 +58,7 @@ import Footer from '../components/Footer'
 import orderAPI from '../apis/order'
 import { Toast } from '../utils/helpers'
 import moment from 'moment'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -92,6 +94,9 @@ export default {
       isLoading: true,
       isProcessing: false
     }
+  },
+  computed: {
+    ...mapState(['currentUser'])
   },
   created () {
     const { order_id: orderId } = this.$route.params
@@ -133,7 +138,10 @@ export default {
         const { data, statusText } = await orderAPI.putEditOrder({ orderId: this.$route.params.order_id, formData })
         // error handling
         if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
-        // redirect to order detail page
+        // update balance to Vuex
+        const quantity = this.order.orderData.quantity - formData.quantity
+        this.$store.commit('updateBalance', quantity)
+        // redirect to order detail pageasx
         this.$router.push({ name: 'order', params: { order_id: this.$route.params.order_id } })
       } catch (error) {
         // update loading status

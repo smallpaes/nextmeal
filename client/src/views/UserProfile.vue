@@ -60,11 +60,12 @@ export default {
     this.fetchUser(userId)
   },
   methods: {
-    async fetchUser (userId = 7) {
+    async fetchUser (userId = 16) {
       try {
         // fetch data from API
         const { data, statusText } = await usersAPI.getProfile({ userId })
         // error handling
+        console.log(data)
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
         this.user = {
@@ -85,7 +86,7 @@ export default {
         })
       }
     },
-    async handleAfterSubmit (formData) {
+    async handleAfterSubmit ({ formData, storedUserData }) {
       try {
         // update processing status
         this.isProcessing = true
@@ -95,6 +96,8 @@ export default {
         const { data, statusText } = await usersAPI.putProfile({ userId, formData })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // update user state to Vuex
+        this.$store.commit('setCurrentUser', storedUserData)
         // update processing
         this.isProcessing = false
         // notify user for successful update

@@ -70,6 +70,7 @@
 import TopLogoNavbar from '../components/Navbar/TopLogoNavbar'
 import authorizationAPI from '../apis/authorization'
 import { Toast } from '../utils/helpers'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -81,6 +82,9 @@ export default {
       password: '',
       isProcessing: false
     }
+  },
+  computed: {
+    ...mapGetters(['controlPanelRouteName'])
   },
   methods: {
     async handleSubmit (e) {
@@ -109,13 +113,16 @@ export default {
         // store jwt in localstorage
         localStorage.setItem('token', data.token)
 
-        // redirect admin and owner to respective admin panel
-        if (data.user.role === 'Admin') return this.$router.push('/admin')
-        if (data.user.role === 'Owner') return this.$router.push('/owner')
+        // prepare user data to be stored in Vuex
+        const { sub_status: subscriptionStatus, sub_balance: subscriptionBalance, ...restData } = data.user
+        const storedUserData = { subscriptionBalance, subscriptionStatus, ...restData }
 
+        // save data to Vuex
+        this.$store.commit('setCurrentUser', storedUserData)
         // redirect user baed on subscription status
-        if (data.user.subscription_status) return this.$router.push({ name: 'order-tomorrow' })
-        this.$router.push({ name: 'subscribe' })
+        if (data.user.role === 'User' && !data.user.sub_status) return this.$router.push({ name: 'subscribe' })
+        // redirect to respected page for each role
+        this.$router.push({ name: this.controlPanelRouteName })
       } catch (error) {
         // update processing status
         this.isProcessing = false

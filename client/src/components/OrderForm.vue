@@ -47,8 +47,8 @@
           <button
             class="btn btn-minus"
             :class="{'disable-btn': formData.quantity === 1}"
-            :disabled="isProcessing"
-            @click.stop.prevent="formData.quantity === 1 ? formData.quantity = 1 : formData.quantity -= 1"
+            :disabled="isProcessing || formData.quantity === 1"
+            @click.stop.prevent="formData.quantity -= 1"
           >
             -
           </button>
@@ -63,9 +63,9 @@
           >
           <button
             class="btn btn-plus"
-            :class="{'disable-btn': orderInfo.quantity === formData.quantity }"
-            :disabled="isProcessing"
-            @click.stop.prevent="orderInfo.quantity === formData.quantity ? formData.quantity = orderInfo.quantity: formData.quantity += 1"
+            :class="{'disable-btn': orderInfo.quantity === formData.quantity || formData.quantity === currentUser.subscriptionBalance }"
+            :disabled="isProcessing || orderInfo.quantity === formData.quantity || formData.quantity === currentUser.subscriptionBalance"
+            @click.stop.prevent="formData.quantity += 1"
           >
             +
           </button>
@@ -111,6 +111,10 @@ export default {
     initialProcessing: {
       type: Boolean,
       default: false
+    },
+    currentUser: {
+      type: Object,
+      required: true
     }
   },
   data () {

@@ -32,5 +32,10 @@ export default {
     return apiHelper.put(`/users/${userId}/edit`, formData, {
       headers: { Authorization: `Bearer ${getToken()}` }
     })
+  },
+  getCurrentUser () {
+    return apiHelper.get('/users/current_user', {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
   }
 }

@@ -25,6 +25,10 @@
             color: darken(color(secondary), 10%);
         }
 
+        .card-warning {
+            color: darken(color(secondary), 10%);
+        }
+
         .card-overlay {
             background-color: transparentize(color(quaternary), .7);
         }
@@ -47,6 +51,10 @@
     &-title {
         font-size: size(md);
         color: color(secondary);
+    }
+
+    &-warning {
+        font-weight: weight(normal);
     }
 }
 

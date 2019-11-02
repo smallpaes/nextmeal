@@ -97,6 +97,7 @@
             class="order-display mt-3"
             :order-info="{quantity: chosenMeal.meal.quantity, timeSlots: chosenMeal.timeSlots}"
             :initial-processing="isProcessing"
+            :current-user="currentUser"
             @change-order="isChoosingMeal = true"
             @after-submit="handleAfterSubmit"
           />
@@ -117,6 +118,7 @@ import OrderForm from '../components/OrderForm'
 import Footer from '../components/Footer'
 import orderAPI from '../apis/order'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -141,6 +143,9 @@ export default {
       isProcessing: false,
       image: 'https://cdn.pixabay.com/photo/2017/06/11/17/03/dumplings-2392893_1280.jpg'
     }
+  },
+  computed: {
+    ...mapState(['currentUser'])
   },
   created () {
     this.fetchMeals()
@@ -183,6 +188,9 @@ export default {
         const { data, statusText } = await orderAPI.postNewOrder(form)
         // error handling
         if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // update balance to Vuex
+        const quantity = formData.quantity * (-1)
+        this.$store.commit('updateBalance', quantity)
         // redirect to order detail page
         this.$router.push({ name: 'order', params: { order_id: data.order_id } })
       } catch (error) {

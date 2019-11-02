@@ -253,11 +253,12 @@ export default {
       // prepare formData
       const form = this.$refs.form
       const formData = new FormData(form)
+      const storedUserData = { name: this.user.name, avatar: this.user.image }
       // set extra data to formData
       const formKeys = ['dob', 'prefer', 'lat', 'lng', 'location', 'role']
       formKeys.forEach(key => formData.set(key, this.user[key]))
       // pass data to parent
-      this.$emit('after-submit', formData)
+      this.$emit('after-submit', { formData, storedUserData })
     }
   }
 }

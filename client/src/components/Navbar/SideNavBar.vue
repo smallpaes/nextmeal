@@ -1,10 +1,12 @@
 <template>
   <nav class="sidenav shadow-sm">
     <div class="sidenav-brand-container text-center py-5">
-      <a
-        href="#"
+      <router-link
+        :to="{name: 'home'}"
         class="sidenav-brand"
-      >NextMeal</a>
+      >
+        NextMeal
+      </router-link>
     </div>
     <ul class="sidenav-nav px-0 text-center">
       <li class="nav-item">
@@ -50,7 +52,9 @@
       <li class="nav-item">
         <a
           href="#"
+          role="button"
           class="nav-link"
+          @click="logout"
         >
           <span class="icon"><i class="fas fa-cog" /></span>
           <span class="nav-link-description">登出</span>
@@ -59,6 +63,17 @@
     </ul>
   </nav>
 </template>
+
+<script>
+export default {
+  methods: {
+    logout () {
+      this.$store.commit('revokeAuthentication')
+      this.$router.push('/')
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .sidenav {

@@ -21,10 +21,6 @@ import SettingForm from '../components/SettingForm'
 import authorizationAPI from '../apis/authorization'
 import { Toast } from '../utils/helpers'
 
-const dummyCategories = {
-  category: ['美式餐廳', '法式餐廳', '義式餐廳']
-}
-
 export default {
   components: {
     TopLogoNavbar,
@@ -43,9 +39,31 @@ export default {
     this.fetchCategories()
   },
   methods: {
-    fetchCategories () {
-      // fetch data from API
-      this.categories = dummyCategories.category
+    async fetchCategories () {
+      // update processing status
+      this.isProcessing = true
+      try {
+        // get setting form data
+        const { data, statusText } = await authorizationAPI.getSignup()
+        // error handling
+        if (statusText !== 'OK') throw new Error(data.message)
+        // fetch data from API
+        this.categories = data.category
+        // update processing status
+        this.isProcessing = false
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+
+        // clear up password field
+        this.password = ''
+
+        // fire error messages
+        Toast.fire({
+          type: 'warning',
+          title: '系統錯誤，請稍後再試'
+        })
+      }
     },
     handleAfterSignup (formData) {
       this.signupData = formData
@@ -58,8 +76,7 @@ export default {
         this.isProcessing = true
 
         // send sign up form to API
-        const { data, statusText } = await authorizationAPI.signup(userData)
-
+        const { data, statusText } = await authorizationAPI.postSignup(userData)
         // error handling
         if (statusText !== 'OK' || data.status !== 'success') {
           throw new Error(data.message)
@@ -67,6 +84,13 @@ export default {
 
         // store jwt in localstorage
         localStorage.setItem('token', data.token)
+
+        // prepare user data to be stored in Vuex
+        const { sub_status: subscriptionStatus, sub_balance: subscriptionBalance, ...restData } = data.user
+        const storedUserData = { subscriptionBalance, subscriptionStatus, ...restData }
+
+        // save data to Vuex
+        this.$store.commit('setCurrentUser', storedUserData)
 
         // redirect to subscribe page
         this.$router.push({ name: 'subscribe' })

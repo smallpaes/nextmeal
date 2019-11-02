@@ -132,7 +132,6 @@ export default {
       try {
         // fetch order data from API
         const { data, statusText } = await orderAPI.getOrder({ orderId })
-        console.log(data)
         // error handling
         if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
 
@@ -153,7 +152,6 @@ export default {
         // update loading status
         this.isLoading = false
       } catch (error) {
-        console.log(error.message)
         // update loading status
         this.isLoading = false
         // fire error messages
@@ -162,7 +160,7 @@ export default {
           title: '無法取得訂單資料，請稍後再試'
         })
         // redirect back to last page
-        // this.$router.go(-1)
+        this.$router.go(-1)
       }
     },
     async deleteOrder () {
@@ -173,6 +171,9 @@ export default {
         const { data, statusText } = await orderAPI.putCancelOrder({ orderId: this.$route.params.order_id })
         // error handling
         if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // update subscription balance to Vuex
+        const quantity = this.order.orderDetail.quantity
+        this.$store.commit('updateBalance', quantity)
         // redirect back to /user/order/tomorrow
         this.$router.push({ name: 'order-tomorrow' })
       } catch (error) {

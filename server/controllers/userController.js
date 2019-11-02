@@ -70,11 +70,12 @@ let userController = {
 
       // check if the user has valid subscriptions
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
-      const subscription_status = validSubscriptions.length >= 1 ? true : false
+      const sub_status = validSubscriptions.length >= 1 ? true : false
 
       //generate a token for the user
       const payload = { id: user.id }
       const token = jwt.sign(payload, 'NextmealProject')
+      
 
       return res.status(200).json({
         status: 'success', message: 'Successfully sign up', user: {
@@ -82,10 +83,11 @@ let userController = {
           name: user.name,
           avatar: user.avatar,
           role: user.role,
-          subscription_status
+          sub_status
         }, token
       })
     } catch (error) {
+      console.log(error)
       res.json({ status: 'error', message: error })
     }
   },
@@ -104,7 +106,8 @@ let userController = {
 
       // check if the user has valid subscriptions
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
-      const subscription_status = validSubscriptions.length >= 1 ? true : false
+      const sub_status = validSubscriptions.length >= 1 ? true : false
+      const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
 
       if (!bcrypt.compareSync(password, user.password)) {
@@ -120,7 +123,8 @@ let userController = {
           name: user.name,
           avatar: user.avatar,
           role: user.role,
-          subscription_status
+          sub_status,
+          sub_balance
         }
       })
 
@@ -289,7 +293,6 @@ let userController = {
 
   getTomorrow: async (req, res) => {
     try {
-      console.log('start')
       let start = moment().add(1, 'days').startOf('day').toDate()
       let end = moment().add(1, 'days').endOf('day').toDate()
       let order = await Order.findAll({
@@ -310,7 +313,6 @@ let userController = {
       if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
-      console.log('error')
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -375,6 +377,35 @@ let userController = {
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
+  },
+  getCurrentUser: async (req, res) => {
+    try {
+      const user = await User.findOne({
+        where: { email: req.user.email }
+      })
+
+      // check if the user has valid subscriptions
+      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
+      const sub_status = validSubscriptions.length >= 1 ? true : false
+      const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
+
+      return res.status(200).json({
+        status: 'success',
+        user: {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          role: user.role,
+          sub_status,
+          subscription_balance: validSubscriptions[0].sub_balance,
+          sub_balance
+        }
+      })
+
+    } catch (error) {
+      res.json({ status: 'error', message: error })
+    }
+
   },
 }
 

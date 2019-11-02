@@ -18,9 +18,9 @@
               :order="order"
               class="pb-2 px-0 mb-3"
             />
-            <PlaceholderImage v-if="orders.length===0">
+            <PlaceholderMessage v-if="orders.length===0">
               <i class="fas fa-utensils mr-2" />目前沒有訂單
-            </PlaceholderImage>
+            </PlaceholderMessage>
             <div
               v-if="totalPage > 0 && currentPage !== totalPage"
               class="btn-container"
@@ -47,6 +47,7 @@ import Footer from '../components/Footer'
 import OrderNavPill from '../components/Navbar/OrderNavPill'
 import OrderCard from '../components/Card/OrderCard'
 import UserProfileCard from '../components/UserProfileCard'
+import PlaceholderMessage from '../components/Placeholder/Message'
 import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
 
@@ -56,6 +57,7 @@ export default {
     UserProfileCard,
     OrderNavPill,
     OrderCard,
+    PlaceholderMessage,
     Footer
   },
   data () {
