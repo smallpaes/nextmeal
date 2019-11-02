@@ -144,7 +144,7 @@ let userController = {
   postSubscription: async (req, res) => {
     try {
       if (!req.body.sub_price || !req.body.sub_name || !req.user.email || !req.body.sub_description || !req.body.sub_balance) {
-        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_description、sub_name、user\'s email' })
+        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_balance、sub_description、sub_name、user\'s email' })
       }
       let subscription = await Subscription.findOne({
         where: { UserId: req.user.id },
@@ -192,6 +192,7 @@ let userController = {
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -207,7 +208,7 @@ let userController = {
         let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
         let subscription = await Subscription.findOne({
           where: { sn: data['Result']['MerchantOrderNo'] },
-          include: [{ model: User, attributes: ['name'] }]
+          include: [{ model: User, attributes: ['name', 'email'] }]
         })
         await Payment.create({
           SubscriptionId: subscription.id,

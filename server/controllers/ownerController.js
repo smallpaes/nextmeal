@@ -42,20 +42,13 @@ let ownerController = {
       if (restaurant.length > 0) return res.status(400).json({ status: 'error', message: 'You already have a restaurant.' });
       const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
       const { file } = req
+      if (!file) return res.status(400).json({ status: 'error', message: 'You need to pick a picture' })
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
         imgur.upload(file.path, async (err, img) => {
           await Restaurant.create({
-            name: req.body.name,
-            description: req.body.description,
+            ...req.body,
             image: img.data.link,
-            tel: req.body.tel,
-            rating: 0,
-            location: req.body.location,
-            CategoryId: req.body.CategoryId,
-            address: req.body.address,
-            opening_hour: req.body.opening_hour,
-            closing_hour: req.body.closing_hour,
             lat: lat,
             lng: lng,
             geometry: point,
@@ -68,16 +61,8 @@ let ownerController = {
         })
       } else {
         await Restaurant.create({
-          name: req.body.name,
-          description: req.body.description,
+          ...req.body,
           image: 'https://cdn.pixabay.com/photo/2016/11/18/14/05/brick-wall-1834784_960_720.jpg',
-          tel: req.body.tel,
-          rating: 0,
-          location: req.body.location,
-          CategoryId: req.body.CategoryId,
-          address: req.body.address,
-          opening_hour: req.body.opening_hour,
-          closing_hour: req.body.closing_hour,
           lat: lat,
           lng: lng,
           geometry: point,

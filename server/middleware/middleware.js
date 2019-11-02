@@ -70,15 +70,15 @@ let middleware = {
     check('location')
       .not().isEmpty().withMessage('can not find the location'),
     check('lat')
-      .isInt({ min: -90, max: 90 }).withMessage('Latitudes should be between -90 90'),
+      .isFloat({ min: -90, max: 90 }).withMessage('Latitudes should be between -90 90'),
     check('lng')
-      .isInt({ min: -180, max: 180 }).withMessage('Longitudes should be between -180 180')
+      .isFloat({ min: -180, max: 180 }).withMessage('Longitudes should be between -180 180')
   ],
   validDishForm: [
     check('name')
       .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
     check('description')
-      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 1-100 words'),
+      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 10-100 words'),
   ],
   validMenuForm: [
     check('quantity')
@@ -92,7 +92,7 @@ let middleware = {
   ],
   validComment: [
     check('user_text')
-      .isLength({ min: 10, max: 100 }).withMessage('user_text should be between 1-100 words'),
+      .isLength({ min: 10, max: 100 }).withMessage('user_text should be between 10-100 words'),
     check('rating')
       .isInt({ min: 1, max: 5 }).withMessage('You are not rating the restaurant 1-5 stars'),
   ],
@@ -117,9 +117,9 @@ let middleware = {
     check('location')
       .not().isEmpty().withMessage('can not find the location'),
     check('lat')
-      .isInt({ min: -90, max: 90 }).withMessage('Latitudes should be between 1-50'),
+      .isFloat({ min: -90, max: 90 }).withMessage('Latitudes should be between 1-50'),
     check('lng')
-      .isInt({ min: -180, max: 180 }).withMessage('Longitudes should be between 1-50')
+      .isFloat({ min: -180, max: 180 }).withMessage('Longitudes should be between 1-50')
   ],
   validMessage: (req, res, next) => {
     const errors = validationResult(req)
@@ -213,8 +213,8 @@ let middleware = {
     try {
       const mailOptions = {
         from: process.env.GMAIL_ACCOUNT,
-        to: process.env.GMAIL_ACCOUNT,
-        subject: `恭喜你成功訂閱 NextMeal 。`,
+        to: subscription.User.email,
+        subject: `親愛的客戶，恭喜你成功訂閱 NextMeal 。`,
         html: `
         <h1>Enjoy Your Next Meal!</h1>
         <h3>您這次的訂閱資訊</h3>
