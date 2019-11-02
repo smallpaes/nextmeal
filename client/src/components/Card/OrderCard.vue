@@ -31,7 +31,7 @@
       <router-link
         v-if="!order.hasComment && $route.query.status==='history'"
         class="btn mt-3"
-        :to="{name: 'comment', params: {order_id: order.id}}"
+        :to="{name: 'order-comment', params: {order_id: order.id}}"
       >
         評論
       </router-link>
