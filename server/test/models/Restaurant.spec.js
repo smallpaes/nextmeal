@@ -26,7 +26,7 @@ describe('# Restaurant Model', () => {
 
   context('properties', () => {
     ;[
-      'name', 'description', 'image', 'location', 'tel', 'rating', 'latitude', 'longitude', 'address', 'CategoryId', 'UserId', "opening_hour", "closing_hour"
+      'name', 'description', 'image', 'location', 'tel', 'rating', 'lat', 'lng', 'address', 'CategoryId', 'UserId', "opening_hour", "closing_hour"
     ].forEach(checkPropertyExists(restaurant))
   });
 

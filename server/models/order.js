@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define('Order', {
-    UserId: DataTypes.STRING,
+    UserId: DataTypes.INTEGER,
     order_date: {
       type: DataTypes.DATE,
       defaultValue: new Date()
@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     }
-
   }, {});
   Order.associate = function (models) {
     // associations can be defined here

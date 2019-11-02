@@ -13,6 +13,7 @@ const commentLimit = 4
 let restController = {
   getRestaurants: async (req, res) => {
     try {
+      if (!req.query.dist) return res.status(200).json({ status: 'error', more_restaurants, message: 'need to query dist some where' })
       // 設定尋找需求
       let page = Number(req.query.page)
       let wherequery = {}
@@ -25,7 +26,7 @@ let restController = {
           where: wherequery,
           include: [{ model: Category, attributes: ['name', 'image'] }],
           attributes: [
-            'id', 'image', 'name', 'rating','description',
+            'id', 'image', 'name', 'rating', 'description',
             [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
             'CategoryId'
           ],
@@ -33,10 +34,12 @@ let restController = {
           offset: page * pageLimit,
           limit: pageLimit
         })
-        more_restaurants.count = more_restaurants.count - 6
-        more_restaurants.pages = Math.ceil((more_restaurants.count) / pageLimit)
-
-        return res.json({ status: 'success', more_restaurants, message: 'Get all restaurants page info' })
+        more_restaurants = {
+          count: more_restaurants.count - 6,
+          restaurants: more_restaurants.rows,
+          pages: Math.ceil((more_restaurants.count - 6) / pageLimit)
+        }
+        return res.status(200).json({ status: 'success', more_restaurants, message: 'Get all restaurants page info' })
       }
 
       // 第一次進入抓熱門、更多(近來就算第一頁)
@@ -54,7 +57,7 @@ let restController = {
       const more_restaurants = {
         count: popular_restaurants.count - 6,
         pages: Math.ceil((popular_restaurants.count - 6) / pageLimit),
-        rows: [popular_restaurants.rows.slice(6)]
+        restaurants: popular_restaurants.rows.slice(6)
       }
       popular_restaurants = popular_restaurants.rows.slice(0, 6)
 
@@ -73,7 +76,7 @@ let restController = {
         },
         restaurants
       }
-      return res.status(202).json({ 
+      return res.status(200).json({
         status: 'success', popular_restaurants,
         more_restaurants, map, districts,
         message: 'Successfully get all restaurants page info'
@@ -84,7 +87,7 @@ let restController = {
   },
 
   getRestaurant: async (req, res) => {
-    try {      
+    try {
       let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
       let restaurant, district
       if (req.params.restaurant_id) {
@@ -100,18 +103,23 @@ let restController = {
               'CategoryId'
             ]
           })
+          // 加入處理沒找到餐廳時的情況 11/1 by Danny
+          if (!restaurant) {
+            res.status(400).json({ status: 'error', message: 'Can not find the restaurant' })
+          }
+
           // 餐廳行政區資訊
           district = districts.find(dist => { return dist.chinese_name === restaurant.location })
         }
         let comments = await Comment.findAndCountAll({
           where: { RestaurantId: req.params.restaurant_id },
-          include: [{model: User, attributes: ['id', 'name', 'avatar']}], //使用者名稱、照片、評分、評論內容
+          include: [{ model: User, attributes: ['id', 'name', 'avatar'] }], //使用者名稱、照片、評分、評論內容
           attributes: ['id', 'user_text', 'res_text', 'rating', 'createdAt'],
           offset: (page - 1) * commentLimit,
           limit: commentLimit
         })
         comments.pages = Math.ceil((comments.count) / commentLimit)
-        return res.status(202).json({
+        return res.status(200).json({
           status: 'success',
           restaurant,
           comments,

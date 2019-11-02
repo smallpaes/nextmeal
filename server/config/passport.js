@@ -8,7 +8,7 @@ const User = db.User
 
 const jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
-jwtOptions.secretOrKey = 'NextmealProject'
+jwtOptions.secretOrKey = process.env.JWT_SECRET
 
 passport.use(new JwtStrategy(jwtOptions, async (jwt_payload, done) => {
   try {
