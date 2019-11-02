@@ -85,3 +85,9 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# ngrok 
+server/ngrok
+
+# temp upload file
+temp/
