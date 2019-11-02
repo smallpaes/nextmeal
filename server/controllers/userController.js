@@ -237,7 +237,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(200).json({ status: 'success', message: 'You are not allow access this page.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -253,7 +253,7 @@ let userController = {
   putProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
-        return res.status(400).json({ status: 'error', message: 'You are not allow edit this profile.' })
+        return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
       }
       validMessage(req, res)
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
@@ -304,7 +304,8 @@ let userController = {
         }],
         attributes: ['id', 'require_date']
       })
-      if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
+      // 11/1 由於上方是findAll 此處更改為判斷陣列的長度
+      if (order.length === 0) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })

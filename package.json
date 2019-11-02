@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server/app.js",
     "dev": "nodemon server/app.js",
-    "test": "mocha server/test --exit --recursive --timeout 6000"
+    "test": "mocha server/test --exit --recursive --timeout 3000"
   },
   "keywords": [],
   "author": "",

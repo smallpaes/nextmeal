@@ -178,7 +178,7 @@ let adminController = {
           'address', 'lat', 'lng'
         ]
       })
-      if (!user) return req.status(400).json({ status: 'error', user, message: 'user does not exist' })
+      if (!user) return res.status(400).json({ status: 'error', user, message: 'user does not exist' })
       return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
