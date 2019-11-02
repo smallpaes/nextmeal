@@ -204,7 +204,7 @@ module.exports = {
           order_date: new Date(),
           require_date: tmr,
           order_status: '明日',
-          hasComment: Math.round(Math.random()),
+          hasComment: false,
           amount: 1,
           createdAt: new Date(),
           updatedAt: new Date()
