@@ -104,19 +104,8 @@ let middleware = {
       .isLength({ min: 1, max: 6 }).withMessage('Name should be between 1-6'),
     check('email')
       .isEmail().withMessage('This is not Email address'),
-    check('location')
-      .not().isEmpty().withMessage('Location should be not empty'),
     check('address')
       .not().isEmpty().withMessage('Address should be not empty'),
-    check('tel')
-      .custom((tel, { req }) => {
-        const valid = /^0[2-9]-\d{4}-\d{3,4}$/
-        const phoneValid = valid.test(tel)
-        if (phoneValid) {
-          return true
-        }
-        throw new Error('Phone number should be 09-2222-2222')
-      }),
     check('dob')
       .custom((dob, { req }) => {
         const valid = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/
