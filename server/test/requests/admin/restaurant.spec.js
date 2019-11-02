@@ -238,6 +238,7 @@ describe('# Admin::Restaurant request', () => {
       it('fail to update specific order info when you are not subscribe', (done) => {
         request(app)
           .put('/api/order/U001')
+          .send(`require_date=1991-04-14&quantity=2`)
           .expect(400)
           .expect({ status: "error", "subscription": null, message: "you are not authorized to do that" }, done)
       })

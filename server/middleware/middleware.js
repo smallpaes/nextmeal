@@ -67,8 +67,8 @@ let middleware = {
       .matches(/^0[2-9]-\d{4}-\d{3,4}$/).withMessage('Telephone number should be 02-2222-2222'),
     check('address')
       .not().isEmpty().withMessage('Address should be not empty'),
-    // check('loction')
-    //   .not().isEmpty().withMessage('can not find the location'),
+    check('location')
+      .not().isEmpty().withMessage('can not find the location'),
     check('lat')
       .isInt({ min: -90, max: 90 }).withMessage('Latitudes should be between -90 90'),
     check('lng')
@@ -114,8 +114,8 @@ let middleware = {
       }),
     check('prefer')
       .not().isEmpty().withMessage('Prefer should be not empty'),
-    // check('loction')
-    //   .not().isEmpty().withMessage('can not find the location'),
+    check('location')
+      .not().isEmpty().withMessage('can not find the location'),
     check('lat')
       .isInt({ min: -90, max: 90 }).withMessage('Latitudes should be between 1-50'),
     check('lng')
