@@ -85,6 +85,7 @@ module.exports = {
     // // add categories
     queryInterface.bulkInsert("Categories", categories.map((item, index) =>
       ({
+        id: index + 1,
         name: item.name,
         image: item.image,
         createdAt: new Date(),
