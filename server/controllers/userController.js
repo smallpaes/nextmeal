@@ -371,6 +371,34 @@ let userController = {
       return res.status(500).json({ status: 'error', message: error })
     }
   },
+  getCurrentUser: async (req, res) => {
+    try {
+      const user = await User.findOne({
+        where: { email: req.user.email }
+      })
+
+      // check if the user has valid subscriptions
+      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
+      const sub_status = validSubscriptions.length >= 1 ? true : false
+      const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
+
+      return res.status(200).json({
+        status: 'success',
+        user: {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          role: user.role,
+          sub_status,
+          sub_balance
+        }
+      })
+
+    } catch (error) {
+      res.json({ status: 'error', message: error })
+    }
+
+  }
 }
 
 module.exports = userController
