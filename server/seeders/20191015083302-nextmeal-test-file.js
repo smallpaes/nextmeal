@@ -54,7 +54,7 @@ function createRest(store) {
       lat: store[i].lat,
       lng: store[i].lng,
       geometry: Sequelize.fn('ST_GeomFromText', `POINT(${store[i].lng} ${store[i].lat})`),
-      rating: parseFloat(Math.random() * 4 + 1),
+      rating: parseFloat(Math.random() * 4 + 1).toFixed(1),
       createdAt: new Date(),
       updatedAt: new Date()
     }

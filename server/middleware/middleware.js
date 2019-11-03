@@ -246,7 +246,7 @@ let middleware = {
         attributes: [[sequelize.fn('avg', sequelize.col('rating')), 'average']]
       })
       await restaurant.update({
-        rating: comments[0].dataValues.average.toFixed(2) || 0
+        rating: comments[0].dataValues.average.toFixed(1) || 0
       })
       await order.update({
         hasComment: true
