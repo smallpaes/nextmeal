@@ -8,7 +8,6 @@ const Category = db.Category
 const Meal = db.Meal
 const Order = db.Order
 const User = db.User
-const { validMessage } = require('../middleware/middleware')
 const moment = require('moment')
 const _ = require('underscore')
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
@@ -37,27 +36,19 @@ let ownerController = {
 
   postRestaurant: async (req, res) => {
     try {
-      validMessage(req, res)
       let { lat, lng } = req.body
       if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'need lat and lng' })
       let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
       if (restaurant.length > 0) return res.status(400).json({ status: 'error', message: 'You already have a restaurant.' });
       const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
       const { file } = req
+      if (!file) return res.status(400).json({ status: 'error', message: 'You need to pick a picture' })
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
         imgur.upload(file.path, async (err, img) => {
           await Restaurant.create({
-            name: req.body.name,
-            description: req.body.description,
+            ...req.body,
             image: img.data.link,
-            tel: req.body.tel,
-            rating: 0,
-            location: req.body.location,
-            CategoryId: req.body.CategoryId,
-            address: req.body.address,
-            opening_hour: req.body.opening_hour,
-            closing_hour: req.body.closing_hour,
             lat: lat,
             lng: lng,
             geometry: point,
@@ -70,16 +61,8 @@ let ownerController = {
         })
       } else {
         await Restaurant.create({
-          name: req.body.name,
-          description: req.body.description,
+          ...req.body,
           image: 'https://cdn.pixabay.com/photo/2016/11/18/14/05/brick-wall-1834784_960_720.jpg',
-          tel: req.body.tel,
-          rating: 0,
-          location: req.body.location,
-          CategoryId: req.body.CategoryId,
-          address: req.body.address,
-          opening_hour: req.body.opening_hour,
-          closing_hour: req.body.closing_hour,
           lat: lat,
           lng: lng,
           geometry: point,
@@ -97,7 +80,6 @@ let ownerController = {
 
   putRestaurant: async (req, res) => {
     try {
-      validMessage(req, res)
       const { lat, lng } = req.body
       if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'can not find address' })
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
@@ -173,7 +155,6 @@ let ownerController = {
       if (restaurant === null) {
         res.status(422).json({ status: 'error', message: 'You haven\'t setting restaurant yet.' })
       }
-      validMessage(req, res) //驗證表格
       const { file } = req
       if (!file) return res.status(400).json({ status: 'error', message: 'You need to pick a picture' })
       if (file) {
@@ -210,7 +191,7 @@ let ownerController = {
         include: [{ model: Restaurant, attributes: ['UserId'] }]
       })
       if (!meal) {
-        return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
+        return res.status(422).json({ status: 'error', message: 'meal does not exist' })
       }
       if (meal.Restaurant.UserId !== req.user.id) {
         return res.status(200).json({ status: 'success', message: 'You are not allow do this action.' })
@@ -230,8 +211,6 @@ let ownerController = {
         return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
       }
       if (meal.Restaurant.UserId !== req.user.id) return res.status(422).json({ status: 'error', message: 'You are not allow this action.' })
-
-      validMessage(req, res) //驗證表格
       const { file } = req
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
@@ -301,7 +280,6 @@ let ownerController = {
 
   putMenu: async (req, res) => {
     try {
-      validMessage(req, res) //驗證表格
       if (Number(req.body.quantity) < 1) {
         return res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
       }
@@ -362,6 +340,12 @@ let ownerController = {
         ],
         order: [['require_date', 'ASC']],
       })
+      // 11/1 加入處理order不存在時的情況 by Danny
+      if (orders.length === 0) {
+        res.status(200).json({ status: 'success', message: 'Can not find any orders' })
+      }
+
+
       orders = orders.map(order => ({
         ...order.dataValues,
         meals: order.dataValues.meals[0]

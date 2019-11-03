@@ -5,8 +5,6 @@ const nodemailer = require("nodemailer"); // 寄送 mail
 const db = require('../models')
 const Subscription = db.Subscription
 const Comment = db.Comment
-const Category = db.Category
-
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 
@@ -64,24 +62,23 @@ let middleware = {
     check('name')
       .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
     check('description')
-      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 1-100 words'),
+      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 10-100 words'),
     check('tel')
-      .custom((tel, { req }) => {
-        const valid = /^0[2-9]-\d{4}-\d{3,4}$/
-        const phoneValid = valid.test(tel)
-        if (phoneValid) {
-          return true
-        }
-        throw new Error('Telephone number should be 02-2222-2222')
-      }),
+      .matches(/^0[2-9]-\d{4}-\d{3,4}$/).withMessage('Telephone number should be 02-2222-2222'),
     check('address')
-      .not().isEmpty().withMessage('Address should be not empty')
+      .not().isEmpty().withMessage('Address should be not empty'),
+    check('location')
+      .not().isEmpty().withMessage('can not find the location'),
+    check('lat')
+      .isFloat({ min: -90, max: 90 }).withMessage('Latitudes should be between -90 90'),
+    check('lng')
+      .isFloat({ min: -180, max: 180 }).withMessage('Longitudes should be between -180 180')
   ],
   validDishForm: [
     check('name')
       .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
     check('description')
-      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 1-100 words'),
+      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 10-100 words'),
   ],
   validMenuForm: [
     check('quantity')
@@ -95,7 +92,7 @@ let middleware = {
   ],
   validComment: [
     check('user_text')
-      .isLength({ min: 10, max: 100 }).withMessage('user_text should be between 1-100 words'),
+      .isLength({ min: 10, max: 100 }).withMessage('user_text should be between 10-100 words'),
     check('rating')
       .isInt({ min: 1, max: 5 }).withMessage('You are not rating the restaurant 1-5 stars'),
   ],
@@ -104,19 +101,8 @@ let middleware = {
       .isLength({ min: 1, max: 6 }).withMessage('Name should be between 1-6'),
     check('email')
       .isEmail().withMessage('This is not Email address'),
-    check('location')
-      .not().isEmpty().withMessage('Location should be not empty'),
     check('address')
       .not().isEmpty().withMessage('Address should be not empty'),
-    check('tel')
-      .custom((tel, { req }) => {
-        const valid = /^0[2-9]-\d{4}-\d{3,4}$/
-        const phoneValid = valid.test(tel)
-        if (phoneValid) {
-          return true
-        }
-        throw new Error('Phone number should be 09-2222-2222')
-      }),
     check('dob')
       .custom((dob, { req }) => {
         const valid = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/
@@ -128,12 +114,19 @@ let middleware = {
       }),
     check('prefer')
       .not().isEmpty().withMessage('Prefer should be not empty'),
+    check('location')
+      .not().isEmpty().withMessage('can not find the location'),
+    check('lat')
+      .isFloat({ min: -90, max: 90 }).withMessage('Latitudes should be between 1-50'),
+    check('lng')
+      .isFloat({ min: -180, max: 180 }).withMessage('Longitudes should be between 1-50')
   ],
-  validMessage: (req, res) => {
+  validMessage: (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return res.status(422).json({ status: 'error', errors: errors.array(), message: 'Information should be filled' });
     }
+    next()
   },
   getTimeStop: (opening_hour, closing_hour) => {
     let openingHour = moment(opening_hour, 'HH:mm')
@@ -220,8 +213,8 @@ let middleware = {
     try {
       const mailOptions = {
         from: process.env.GMAIL_ACCOUNT,
-        to: process.env.GMAIL_ACCOUNT,
-        subject: `恭喜你成功訂閱 NextMeal 。`,
+        to: subscription.User.email,
+        subject: `親愛的客戶，恭喜你成功訂閱 NextMeal 。`,
         html: `
         <h1>Enjoy Your Next Meal!</h1>
         <h3>您這次的訂閱資訊</h3>
