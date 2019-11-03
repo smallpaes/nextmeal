@@ -1,191 +1,103 @@
 'use strict';
 const faker = require('faker')
 const bcrypt = require('bcryptjs')
-const locations = ['信義區', '大安區', '中山區', '松山區']
-const categories = ['中式料理', '日本料理', '義大利料理', '墨西哥料理', '素食料理', '美式料理', '複合式料理']
-const time_slots = ['11:00', '11:30', '12:00', '12:30', '13:00', '13:30']
-const nowTime = new Date()
-const tmr = new Date()
-tmr.setDate(nowTime.getDate() + 1)
-tmr.setHours(12, 0, 0, 0)
+const moment = require('moment')
+const opening_hour = '11:00'
+const closing_hour = '14:00'
+const users = require('../location/users.json')
+const stores = require('../location/stores.json')
+const foodImg = require('../location/foodImg.json')
+const restImg = require('../location/restImg.json')
+const categories = require('../location/categories.json')
 
-const Sequelize = require('sequelize')
-module.exports = {
-  up: (queryInterface, Sequelize) => {
-
-    //add Users
-    queryInterface.bulkInsert('Users', [{
-      name: 'root',
-      email: 'root@example.com',
+function createUsers(users) {
+  let userData = []
+  for (let i = 0; i < users.length; i++) {
+    let role = 'User'
+    if (i === 0) role = 'Admin'
+    if (i > 0 && i < (stores.length + 1)) role = 'Owner'
+    const seedUser = {
+      name: i === 0 ? 'root' : faker.name.findName(),
+      email: i === 0 ? 'root@example.com' : `user${i}@example.com`,
       password: bcrypt.hashSync('12345678', 10),
-      avatar: faker.image.avatar(),
-      role: 'Admin',
-      address: '台北市大安區臥龍街289-1號',
-      lat: 25.017186,
-      lng: 121.558462,
-      geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.558462 25.017186)`),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      name: 'user1',
-      email: 'user1@example.com',
-      password: bcrypt.hashSync('12345678', 10),
-      avatar: faker.image.avatar(),
-      role: 'User',
-      address: '台北市大安區羅斯福路四段113巷',
-      lat: 25.011280,
-      lng: 121.538819,
-      geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.538819 25.011280)`),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      name: 'user2',
-      email: 'user2@example.com',
-      password: bcrypt.hashSync('12345678', 10),
-      avatar: faker.image.avatar(),
-      role: 'Owner',
-      address: "台北市信義區松壽路8-10",
-      lat: 25.036037,
-      lng: 121.565124,
-      geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.565124 25.036037)`),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      name: 'user3',
-      email: 'user3@example.com',
-      password: bcrypt.hashSync('12345678', 10),
-      avatar: faker.image.avatar(),
-      role: 'Owner',
-      address: "台北市信義區松壽路8-10",
-      lat: 25.036037,
-      lng: 121.565124,
-      geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.565124 25.036037)`),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }, {
-      name: 'user4',
-      email: 'user4@example.com',
-      password: bcrypt.hashSync('12345678', 10),
-      avatar: faker.image.avatar(),
-      role: 'Owner',
-      address: "台北市信義區松壽路8-10",
-      lat: 25.036037,
-      lng: 121.565124,
-      geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.565124 25.036037)`),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }, {
-      name: 'user5',
-      email: 'user5@example.com',
-      password: bcrypt.hashSync('12345678', 10),
-      avatar: faker.image.avatar(),
-      role: 'Owner',
-      address: "台北市信義區松壽路8-10",
-      lat: 25.036037,
-      lng: 121.565124,
-      geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.565124 25.036037)`),
+      avatar: `https://i.pravatar.cc/400?img=${Math.floor(Math.random() * 70 + 1)}`,
+      role: role,
+      dob: faker.date.past(60, new Date(2001, 0, 1)),
+      location: users[i].location,
+      prefer: categories[Math.floor(Math.random() * 5) + 1].name,
+      address: users[i].address,
+      lat: users[i].lat,
+      lng: users[i].lng,
+      geometry: Sequelize.fn('ST_GeomFromText', `POINT(${users[i].lng} ${users[i].lat})`),
       createdAt: new Date(),
       updatedAt: new Date()
     }
-    ])
+    userData.push(seedUser)
+  }
+  return userData
+}
 
-    //add restaurants
-    queryInterface.bulkInsert('Restaurants', [
-      {
-        name: faker.name.findName(),
-        tel: faker.phone.phoneNumber(),
-        address: "台北市信義區松高路16號",
-        opening_hour: '11:00',
-        closing_hour: "14:00",
-        image: faker.image.imageUrl(),
-        description: faker.lorem.text(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        lat: 25.038985,
-        lng: 121.567284,
-        location: '信義區',
-        geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.567284 25.038985)`),
-        rating: parseFloat(Math.random() * 5).toFixed(1),
-        CategoryId: Math.floor(Math.random() * 5) + 1,
-        UserId: 3
-      },
-      {
-        name: faker.name.findName(),
-        tel: faker.phone.phoneNumber(),
-        address: "台北市信義區松壽路12號",
-        opening_hour: '11:00',
-        closing_hour: "14:00",
-        image: faker.image.imageUrl(),
-        description: faker.lorem.text(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        lat: 25.036691,
-        lng: 121.566490,
-        location: '信義區',
-        geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.566490 25.036691)`),
-        rating: parseFloat(Math.random() * 5).toFixed(1),
-        CategoryId: Math.floor(Math.random() * 5) + 1,
-        UserId: 4
-      },
-      {
-        name: faker.name.findName(),
-        tel: faker.phone.phoneNumber(),
-        address: "台北市大安區四維路96號",
-        opening_hour: '11:00',
-        closing_hour: "14:00",
-        image: faker.image.imageUrl(),
-        description: faker.lorem.text(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        lat: 25.032872,
-        lng: 121.547953,
-        location: '大安區',
-        geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.547953 25.032872)`),
-        rating: parseFloat(Math.random() * 5).toFixed(1),
-        CategoryId: Math.floor(Math.random() * 5) + 1,
-        UserId: 5
-      },
-      {
-        name: faker.name.findName(),
-        tel: faker.phone.phoneNumber(),
-        address: "台北市中山區中山北路二段44號",
-        opening_hour: '11:00',
-        closing_hour: "14:00",
-        image: faker.image.imageUrl(),
-        description: faker.lorem.text(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        lat: 25.055176,
-        lng: 121.522471,
-        location: '中山區',
-        geometry: Sequelize.fn('ST_GeomFromText', `POINT(121.522471 25.055176)`),
-        rating: parseFloat(Math.random() * 5).toFixed(1),
-        CategoryId: Math.floor(Math.random() * 5) + 1,
-        UserId: 6
-      }
-    ]
-    );
+function createRest(store) {
+  let restData = []
+  for (let i = 0; i < store.length; i++) {
+    const seedRest = {
+      name: store[i].name,
+      description: store[i].description.substring(0, 101),
+      tel: faker.phone.phoneNumber(),
+      location: store[i].location,
+      address: store[i].address,
+      UserId: i + 2,
+      opening_hour: opening_hour,
+      closing_hour: closing_hour,
+      CategoryId: Math.floor(Math.random() * 7) + 1,
+      image: restImg[Math.floor(Math.random() * restImg.length)],
+      lat: store[i].lat,
+      lng: store[i].lng,
+      geometry: Sequelize.fn('ST_GeomFromText', `POINT(${store[i].lng} ${store[i].lat})`),
+      rating: parseFloat(Math.random() * 4 + 1),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    restData.push(seedRest)
+  }
+  return restData
+}
 
-    // add categories
+
+function randomTime() {
+  let tomorrow = moment().add(1, 'days').startOf('day')
+  tomorrow.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30))
+  tomorrow = new Date(tomorrow)
+  return tomorrow
+}
+
+const Sequelize = require('sequelize')
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    let allUser = createUsers(users)
+    let allStore = createRest(stores)
+    // //add Users
+    await queryInterface.bulkInsert('Users', allUser, {})
+
+    // //add restaurants
+    await queryInterface.bulkInsert('Restaurants', allStore, {});
+
+    // // add categories
     queryInterface.bulkInsert("Categories", categories.map((item, index) =>
       ({
-        id: index + 1,
-        name: item,
-        image: faker.image.imageUrl(),
+        name: item.name,
+        image: item.image,
         createdAt: new Date(),
         updatedAt: new Date()
       })
     ), {});
 
-    // add meals
+    // // add meals
     queryInterface.bulkInsert("Meals",
-      Array.from({ length: 4 }).map((item, index) => (
+      Array.from({ length: stores.length }).map((item, index) => (
         {
           name: faker.name.findName(),
-          image: faker.image.imageUrl(),
+          image: foodImg[Math.floor(Math.random() * foodImg.length)],
           RestaurantId: index + 1,
           quantity: 50,
           description: faker.lorem.text(),
@@ -198,11 +110,11 @@ module.exports = {
 
     // add orders
     queryInterface.bulkInsert("Orders",
-      Array.from({ length: 3 }).map((item, index) => (
+      Array.from({ length: 10 }).map((item, index) => (
         {
-          UserId: Math.ceil(Math.random() * 2),
+          UserId: Math.ceil(Math.random() * users.length - stores.length + 1) + stores.length + 1,
           order_date: new Date(),
-          require_date: tmr,
+          require_date: randomTime(),
           order_status: '明日',
           hasComment: false,
           amount: 1,
@@ -213,11 +125,11 @@ module.exports = {
 
     // add orderitems
     queryInterface.bulkInsert("OrderItems",
-      Array.from({ length: 3 }).map((item, index) => (
+      Array.from({ length: 100 }).map((item, index) => (
         {
           OrderId: index + 1,
-          MealId: Math.ceil(Math.random() * 4),
-          quantity: Math.ceil(Math.random() * 3),
+          MealId: Math.ceil(Math.random() * 496) + 1,
+          quantity: 1,
           createdAt: new Date(),
           updatedAt: new Date()
         }))
@@ -225,17 +137,17 @@ module.exports = {
 
     // add subscriptions
     return queryInterface.bulkInsert("Subscriptions",
-      Array.from({ length: 6 }).map((item, index) => (
+      Array.from({ length: 100 }).map((item, index) => (
         {
           UserId: index + 1,
           sub_name: '輕量型',
           sub_price: 1000,
           sub_description: '一個月10餐',
           sub_balance: 10,
-          sub_date: new Date(),
-          sub_expired_date: new Date(nowTime.getTime() + (24 * 60 * 60 * 30 * 1000)),
-          payment_status: true,
-          sn: Date.now() + index,
+          sub_date: index < 1 ? new Date() : null,
+          sub_expired_date: index < 1 ? moment().add(30, 'days').endOf('day').toDate() : null,
+          payment_status: index < 1 ? true : false,
+          sn: index < 1 ? Date.now() + index : null,
           createdAt: new Date(),
           updatedAt: new Date()
         }))
