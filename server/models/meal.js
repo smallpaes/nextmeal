@@ -4,7 +4,10 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     description: DataTypes.TEXT,
     image: DataTypes.STRING,
-    quantity: DataTypes.INTEGER,
+    quantity: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
     nextServing_quantity: DataTypes.INTEGER,
     RestaurantId: DataTypes.INTEGER,
     modifiedAt: DataTypes.DATE,

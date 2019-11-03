@@ -10,13 +10,13 @@ const Order = db.Order
 const User = db.User
 const Meal = db.Meal
 const {
-  validMessage,
   getTradeInfo,
   createSubscription,
   create_mpg_aes_decrypt,
   sendEmail
 } = require('../middleware/middleware')
 const districts = require('../location/district.json')
+const plan = require('../location/plan.json')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const pageLimit = 6
@@ -29,7 +29,6 @@ let userController = {
     try {
       //check if email has been used
       const { email } = req.body
-      validMessage(req, res)
 
       const user = await User.findOne({ where: { email } })
       //if user exsist , return error
@@ -116,7 +115,7 @@ let userController = {
       }
       // generate and provide user with a token
       const payload = { id: user.id }
-      const token = jwt.sign(payload, 'NextmealProject')
+      const token = jwt.sign(payload, process.env.JWT_SECRET)
       return res.status(200).json({
         status: 'success', message: 'Successfully log in', token,
         user: {
@@ -150,7 +149,7 @@ let userController = {
   postSubscription: async (req, res) => {
     try {
       if (!req.body.sub_price || !req.body.sub_name || !req.user.email || !req.body.sub_description || !req.body.sub_balance) {
-        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_description、sub_name、user\'s email' })
+        return res.status(400).json({ status: 'error', message: 'need sub_price、sub_balance、sub_description、sub_name、user\'s email' })
       }
       let subscription = await Subscription.findOne({
         where: { UserId: req.user.id },
@@ -198,6 +197,7 @@ let userController = {
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -213,7 +213,7 @@ let userController = {
         let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
         let subscription = await Subscription.findOne({
           where: { sn: data['Result']['MerchantOrderNo'] },
-          include: [{ model: User, attributes: ['name'] }]
+          include: [{ model: User, attributes: ['name', 'email'] }]
         })
         await Payment.create({
           SubscriptionId: subscription.id,
@@ -241,7 +241,7 @@ let userController = {
   getProfile: async (req, res) => {
     try {
       if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(200).json({ status: 'success', message: 'You are not allow access this page.' })
+        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
       }
       const categories = await Category.findAll()
       const user = await User.findByPk(req.params.user_id, {
@@ -251,16 +251,14 @@ let userController = {
       })
       return res.status(200).json({ status: 'success', user, categories, districts, message: 'get personal profile page.' })
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   },
-
   putProfile: async (req, res) => {
     try {
-      if (req.user.id !== Number(req.params.user_id) || req.user.role !== 'Admin') {
-        return res.status(400).json({ status: 'error', message: 'You are not allow edit this profile.' })
+      if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
+        return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
       }
-      validMessage(req, res)
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       let user = await User.findByPk(req.params.user_id)
       const { file } = req
@@ -287,7 +285,6 @@ let userController = {
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }
     } catch (error) {
-      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -310,8 +307,8 @@ let userController = {
         }],
         attributes: ['id', 'require_date']
       })
-
-      if (!order) return res.status(400).json({ status: 'error', message: 'not order yet.' })
+      // 11/1 由於上方是findAll 此處更改為判斷陣列的長度
+      if (order.length === 0) return res.status(400).json({ status: 'error', message: 'not order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })

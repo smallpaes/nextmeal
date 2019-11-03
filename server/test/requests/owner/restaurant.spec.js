@@ -3,9 +3,10 @@ var request = require('supertest')
 var sinon = require('sinon')
 var should = chai.should();
 var expect = chai.expect;
-
+const today = (new Date()).getDay()
 var app = require('../../../app')
 var helpers = require('../../../_helpers');
+const imageUrl = 'https://randomuser.me/api/portraits/lego/1.jpg'
 const db = require('../../../models')
 const defaultRestaurant1 = {
   name: 'Danny的小廚房',
@@ -76,7 +77,8 @@ describe('# Admin::Owner request', () => {
         await db.User.destroy({ where: {}, truncate: true })
         await db.Restaurant.destroy({ where: {}, truncate: true })
         await db.Meal.destroy({ where: {}, truncate: true })
-        await db.Meal.create({ name: '蒜泥白肉', RestaurantId: 1 })
+        await db.Meal.create({ name: '蒜泥白肉', RestaurantId: 1, isServing: 1, nextServing: 1 })
+        // await db.Meal.create({ name: '蒜泥白肉2', RestaurantId: 1, isServing: true, nextServing: true })
 
 
       })
@@ -84,12 +86,20 @@ describe('# Admin::Owner request', () => {
       it('should be able to post a new restaurant', (done) => {
         request(app)
           .post('/api/owner')
-          .send('name=dannyRestaurant')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'dannyRest')
+          .field('description', 'niceRestaurant22')
+          .field('tel', '04-2657-6055')
+          .field('address', 'somewhereInTaiwan')
+          .field('lat', 25)
+          .field('lng', 121)
+          .field('location', '大安區')
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .expect({ status: 'success', message: 'successfully add a new restaurant' })
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)
-            expect(restaurant.name).to.be.equal('dannyRestaurant')
+            expect(restaurant.name).to.be.equal('dannyRest')
             return done()
           })
       })
@@ -98,20 +108,28 @@ describe('# Admin::Owner request', () => {
         request(app)
           .get('/api/owner')
           .expect(200)
-          .then(response => {
-            expect(response.body.restaurant).to.have.property('name')
-            done()
-          }).catch(err => console.log(err))
+          .end((err, res) => {
+            expect(res.body.restaurant[0]).to.have.property('name')
+            return done()
+          })
       })
 
       it('should be able to update restaurant info', (done) => {
         request(app)
           .put('/api/owner')
-          .send('name=MikeRestaurant')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'MikeRest')
+          .field('description', 'niceRestaurant22')
+          .field('tel', '04-2657-6055')
+          .field('address', 'somewhereInTaiwan')
+          .field('lat', 25)
+          .field('lng', 121)
+          .field('location', '大安區')
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
             const restaurant = await db.Restaurant.findByPk(1)
-            expect(restaurant.name).to.be.equal('MikeRestaurant')
+            expect(restaurant.name).to.be.equal('MikeRest')
             expect(res.body.status).to.be.equal('success')
             return done()
           })
@@ -134,11 +152,14 @@ describe('# Admin::Owner request', () => {
       it('should be able to post a new meal', (done) => {
         request(app)
           .post('/api/owner/dishes')
-          .send('name=tomatosoup')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'tomato')
+          .field('description', 'handmadesouppp')
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
             const meal = await db.Meal.findByPk(2)
-            expect(meal.name).to.be.equal('tomatosoup')
+            expect(meal.name).to.be.equal('tomato')
             expect(res.body.status).to.be.equal('success')
             return done()
           })
@@ -150,30 +171,54 @@ describe('# Admin::Owner request', () => {
           .expect(200)
           .end(async (err, res) => {
             const meal = await db.Meal.findByPk(2)
-            expect(meal.name).to.be.equal('tomatosoup')
+            expect(meal.name).to.be.equal('tomato')
             return done()
           })
       })
 
       it('fail to get specific meal info', (done) => {
         request(app)
-          .get('/api/owner/dishes/U001')
-          .expect(400)
+          .get('/api/owner/dishes/17')
+          .expect(422)
           .expect({ status: "error", message: "meal does not exist" }, done)
 
       })
 
       it('should be able to update specific meal info', (done) => {
         request(app)
-          .put('/api/owner/dishes/2')
-          .send('name=tomatosoup2')
+          .put('/api/owner/dishes/2/edit')
+          .set('Content-type', 'multipart/form-data')
+          .field('name', 'tomatoso')
+          .field('description', 'handmadesouppp')
+          .attach('image', 'server/test/check.png')
           .expect(200)
           .end(async (err, res) => {
             const meal = await db.Meal.findByPk(2)
-            expect(meal.name).to.be.equal('tomatosoup2')
+            expect(meal.name).to.be.equal('tomatoso')
             return done()
           })
       })
+      if (today >= 6) {
+        it('should not be able to update next week menu info after Saturday', (done) => {
+          request(app)
+            .put('/api/owner/menu')
+            .send('quantity=40&id=1')
+            .expect(400, done)
+        })
+
+      } else {
+        it('should be able to update next week menu info by Saturday', (done) => {
+          request(app)
+            .put('/api/owner/menu')
+            .send('quantity=40&id=1')
+            .expect(200)
+            .end(async (err, res) => {
+              const meal = await db.Meal.findByPk(1)
+              expect(meal.nextServing_quantity).to.be.equal(40)
+              return done()
+            })
+        })
+      }
 
       it('should be able to delete specific meal info', (done) => {
         request(app)
@@ -191,10 +236,8 @@ describe('# Admin::Owner request', () => {
           .get('/api/owner/menu?ran=thisWeek')
           .expect(200)
           .end((err, res) => {
-            expect(res.body.meal).to.have.property('name')
-            expect(res.body.meal).to.have.property('id')
-            expect(res.body.meal).to.have.property('image')
-            expect(res.body.meal).to.have.property('quantity')
+            expect(res.body).to.have.property('meals')
+            expect(res.body.status).to.have.be.equal('success')
             return done()
           })
       })
@@ -204,39 +247,13 @@ describe('# Admin::Owner request', () => {
           .get('/api/owner/menu?ran=nextWeek')
           .expect(200)
           .end((err, res) => {
-            expect(res.body.meal).to.have.property('name')
-            expect(res.body.meal).to.have.property('id')
-            expect(res.body.meal).to.have.property('image')
-            expect(res.body.meal).to.have.property('quantity')
+            expect(res.body).to.have.property('meals')
+            expect(res.body.status).to.have.be.equal('success')
             return done()
           })
       })
 
-      it('should be able to update next week menu info by Saturday', (done) => {
-        request(app)
-          .put('/api/owner/menu')
-          .send('name=steak&quantity=60&id=2')
-          .expect(200)
-          .end(async (err, res) => {
-            const meal = await db.Meal.findByPk(2)
-            expect(meal.quantity).to.be.equal(60)
-            expect(res.body.status).to.be.equal('success')
-            return done()
-          })
-      })
 
-      // it('should see today orders by time period', (done) => {
-      //   request(app)
-      //     .get('/api/owner/orders')
-      //     .send('name=steak&quantity=60&id=2')
-      //     .expect(200)
-      //     .end((err, res) => {
-      //       const meal = await db.Meal.findByPk(2)
-      //       expect(meal.quantity).to.be.equal(60)
-      //       expect(res.body.status).to.be.equal('success')
-      //       return done()
-      //     })
-      // })
 
 
 
