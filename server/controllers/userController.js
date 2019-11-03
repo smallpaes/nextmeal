@@ -34,11 +34,12 @@ let userController = {
       const user = await User.findOne({ where: { email } })
       //if user exsist , return error
       if (user) {
-        return res.status(400).json({ status: 'error', message: 'Email has been used' })
+        return res.status(200).json({ status: 'success', isAvailable: false, message: 'Email has been used' })
       }
       //otherwise return success
-      return res.status(200).json({ status: 'success', message: 'Valid email' })
+      return res.status(200).json({ status: 'success', isAvailable: true, message: 'Valid email' })
     } catch (error) {
+      console.log(error)
       res.json({ status: 'error', message: error })
     }
 
