@@ -69,7 +69,7 @@ let userController = {
 
       // check if the user has valid subscriptions
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
-      const subscription_status = validSubscriptions.length >= 1 ? true : false
+      const sub_status = validSubscriptions.length >= 1 ? true : false
 
       //generate a token for the user
       const payload = { id: user.id }
@@ -81,7 +81,7 @@ let userController = {
           name: user.name,
           avatar: user.avatar,
           role: user.role,
-          subscription_status
+          sub_status
         }, token
       })
     } catch (error) {
@@ -103,7 +103,8 @@ let userController = {
 
       // check if the user has valid subscriptions
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
-      const subscription_status = validSubscriptions.length >= 1 ? true : false
+      const sub_status = validSubscriptions.length >= 1 ? true : false
+      const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
 
       if (!bcrypt.compareSync(password, user.password)) {
@@ -119,7 +120,8 @@ let userController = {
           name: user.name,
           avatar: user.avatar,
           role: user.role,
-          subscription_status
+          sub_status,
+          sub_balance
         }
       })
 
