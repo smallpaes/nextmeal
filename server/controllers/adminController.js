@@ -176,8 +176,23 @@ let adminController = {
           'address', 'lat', 'lng'
         ]
       })
+      const roles = [
+        {
+          id: 1,
+          name: 'Admin'
+        },
+        {
+          id: 2,
+          name: 'Owner'
+        },
+        {
+          id: 3,
+          name: 'User'
+        }
+      ]
+      const categories = await Category.findAll({ attributes: ['id', 'name'] })
       if (!user) return res.status(400).json({ status: 'error', user, message: 'user does not exist' })
-      return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
+      return res.status(200).json({ status: 'success', user, roles, categories, message: 'Successfully get the user information.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
