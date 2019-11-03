@@ -160,7 +160,7 @@ module.exports = {
     queryInterface.bulkDelete('Meals', null, { truncate: true })
     queryInterface.bulkDelete('Subscriptions', null, { truncate: true })
     queryInterface.bulkDelete('Orders', null, { truncate: true })
-    queryInterface.bulkDelete('Orderitems', null, { truncate: true })
+    queryInterface.bulkDelete('OrderItems', null, { truncate: true })
     return queryInterface.bulkDelete('Restaurants', null, { truncate: true })
   }
 };
