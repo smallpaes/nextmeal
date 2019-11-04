@@ -48,7 +48,7 @@ export default {
         // error handling
         if (statusText !== 'OK') throw new Error(data.message)
         // fetch data from API
-        this.categories = data.category
+        this.categories = data.category.map((item, index) => ({ id: index + 1, name: item }))
         // update processing status
         this.isProcessing = false
       } catch (error) {
@@ -159,13 +159,5 @@ export default {
         font-size: size(xs);
         color:lighten(color(secondary), 10%);
     }
-
-    &-control {
-        @include formValidation;
-    }
-}
-
-/deep/ .invalid-feedback {
-    text-align: left;
 }
 </style>

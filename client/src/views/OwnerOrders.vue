@@ -6,13 +6,22 @@
         今日訂單
       </h1>
       <hr class="order-divider">
-      <OwnerOrdersTable
-        v-for="(timeSlotOrders, timeSlot) in orders"
-        :key="timeSlot"
-        :orders="timeSlotOrders"
-        :time-slot="timeSlot"
-        class="mb-3"
-      />
+      <template v-if="Object.keys(orders).length > 0">
+        <OwnerOrdersTable
+          v-for="(timeSlotOrders, timeSlot) in orders"
+          :key="timeSlot"
+          :orders="timeSlotOrders"
+          :time-slot="timeSlot"
+          class="mb-3"
+        />
+      </template>
+      <PlaceholderMessage
+        v-else
+        class="placeholder-message col-12 py-4 text-center"
+      >
+        <h1><i class="fas fa-utensils" /></h1>
+        今日無訂單
+      </PlaceholderMessage>
     </section>
   </section>
 </template>
@@ -21,12 +30,14 @@
 import SideNavBar from '../components/Navbar/SideNavBar'
 import OwnerOrdersTable from '../components/OwnerOrdersTable.vue'
 import ownerAPI from '../apis/owner'
+import PlaceholderMessage from '../components/Placeholder/Message'
 import { Toast } from '../utils/helpers'
 
 export default {
   components: {
     SideNavBar,
-    OwnerOrdersTable
+    OwnerOrdersTable,
+    PlaceholderMessage
   },
   data () {
     return {

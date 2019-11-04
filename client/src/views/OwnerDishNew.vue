@@ -9,7 +9,7 @@
       <hr class="dish-divider">
       <div class="dish-form-container pb-4">
         <OwnerDishForm
-          :initial-loading="isLoading"
+          :initial-processing="isProcessing"
           @after-submit="handleAfterSubmit"
         >
           <template v-slot:header>
@@ -39,13 +39,13 @@ export default {
   },
   data () {
     return {
-      isLoading: false
+      isProcessing: false
     }
   },
   methods: {
     async handleAfterSubmit (formData) {
       // update processing status
-      this.isLoading = true
+      this.isProcessing = true
 
       try {
         // create a new dish
@@ -56,7 +56,7 @@ export default {
         this.$router.push({ name: 'owner-dishes' })
       } catch (error) {
         // update loading status
-        this.isLoading = false
+        this.isProcessing = false
         // fire error messages
         Toast.fire({
           type: 'error',

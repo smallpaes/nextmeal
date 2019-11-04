@@ -15,21 +15,32 @@
             透過您的 NextMeal 帳號登入
           </h5>
         </div>
-        <div class="form-group">
+        <div
+          class="form-group"
+          :class="{invalid: $v.email.$error}"
+        >
           <input
             id="email"
             v-model="email"
             type="email"
             class="form-control"
             placeholder="電子信箱"
-            autofocus
             required
+            @blur="$v.email.$touch()"
           >
-          <div class="invalid-feedback">
-            請輸入格式正確的電子信箱
-          </div>
+          <small
+            v-if="!$v.email.email && $v.email.$dirty"
+            class="form-text"
+          >請輸入格式正確的電子信箱</small>
+          <small
+            v-if="!$v.email.required && $v.email.$dirty"
+            class="form-text"
+          >電子信箱必填</small>
         </div>
-        <div class="form-group">
+        <div
+          class="form-group"
+          :class="{invalid: $v.password.$error}"
+        >
           <input
             id="password"
             v-model="password"
@@ -39,16 +50,18 @@
             minlength="8"
             maxlength="12"
             required
+            @blur="$v.password.$touch()"
           >
-          <div class="invalid-feedback">
-            請輸入 8-12 位密碼
-          </div>
+          <small
+            v-if="$v.password.$error"
+            class="form-text"
+          >密碼 8-12 位，需包大小寫字母與至少一個符號</small>
         </div>
         <div class="btn-container text-center">
           <button
             type="submit"
             class="btn mt-1"
-            :disabled="isProcessing"
+            :disabled="isProcessing || $v.$invalid"
           >
             登入
           </button>
@@ -71,6 +84,7 @@ import TopLogoNavbar from '../components/Navbar/TopLogoNavbar'
 import authorizationAPI from '../apis/authorization'
 import { Toast } from '../utils/helpers'
 import { mapGetters } from 'vuex'
+import { required, email } from 'vuelidate/lib/validators'
 
 export default {
   components: {
@@ -83,18 +97,21 @@ export default {
       isProcessing: false
     }
   },
+  validations: {
+    email: {
+      required,
+      email
+    },
+    password: {
+      required,
+      passwordFormat: value => /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/.test(value)
+    }
+  },
   computed: {
     ...mapGetters(['controlPanelRouteName'])
   },
   methods: {
     async handleSubmit (e) {
-      // Validate form
-      const isValid = this.email && this.password.length >= 8 && this.password.length <= 12
-      if (e.target.checkValidity() === false || !isValid) {
-        e.target.classList.add('was-validated')
-        return
-      }
-
       try {
         // update processing status
         this.isProcessing = true
@@ -151,6 +168,7 @@ export default {
 
 .form {
     @include formControl;
+    @include inputValidation;
 
     &-content {
         max-width: 450px;
@@ -192,14 +210,6 @@ export default {
             }
         }
     }
-
-    &-control {
-        @include formValidation;
-    }
-}
-
-.invalid-feedback {
-    text-align: left;
 }
 
 .btn {

@@ -1,6 +1,9 @@
 <template>
   <div class="form-group">
-    <label for="category">
+    <label
+      v-if="$slots.label"
+      for="category"
+    >
       <slot name="label" />
     </label>
     <div class="form-select-control">
@@ -57,8 +60,6 @@ export default {
   @include formSelectControl;
 
   &-control {
-      @include formValidation;
-
       &:invalid {
           margin-bottom: 0rem;
       }
@@ -67,9 +68,19 @@ export default {
   &-select-control {
       position: relative;
 
+      .form {
+        &-control {
+          border: none;
+        }
+      }
+
       .invalid-feedback {
           position: absolute;
       }
   }
+}
+
+.form-control {
+    border: none
 }
 </style>

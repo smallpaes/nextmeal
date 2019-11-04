@@ -129,10 +129,6 @@ export default {
   @include formSelectControl;
   background-color: color(quaternary);
 
-  &-control {
-      @include formValidation;
-  }
-
   &-select-control {
     margin: 0 .3rem .6rem .3rem;
 

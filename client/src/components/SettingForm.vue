@@ -25,7 +25,10 @@
       >
         {{ warningMessage }}
       </div>
-      <div class="form-group">
+      <div
+        class="form-group form-address-group"
+        :class="{invalid: $v.user.address.$error}"
+      >
         <input
           id="address"
           v-model="user.address"
@@ -34,41 +37,43 @@
           placeholder="預設所在地址"
           autofocus
           required
+          @blur="$v.user.address.$touch()"
         >
-        <div class="invalid-feedback">
-          {{ validationMsg.address }}
-        </div>
+        <small
+          v-if="$v.user.address.$error"
+          class="form-text"
+        >地址必填</small>
+        <small
+          v-if="validationMsg.address"
+          class="form-text"
+        >{{ validationMsg.address }}</small>
       </div>
-      <div class="form-group">
-        <select
-          v-model="user.prefer"
-          class="form-control"
-          required
-        >
-          <option value="">
-            偏好餐廳類型
-          </option>
-          <option
-            v-for="category in categories"
-            :key="category"
-            :value="category"
-          >
-            {{ category }}
-          </option>
-        </select>
-        <div class="invalid-feedback">
-          請選擇一種偏好餐廳
-        </div>
-      </div>
+      <!--Prefer-->
+      <CustomSelect
+        v-model="user.prefer"
+        class="p-0"
+        :options="categories"
+        :v="$v.user.prefer"
+        :target="'name'"
+      >
+        <template v-slot:option>
+          偏好餐廳類別
+        </template>
+        <template v-slot:invalid>
+          請選擇一種偏好餐廳類別
+        </template>
+      </CustomSelect>
+      <!--dob-->
       <CustomDatePicker
-        v-model="user"
+        v-model="user.dob"
         :has-label="false"
+        :v="$v.user.dob"
       />
       <div class="btn-container text-center">
         <button
           class="btn mt-1"
           type="submit"
-          :disabled="isProcessing"
+          :disabled="isProcessing || $v.$invalid"
         >
           送出
         </button>
@@ -100,7 +105,7 @@
         </button>
         <button
           class="btn ml-2"
-          :disabled="isProcessing"
+          :disabled="isProcessing || $v.$invalid"
           @click.prevent.stop="showMap = false"
         >
           修改地址
@@ -114,11 +119,14 @@
 import { dateTransformFilter, getGeoMethods } from '../utils/mixins'
 import CustomDatePicker from '../components/CustomDatePicker'
 import GMap from '../components/GMap'
+import CustomSelect from '../components/CustomSelect'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   components: {
     GMap,
-    CustomDatePicker
+    CustomDatePicker,
+    CustomSelect
   },
   mixins: [dateTransformFilter, getGeoMethods],
   props: {
@@ -146,10 +154,23 @@ export default {
 
       apiKey: process.env.VUE_APP_GOOGLE,
       validationMsg: {
-        address: '請輸入地址'
+        address: ''
       },
       showMap: false,
       isProcessing: this.initialProcessing
+    }
+  },
+  validations: {
+    user: {
+      address: {
+        required
+      },
+      prefer: {
+        required
+      },
+      dob: {
+        required
+      }
     }
   },
   watch: {
@@ -184,6 +205,10 @@ export default {
 /deep/ .google-map {
   width: 100%;
   height: 400px;
+}
+
+.form {
+    @include inputValidation;
 }
 
 .alert {

@@ -1,5 +1,8 @@
 <template>
-  <div class="form-group form-calendar-group">
+  <div
+    class="form-group form-calendar-group"
+    :class="{invalid: v.$error}"
+  >
     <label
       v-if="hasLabel"
       for="hidden-date-input"
@@ -11,7 +14,7 @@
       name="hiddenDate"
     >
     <date-picker
-      v-model="value.dob"
+      v-model="data"
       value-type="format"
       placeholder="選擇出生年月日"
       input-class="form-control form-calendar"
@@ -20,11 +23,14 @@
       :not-after="lastDate"
       :not-before="new Date('1900', '12', '12')"
       :editable="editable"
-      @input="$emit('handle-date', value)"
+      @input="v.$touch()"
     />
-    <div class="invalid-feedback">
+    <small
+      v-if="v.$error"
+      class="form-text"
+    >
       請選擇日期
-    </div>
+    </small>
   </div>
 </template>
 
@@ -37,7 +43,7 @@ export default {
   },
   props: {
     value: {
-      type: Object,
+      type: String,
       required: true
     },
     hasLabel: {
@@ -47,6 +53,10 @@ export default {
     lastDate: {
       type: Object,
       default: () => moment()
+    },
+    v: {
+      type: Object,
+      required: true
     }
   },
   data () {
@@ -57,6 +67,16 @@ export default {
       },
       editable: false
     }
+  },
+  computed: {
+    data: {
+      get () {
+        return this.value
+      },
+      set (value) {
+        this.$emit('input', value)
+      }
+    }
   }
 }
 </script>
@@ -66,8 +86,6 @@ export default {
     @include formControl;
 
     &-control {
-        @include formValidation;
-
         &[readonly] {
           background-color: transparent;
         }
@@ -75,6 +93,17 @@ export default {
 }
 
 .form {
+  @include inputValidation;
+
+  &-group {
+    &.invalid {
+      /deep/ input {
+        border: 1px solid color(primary);
+        background-color: lighten(color(primary), 36%);
+      }
+    }
+  }
+
   &-calendar-group {
     position: relative;
 
@@ -83,22 +112,6 @@ export default {
       width: 0;
       height: 0;
       opacity: 0;
-    }
-  }
-}
-
-.was-validated {
-  .hidden-date-input {
-    &:invalid {
-      &/deep/ + div input {
-        border-color: color(primary);
-      }
-    }
-
-    &:valid {
-      &/deep/ + div input {
-        border-color: #28a745;
-      }
     }
   }
 }

@@ -26,7 +26,6 @@
           placeholder="名稱"
           minlength="1"
           maxlength="6"
-          autofocus
           required
           @blur="$v.name.$touch()"
         >
@@ -42,7 +41,7 @@
       >
         <input
           id="email"
-          v-model="email"
+          v-model.lazy="email"
           type="email"
           class="form-control"
           placeholder="電子信箱"
@@ -51,14 +50,17 @@
           @blur="$v.email.$touch()"
         >
         <small
-          v-if="!$v.email.email && $v.email.$dirty"
+          v-if="!$v.email.email && $v.email.$dirty && $v.email.unique"
           class="form-text"
         >請輸入格式正確的電子信箱</small>
         <small
           v-if="!$v.email.required && $v.email.$dirty"
           class="form-text"
         >電子信箱必填</small>
-        <!-- <p>{{ $v }}</p> -->
+        <small
+          v-if="!$v.email.unique || !$v.email.email && $v.email.$dirty"
+          class="form-text"
+        >電子信箱重複或格式錯誤</small>
       </div>
       <!--Password-->
       <div
@@ -153,14 +155,11 @@ export default {
       unique: async val => {
         if (val === '') return true
         try {
-          const response = await authorizationAPI.emailcheck({ email: val })
-          console.log(response)
-          return true
-          // if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
-          // return data.isAvailable
+          const { data, statusText } = await authorizationAPI.emailcheck({ email: val })
+          if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
+          return data.isAvailable
         } catch (error) {
-          console.log(error)
-          // return false
+          return false
         }
       }
     },
@@ -174,32 +173,9 @@ export default {
   },
   methods: {
     async handleSubmit (e) {
-      // Validate form
-      const passwordCheckInput = document.getElementById('passwordCheck')
-
-      if (this.password !== this.passwordCheck) {
-        passwordCheckInput.setCustomValidity('invalid')
-        this.validationMsg.passwordCheck = '兩組輸入密碼不相同'
-      } else {
-        passwordCheckInput.setCustomValidity('')
-        this.validationMsg.passwordcheck = '請輸入 8-12 位密碼'
-      }
-
-      if (e.target.checkValidity() === false) {
-        return e.target.classList.add('was-validated')
-      }
-
       try {
         // update processing status
         this.isProcessing = true
-
-        // Send api to  check if email already existed
-        const { data, statusText } = await authorizationAPI.emailcheck({ email: this.email })
-
-        // error handling
-        if (statusText !== 'OK' || data.status !== 'success') {
-          throw new Error(data.message)
-        }
 
         // Send data to parents
         this.$emit('after-signup', {
@@ -208,7 +184,6 @@ export default {
           password: this.password,
           passwordCheck: this.passwordCheck
         })
-
         // update processing status
         this.isProcessing = false
       } catch (error) {
@@ -232,20 +207,6 @@ export default {
 }
 
 .form {
-
-    &-group {
-      &.invalid {
-
-        input {
-          border: 1px solid color(primary);
-          background-color: lighten(color(primary), 36%);
-        }
-
-        small {
-          color: color(primary);
-        }
-
-      }
-    }
+    @include inputValidation;
 }
 </style>

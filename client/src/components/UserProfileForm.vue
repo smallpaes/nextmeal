@@ -20,7 +20,10 @@
     </div>
     <div class="form-row">
       <!--Name-->
-      <div class="form-group col-md-6">
+      <div
+        class="form-group col-md-6"
+        :class="{invalid: $v.user.name.$error}"
+      >
         <label for="name">名稱</label>
         <input
           id="name"
@@ -29,13 +32,18 @@
           class="form-control"
           name="name"
           required
+          @blur="$v.user.name.$touch()"
         >
-        <div class="invalid-feedback">
-          請輸入名稱
-        </div>
+        <small
+          v-if="$v.user.name.$error"
+          class="form-text"
+        >名稱長度介於 1-6 位</small>
       </div>
       <!--Email-->
-      <div class="form-group col-md-6">
+      <div
+        class="form-group col-md-6"
+        :class="{invalid: $v.user.email.$error}"
+      >
         <label for="email">電子信箱</label>
         <input
           id="email"
@@ -44,19 +52,26 @@
           class="form-control"
           name="email"
           required
+          @blur="$v.user.email.$touch()"
         >
-        <div class="invalid-feedback">
-          請輸入電子信箱
-        </div>
+        <small
+          v-if="!$v.user.email.email && $v.user.email.$dirty"
+          class="form-text"
+        >請輸入格式正確的電子信箱</small>
+        <small
+          v-if="!$v.user.email.required && $v.user.email.$dirty"
+          class="form-text"
+        >電子信箱必填</small>
       </div>
     </div>
     <div class="form-row">
       <!--Category-->
-      <CustomSelectInput
-        v-model="user"
+      <CustomSelect
+        v-model="user.prefer"
         class="col-md-6"
         :options="categories"
-        :name="'prefer'"
+        :v="$v.user.prefer"
+        :target="'name'"
       >
         <template v-slot:label>
           喜好餐廳
@@ -65,19 +80,23 @@
           餐廳類別
         </template>
         <template v-slot:invalid>
-          請選擇類別
+          請選擇一種偏好餐廳類別
         </template>
-      </CustomSelectInput>
+      </CustomSelect>
       <!--Date of birth-->
       <CustomDatePicker
-        v-model="user"
+        v-model="user.dob"
+        :v="$v.user.dob"
         name="dob"
         class="px-1 col-md-6 p-0"
       />
     </div>
     <div class="form-row">
       <!--Address-->
-      <div class="form-group col-12 col-md">
+      <div
+        class="form-group form-address-group col-12 col-md"
+        :class="{invalid: $v.user.address.$error}"
+      >
         <label for="address">地址</label>
         <input
           id="address"
@@ -87,18 +106,24 @@
           placeholder="台北市大安區..."
           name="address"
           required
+          @blur="$v.user.address.$touch()"
         >
-        <div class="invalid-feedback">
-          {{ validationMsg.address }}
-        </div>
+        <small
+          v-if="$v.user.address.$error"
+          class="form-text"
+        >地址必填</small>
+        <small
+          v-if="validationMsg.address"
+          class="form-text"
+        >{{ validationMsg.address }}</small>
       </div>
       <!--Role-->
-      <CustomSelectInput
-        v-if="roles.length > 0"
-        v-model="user"
+      <CustomSelect
+        v-model="user.role"
         class="col-12 col-md"
         :options="roles"
-        :name="'role'"
+        :v="$v.user.role"
+        :target="'name'"
       >
         <template v-slot:label>
           用戶權限
@@ -107,15 +132,22 @@
           選擇權限
         </template>
         <template v-slot:invalid>
-          請選擇權限
+          請選擇一種權限
         </template>
-      </CustomSelectInput>
+      </CustomSelect>
     </div>
     <!--Image upload-->
     <p class="mb-2">
       上傳餐廳照片
     </p>
-    <div class="form-group">
+    <div
+      class="form-group"
+      :class="{invalid: !$v.user.image.hasImage}"
+    >
+      <small
+        v-if="!$v.user.image.hasImage"
+        class="form-text mb-2"
+      >請上傳一張照片&#8595;</small>
       <!--Invisible file upload button-->
       <input
         id="file"
@@ -124,6 +156,7 @@
         name="avatar"
         accept=".png, .jpg, .jpeg"
         @change="handleFileChange($event, 'user')"
+        @input="$v.user.image.$touch()"
       >
       <!--Preview image-->
       <div
@@ -149,16 +182,13 @@
       >
         <i class="fas fa-plus" />
       </label>
-      <div class="invalid-feedback">
-        請上傳一張圖片檔案
-      </div>
     </div>
     <div class="btn-container mt-3">
       <button
         class="btn"
         :class="{'btn-update': $route.name === 'admin-user-edit'}"
         type="submit"
-        :disabled="isProcessing"
+        :disabled="isProcessing || $v.$invalid"
         @click.stop.prevent="getLocation('user')"
       >
         更新
@@ -166,7 +196,7 @@
       <button
         v-if="$route.name ==='admin-user-edit'"
         class="btn"
-        :disabled="isProcessing"
+        :disabled="isProcessing || $v.$invalid"
         @click.stop.prevent="$emit('after-delete')"
       >
         刪除
@@ -177,13 +207,14 @@
 
 <script>
 import CustomDatePicker from '../components/CustomDatePicker'
-import CustomSelectInput from '../components/CustomSelectInput'
+import CustomSelect from '../components/CustomSelect'
 import { getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter } from '../utils/mixins'
+import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
 
 export default {
   components: {
     CustomDatePicker,
-    CustomSelectInput
+    CustomSelect
   },
   mixins: [getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter],
   props: {
@@ -215,14 +246,46 @@ export default {
         image: '',
         lng: '',
         lat: '',
-        location: ''
+        location: '',
+        address: ''
       },
       warningMessage: '',
       apiKey: process.env.VUE_APP_GOOGLE,
       validationMsg: {
-        address: '請輸入地址'
+        address: ''
       },
       isProcessing: false
+    }
+  },
+  validations: {
+    user: {
+      address: {
+        required
+      },
+      prefer: {
+        required
+      },
+      dob: {
+        required
+      },
+      name: {
+        required,
+        minLength: minLength(1),
+        maxLength: maxLength(6)
+      },
+      email: {
+        required,
+        email
+      },
+      image: {
+        hasImage: value => {
+          if (!value) return false
+          return true
+        }
+      },
+      role: {
+        required
+      }
     }
   },
   watch: {
@@ -266,14 +329,11 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-  @include fileUpload;
+    @include fileUpload;
     @include formControl;
+    @include inputValidation;
     background-color: color(quaternary);
     color: color(secondary);
-
-    &-control {
-        @include formValidation;
-    }
 }
 
 .btn {

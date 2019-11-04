@@ -177,16 +177,20 @@
       }
 }
 
-@mixin formValidation {
-    &:valid {
-        background-image: none;
-        &:focus {
-            box-shadow: none;
+@mixin inputValidation {
+    &-group {
+        &.invalid {
+  
+          .form-control {
+            border: 1px solid color(primary);
+            background-color: lighten(color(primary), 36%);
+          }
+  
+          small {
+            color: color(primary);
+          }
+  
         }
-    }
-
-    &:invalid {
-        @extend .form-control:valid;
     }
 }
 

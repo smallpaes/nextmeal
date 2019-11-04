@@ -47,37 +47,33 @@ export const getGeoMethods = {
         const BASE_URL = 'https://maps.googleapis.com/maps/api/geocode'
         const language = 'zh-TW'
         const activeDistricts = ['信義區', '大安區', '中山區', '松山區']
-        const addressInput = document.getElementById('address')
-        const form = document.querySelector('form')
+        const addressGroup = document.querySelector('.form-address-group')
         const { data } = await axios.get(`${BASE_URL}/json?address=${this[storeLocation].address}&language=${language}&components=country:TW&key=${this.apiKey}`)
 
-        // Retrieve district from data
-        const addressComponents = data.results[0].address_components
-        const district = addressComponents.filter(item => activeDistricts.includes(item.long_name))
+        let addressComponents = []
+        let district = []
+
+        // check if it's not zero result
+        if (data.results.length) {
+          // Retrieve district from data
+          addressComponents = data.results[0].address_components
+          district = addressComponents.filter(item => activeDistricts.includes(item.long_name))
+        }
 
         // validate address
         if (data.status !== 'OK' || !district.length || addressComponents.length <= 4) {
-          addressInput.setCustomValidity('invalid')
+          // set address form group to invalid
+          addressGroup.classList.add('invalid')
+          // show warning message
           this.validationMsg.address = '請確認為台北市信義、松山、大安、中山區的完整地址'
-        } else {
-          addressInput.setCustomValidity('')
-          this.validationMsg.address = '請輸入地址'
-        }
-
-        // validate dob
-        if ('dob' in this[storeLocation] && !this[storeLocation].dob) {
-          document.getElementById('hidden-date-input').setCustomValidity('invalid')
-        } else if ('dob' in this[storeLocation] && this[storeLocation].dob) {
-          document.getElementById('hidden-date-input').setCustomValidity('')
-        }
-
-        // Validate form data
-        if (form.checkValidity() === false) {
-          form.classList.add('was-validated')
-          // update processing status
           this.isProcessing = false
-          return false
+          return
         }
+
+        // clear invalid and warning sign
+        addressGroup.classList.remove('invalid')
+        this.validationMsg.address = ''
+
         // update location data
         this[storeLocation].lat = data.results[0].geometry.location.lat
         this[storeLocation].lng = data.results[0].geometry.location.lng

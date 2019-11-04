@@ -8,19 +8,28 @@
       <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dishes-divider">
       <div class="dishes-card-container row mx-0 p-3 rounded-sm shadow-sm">
-        <OwnerMenuCard
-          v-for="day in days"
-          :key="day"
-          class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
-          :meal="meal"
-          :day="day"
-          @edit-meal="handleEditMeal"
-        />
+        <template v-if="Object.keys(meal).length > 0">
+          <OwnerMenuCard
+            v-for="day in days"
+            :key="day"
+            class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
+            :meal="meal"
+            :day="day"
+            @edit-meal="handleEditMeal"
+          />
+        </template>
+        <PlaceholderMessage
+          v-else
+          class="placeholder-message col-12 py-4 text-center"
+        >
+          <h1><i class="fas fa-utensils" /></h1>
+          尚未提供餐點
+        </PlaceholderMessage>
       </div>
       <OwnerMenuForm
         v-if="$route.query.ran==='nextWeek'"
         ref="editForm"
-        :initial-meal="meal"
+        :initial-meal="Object.keys(meal).length > 0 ? meal : {}"
         :options="options"
         @after-submit="handleAfterSubmit"
       />
@@ -33,6 +42,7 @@ import SideNavBar from '../components/Navbar/SideNavBar'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerMenuCard from '../components/OwnerMenuCard'
 import OwnerMenuForm from '../components/OwnerMenuForm'
+import PlaceholderMessage from '../components/Placeholder/Message'
 import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
 
@@ -41,16 +51,17 @@ export default {
     SideNavBar,
     OwnerDishNavPill,
     OwnerMenuCard,
-    OwnerMenuForm
+    OwnerMenuForm,
+    PlaceholderMessage
   },
   data () {
     return {
       meal: {
-        id: -1,
+        id: '',
         name: '',
         description: '',
         image: '',
-        quantity: 50,
+        quantity: 0,
         isServing: false,
         nextServing: false
       },
@@ -81,7 +92,8 @@ export default {
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
-        this.meal = data.meals[0]
+
+        this.meal = !data.meals.length ? {} : data.meals[0]
         if (data.options) this.options = data.options
         // update loading status
         this.isLoading = false
@@ -150,5 +162,9 @@ export default {
     @include response(md) {
         margin-left: 145px;
     }
+}
+
+.placeholder-message {
+  border-bottom: 1px solid lighten(color(secondary), 50%);
 }
 </style>

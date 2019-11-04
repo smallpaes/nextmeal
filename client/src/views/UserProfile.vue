@@ -60,12 +60,11 @@ export default {
     this.fetchUser(userId)
   },
   methods: {
-    async fetchUser (userId = 16) {
+    async fetchUser (userId = 17) {
       try {
         // fetch data from API
         const { data, statusText } = await usersAPI.getProfile({ userId })
         // error handling
-        console.log(data)
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
         this.user = {

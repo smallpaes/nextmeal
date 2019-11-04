@@ -231,7 +231,7 @@ let userController = {
           })
           await sendEmail(req, res, subscription, data)
         }
-        return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
+        return res.status(200).json({ status: 'success', data, message: 'Thank you for subscribing NextMeal, enjoy your day.' })
       }
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -395,12 +395,13 @@ let userController = {
           avatar: user.avatar,
           role: user.role,
           sub_status,
-          subscription_balance: validSubscriptions[0].sub_balance,
+          sub_balance,
           sub_balance
         }
       })
 
     } catch (error) {
+      console.log(error)
       res.json({ status: 'error', message: error })
     }
 

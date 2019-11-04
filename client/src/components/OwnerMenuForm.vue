@@ -8,52 +8,50 @@
       更新下週菜單
     </h3>
     <!--Dish selection-->
-    <div class="form-group">
-      <label for="dish">餐點</label>
-      <select
-        v-model.trim="id"
-        class="form-control"
-        required
-      >
-        <option value="">
-          選擇餐點
-        </option>
-        <option
-          v-for="option in options"
-          :key="option.id"
-          :value="option.id"
-          :selected="id === option.id"
-        >
-          {{ option.name }}
-        </option>
-      </select>
-      <div class="invalid-feedback">
-        請選擇餐點
-      </div>
-    </div>
+    <CustomSelect
+      v-model="id"
+      :options="options"
+      :v="$v.id"
+      :target="'id'"
+    >
+      <template v-slot:label>
+        餐點
+      </template>
+      <template v-slot:option>
+        選擇餐點
+      </template>
+      <template v-slot:invalid>
+        請選擇一種餐點
+      </template>
+    </CustomSelect>
 
     <!--Quantity-->
-    <div class="form-group">
+    <div
+      class="form-group"
+      :class="{invalid: $v.quantity.$error}"
+    >
       <label for="quantity">供應數量</label>
       <input
         id="quantity"
-        v-model.trim="quantity"
+        v-model.number="quantity"
         type="number"
         class="form-control"
         min="1"
         max="50"
         required
+        @blur="$v.quantity.$touch()"
       >
-      <div class="invalid-feedback">
-        請填寫欲提供的數量，最少 1 份和最多 50 份
-      </div>
+      <small
+        v-if="$v.quantity.$error"
+        class="form-text"
+      >請填寫欲提供的數量，最少 1 份和最多 50 份</small>
     </div>
 
     <div class="btn-container mt-4">
       <button
         class="btn"
         type="submit"
-        :disabled="isLoading"
+        :disabled="isProcessing || $v.$invalid"
       >
         更新
       </button>
@@ -62,14 +60,23 @@
 </template>
 
 <script>
+import CustomSelect from '../components/CustomSelect'
 import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
+import { required, between } from 'vuelidate/lib/validators'
 
 export default {
+  components: {
+    CustomSelect
+  },
   props: {
     initialMeal: {
       type: Object,
-      required: true
+      default: () => ({
+        id: '',
+        name: '',
+        quantity: 0
+      })
     },
     options: {
       type: Array,
@@ -78,25 +85,32 @@ export default {
   },
   data () {
     return {
-      quantity: this.initialMeal.quantity,
-      id: -1,
-      isLoading: false
+      quantity: 0,
+      id: '',
+      isProcessing: false
+    }
+  },
+  validations: {
+    id: {
+      required
+    },
+    quantity: {
+      required,
+      between: between(1, 50)
     }
   },
   watch: {
     initialMeal (meal) {
-      this.id = meal.id
+      this.id = meal.id || this.id
+      this.quantity = meal.quantity || this.quantity
     }
   },
   created () {
-    this.id = this.initialMeal.id
+    this.id = this.initialMeal.id || this.id
+    this.quantity = this.initialMeal.quantity || this.quantity
   },
   methods: {
     async handleSubmit (e) {
-      // form validation
-      if (e.target.checkValidity() === false) {
-        return e.target.classList.add('was-validated')
-      }
       // prepare form data
       const formData = {
         id: this.id,
@@ -104,7 +118,7 @@ export default {
       }
 
       // update loading status
-      this.isLoading = true
+      this.isProcessing = true
 
       try {
         // send the updated data
@@ -119,10 +133,10 @@ export default {
           title: '成功更新下週菜單！'
         })
         // update loading status
-        this.isLoading = false
+        this.isProcessing = false
       } catch (error) {
         // update loading status
-        this.isLoading = false
+        this.isProcessing = false
         // fire error messages
         Toast.fire({
           type: 'error',
@@ -136,13 +150,10 @@ export default {
 
 <style lang="scss" scoped>
 .form {
+    @include inputValidation;
     @include formControl;
     background-color: color(quaternary);
     color: color(secondary);
-
-    &-control {
-        @include formValidation;
-    }
 
     &-header {
         font-size: size(md);
