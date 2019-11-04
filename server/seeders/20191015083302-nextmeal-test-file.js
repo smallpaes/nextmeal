@@ -15,7 +15,7 @@ function createUsers(users) {
   for (let i = 0; i < users.length; i++) {
     let role = 'User'
     if (i === 0) role = 'Admin'
-    if (i > 0 && i < (stores.length + 1)) role = 'Owner'
+    if (i > 1 && i < (stores.length + 2)) role = 'Owner'
     const seedUser = {
       name: i === 0 ? 'root' : faker.name.findName(),
       email: i === 0 ? 'root@example.com' : `user${i}@example.com`,
@@ -46,7 +46,7 @@ function createRest(store) {
       tel: faker.phone.phoneNumber(),
       location: store[i].location,
       address: store[i].address,
-      UserId: i + 2,
+      UserId: i + 3,
       opening_hour: opening_hour,
       closing_hour: closing_hour,
       CategoryId: Math.floor(Math.random() * 7) + 1,
@@ -71,19 +71,60 @@ function randomTime() {
   return tomorrow
 }
 
+function pastOrder() {
+  let date = faker.date.past(1, new Date(Date.now()))
+  date = moment(date).startOf('day')
+  date.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30)).toDate()
+  date = new Date(date)
+  return date
+}
 const Sequelize = require('sequelize')
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     let allUser = createUsers(users)
     let allStore = createRest(stores)
-    // //add Users
+    let usersOrders = []
+    let OrdersItem = []
+    for (let i = 0; i < 400; i++) {
+      let order_status = '明日'
+      let past, orderPast
+      const random = Math.floor(Math.random() * 3) + 1
+      if (i === 99) {
+        past = randomTime()
+      }
+      if (i < 99) {
+        past = pastOrder()
+        order_status = '今日'
+      }
+      orderPast = new Date(moment(past).subtract(1, 'days'))
+      const seedOrders = {
+        UserId: i < 100 ? 2 : Math.ceil(Math.random() * (users.length - stores.length + 2)) + stores.length + 2,
+        require_date: i < 100 ? past : randomTime(),
+        order_date: i < 100 ? orderPast : new Date(),
+        order_status: order_status,
+        hasComment: false,
+        amount: random,
+        createdAt: i < 100 ? orderPast : new Date(),
+        updatedAt: i < 100 ? orderPast : new Date()
+      }
+      const seedOrderItem = {
+        OrderId: i + 1,
+        MealId: i < 384 ? Math.ceil(Math.random() * 496) + 1 : 1,
+        quantity: random,
+        createdAt: i < 100 ? orderPast : new Date(),
+        updatedAt: i < 100 ? orderPast : new Date()
+      }
+      usersOrders.push(seedOrders)
+      OrdersItem.push(seedOrderItem)
+    }
+    // // //add Users
     await queryInterface.bulkInsert('Users', allUser, {})
 
-    // //add restaurants
+    // // //add restaurants
     await queryInterface.bulkInsert('Restaurants', allStore, {});
 
-    // // add categories
-    queryInterface.bulkInsert("Categories", categories.map((item, index) =>
+    // add categories
+    await queryInterface.bulkInsert("Categories", categories.map((item, index) =>
       ({
         id: index + 1,
         name: item.name,
@@ -93,8 +134,8 @@ module.exports = {
       })
     ), {});
 
-    // // add meals
-    queryInterface.bulkInsert("Meals",
+    // add meals
+    await queryInterface.bulkInsert("Meals",
       Array.from({ length: stores.length }).map((item, index) => (
         {
           name: faker.name.findName(),
@@ -109,46 +150,25 @@ module.exports = {
         }))
       , {});
 
-    // add orders
-    queryInterface.bulkInsert("Orders",
-      Array.from({ length: 10 }).map((item, index) => (
-        {
-          UserId: Math.ceil(Math.random() * users.length - stores.length + 1) + stores.length + 1,
-          order_date: new Date(),
-          require_date: randomTime(),
-          order_status: '明日',
-          hasComment: false,
-          amount: 1,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }))
-      , {});
+    // // add orders
+    await queryInterface.bulkInsert("Orders", usersOrders, {});
 
     // add orderitems
-    queryInterface.bulkInsert("OrderItems",
-      Array.from({ length: 100 }).map((item, index) => (
-        {
-          OrderId: index + 1,
-          MealId: Math.ceil(Math.random() * 496) + 1,
-          quantity: 1,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }))
-      , {});
+    await queryInterface.bulkInsert("OrderItems", OrdersItem, {});
 
     // add subscriptions
     return queryInterface.bulkInsert("Subscriptions",
-      Array.from({ length: 100 }).map((item, index) => (
+      Array.from({ length: 3 }).map((item, index) => (
         {
           UserId: index + 1,
           sub_name: '輕量型',
           sub_price: 1000,
           sub_description: '一個月10餐',
           sub_balance: 10,
-          sub_date: index < 1 ? new Date() : null,
-          sub_expired_date: index < 1 ? moment().add(30, 'days').endOf('day').toDate() : null,
-          payment_status: index < 1 ? true : false,
-          sn: index < 1 ? Date.now() + index : null,
+          sub_date: index < 3 ? new Date() : null,
+          sub_expired_date: index < 3 ? moment().add(30, 'days').endOf('day').toDate() : null,
+          payment_status: index < 3 ? true : false,
+          sn: index < 3 ? Date.now() + index : null,
           createdAt: new Date(),
           updatedAt: new Date()
         }))
