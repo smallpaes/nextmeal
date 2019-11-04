@@ -22,6 +22,6 @@ router.get('/orders/tomorrow', ensureAuthenticated, getUser, validSubsribe, user
 router.get('/current_user', ensureAuthenticated, getUser, userController.getCurrentUser)
 
 router.put('/:user_id/edit', ensureAuthenticated, getUser, upload.single('avatar'), validUserProfile, validMessage, userController.putProfile)
+router.get('/current_user', ensureAuthenticated, getUser, userController.getCurrentUser)
 router.get('/:user_id', ensureAuthenticated, getUser, userController.getProfile)
-
 module.exports = router

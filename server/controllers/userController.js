@@ -395,17 +395,15 @@ let userController = {
           avatar: user.avatar,
           role: user.role,
           sub_status,
-          sub_balance,
           sub_balance
         }
       })
 
     } catch (error) {
-      console.log(error)
       res.json({ status: 'error', message: error })
     }
 
-  },
+  }
 }
 
 module.exports = userController

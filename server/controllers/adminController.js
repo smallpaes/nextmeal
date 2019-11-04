@@ -125,11 +125,11 @@ let adminController = {
 
   getUsers: async (req, res) => {
     try {
-      const { name, subscription_status } = req.query
+      const { name, sub_status } = req.query
       const start = moment().startOf('day').toDate()
       let whereQuery = {}
-      if (subscription_status) {
-        if (subscription_status === 'inactive') {
+      if (sub_status) {
+        if (sub_status === 'inactive') {
           whereQuery = { [Op.or]: { payment_status: false, sub_expired_date: { [Op.lt]: start } } }
         } else {
           whereQuery = { payment_status: true, sub_expired_date: { [Op.gte]: start } }
@@ -157,7 +157,7 @@ let adminController = {
         ...user.dataValues,
         sub_description: (user.dataValues.Subscriptions[0]) ?
           user.dataValues.Subscriptions[0].dataValues.sub_description : false,
-        subscription_status: (user.dataValues.Subscriptions[0]) ? (
+        sub_status: (user.dataValues.Subscriptions[0]) ? (
           user.dataValues.Subscriptions[0].dataValues.payment_status === true &&
           user.dataValues.Subscriptions[0].dataValues.sub_expired_date >= start) ? 'active' : 'inactive'
           : 'inactive'
@@ -177,8 +177,23 @@ let adminController = {
           'address', 'lat', 'lng'
         ]
       })
+      const roles = [
+        {
+          id: 1,
+          name: 'Admin'
+        },
+        {
+          id: 2,
+          name: 'Owner'
+        },
+        {
+          id: 3,
+          name: 'User'
+        }
+      ]
+      const categories = await Category.findAll({ attributes: ['id', 'name'] })
       if (!user) return res.status(400).json({ status: 'error', user, message: 'user does not exist' })
-      return res.status(200).json({ status: 'success', user, message: 'Successfully get the user information.' })
+      return res.status(200).json({ status: 'success', user, roles, categories, message: 'Successfully get the user information.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -253,7 +268,7 @@ let adminController = {
   // admin 的取消路由
   putCancel: async (req, res) => {
     try {
-      let order = await Order.findByPk(req.params.order_id,{
+      let order = await Order.findByPk(req.params.order_id, {
         include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
@@ -261,7 +276,7 @@ let adminController = {
         return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       }
       if (order.meals.length === 0 || order.meals[0] === undefined) {
-        return res.status(400).json({status: 'error', message: 'information is not correct'})
+        return res.status(400).json({ status: 'error', message: 'information is not correct' })
       }
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
@@ -281,7 +296,7 @@ let adminController = {
       })
       let meal = await Meal.findByPk(order.meals[0].dataValues.id)
       await meal.update({
-        quantity: meal.quantity + order.amount 
+        quantity: meal.quantity + order.amount
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
