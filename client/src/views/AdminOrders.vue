@@ -12,26 +12,33 @@
         :input-placeholder="'搜尋編號'"
         @after-search="handleAfterFilter({ page: 0, order_id: $event, order_status: currentFilterOption, date: currentDate })"
         @after-filter="handleAfterFilter({ page: 0, order_id: currentSearchInput, order_status: $event, date: currentDate })"
-        @after-date-pick="handleAfterFilter({ page: 0, order_id: currentSearchInput, order_status: currentFilterOption, date: $event.dob })"
+        @after-date-pick="handleAfterFilter({ page: 0, order_id: currentSearchInput, order_status: currentFilterOption, date: $event })"
       >
         <template v-slot:filterOption>
           訂單狀態
         </template>
       </AdminFilterPanel>
-      <AdminOrdersTable
-        :orders="orders"
-        @after-cancel="handleAfterCancel"
-      />
-      <div class="btn-container mt-3 mt-md-4">
-        <button
-          v-if="currentPage !== totalPage"
-          class="btn"
-          href="#"
-          @click="fetchOrders(currentSearchInput, currentDate, currentFilterOption, currentPage + 1)"
+      <template v-if="orders.length > 0">
+        <AdminOrdersTable
+          :orders="orders"
+          @after-cancel="handleAfterCancel"
+        />
+        <div
+          v-if="totalPage > 0 && currentPage !== totalPage"
+          class="btn-container mt-3 mt-md-4"
         >
-          瀏覽更多
-        </button>
-      </div>
+          <button
+            class="btn"
+            href="#"
+            @click="fetchOrders(currentSearchInput, currentDate, currentFilterOption, currentPage + 1)"
+          >
+            瀏覽更多
+          </button>
+        </div>
+      </template>
+      <PlaceholderMessage v-else>
+        <i class="fas fa-search mr-2" />沒有符合的結果
+      </PlaceholderMessage>
     </section>
   </section>
 </template>
@@ -40,72 +47,17 @@
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminOrdersTable from '../components/AdminOrdersTable.vue'
+import PlaceholderMessage from '../components/Placeholder/Message'
 import adminAPI from '../apis/admin'
+import moment from 'moment'
 import { Toast } from '../utils/helpers'
-
-const dummyOrders = {
-  orders: [
-    {
-      id: 1,
-      require_date: '2019-10-28T03:00:00.000Z',
-      order_status: '今日',
-      date: '20191028',
-      time: '11:00',
-      meals: {
-        id: 2,
-        name: '巨無霸套餐',
-        image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-        OrderItem: {
-          OrderId: 1,
-          MealId: 2,
-          quantity: 2
-        },
-        Restaurant: {
-          id: 1,
-          name: '美國家鄉菜'
-        }
-      },
-      User: {
-        id: 1,
-        name: 'Mike',
-        email: 'mike@example.com'
-      }
-    },
-    {
-      id: 2,
-      require_date: '2019-10-28T03:00:00.000Z',
-      order_status: '取消',
-      date: '20191028',
-      time: '11:00',
-      meals: {
-        id: 2,
-        name: '巨無霸套餐',
-        image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-        OrderItem: {
-          OrderId: 2,
-          MealId: 2,
-          quantity: 2
-        },
-        Restaurant: {
-          id: 1,
-          name: '美國家鄉菜'
-        }
-      },
-      User: {
-        id: 2,
-        name: 'Micky',
-        email: 'mike@example.com'
-      }
-    }
-  ],
-  pages: 3
-}
 
 export default {
   components: {
     AdminSideNavBar,
     AdminFilterPanel,
-    AdminOrdersTable
+    AdminOrdersTable,
+    PlaceholderMessage
   },
   data () {
     return {
@@ -116,13 +68,13 @@ export default {
       currentDate: '',
       currentPage: 0,
       totalPage: null,
-      isProcessing: true
+      isLoading: true
     }
   },
   created () {
     const { order_id: orderId, order_status: orderStatus, date } = this.$route.query
     this.currentFilterOption = orderStatus || '未取消'
-    this.currentDate = date || new Date()
+    this.currentDate = date || moment().format('YYYY-MM-DD')
     this.currentSearchInput = orderId || ''
     this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage + 1)
   },
@@ -133,7 +85,7 @@ export default {
     this.orders = []
     const { order_id: orderId, order_status: orderStatus, date } = to.query
     this.currentFilterOption = orderStatus || '未取消'
-    this.currentDate = date || new Date()
+    this.currentDate = date || moment().format('YYYY-MM-DD')
     this.currentSearchInput = orderId || ''
     this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage + 1)
     next()
@@ -141,8 +93,7 @@ export default {
   methods: {
     async fetchOrders (id, date, status, page) {
       try {
-        // update processing status
-        this.isProcessing = false
+        this.isLoading = true
         // fetch data from API
         const { data, statusText } = await adminAPI.orders.getOrders({ id, date, status, page })
         // error handling
@@ -150,6 +101,7 @@ export default {
         // fetch data from API
         this.orders = [...this.orders, ...data.orders]
         this.totalPage = data.pages
+        this.currentPage += 1
         // update loading status
         this.isLoading = false
       } catch (error) {

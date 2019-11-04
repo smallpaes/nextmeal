@@ -68,6 +68,7 @@
         v-model="user.dob"
         :has-label="false"
         :v="$v.user.dob"
+        :placeholder="'選擇出生年月日'"
       />
       <div class="btn-container text-center">
         <button

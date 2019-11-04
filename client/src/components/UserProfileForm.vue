@@ -89,6 +89,7 @@
         :v="$v.user.dob"
         name="dob"
         class="px-1 col-md-6 p-0"
+        :placeholder="'選擇出生年月日'"
       />
     </div>
     <div class="form-row">

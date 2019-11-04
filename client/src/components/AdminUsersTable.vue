@@ -30,8 +30,8 @@
           <td>{{ user.role }}</td>
           <td>
             <span
-              :inner-html.prop="user.subscription_status | getStatusIcon"
-              :class="{isTrue: user.subscription_status === 'active', isFalse: user.subscription_status === 'inactive'}"
+              :inner-html.prop="user.sub_status | getStatusIcon"
+              :class="{isTrue: user.sub_status === 'active', isFalse: user.sub_status === 'inactive'}"
             />
           </td>
           <td class="comment">

@@ -58,6 +58,7 @@ export default new Vuex.Store({
         // is authenticated
         return true
       } catch (error) {
+        console.log(error)
         // clear state
         commit('revokeAuthentication')
         // is not authenticated

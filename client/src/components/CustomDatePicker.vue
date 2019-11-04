@@ -1,7 +1,7 @@
 <template>
   <div
     class="form-group form-calendar-group"
-    :class="{invalid: v.$error}"
+    :class="{invalid: v && v.$error}"
   >
     <label
       v-if="hasLabel"
@@ -16,17 +16,17 @@
     <date-picker
       v-model="data"
       value-type="format"
-      placeholder="選擇出生年月日"
+      :placeholder="placeholder"
       input-class="form-control form-calendar"
       width="100%"
       :input-attr="inputAttribute"
       :not-after="lastDate"
       :not-before="new Date('1900', '12', '12')"
       :editable="editable"
-      @input="v.$touch()"
+      @input="v ? v.$touch() : $emit('handle-date', $event)"
     />
     <small
-      v-if="v.$error"
+      v-if="v && v.$error"
       class="form-text"
     >
       請選擇日期
@@ -56,6 +56,10 @@ export default {
     },
     v: {
       type: Object,
+      default: () => {}
+    },
+    placeholder: {
+      type: String,
       required: true
     }
   },

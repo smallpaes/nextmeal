@@ -38,12 +38,11 @@
           </td>
           <td
             v-else
-            class="cancel"
-            @click="cancelOrder(order.id)"
+            :class="{pointer: !isProcessing, wait: isProcessing}"
+            @click="isProcessing ? null : cancelOrder(order.id)"
           >
-            <i
-              class="fas fa-times"
-            />
+            未取消
+            <i class="fas fa-trash ml-1" />
           </td>
         </tr>
       </tbody>
@@ -52,6 +51,9 @@
 </template>
 
 <script>
+import adminAPI from '../apis/admin'
+import { Toast } from '../utils/helpers'
+
 export default {
   props: {
     orders: {
@@ -59,11 +61,33 @@ export default {
       required: true
     }
   },
+  data () {
+    return {
+      isProcessing: false
+    }
+  },
   methods: {
-    cancelOrder (orderId) {
-      // PUT /api/admin/orders/:order_id
-      console.log(orderId)
-      this.$emit('after-cancel', orderId)
+    async cancelOrder (orderId) {
+      try {
+        // update processing status
+        this.isProcessing = true
+        // cancel the oreder
+        const { data, statusText } = await adminAPI.orders.putOrder({ orderId })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // notify parent
+        this.$emit('after-cancel', orderId)
+        // update processing status
+        this.isProcessing = false
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取消訂單，請稍後再試'
+        })
+      }
     }
   }
 }
@@ -88,10 +112,11 @@ $headers: (
     cursor: unset;
 }
 
-.cancel {
-    .fa-times {
-        color: color(primary);
-        cursor: pointer;
-    }
+.pointer {
+    cursor: pointer;
+}
+
+.wait {
+    cursor: wait;
 }
 </style>

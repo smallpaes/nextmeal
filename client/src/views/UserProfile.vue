@@ -60,7 +60,7 @@ export default {
     this.fetchUser(userId)
   },
   methods: {
-    async fetchUser (userId = 17) {
+    async fetchUser (userId = 19) {
       try {
         // fetch data from API
         const { data, statusText } = await usersAPI.getProfile({ userId })

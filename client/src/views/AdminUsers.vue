@@ -52,11 +52,11 @@ export default {
     }
   },
   created () {
-    const { subscription_status: subscriptionStatus = '', name = '' } = this.$route.query
+    const { sub_status: subscriptionStatus = '', name = '' } = this.$route.query
     this.fetchUsers({ subscriptionStatus, name })
   },
   beforeRouteUpdate (to, from, next) {
-    const { subscription_status: subscriptionStatus = '', name = '' } = to.query
+    const { sub_status: subscriptionStatus = '', name = '' } = to.query
     this.fetchUsers({ subscriptionStatus, name })
     next()
   },
@@ -69,7 +69,7 @@ export default {
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
         this.users = data.users
-        this.subscriptionStatus = data.subscription_status || this.subscriptionStatus
+        this.subscriptionStatus = data.sub_status || this.subscriptionStatus
         // update loading status
         this.isLoading = false
       } catch (error) {

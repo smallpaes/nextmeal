@@ -32,8 +32,7 @@ export default {
       })
     },
     getUsers ({ subscriptionStatus, name }) {
-      const searchParams = new URLSearchParams({ 'subscription_status': subscriptionStatus, name })
-      console.log(searchParams.toString())
+      const searchParams = new URLSearchParams({ 'sub_status': subscriptionStatus, name })
       return apiHelper.get(`/admin/users?${searchParams.toString()}`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       })
@@ -46,8 +45,13 @@ export default {
   },
   orders: {
     getOrders ({ id, date, status, page }) {
-      const searchParams = new URLSearchParams({ page, 'order_id': id, date, 'order_status': encodeURIComponent(status) })
+      const searchParams = new URLSearchParams({ page, 'order_id': id, date, 'order_status': status })
       return apiHelper.get(`/admin/orders?${searchParams.toString()}`, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      })
+    },
+    putOrder ({ orderId }) {
+      return apiHelper.put(`/admin/orders/${orderId}`, {}, {
         headers: { Authorization: `Bearer ${getToken()}` }
       })
     }

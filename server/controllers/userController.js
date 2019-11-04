@@ -74,7 +74,7 @@ let userController = {
 
       //generate a token for the user
       const payload = { id: user.id }
-      const token = jwt.sign(payload, 'NextmealProject')
+      const token = jwt.sign(payload, process.env.JWT_SECRET)
       
 
       return res.status(200).json({
@@ -308,7 +308,7 @@ let userController = {
         attributes: ['id', 'require_date']
       })
       // 11/1 由於上方是findAll 此處更改為判斷陣列的長度
-      if (order.length === 0) return res.status(400).json({ status: 'error', message: 'not order yet.' })
+      if (order.length === 0) return res.status(200).json({ status: 'success', order: [],  message: 'no order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })

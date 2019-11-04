@@ -24,6 +24,7 @@
             v-for="option in options"
             :key="option"
             :value="option"
+            :selected="option === '未取消'"
           >
             {{ option | transformName }}
           </option>
@@ -35,6 +36,7 @@
         v-model="selectedDate"
         :last-date="getTomorrowDate"
         :has-label="false"
+        :placeholder="'訂單日期'"
         class="col-sm-6 my-1 col-md pl-md-2 pr-md-0"
         @handle-date="$emit('after-date-pick', $event)"
       />
@@ -110,9 +112,7 @@ export default {
     return {
       searchInput: '',
       selectedOption: '',
-      selectedDate: {
-        dob: moment().format('YYYY-MM-DD')
-      }
+      selectedDate: moment().format('YYYY-MM-DD')
     }
   },
   computed: {

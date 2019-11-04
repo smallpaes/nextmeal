@@ -143,6 +143,7 @@ export default {
         // update loading status
         this.isProcessing = false
       } catch (error) {
+        console.log(error.message)
         // update loading status
         this.isProcessing = false
         // fire error messages

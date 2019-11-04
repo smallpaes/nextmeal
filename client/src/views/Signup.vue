@@ -81,7 +81,6 @@ export default {
         if (statusText !== 'OK' || data.status !== 'success') {
           throw new Error(data.message)
         }
-
         // store jwt in localstorage
         localStorage.setItem('token', data.token)
 

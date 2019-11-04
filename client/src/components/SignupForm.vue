@@ -45,7 +45,6 @@
           type="email"
           class="form-control"
           placeholder="電子信箱"
-          autofocus
           required
           @blur="$v.email.$touch()"
         >
