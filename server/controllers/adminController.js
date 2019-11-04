@@ -204,7 +204,6 @@ let adminController = {
       let end = moment.utc(date).endOf('day').toDate()
       // 如果 order_status 不是取消，就顯示非取消的 order, 預設為當日非取消的 order 
       let whereQuery = {
-        order_status: { [Op.notLike]: '取消' },
         require_date: { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_id) {
@@ -213,6 +212,10 @@ let adminController = {
       if (order_status && order_status === '取消') {
         whereQuery['order_status'] = { [Op.substring]: '取消' || '' }
       }
+      if (order_status && order_status === '未取消') {
+        whereQuery['order_status'] = { [Op.notLike]: '取消' }
+      }
+      console.log(whereQuery)
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let orders = await Order.findAndCountAll({
         where: whereQuery,
