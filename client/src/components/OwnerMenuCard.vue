@@ -29,7 +29,7 @@
           </p>
           <p class="m-0 d-inline d-md-block">
             <span class="d-none d-md-inline">供應數量</span>
-            ：{{ meal.quantity }}份
+            ：{{ ran === 'thisWeek' ? meal.quantity : meal.nextServing_quantity }}份
           </p>
         </div>
       </div>
@@ -45,6 +45,10 @@ export default {
       required: true
     },
     day: {
+      type: String,
+      required: true
+    },
+    ran: {
       type: String,
       required: true
     }

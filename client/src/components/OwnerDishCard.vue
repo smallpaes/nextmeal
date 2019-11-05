@@ -21,7 +21,7 @@
           {{ meal.name }}
         </h5>
         <p class="card-text d-none d-md-inline mt-2">
-          {{ meal.description }}
+          {{ meal.description | textTruncate }}
         </p>
       </div>
     </div>
@@ -29,7 +29,10 @@
 </template>
 
 <script>
+import { textTruncateFilter } from '../utils/mixins'
+
 export default {
+  mixins: [textTruncateFilter],
   props: {
     meal: {
       type: Object,

@@ -14,6 +14,7 @@
         v-model="data"
         class="form-control"
         required
+        :disabled="isProcessing"
         @change="v.$touch()"
       >
         <option
@@ -58,6 +59,10 @@ export default {
     target: {
       type: String,
       required: true
+    },
+    isProcessing: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {

@@ -39,6 +39,7 @@
         :options="categories"
         :v="$v.restaurant.Category.id"
         :target="'id'"
+        :is-processing="isProcessing"
       >
         <template v-slot:label>
           類別

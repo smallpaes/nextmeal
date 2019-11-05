@@ -448,7 +448,7 @@
     max-width: 800px;
     margin-left: 0;
     transition: margin-left .1s linear;
-    overflow-y: scroll;
+    // overflow-y: scroll;
 
     &-title {
         size: size(lg);

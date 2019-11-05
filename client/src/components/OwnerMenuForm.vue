@@ -75,7 +75,7 @@ export default {
       default: () => ({
         id: '',
         name: '',
-        quantity: 0
+        nextServing_quantity: 0
       })
     },
     options: {
@@ -102,12 +102,12 @@ export default {
   watch: {
     initialMeal (meal) {
       this.id = meal.id || this.id
-      this.quantity = meal.quantity || this.quantity
+      this.quantity = meal.nextServing_quantity || this.quantity
     }
   },
   created () {
     this.id = this.initialMeal.id || this.id
-    this.quantity = this.initialMeal.quantity || this.quantity
+    this.quantity = this.initialMeal.nextServing_quantity || this.quantity
   },
   methods: {
     async handleSubmit (e) {
@@ -126,7 +126,7 @@ export default {
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // send dish name and image from response to parent
-        this.$emit('after-submit', { ...formData, name: data.meal.name, image: data.meal.image })
+        this.$emit('after-submit', { id: formData.id, nextServing_quantity: formData.quantity, name: data.meal.name, image: data.meal.image })
         // notify for successful update
         Toast.fire({
           type: 'success',

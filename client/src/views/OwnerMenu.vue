@@ -20,6 +20,7 @@
             class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
             :meal="meal"
             :day="day"
+            :ran="$route.query.ran"
             @edit-meal="handleEditMeal"
           />
         </template>
@@ -69,6 +70,7 @@ export default {
         description: '',
         image: '',
         quantity: 0,
+        nextServing_quantity: 0,
         isServing: false,
         nextServing: false
       },
