@@ -51,7 +51,7 @@ cron.schedule('00 00 * * *', async () => {
 
 //每周菜單更新(下周->本周)
 
-cron.schedule('*/5 * * * * *', async () => {
+cron.schedule('00 00 * * 0', async () => {
 
   // 撈出所有下周供應的餐點
   const meals = await Meal.findAll({
