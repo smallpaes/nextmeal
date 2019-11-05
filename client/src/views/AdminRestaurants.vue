@@ -1,7 +1,12 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <AdminSideNavBar />
+    <AdminSideNavBar :nav-is-open="navIsOpen" />
     <section class="restaurants flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <h1 class="restaurants-title">
         餐廳管理
       </h1>
@@ -28,6 +33,7 @@
 
 <script>
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminRestaurantsTable from '../components/AdminRestaurantsTable.vue'
 import PlaceholderMessage from '../components/Placeholder/Message'
@@ -37,6 +43,7 @@ import { Toast } from '../utils/helpers'
 export default {
   components: {
     AdminSideNavBar,
+    NavbarToggler,
     AdminFilterPanel,
     AdminRestaurantsTable,
     PlaceholderMessage
@@ -47,7 +54,8 @@ export default {
       districts: [],
       currentSearchInput: '',
       currentFilterOption: '',
-      isLoading: true
+      isLoading: true,
+      navIsOpen: false
     }
   },
   created () {
@@ -99,22 +107,6 @@ export default {
 }
 
 .restaurants {
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    transition: margin-left .1s linear;
-    overflow-y: scroll;
-
-    &-title {
-        size: size(lg);
-    }
-
-    &-divider {
-        width: 100%;
-    }
-
-    @include response(md) {
-        margin-left: 145px;
-    }
+    @include controlPanelLayout;
 }
 </style>

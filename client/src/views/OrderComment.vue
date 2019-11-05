@@ -1,7 +1,7 @@
 <template>
   <section>
     <header>
-      <Navbar />
+      <UserNavbar />
       <ImageHeaderBanner
         :background-photo="banner.image"
         :banner-height="banner.height"
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
+import UserNavbar from '../components/Navbar/UserNavbar'
 import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import MealHorizontalCard from '../components/Card/MealHorizontalCard'
 import OrderCommentForm from '../components/OrderCommentForm'
@@ -73,7 +73,7 @@ const dummyOrder = {
 
 export default {
   components: {
-    Navbar,
+    UserNavbar,
     ImageHeaderBanner,
     MealHorizontalCard,
     OrderCommentForm,

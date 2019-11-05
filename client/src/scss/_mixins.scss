@@ -441,3 +441,28 @@
         }
     }
 }
+
+@mixin controlPanelLayout {
+    position: relative; 
+    padding: 2.3rem 2rem;
+    max-width: 800px;
+    margin-left: 0;
+    transition: margin-left .1s linear;
+    overflow-y: scroll;
+
+    &-title {
+        size: size(lg);
+    }
+
+    &-divider {
+        width: 100%;
+    }
+
+    @include response(sm) {
+        margin-left: 80px;
+    }
+
+    @include response(md) {
+        margin-left: 145px;
+    }
+}

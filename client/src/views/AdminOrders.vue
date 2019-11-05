@@ -1,7 +1,12 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <AdminSideNavBar />
+    <AdminSideNavBar :nav-is-open="navIsOpen" />
     <section class="users flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <h1 class="users-title">
         訂單管理
       </h1>
@@ -45,6 +50,7 @@
 
 <script>
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminOrdersTable from '../components/AdminOrdersTable.vue'
 import PlaceholderMessage from '../components/Placeholder/Message'
@@ -55,6 +61,7 @@ import { Toast } from '../utils/helpers'
 export default {
   components: {
     AdminSideNavBar,
+    NavbarToggler,
     AdminFilterPanel,
     AdminOrdersTable,
     PlaceholderMessage
@@ -68,7 +75,8 @@ export default {
       currentDate: '',
       currentPage: 0,
       totalPage: null,
-      isLoading: true
+      isLoading: true,
+      navIsOpen: false
     }
   },
   created () {
@@ -143,23 +151,7 @@ export default {
 }
 
 .users {
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    transition: margin-left .1s linear;
-    overflow-y: scroll;
-
-    &-title {
-        size: size(lg);
-    }
-
-    &-divider {
-        width: 100%;
-    }
-
-    @include response(md) {
-        margin-left: 145px;
-    }
+    @include controlPanelLayout;
 }
 
 .btn-container {

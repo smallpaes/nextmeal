@@ -1,7 +1,7 @@
 <template>
   <section class="order-container">
     <header>
-      <Navbar />
+      <UserNavbar />
     </header>
     <section class="container pt-4 pb-4 w-100">
       <div class="order-wrapper row profil">
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
+import UserNavbar from '../components/Navbar/UserNavbar'
 import Footer from '../components/Footer'
 import OrderNavPill from '../components/Navbar/OrderNavPill'
 import OrderCard from '../components/Card/OrderCard'
@@ -53,7 +53,7 @@ import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    Navbar,
+    UserNavbar,
     UserProfileCard,
     OrderNavPill,
     OrderCard,

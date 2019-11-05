@@ -1,7 +1,7 @@
 <template>
   <section class="profile-container">
     <header>
-      <Navbar />
+      <UserNavbar />
     </header>
     <section class="container pt-4 pb-4 w-100">
       <div class="profile-wrapper row profil">
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
+import UserNavbar from '../components/Navbar/UserNavbar'
 import Footer from '../components/Footer'
 import UserProfileCard from '../components/UserProfileCard'
 import UserProfileForm from '../components/UserProfileForm'
@@ -32,7 +32,7 @@ import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    Navbar,
+    UserNavbar,
     UserProfileCard,
     UserProfileForm,
     Footer

@@ -2,8 +2,13 @@
   <section
     class="wrapper d-flex vh-100"
   >
-    <SideNavBar />
+    <OwnerSideNavBar :nav-is-open="navIsOpen" />
     <section class="dishes flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <router-link
         :to="{name: 'owner-dish-new'}"
         class="new-dish"
@@ -29,7 +34,8 @@
 </template>
 
 <script>
-import SideNavBar from '../components/Navbar/SideNavBar'
+import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishCard from '../components/OwnerDishCard'
 import ownerAPI from '../apis/owner'
@@ -37,14 +43,16 @@ import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    SideNavBar,
+    OwnerSideNavBar,
+    NavbarToggler,
     OwnerDishNavPill,
     OwnerDishCard
   },
   data () {
     return {
       meals: [],
-      isLoading: true
+      isLoading: true,
+      navIsOpen: false
     }
   },
   created () {
@@ -87,26 +95,12 @@ export default {
 }
 
 .dishes {
-    position: relative;
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    transition: margin-left .1s linear;
-
-    &-title {
-        size: size(lg);
-    }
+    @include controlPanelLayout;
 
     &-divider {
         width: 100%;
         margin-top: 0;
     }
-
-    // set max-heigt for tablet
-    // &-card-container {
-    //     max-height: 560px;
-    //     overflow-y: scroll;
-    // }
 
     .new-dish {
         @include linkStyling(color(primary));
@@ -114,10 +108,6 @@ export default {
         right: 40px;
         top: 112px;
         font-size: size(xs);
-    }
-
-    @include response(md) {
-        margin-left: 145px;
     }
 }
 </style>

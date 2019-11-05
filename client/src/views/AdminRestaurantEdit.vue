@@ -1,7 +1,12 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <AdminSideNavBar />
+    <AdminSideNavBar :nav-is-open="navIsOpen" />
     <section class="restaurant flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <h1 class="restaurant-title">
         編輯餐廳
       </h1>
@@ -20,6 +25,7 @@
 
 <script>
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import RestaurantInfoForm from '../components/RestaurantInfoForm'
 import adminAPI from '../apis/admin'
 import { Toast } from '../utils/helpers'
@@ -27,6 +33,7 @@ import { Toast } from '../utils/helpers'
 export default {
   components: {
     AdminSideNavBar,
+    NavbarToggler,
     RestaurantInfoForm
   },
   data () {
@@ -34,7 +41,8 @@ export default {
       restaurant: {},
       categories: [],
       isLoading: true,
-      isProcessing: false
+      isProcessing: false,
+      navIsOpen: false
     }
   },
   created () {
@@ -133,22 +141,6 @@ export default {
 }
 
 .restaurant {
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    overflow-y: scroll;
-    transition: margin-left .1s linear;
-
-    &-title {
-        size: size(lg);
-    }
-
-    &-divider {
-        width: 100%;
-    }
-
-    @include response(md) {
-        margin-left: 145px;
-    }
+    @include controlPanelLayout;
 }
 </style>

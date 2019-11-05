@@ -1,7 +1,7 @@
 <template>
   <section>
     <header>
-      <Navbar />
+      <UserNavbar />
       <ImageBanner
         :background-photo="restaurant.image"
       />
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
+import UserNavbar from '../components/Navbar/UserNavbar'
 import Footer from '../components/Footer'
 import ImageBanner from '../components/Banner/ImageBanner'
 import Breadcrumb from '../components/Breadcrumb'
@@ -63,7 +63,7 @@ import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    Navbar,
+    UserNavbar,
     Footer,
     ImageBanner,
     Breadcrumb,

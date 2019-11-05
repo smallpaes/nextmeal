@@ -1,7 +1,12 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <SideNavBar />
+    <OwnerSideNavBar :nav-is-open="navIsOpen" />
     <section class="dishes flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <h1 class="dishes-title">
         餐點資訊
       </h1>
@@ -38,7 +43,8 @@
 </template>
 
 <script>
-import SideNavBar from '../components/Navbar/SideNavBar'
+import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerMenuCard from '../components/OwnerMenuCard'
 import OwnerMenuForm from '../components/OwnerMenuForm'
@@ -48,8 +54,9 @@ import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    SideNavBar,
+    OwnerSideNavBar,
     OwnerDishNavPill,
+    NavbarToggler,
     OwnerMenuCard,
     OwnerMenuForm,
     PlaceholderMessage
@@ -67,7 +74,8 @@ export default {
       },
       options: [],
       days: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
-      isLoading: true
+      isLoading: true,
+      navIsOpen: false
     }
   },
   created () {
@@ -132,23 +140,15 @@ export default {
 }
 
 .dishes {
-    position: relative;
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    transition: margin-left .1s linear;
+    @include controlPanelLayout;
 
-    &-title {
-        size: size(lg);
+    &-card-container {
+        background-color: color(quaternary);
     }
 
     &-divider {
         width: 100%;
         margin-top: 0;
-    }
-
-    &-card-container {
-        background-color: color(quaternary);
     }
 
     .new-dish {
@@ -157,10 +157,6 @@ export default {
         right: 40px;
         top: 112px;
         font-size: size(xs);
-    }
-
-    @include response(md) {
-        margin-left: 145px;
     }
 }
 

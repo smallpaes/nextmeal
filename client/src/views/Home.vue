@@ -1,7 +1,7 @@
 <template>
   <section v-if="!isLoading">
     <header>
-      <Navbar />
+      <UserNavbar />
       <ImageHeaderBanner :background-photo="bannerImage">
         <template v-slot:header>
           <h1 class="banner-content-title">
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
+import UserNavbar from '../components/Navbar/UserNavbar'
 import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import OrderProcess from '../components/OrderProcess'
 import CustomCarousel from '../components/CustomCarousel'
@@ -65,7 +65,7 @@ import { Toast } from '../utils/helpers'
 export default {
   name: 'Home',
   components: {
-    Navbar,
+    UserNavbar,
     ImageHeaderBanner,
     OrderProcess,
     CustomCarousel,

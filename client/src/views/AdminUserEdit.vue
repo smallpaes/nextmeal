@@ -1,7 +1,12 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <AdminSideNavBar />
+    <AdminSideNavBar :nav-is-open="navIsOpen" />
     <section class="user flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <h1 class="user-title">
         編輯用戶
       </h1>
@@ -20,6 +25,7 @@
 
 <script>
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import UserProfileForm from '../components/UserProfileForm'
 import adminAPI from '../apis/admin'
 import usersAPI from '../apis/users'
@@ -80,6 +86,7 @@ const dummyCategories = [
 export default {
   components: {
     AdminSideNavBar,
+    NavbarToggler,
     UserProfileForm
   },
   data () {
@@ -108,7 +115,8 @@ export default {
         }
       ],
       isLoading: true,
-      isProcessing: false
+      isProcessing: false,
+      navIsOpen: false
     }
   },
   created () {
@@ -200,18 +208,6 @@ export default {
 }
 
 .user {
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    overflow-y: scroll;
-    transition: margin-left .1s linear;
-
-    &-title {
-        size: size(lg);
-    }
-
-    @include response(md) {
-        margin-left: 145px;
-    }
+    @include controlPanelLayout;
 }
 </style>

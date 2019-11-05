@@ -1,7 +1,7 @@
 <template>
   <section>
     <header>
-      <Navbar />
+      <UserNavbar />
       <DropdownBanner
         :districts="districts"
         :current-district="currentDistrict"
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
+import UserNavbar from '../components/Navbar/UserNavbar'
 import Footer from '../components/Footer'
 import DropdownBanner from '../components/Banner/DropdownBanner'
 import CustomCarousel from '../components/CustomCarousel'
@@ -90,7 +90,7 @@ import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    Navbar,
+    UserNavbar,
     Footer,
     DropdownBanner,
     CustomCarousel,

@@ -1,5 +1,8 @@
 <template>
-  <nav class="sidenav shadow-sm">
+  <nav
+    class="sidenav shadow-sm"
+    :class="{opened: navIsOpen}"
+  >
     <div class="sidenav-brand-container text-center py-5">
       <router-link
         :to="{name: 'home'}"
@@ -66,6 +69,12 @@
 
 <script>
 export default {
+  props: {
+    navIsOpen: {
+      type: Boolean,
+      required: true
+    }
+  },
   methods: {
     logout () {
       this.$store.commit('revokeAuthentication')
@@ -80,26 +89,41 @@ export default {
     @include brand(sidenav);
     position: fixed;
     height: 100vh;
-    width: 80px;
+    width: 0;
     white-space: nowrap;
     background-color: color(quaternary);
     transition: width .2s linear;
     overflow-y: scroll;
+    overflow-x: hidden;
+    z-index: 3;
 
     &-brand {
-      @include visibleTransition(invisible);
-
-      @include response(md) {
         @include visibleTransition(visible);
-      }
+
+        @include response(sm) {
+            @include visibleTransition(invisible);
+        }
+
+        @include response(md) {
+            @include visibleTransition(visible);
+        }
     }
 
     &-nav {
         list-style-type: none;
     }
 
+    &.opened {
+        @extend .sidenav;
+        width: 100%;
+    }
+
+    @include response(sm) {
+        width: 80px;
+    }
+
     @include response(md) {
-      width: 145px;
+        width: 145px;
     }
 }
 
@@ -117,23 +141,38 @@ export default {
             color: color(tertiary);
             @include pseudoStyling(before, tertiary, 0.4, 2.3);
 
+            &::before {
+                background-color: transparent;
+
+                @include response(sm) {
+                    background-color: color(tertiary);
+                }
+            }
         }
 
         &-description {
-          display: none;
-          opacity: 0;
-          transition: opacity .1s linear;
+            transition: opacity .1s linear;
 
-          @include response(md) {
-            display: unset;
-            opacity: 1;
-          }
+            @include response(sm) {
+                opacity: 0;
+                display: none;
+            }
+
+            @include response(md) {
+                display: unset;
+                opacity: 1;
+            }
         }
     }
 
     &-divider {
+        display: none;
         border: .03rem solid lighten(color(secondary), 55%);
         margin: 0 .6rem;
+
+        @include response(sm) {
+            display: block;
+        }
     }
 }
 

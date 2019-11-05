@@ -1,7 +1,12 @@
 <template>
   <section class="wrapper d-flex h-100">
-    <SideNavBar />
+    <OwnerSideNavBar :nav-is-open="navIsOpen" />
     <section class="dish flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <h1 class="dish-title">
         餐點資訊
       </h1>
@@ -26,7 +31,8 @@
 </template>
 
 <script>
-import SideNavBar from '../components/Navbar/SideNavBar'
+import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishForm from '../components/OwnerDishForm'
 import ownerAPI from '../apis/owner'
@@ -34,7 +40,8 @@ import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    SideNavBar,
+    OwnerSideNavBar,
+    NavbarToggler,
     OwnerDishNavPill,
     OwnerDishForm
   },
@@ -46,7 +53,8 @@ export default {
         image: ''
       },
       isLoading: true,
-      isProcessing: false
+      isProcessing: false,
+      navIsOpen: false
     }
   },
   created () {
@@ -119,23 +127,10 @@ export default {
 }
 
 .dish {
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    overflow-y: scroll;
-    margin-left: 80px;
-    transition: margin-left .1s linear;
-
-    &-title {
-        size: size(lg);
-    }
+    @include controlPanelLayout;
 
     &-divider {
-        width: 100%;
         margin-top: 0;
-    }
-
-    @include response(md) {
-        margin-left: 145px;
     }
 }
 </style>
