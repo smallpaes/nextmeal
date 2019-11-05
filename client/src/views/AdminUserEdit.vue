@@ -31,58 +31,6 @@ import adminAPI from '../apis/admin'
 import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
 
-const dummyCategories = [
-  {
-    'id': 1,
-    'name': '中式料理',
-    'image': 'http://lorempixel.com/640/480',
-    'createdAt': '2019-10-30T15:05:17.000Z',
-    'updatedAt': '2019-10-30T15:05:17.000Z'
-  },
-  {
-    'id': 2,
-    'name': '日本料理',
-    'image': 'http://lorempixel.com/640/480',
-    'createdAt': '2019-10-30T15:05:17.000Z',
-    'updatedAt': '2019-10-30T15:05:17.000Z'
-  },
-  {
-    'id': 3,
-    'name': '義大利料理',
-    'image': 'http://lorempixel.com/640/480',
-    'createdAt': '2019-10-30T15:05:17.000Z',
-    'updatedAt': '2019-10-30T15:05:17.000Z'
-  },
-  {
-    'id': 4,
-    'name': '墨西哥料理',
-    'image': 'http://lorempixel.com/640/480',
-    'createdAt': '2019-10-30T15:05:17.000Z',
-    'updatedAt': '2019-10-30T15:05:17.000Z'
-  },
-  {
-    'id': 5,
-    'name': '素食料理',
-    'image': 'http://lorempixel.com/640/480',
-    'createdAt': '2019-10-30T15:05:17.000Z',
-    'updatedAt': '2019-10-30T15:05:17.000Z'
-  },
-  {
-    'id': 6,
-    'name': '美式料理',
-    'image': 'http://lorempixel.com/640/480',
-    'createdAt': '2019-10-30T15:05:17.000Z',
-    'updatedAt': '2019-10-30T15:05:17.000Z'
-  },
-  {
-    'id': 7,
-    'name': '複合式料理',
-    'image': 'http://lorempixel.com/640/480',
-    'createdAt': '2019-10-30T15:05:17.000Z',
-    'updatedAt': '2019-10-30T15:05:17.000Z'
-  }
-]
-
 export default {
   components: {
     AdminSideNavBar,
@@ -102,18 +50,8 @@ export default {
         lat: '',
         location: ''
       },
-      categories: dummyCategories,
-      roles: [
-        { id: 1,
-          name: 'Admin'
-        },
-        { id: 2,
-          name: 'Owner'
-        },
-        { id: 3,
-          name: 'User'
-        }
-      ],
+      categories: [],
+      roles: [],
       isLoading: true,
       isProcessing: false,
       navIsOpen: false
@@ -134,6 +72,7 @@ export default {
         this.user = {
           ...this.user,
           ...data.user,
+          dob: data.user.dob.slice(0, 10),
           image: data.user.avatar
         }
         this.categories = data.categories || this.categories

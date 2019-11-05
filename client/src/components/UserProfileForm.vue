@@ -120,6 +120,7 @@
       </div>
       <!--Role-->
       <CustomSelect
+        v-if="$route.name === 'admin-user-edit'"
         v-model="user.role"
         class="col-12 col-md"
         :options="roles"

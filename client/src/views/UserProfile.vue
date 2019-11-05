@@ -60,7 +60,7 @@ export default {
     this.fetchUser(userId)
   },
   methods: {
-    async fetchUser (userId = 19) {
+    async fetchUser (userId = 501) {
       try {
         // fetch data from API
         const { data, statusText } = await usersAPI.getProfile({ userId })
@@ -70,6 +70,7 @@ export default {
         this.user = {
           ...this.user,
           ...data.user,
+          dob: data.user.dob.slice(0, 10),
           image: data.user.avatar
         }
         this.categories = data.categories || this.categories
@@ -90,7 +91,7 @@ export default {
         // update processing status
         this.isProcessing = true
         // get user id
-        const { user_id: userId = 7 } = this.$route.params
+        const { user_id: userId = 501 } = this.$route.params
         // update profile
         const { data, statusText } = await usersAPI.putProfile({ userId, formData })
         // error handling
