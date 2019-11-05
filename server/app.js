@@ -12,6 +12,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 // routes
 require('./routes')(app)
+//cron job
+require('./config/cron')
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(__dirname + '/public/'))
