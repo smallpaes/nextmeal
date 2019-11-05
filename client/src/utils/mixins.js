@@ -37,6 +37,25 @@ export const dateTransformFilter = {
   }
 }
 
+export const padEndFilter = {
+  filters: {
+    padEnd (value) {
+      if (!value) return '-'
+      return value.toString().padEnd(3, '.0')
+    }
+  }
+}
+
+export const textTruncateFilter = {
+  filters: {
+    textTruncate (content) {
+      if (!content.length) return '無介紹'
+      if (content.length <= 50) return content
+      return `${content.slice(0, 50)}...`
+    }
+  }
+}
+
 export const getGeoMethods = {
   methods: {
     async getLocation (storeLocation) {

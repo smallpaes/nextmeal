@@ -13,18 +13,21 @@
         {{ restaurant.name }}
       </h5>
       <p class="card-text mt-1">
-        <span class="rating">&#9733; {{ restaurant.rating }}</span>
+        <span class="rating">&#9733; {{ restaurant.rating | padEnd }}</span>
         <span class="mx-1">|</span>{{ restaurant.Category.name }}
       </p>
       <p class="card-text">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora unde corporis aliquid eaque quas iste.
+        {{ restaurant.description | textTruncate }}
       </p>
     </div>
   </router-link>
 </template>
 
 <script>
+import { padEndFilter, textTruncateFilter } from '../utils/mixins'
+
 export default {
+  mixins: [padEndFilter, textTruncateFilter],
   props: {
     restaurant: {
       type: Object,
@@ -50,6 +53,11 @@ export default {
 
     &-body {
         padding: .8rem;
+        min-height: 125px;
+
+        @include response(md) {
+          min-height: 145px;
+        }
     }
 
     &-title {

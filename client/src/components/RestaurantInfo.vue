@@ -4,7 +4,7 @@
       {{ restaurant.name }}
     </h1>
     <p class="info-sub-title">
-      <span class="rating">&#9733; {{ restaurant.rating }}</span>
+      <span class="rating">&#9733; {{ restaurant.rating | padEnd }}</span>
       <span class="mx-2">|</span>
       {{ restaurant.Category.name }}
     </p>
@@ -16,7 +16,10 @@
 </template>
 
 <script>
+import { padEndFilter } from '../utils/mixins'
+
 export default {
+  mixins: [padEndFilter],
   props: {
     restaurant: {
       type: Object,
