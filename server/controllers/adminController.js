@@ -219,7 +219,6 @@ let adminController = {
       let end = moment.utc(date).endOf('day').toDate()
       // 如果 order_status 不是取消，就顯示非取消的 order, 預設為當日非取消的 order 
       let whereQuery = {
-        order_status: { [Op.notLike]: '取消' },
         require_date: { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_id) {
@@ -228,6 +227,10 @@ let adminController = {
       if (order_status && order_status === '取消') {
         whereQuery['order_status'] = { [Op.substring]: '取消' || '' }
       }
+      if (order_status && order_status === '未取消') {
+        whereQuery['order_status'] = { [Op.notLike]: '取消' }
+      }
+      console.log(whereQuery)
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let orders = await Order.findAndCountAll({
         where: whereQuery,
@@ -269,6 +272,8 @@ let adminController = {
         include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      let meal = await Meal.findByPk(order.meals[0].id)
+      if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist.' })
       if (order.order_status === '取消') {
         return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       }
@@ -278,7 +283,7 @@ let adminController = {
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
         where: {
-          UserId: order.UserId,
+          UserId: Number(order.UserId),
           payment_status: true,
           sub_expired_date: { [Op.gte]: start }
         },
@@ -291,12 +296,12 @@ let adminController = {
       order = await order.update({
         order_status: '取消'
       })
-      let meal = await Meal.findByPk(order.meals[0].dataValues.id)
       await meal.update({
         quantity: meal.quantity + order.amount
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }
