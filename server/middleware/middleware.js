@@ -247,7 +247,7 @@ let middleware = {
         attributes: [[sequelize.fn('avg', sequelize.col('rating')), 'average']]
       })
       await restaurant.update({
-        rating: comments[0].dataValues.average.toFixed(2) || 0
+        rating: comments[0].dataValues.average.toFixed(1) || 0
       })
       await order.update({
         hasComment: true
@@ -256,6 +256,12 @@ let middleware = {
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
+  },
+  stopOrder: (req, res, next) => {
+    const start = moment({hour: 23, minute: 58})
+    const end = moment({hour: 00, minute: 5})
+    if (moment() > start || moment() < end) return res.status(200).json({status:'success', message: 'Server is updating the information.'})
+    next()
   }
 }
 

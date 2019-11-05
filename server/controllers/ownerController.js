@@ -289,26 +289,25 @@ let ownerController = {
       if (today >= 6) {
         return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
-      //要修改的 meal
       let meal = await Meal.findByPk(req.body.id)
+      //要修改的 meal
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist' })
-      if (Number(req.body.quantity) > 0) {
-        // 如果有先更新成 false
-        let originNextWeeK = await Meal.findOne({
-          where: { nextServing: true },
-          include: [{ model: Restaurant, where: { id: meal.RestaurantId } }]
+      let originNextWeeK = await Meal.findOne({
+        where: { nextServing: true },
+        include: [{ model: Restaurant, where: { UserId: req.user.id } }]
+      })
+      // 如果有先更新成 false
+      if (originNextWeeK) {
+        originNextWeeK = await originNextWeeK.update({
+          nextServing: false
         })
-        if (originNextWeeK) {
-          await originNextWeeK.update({
-            nextServing: false
-          })
-        }
-        meal = await meal.update({
-          nextServing_quantity: req.body.quantity || meal.quantity,
-          nextServing: true
-        })
-        return res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
       }
+      meal = await Meal.findByPk(req.body.id)
+      meal = await meal.update({
+        nextServing_quantity: req.body.quantity || meal.quantity,
+        nextServing: true
+      })
+      return res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }

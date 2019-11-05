@@ -75,7 +75,6 @@ let userController = {
       //generate a token for the user
       const payload = { id: user.id }
       const token = jwt.sign(payload, process.env.JWT_SECRET)
-      
 
       return res.status(200).json({
         status: 'success', message: 'Successfully sign up', user: {
