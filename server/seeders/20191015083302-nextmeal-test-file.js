@@ -19,7 +19,7 @@ function createUsers(users) {
     const seedUser = {
       name: i === 0 ? 'root' : faker.name.findName(),
       email: i === 0 ? 'root@example.com' : `user${i}@example.com`,
-      password: bcrypt.hashSync('12345678', 10),
+      password: bcrypt.hashSync('Nextmeal!', 10),
       avatar: `https://i.pravatar.cc/400?img=${Math.floor(Math.random() * 70 + 1)}`,
       role: role,
       dob: faker.date.past(60, new Date(2001, 0, 1)),
