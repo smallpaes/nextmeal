@@ -1,35 +1,22 @@
 import { apiHelper } from '../utils/helpers'
-const getToken = () => localStorage.getItem('token')
 
 export default {
   getNewOrder () {
-    return apiHelper.get('/order/new', {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    })
+    return apiHelper.get('/order/new')
   },
   postNewOrder (formData) {
-    return apiHelper.post('/order/new', formData, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    })
+    return apiHelper.post('/order/new', formData)
   },
   getOrder ({ orderId }) {
-    return apiHelper.get(`/order/${orderId}`, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    })
+    return apiHelper.get(`/order/${orderId}`)
   },
   getEditOrder ({ orderId }) {
-    return apiHelper.get(`/order/${orderId}/edit`, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    })
+    return apiHelper.get(`/order/${orderId}/edit`)
   },
   putEditOrder ({ orderId, formData }) {
-    return apiHelper.put(`/order/${orderId}`, formData, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    })
+    return apiHelper.put(`/order/${orderId}`, formData)
   },
   putCancelOrder ({ orderId }) {
-    return apiHelper.put(`/order/${orderId}/cancel`, {}, {
-      headers: { Authorization: `Bearer ${getToken()}` }
-    })
+    return apiHelper.put(`/order/${orderId}/cancel`, {})
   }
 }
