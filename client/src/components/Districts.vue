@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row px-3">
     <router-link
       v-for="district in districts"
       :key="district.eng_name"

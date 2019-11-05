@@ -8,7 +8,7 @@
       />
     </header>
     <section class="popular">
-      <div class="container pt-3 pb-5">
+      <div class="container pt-3 pb-0 pb-md-5">
         <Header>
           <template v-slot:title>
             熱門餐廳
@@ -17,7 +17,7 @@
             嘗試最受歡迎的餐廳
           </template>
         </Header>
-        <RestaurantCarousel :popular-restaurants="popular_restaurants" />
+        <CustomCarousel :popular-restaurants="popular_restaurants" />
       </div>
     </section>
     <section class="restaurants">
@@ -30,7 +30,7 @@
             探索更多在地餐廳
           </template>
         </Header>
-        <div class="card-wrapper row">
+        <div class="card-wrapper row px-3">
           <div
             v-for="restaurant in more_restaurants.restaurants"
             :key="restaurant.id"
@@ -81,7 +81,7 @@
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import DropdownBanner from '../components/Banner/DropdownBanner'
-import RestaurantCarousel from '../components/RestaurantCarousel'
+import CustomCarousel from '../components/CustomCarousel'
 import RestaurantCard from '../components/RestaurantCard'
 import GMap from '../components/GMap'
 import Header from '../components/Header'
@@ -93,7 +93,7 @@ export default {
     Navbar,
     Footer,
     DropdownBanner,
-    RestaurantCarousel,
+    CustomCarousel,
     RestaurantCard,
     GMap,
     Header

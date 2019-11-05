@@ -1,6 +1,6 @@
 <template>
   <router-link
-    class="card col p-0 mx-2"
+    class="card col p-0"
     :to="{name: 'restaurant', params: {restaurant_id: restaurant.id}}"
   >
     <img

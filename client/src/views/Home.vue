@@ -21,7 +21,7 @@
       <OrderProcess @learn-more="handleLearMore" />
     </header>
     <section class="popular">
-      <div class="container pt-3 pb-5">
+      <div class="container pt-3 pb-0 pb-md-5">
         <div class="popular-heading">
           <h1 class="popular-heading-title">
             熱門餐廳
@@ -30,7 +30,7 @@
             嘗試最受歡迎的餐廳
           </p>
         </div>
-        <RestaurantCarousel :popular-restaurants="popularRestaurants" />
+        <CustomCarousel :popular-restaurants="popularRestaurants" />
       </div>
     </section>
     <section class="districts">
@@ -55,7 +55,7 @@
 import Navbar from '../components/Navbar'
 import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import OrderProcess from '../components/OrderProcess'
-import RestaurantCarousel from '../components/RestaurantCarousel'
+import CustomCarousel from '../components/CustomCarousel'
 import Districts from '../components/Districts'
 import Questions from '../components/Questions'
 import Footer from '../components/Footer'
@@ -68,7 +68,7 @@ export default {
     Navbar,
     ImageHeaderBanner,
     OrderProcess,
-    RestaurantCarousel,
+    CustomCarousel,
     Districts,
     Questions,
     Footer
