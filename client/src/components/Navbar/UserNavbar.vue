@@ -7,7 +7,7 @@
       NextMeal
     </router-link>
     <button
-      class="navbar-toggler"
+      class="navbar-toggler border-0"
       type="button"
       data-toggle="collapse"
       data-target="#navbarContent"
@@ -57,7 +57,7 @@
               購買方案
             </router-link>
           </li>
-          <li class="nav-item dropdown ml-3">
+          <li class="nav-item dropdown ml-0 ml-sm-3">
             <a
               id="navbarDropdownMenuLink"
               class="dropdown-toggle p-0"
@@ -110,7 +110,7 @@
             </router-link>
           </li>
           <li
-            class="nav-item  ml-3"
+            class="nav-item ml-0 ml-sm-3"
           >
             <a
               class="nav-link px-1"
@@ -164,7 +164,7 @@ export default {
 
 .nav {
     &-link {
-        @include buttonAnimation;
+        text-align: center;
         color:lighten(color(secondary), 20%);
         transition: color .2s linear;
 
@@ -174,6 +174,11 @@ export default {
 
         &:hover {
             color: color(secondary);
+            font-weight: weight(bold);
+        }
+
+        @include response(sm) {
+            @include buttonAnimation;
         }
     }
 }
