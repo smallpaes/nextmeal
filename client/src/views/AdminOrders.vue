@@ -81,7 +81,7 @@ export default {
   },
   created () {
     const { order_id: orderId, order_status: orderStatus, date } = this.$route.query
-    this.currentFilterOption = orderStatus || '未取消'
+    this.currentFilterOption = orderStatus || ''
     this.currentDate = date || moment().format('YYYY-MM-DD')
     this.currentSearchInput = orderId || ''
     this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage + 1)
@@ -92,7 +92,7 @@ export default {
     // clear existing data
     this.orders = []
     const { order_id: orderId, order_status: orderStatus, date } = to.query
-    this.currentFilterOption = orderStatus || '未取消'
+    this.currentFilterOption = orderStatus || ''
     this.currentDate = date || moment().format('YYYY-MM-DD')
     this.currentSearchInput = orderId || ''
     this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage + 1)

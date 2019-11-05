@@ -48,10 +48,10 @@ export const padEndFilter = {
 
 export const textTruncateFilter = {
   filters: {
-    textTruncate (content) {
+    textTruncate (content, textLength = 50) {
       if (!content.length) return '無介紹'
-      if (content.length <= 50) return content
-      return `${content.slice(0, 50)}...`
+      if (content.length <= textLength) return content
+      return `${content.slice(0, textLength)}...`
     }
   }
 }
