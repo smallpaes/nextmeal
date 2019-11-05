@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const ownerController = require('../controllers/ownerController.js')
-const { validRestaurantForm, validMenuForm, validDishForm, validMessage } = require('../middleware/middleware')
+const { validRestaurantForm, validMenuForm, validDishForm, validMessage, stopOrder } = require('../middleware/middleware')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 
@@ -19,7 +19,7 @@ router.delete('/dishes/:dish_id', ownerController.deleteDish)
 
 // owner meun
 router.get('/menu', ownerController.getMenu)
-router.put('/menu', validMenuForm, ownerController.putMenu)
+router.put('/menu', stopOrder, validMenuForm, ownerController.putMenu)
 
 router.get('/orders', ownerController.getOrders)
 

@@ -255,6 +255,12 @@ let middleware = {
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
+  },
+  stopOrder: (req, res, next) => {
+    const start = moment({hour: 23, minute: 58})
+    const end = moment({hour: 00, minute: 5})
+    if (moment() > start || moment() < end) return res.status(200).json({status:'success', message: 'Server is updating the information.'})
+    next()
   }
 }
 
