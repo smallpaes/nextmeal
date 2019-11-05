@@ -257,6 +257,8 @@ let adminController = {
         include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
+      let meal = await Meal.findByPk(order.meals[0].id)
+      if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist.' })
       if (order.order_status === '取消') {
         return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
       }
@@ -266,7 +268,7 @@ let adminController = {
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
         where: {
-          UserId: order.UserId,
+          UserId: Number(order.UserId),
           payment_status: true,
           sub_expired_date: { [Op.gte]: start }
         },
@@ -279,12 +281,12 @@ let adminController = {
       order = await order.update({
         order_status: '取消'
       })
-      let meal = await Meal.findByPk(order.meals[0].dataValues.id)
       await meal.update({
         quantity: meal.quantity + order.amount 
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }

@@ -207,17 +207,17 @@ module.exports = {
     await queryInterface.bulkInsert("Comments", commentRest, {});
     // add subscriptions
     return queryInterface.bulkInsert("Subscriptions",
-      Array.from({ length: 1 }).map((item, index) => (
+      Array.from({ length: users.length - stores.length + 1}).map((item, index) => (
         {
-          UserId: index + 1,
+          UserId: index < 3 ? index + 1 : index + stores.length,
           sub_name: '輕量型',
           sub_price: 1000,
           sub_description: '一個月10餐',
           sub_balance: 10,
-          sub_date: index < 3 ? new Date() : null,
-          sub_expired_date: index < 3 ? moment().add(30, 'days').endOf('day').toDate() : null,
-          payment_status: index < 3 ? true : false,
-          sn: index < 3 ? Date.now() + index : null,
+          sub_date: new Date(),
+          sub_expired_date: moment().add(30, 'days').endOf('day').toDate(),
+          payment_status: true,
+          sn: Date.now() + index,
           createdAt: new Date(),
           updatedAt: new Date()
         }))
