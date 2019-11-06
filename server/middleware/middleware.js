@@ -127,9 +127,9 @@ let middleware = {
     check('location')
       .not().isEmpty().withMessage('can not find the location'),
     check('lat')
-      .isFloat({ min: -90, max: 90 }).withMessage('Latitudes should be between 1-50'),
+      .isFloat({ min: -90, max: 90 }).withMessage('Latitudes should be between -90 and 90'),
     check('lng')
-      .isFloat({ min: -180, max: 180 }).withMessage('Longitudes should be between 1-50')
+      .isFloat({ min: -180, max: 180 }).withMessage('Longitudes should be between -180 and 180')
   ],
   validMessage: (req, res, next) => {
     const errors = validationResult(req)
