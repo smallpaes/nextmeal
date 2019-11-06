@@ -7,51 +7,57 @@
       />
     </header>
     <Loader v-if="isLoading" />
-    <template v-else>
-      <div
-        class="info bg-white"
+    <transition name="slide">
+      <section
+        v-if="!isLoading"
+        class="restaurant-container-bottom"
       >
-        <div class="info-container container pt-4 pb-3">
-          <Breadcrumb
-            :restaurant="restaurant"
-          />
-          <RestaurantInfo :restaurant="restaurant" />
-        </div>
-      </div>
-      <section class="comments">
-        <div class="comments-wrapper container py-5">
-          <h3 class="comments-heading">
-            評論({{ comments.rows.length }})
-          </h3>
-          <div class="row mt-5">
-            <CommentMedia
-              v-for="comment in comments.rows"
-              :key="comment.id"
-              :comment="comment"
-              class="col-12 col-md-10 col-lg-8 py-2"
+        <div
+          class="info bg-white"
+        >
+          <div class="info-container container pt-4 pb-3">
+            <Breadcrumb :restaurant="restaurant" />
+            <RestaurantInfo
+              :restaurant="restaurant"
+              :is-loading="isLoading"
             />
-            <div
-              v-if="totalPage > 0 && currentPage !== totalPage"
-              class="btn-container col-12 col-md-10 col-lg-8 py-2"
-            >
-              <button
-                class="btn mt-3"
-                href="#"
-                @click="fetchRestaurant(restaurant.id, currentPage + 1)"
-              >
-                瀏覽更多
-              </button>
-            </div>
-            <div
-              v-else
-              class="col-12 col-md-10 col-lg-8 py-2 placeholder-message"
-            >
-              <i class="fas fa-ice-cream" />目前還沒有評論
-            </div>
           </div>
         </div>
+        <section class="comments">
+          <div class="comments-wrapper container py-5">
+            <h3 class="comments-heading">
+              評論({{ comments.rows.length }})
+            </h3>
+            <div class="row mt-5">
+              <CommentMedia
+                v-for="comment in comments.rows"
+                :key="comment.id"
+                :comment="comment"
+                class="col-12 col-md-10 col-lg-8 py-2"
+              />
+              <div
+                v-if="totalPage > 0 && currentPage !== totalPage"
+                class="btn-container col-12 col-md-10 col-lg-8 py-2"
+              >
+                <button
+                  class="btn mt-3"
+                  href="#"
+                  @click="fetchRestaurant(restaurant.id, currentPage + 1)"
+                >
+                  瀏覽更多
+                </button>
+              </div>
+              <div
+                v-if="comments.rows.length === 0"
+                class="col-12 col-md-10 col-lg-8 py-2 placeholder-message"
+              >
+                <i class="fas fa-ice-cream" />目前還沒有評論
+              </div>
+            </div>
+          </div>
+        </section>
       </section>
-    </template>
+    </transition>
     <Footer />
   </section>
 </template>
@@ -145,6 +151,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .restaurant {
     &-container {
         display: flex;

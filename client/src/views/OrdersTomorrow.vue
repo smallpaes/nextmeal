@@ -103,7 +103,7 @@ export default {
     return {
       banner: {
         image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-        height: 450
+        height: 550
       },
       lunch: {
         indicator: '午',

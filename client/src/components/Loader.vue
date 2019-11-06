@@ -1,5 +1,5 @@
 <template>
-  <div class="icecream-container p-3">
+  <div class="icecream-container py-5">
     <h1
       v-for="i in 3"
       :key="i"
@@ -13,7 +13,7 @@
   </div>
 </template>
 
-,<style lang="scss" scoped>
+<style lang="scss" scoped>
 .icecream {
     animation: jumping 1.2s linear infinite;
 

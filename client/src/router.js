@@ -226,8 +226,14 @@ router.beforeEach(async (to, from, next) => {
     isAuthenticated = await store.dispatch('fetchCurrentUser')
   }
 
+  // if user is authenticated redirect to respected page
+  if (isAuthenticated && (to.name === 'login' || to.name === 'signup')) {
+    const routeName = store.getters.controlPanelRouteName
+    next(routeName)
+  }
+
   // declare routes without authentication
-  const pathWithoutAuth = ['home', 'restaurants', 'restaurant', 'not-found']
+  const pathWithoutAuth = ['signup', 'home', 'restaurants', 'restaurant', 'not-found']
   if (pathWithoutAuth.includes(to.name)) {
     next()
     return
@@ -237,12 +243,6 @@ router.beforeEach(async (to, from, next) => {
   if (!isAuthenticated && to.name !== 'login') {
     next('/login')
     return
-  }
-
-  // if user is authenticated redirect to respected page
-  if (isAuthenticated && (to.name === 'login' || to.name === 'signup')) {
-    const routeName = store.getters.controlPanelRouteName
-    next(routeName)
   }
 
   next()
