@@ -215,7 +215,6 @@ let adminController = {
       if (order_status && order_status === '未取消') {
         whereQuery['order_status'] = { [Op.notLike]: '取消' }
       }
-      console.log(whereQuery)
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let orders = await Order.findAndCountAll({
         where: whereQuery,
@@ -231,7 +230,7 @@ let adminController = {
           customQuery.char.date,
           customQuery.char.time
         ],
-        order: [['require_date', 'ASC']],
+        order: [['require_date', 'ASC'], ['id', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
