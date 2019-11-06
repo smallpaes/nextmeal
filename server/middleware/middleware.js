@@ -117,9 +117,9 @@ let middleware = {
     check('location')
       .not().isEmpty().withMessage('can not find the location'),
     check('lat')
-      .isFloat({ min: -90, max: 90 }).withMessage('Latitudes should be between 1-50'),
+      .isFloat({ min: -90, max: 90 }).withMessage('Latitudes should be between -90 and 90'),
     check('lng')
-      .isFloat({ min: -180, max: 180 }).withMessage('Longitudes should be between 1-50')
+      .isFloat({ min: -180, max: 180 }).withMessage('Longitudes should be between -180 and 180')
   ],
   validMessage: (req, res, next) => {
     const errors = validationResult(req)
@@ -257,9 +257,9 @@ let middleware = {
     }
   },
   stopOrder: (req, res, next) => {
-    const start = moment({hour: 23, minute: 58})
-    const end = moment({hour: 00, minute: 5})
-    if (moment() > start || moment() < end) return res.status(200).json({status:'success', message: 'Server is updating the information.'})
+    const start = moment({ hour: 23, minute: 58 })
+    const end = moment({ hour: 00, minute: 5 })
+    if (moment() > start || moment() < end) return res.status(200).json({ status: 'success', message: 'Server is updating the information.' })
     next()
   }
 }

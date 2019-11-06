@@ -237,11 +237,11 @@ let userController = {
 
   getProfile: async (req, res) => {
     try {
-      if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
-      }
+      // if (req.user.id !== Number(req.params.user_id)) {
+      //   return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
+      // }
       const categories = await Category.findAll()
-      const user = await User.findByPk(req.params.user_id, {
+      const user = await User.findByPk(req.user.id, {
         attributes: {
           exclude: ['password']
         }
@@ -253,18 +253,25 @@ let userController = {
   },
   putProfile: async (req, res) => {
     try {
-      if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
-        return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
-      }
+      // if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
+      //   return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
+      // }
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
-      let user = await User.findByPk(req.params.user_id)
+      let user = await User.findByPk(req.user.id)
       const { file } = req
       // 如果上有照片
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
         imgur.upload(file.path, async (err, img) => {
           await user.update({
-            ...req.body,
+            name: req.body.name,
+            email: req.body.email,
+            address: req.body.address,
+            dob: req.body.dob,
+            prefer: req.body.prefer,
+            lat: req.body.lat,
+            lng: req.body.lng,
+            location: req.body.location,
             avatar: file ? img.data.link : user.avatar,
             geometry: point
           })
@@ -276,7 +283,14 @@ let userController = {
       } else {
         // 如果沒上傳照片
         await user.update({
-          ...req.body,
+          name: req.body.name,
+          email: req.body.email,
+          address: req.body.address,
+          dob: req.body.dob,
+          prefer: req.body.prefer,
+          lat: req.body.lat,
+          lng: req.body.lng,
+          location: req.body.location,
           geometry: point,
         })
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })

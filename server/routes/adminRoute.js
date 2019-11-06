@@ -15,6 +15,7 @@ router.delete('/restaurants/:restaurant_id', adminController.deleteRestaurant)
 
 router.get('/users', adminController.getUsers)
 router.get('/users/:user_id', adminController.getUser)
+router.put('/users/:user_id', adminController.getUser)
 router.delete('/users/:user_id', adminController.deleteUser)
 
 router.get('/orders', adminController.getOrders)
