@@ -4,6 +4,7 @@ const router = express.Router()
 const { validRestaurantForm, validMessage, stopOrder } = require('../middleware/middleware')
 
 const adminController = require('../controllers/adminController.js')
+const userController = require('../controllers/userController')
 const multer = require('multer')
 const upload = multer({ dest: 'temp/' })
 
@@ -15,6 +16,7 @@ router.delete('/restaurants/:restaurant_id', adminController.deleteRestaurant)
 
 router.get('/users', adminController.getUsers)
 router.get('/users/:user_id', adminController.getUser)
+router.put('/users/:user_id', userController.putProfile)
 router.delete('/users/:user_id', adminController.deleteUser)
 
 router.get('/orders', adminController.getOrders)

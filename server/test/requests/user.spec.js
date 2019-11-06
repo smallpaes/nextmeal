@@ -218,6 +218,7 @@ describe('# User: request', () => {
         this.getUser.restore();
         await db.Subscription.destroy({ where: {}, truncate: true })
         await db.Meal.destroy({ where: {}, truncate: true })
+        await db.User.destroy({ where: {}, truncate: true })
         await db.Restaurant.destroy({ where: {}, truncate: true })
         await db.OrderItem.destroy({ where: {}, truncate: true })
         await db.Order.destroy({ where: {}, truncate: true })
