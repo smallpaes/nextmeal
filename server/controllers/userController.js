@@ -396,7 +396,7 @@ let userController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (orders.rows.length === 0) return res.status(400).json({ status: 'error', message: 'Can not found any order.' })
+      if (orders.rows.length === 0) return res.status(200).json({ status: 'success', orders: [], message: 'Cannot find any order.' })
       let count = orders.count
       orders = orders.rows.map(order => ({
         ...order.dataValues,
