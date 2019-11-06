@@ -128,7 +128,6 @@ let orderController = {
       if (Number(req.user.id) !== Number(order.UserId)) return res.status(400).json({ status: 'error', order, message: 'you are not allow do this action' })
       return res.status(200).json({ status: 'success', order, message: 'Successfully get the Order' })
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -143,8 +142,7 @@ let orderController = {
           payment_status: true,
           sub_expired_date: { [Op.gte]: start },
         },
-        order: [['sub_expired_date', 'DESC']],
-        limit: 1
+        order: [['sub_expired_date', 'DESC']]
       })
       if (!subscription) return res.status(400).json({ status: 'error', subscription, message: 'you are not authorized to do that' })
       // 取得訂單
@@ -176,7 +174,6 @@ let orderController = {
         message: 'Successfully edit Order information.'
       })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
