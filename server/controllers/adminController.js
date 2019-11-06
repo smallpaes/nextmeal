@@ -45,6 +45,7 @@ let adminController = {
         order: [['rating', 'DESC'], ['id', 'DESC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
+        subQuery: false,
         distinct: true
       })
       const count = restaurants.count
