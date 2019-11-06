@@ -1,5 +1,6 @@
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const URL = process.env.URL
 
 const db = require('../models')
 const Subscription = db.Subscription
@@ -126,7 +127,7 @@ let userController = {
       })
 
     } catch (error) {
-      res.json({ status: 'error', message: error })
+      return res.json({ status: 'error', message: error })
     }
 
   },
@@ -194,7 +195,6 @@ let userController = {
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -228,7 +228,8 @@ let userController = {
           })
           await sendEmail(req, res, subscription, data)
         }
-        return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
+        return res.redirect(`${URL}/users/orders/tomorrow/`)
+        // return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
       }
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
