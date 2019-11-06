@@ -37,6 +37,7 @@ export default {
 
     &-container {
         margin-top: 62px;
+        @include setBackground("../../assets/placeholder-image/plain/1260x750.png", 550px);
     }
 
     &-img {

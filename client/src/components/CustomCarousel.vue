@@ -7,8 +7,24 @@
     :pagination-active-color="'#777371'"
     :speed="600"
   >
+    <!--Show placeholder while loading-->
+    <template v-if="isLoading">
+      <slide
+        v-for="index in 6"
+        :key="index"
+      >
+        <div class="px-2">
+          <RestaurantCard
+            :is-loading="isLoading"
+            class="mx-0"
+          />
+        </div>
+      </slide>
+    </template>
+    <!--Show real data when data is loaded-->
     <slide
       v-for="restaurant in popularRestaurants"
+      v-else
       :key="restaurant.id"
     >
       <div class="px-2">
@@ -36,6 +52,10 @@ export default {
     popularRestaurants: {
       type: Array,
       required: true
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   }
 }

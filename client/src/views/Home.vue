@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!isLoading">
+  <section>
     <header>
       <UserNavbar />
       <ImageHeaderBanner :background-photo="bannerImage">
@@ -30,7 +30,10 @@
             嘗試最受歡迎的餐廳
           </p>
         </div>
-        <CustomCarousel :popular-restaurants="popularRestaurants" />
+        <CustomCarousel
+          :is-loading="isLoading"
+          :popular-restaurants="popularRestaurants"
+        />
       </div>
     </section>
     <section class="districts">
@@ -43,7 +46,10 @@
             探索各地區熱門美食
           </p>
         </div>
-        <Districts :districts="districts" />
+        <Districts
+          :districts="districts"
+          :is-loading="isLoading"
+        />
       </div>
     </section>
     <Questions ref="question" />

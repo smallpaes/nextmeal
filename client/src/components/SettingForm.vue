@@ -4,115 +4,123 @@
     novalidate
     @submit.prevent.stop="getLocation('user')"
   >
-    <!--Input data-->
-    <div
-      v-if="!showMap"
-      class="form-content-top rounded-top"
+    <transition
+      appear
+      mode="out-in"
+      name="fade"
     >
-      <div class="form-content-top-header mb-4">
-        <h3>
-          設定
-        </h3>
-        <h5>
-          完成偏好設定以獲得更好體驗
-        </h5>
-      </div>
-      <!--Show alert section-->
+      <!--Input data-->
       <div
-        v-if="warningMessage"
-        class="alert mb-0 pt-0"
-        role="alert"
+        v-if="!showMap"
+        key="basic"
+        class="form-content-top rounded-top"
       >
-        {{ warningMessage }}
-      </div>
-      <div
-        class="form-group form-address-group"
-        :class="{invalid: $v.user.address.$error}"
-      >
-        <input
-          id="address"
-          v-model="user.address"
-          type="text"
-          class="form-control"
-          placeholder="預設所在地址"
-          autofocus
-          required
-          @blur="$v.user.address.$touch()"
+        <div class="form-content-top-header mb-4">
+          <h3>
+            設定
+          </h3>
+          <h5>
+            完成偏好設定以獲得更好體驗
+          </h5>
+        </div>
+        <!--Show alert section-->
+        <div
+          v-if="warningMessage"
+          class="alert mb-0 pt-0"
+          role="alert"
         >
-        <small
-          v-if="$v.user.address.$error"
-          class="form-text"
-        >地址必填</small>
-        <small
-          v-if="validationMsg.address"
-          class="form-text"
-        >{{ validationMsg.address }}</small>
-      </div>
-      <!--Prefer-->
-      <CustomSelect
-        v-model="user.prefer"
-        class="p-0"
-        :options="categories"
-        :v="$v.user.prefer"
-        :target="'name'"
-      >
-        <template v-slot:option>
-          偏好餐廳類別
-        </template>
-        <template v-slot:invalid>
-          請選擇一種偏好餐廳類別
-        </template>
-      </CustomSelect>
-      <!--dob-->
-      <CustomDatePicker
-        v-model="user.dob"
-        :has-label="false"
-        :v="$v.user.dob"
-        :placeholder="'選擇出生年月日'"
-      />
-      <div class="btn-container text-center">
-        <button
-          class="btn mt-1"
-          type="submit"
-          :disabled="isProcessing || $v.$invalid"
+          {{ warningMessage }}
+        </div>
+        <div
+          class="form-group form-address-group"
+          :class="{invalid: $v.user.address.$error}"
         >
-          送出
-        </button>
+          <input
+            id="address"
+            v-model="user.address"
+            type="text"
+            class="form-control"
+            placeholder="預設所在地址"
+            autofocus
+            required
+            @blur="$v.user.address.$touch()"
+          >
+          <small
+            v-if="$v.user.address.$error"
+            class="form-text"
+          >地址必填</small>
+          <small
+            v-if="validationMsg.address"
+            class="form-text"
+          >{{ validationMsg.address }}</small>
+        </div>
+        <!--Prefer-->
+        <CustomSelect
+          v-model="user.prefer"
+          class="p-0"
+          :options="categories"
+          :v="$v.user.prefer"
+          :target="'name'"
+        >
+          <template v-slot:option>
+            偏好餐廳類別
+          </template>
+          <template v-slot:invalid>
+            請選擇一種偏好餐廳類別
+          </template>
+        </CustomSelect>
+        <!--dob-->
+        <CustomDatePicker
+          v-model="user.dob"
+          :has-label="false"
+          :v="$v.user.dob"
+          :placeholder="'選擇出生年月日'"
+        />
+        <div class="btn-container text-center">
+          <button
+            class="btn mt-1"
+            type="submit"
+            :disabled="isProcessing || $v.$invalid"
+          >
+            送出
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!--Map sidplay section-->
-    <div
-      v-if="showMap"
-      class="form-content-top rounded-top"
-    >
-      <GMap
-        :center="{lat: user.lat, lng: user.lng}"
-        :street-view-control="false"
-        :locations="[user]"
-        :map-type-control="false"
-        :fullscreen-control="true"
-        :zoom-control="true"
-        :zoom="18"
-        class="shadow-sm rounded-sm"
-      />
-      <div class="form-buttons d-flex justify-content-center mt-3">
-        <button
-          class="btn btn-update"
-          :disabled="isProcessing"
-          @click.stop.prevent="handleSubmit"
-        >
-          位置正確
-        </button>
-        <button
-          class="btn ml-2"
-          :disabled="isProcessing || $v.$invalid"
-          @click.prevent.stop="showMap = false"
-        >
-          修改地址
-        </button>
+      <!--Map sidplay section-->
+      <div
+        v-if="showMap"
+        key="map"
+        class="form-content-top rounded-top"
+      >
+        <GMap
+          :center="{lat: user.lat, lng: user.lng}"
+          :street-view-control="false"
+          :locations="[user]"
+          :map-type-control="false"
+          :fullscreen-control="true"
+          :zoom-control="true"
+          :zoom="18"
+          class="shadow-sm rounded-sm"
+        />
+        <div class="form-buttons d-flex justify-content-center mt-3">
+          <button
+            class="btn btn-update"
+            :disabled="isProcessing"
+            @click.stop.prevent="handleSubmit"
+          >
+            位置正確
+          </button>
+          <button
+            class="btn ml-2"
+            :disabled="isProcessing || $v.$invalid"
+            @click.prevent.stop="showMap = false"
+          >
+            修改地址
+          </button>
+        </div>
       </div>
-    </div>
+    </transition>
   </form>
 </template>
 
@@ -203,6 +211,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include fadeAnimation;
+
 /deep/ .google-map {
   width: 100%;
   height: 400px;

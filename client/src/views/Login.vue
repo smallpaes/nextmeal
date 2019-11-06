@@ -1,81 +1,86 @@
 <template>
   <section class="login">
     <TopLogoNavbar />
-    <form
-      class="form-content needs-validation rounded"
-      novalidate
-      @submit.prevent.stop="handleSubmit"
+    <transition
+      appear
+      name="slide"
     >
-      <div class="form-content-top rounded-top">
-        <div class="form-content-top-header mb-4">
-          <h3>
-            登入
-          </h3>
-          <h5>
-            透過您的 NextMeal 帳號登入
-          </h5>
-        </div>
-        <div
-          class="form-group"
-          :class="{invalid: $v.email.$error}"
-        >
-          <input
-            id="email"
-            v-model="email"
-            type="email"
-            class="form-control"
-            placeholder="電子信箱"
-            required
-            @blur="$v.email.$touch()"
+      <form
+        class="form-content needs-validation rounded"
+        novalidate
+        @submit.prevent.stop="handleSubmit"
+      >
+        <div class="form-content-top rounded-top">
+          <div class="form-content-top-header mb-4">
+            <h3>
+              登入
+            </h3>
+            <h5>
+              透過您的 NextMeal 帳號登入
+            </h5>
+          </div>
+          <div
+            class="form-group"
+            :class="{invalid: $v.email.$error}"
           >
-          <small
-            v-if="!$v.email.email && $v.email.$dirty"
-            class="form-text"
-          >請輸入格式正確的電子信箱</small>
-          <small
-            v-if="!$v.email.required && $v.email.$dirty"
-            class="form-text"
-          >電子信箱必填</small>
-        </div>
-        <div
-          class="form-group"
-          :class="{invalid: $v.password.$error}"
-        >
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            class="form-control"
-            placeholder="密碼"
-            minlength="8"
-            maxlength="12"
-            required
-            @blur="$v.password.$touch()"
+            <input
+              id="email"
+              v-model="email"
+              type="email"
+              class="form-control"
+              placeholder="電子信箱"
+              required
+              @blur="$v.email.$touch()"
+            >
+            <small
+              v-if="!$v.email.email && $v.email.$dirty"
+              class="form-text"
+            >請輸入格式正確的電子信箱</small>
+            <small
+              v-if="!$v.email.required && $v.email.$dirty"
+              class="form-text"
+            >電子信箱必填</small>
+          </div>
+          <div
+            class="form-group"
+            :class="{invalid: $v.password.$error}"
           >
-          <small
-            v-if="$v.password.$error"
-            class="form-text"
-          >密碼 8-12 位，需包大小寫字母與至少一個符號</small>
+            <input
+              id="password"
+              v-model="password"
+              type="password"
+              class="form-control"
+              placeholder="密碼"
+              minlength="8"
+              maxlength="12"
+              required
+              @blur="$v.password.$touch()"
+            >
+            <small
+              v-if="$v.password.$error"
+              class="form-text"
+            >密碼 8-12 位，需包大小寫字母與至少一個符號</small>
+          </div>
+          <div class="btn-container text-center">
+            <button
+              type="submit"
+              class="btn mt-1"
+              :disabled="isProcessing || $v.$invalid"
+            >
+              登入
+            </button>
+          </div>
         </div>
-        <div class="btn-container text-center">
-          <button
-            type="submit"
-            class="btn mt-1"
-            :disabled="isProcessing || $v.$invalid"
-          >
-            登入
-          </button>
+        <div class="form-content-bottom rounded-bottom d-flex">
+          <p class="text-left m-0 mr-3">
+            現在就前往體驗 NextMeal
+          </p>
+          <router-link :to="{name: 'signup'}">
+            註冊
+          </router-link>
         </div>
-      </div>
-      <div class="form-content-bottom rounded-bottom d-flex">
-        <p class="text-left m-0 mr-3">
-          現在就前往體驗 NextMeal
-        </p>
-        <router-link :to="{name: 'signup'}">
-          註冊
-        </router-link>
-      </div>
-    </form>
+      </form>
+    </transition>
   </section>
 </template>
 
@@ -159,6 +164,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .login {
     @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
     overflow-y: scroll;

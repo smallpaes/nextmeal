@@ -3,6 +3,7 @@
     <header>
       <UserNavbar />
       <DropdownBanner
+        :is-loading="isLoading"
         :districts="districts"
         :current-district="currentDistrict"
       />
@@ -17,7 +18,10 @@
             嘗試最受歡迎的餐廳
           </template>
         </Header>
-        <CustomCarousel :popular-restaurants="popular_restaurants" />
+        <CustomCarousel
+          :is-loading="isLoading"
+          :popular-restaurants="popular_restaurants"
+        />
       </div>
     </section>
     <section class="restaurants">
@@ -31,15 +35,28 @@
           </template>
         </Header>
         <div class="card-wrapper row px-3">
+          <template v-if="isLoading">
+            <div
+              v-for="index in 6"
+              :key="index"
+              class="col-12 col-md-6 col-lg-4 p-2"
+            >
+              <RestaurantCard :is-loading="isLoading" />
+            </div>
+          </template>
           <div
             v-for="restaurant in more_restaurants.restaurants"
+            v-else
             :key="restaurant.id"
             class="col-12 col-md-6 col-lg-4 p-2"
           >
             <RestaurantCard :restaurant="restaurant" />
           </div>
         </div>
-        <div class="btn-container">
+        <div
+          v-if="!isLoading"
+          class="btn-container"
+        >
           <button
             v-if="currentPage !== totalPage"
             class="btn mt-3"
@@ -61,8 +78,13 @@
             探索最近的美食地圖
           </template>
         </Header>
+        <SkelentonBox
+          v-if="isLoading"
+          :width="'100%'"
+          :height="'400px'"
+        />
         <GMap
-          v-if="!isLoading"
+          v-else
           :center="{lat: parseFloat(map.center.lat), lng: parseFloat(map.center.lng)}"
           :locations="map.restaurants"
           :street-view-control="false"
@@ -86,6 +108,7 @@ import RestaurantCard from '../components/RestaurantCard'
 import GMap from '../components/GMap'
 import Header from '../components/Header'
 import restaurantsAPI from '../apis/restaurants'
+import SkelentonBox from '../components/Placeholder/SkeletonBox'
 import { Toast } from '../utils/helpers'
 
 export default {
@@ -96,7 +119,8 @@ export default {
     CustomCarousel,
     RestaurantCard,
     GMap,
-    Header
+    Header,
+    SkelentonBox
   },
   data () {
     return {
@@ -122,6 +146,8 @@ export default {
     this.currentPage = 0
     // Clear existing restaurants
     this.more_restaurants.restaurants = []
+    // clear districts
+    this.districts = []
     // Get the district name
     const { dist } = to.query
     this.currentDistrict = dist || '信義區'
@@ -152,7 +178,6 @@ export default {
         this.currentPage += 1
         this.isLoading = false
       } catch (error) {
-        console.log(error.message)
         // update loading status
         this.isLoading = false
         // fire error messages

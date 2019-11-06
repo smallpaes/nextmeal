@@ -1,16 +1,24 @@
 <template>
   <section class="signup">
     <TopLogoNavbar />
-    <SignupForm
-      v-if="isSigningUp"
-      @after-signup="handleAfterSignup"
-    />
-    <SettingForm
-      v-else
-      :categories="categories"
-      :initial-processing="isProcessing"
-      @after-setting="handleAfterSetting"
-    />
+    <transition
+      name="slide"
+      appear
+      mode="out-in"
+    >
+      <SignupForm
+        v-if="isSigningUp"
+        key="signup"
+        @after-signup="handleAfterSignup"
+      />
+      <SettingForm
+        v-else
+        key="setting"
+        :categories="categories"
+        :initial-processing="isProcessing"
+        @after-setting="handleAfterSetting"
+      />
+    </transition>
   </section>
 </template>
 
@@ -109,6 +117,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .signup {
     @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
     overflow-y: scroll;

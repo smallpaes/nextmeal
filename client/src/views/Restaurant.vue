@@ -1,52 +1,57 @@
 <template>
-  <section>
+  <section class="restaurant-container">
     <header>
       <UserNavbar />
       <ImageBanner
         :background-photo="restaurant.image"
       />
     </header>
-    <div class="info bg-white">
-      <div class="info-container container pt-4 pb-3">
-        <Breadcrumb
-          :restaurant="restaurant"
-        />
-        <RestaurantInfo :restaurant="restaurant" />
-      </div>
-    </div>
-    <section class="comments">
-      <div class="comments-wrapper container py-5">
-        <h3 class="comments-heading">
-          評論({{ comments.rows.length }})
-        </h3>
-        <div class="row mt-5">
-          <CommentMedia
-            v-for="comment in comments.rows"
-            :key="comment.id"
-            :comment="comment"
-            class="col-12 col-md-10 col-lg-8 py-2"
+    <Loader v-if="isLoading" />
+    <template v-else>
+      <div
+        class="info bg-white"
+      >
+        <div class="info-container container pt-4 pb-3">
+          <Breadcrumb
+            :restaurant="restaurant"
           />
-          <div
-            v-if="totalPage > 0 && currentPage !== totalPage"
-            class="btn-container col-12 col-md-10 col-lg-8 py-2"
-          >
-            <button
-              class="btn mt-3"
-              href="#"
-              @click="fetchRestaurant(restaurant.id, currentPage + 1)"
-            >
-              瀏覽更多
-            </button>
-          </div>
-          <div
-            v-else
-            class="col-12 col-md-10 col-lg-8 py-2 placeholder-message"
-          >
-            <i class="fas fa-ice-cream" />目前還沒有評論
-          </div>
+          <RestaurantInfo :restaurant="restaurant" />
         </div>
       </div>
-    </section>
+      <section class="comments">
+        <div class="comments-wrapper container py-5">
+          <h3 class="comments-heading">
+            評論({{ comments.rows.length }})
+          </h3>
+          <div class="row mt-5">
+            <CommentMedia
+              v-for="comment in comments.rows"
+              :key="comment.id"
+              :comment="comment"
+              class="col-12 col-md-10 col-lg-8 py-2"
+            />
+            <div
+              v-if="totalPage > 0 && currentPage !== totalPage"
+              class="btn-container col-12 col-md-10 col-lg-8 py-2"
+            >
+              <button
+                class="btn mt-3"
+                href="#"
+                @click="fetchRestaurant(restaurant.id, currentPage + 1)"
+              >
+                瀏覽更多
+              </button>
+            </div>
+            <div
+              v-else
+              class="col-12 col-md-10 col-lg-8 py-2 placeholder-message"
+            >
+              <i class="fas fa-ice-cream" />目前還沒有評論
+            </div>
+          </div>
+        </div>
+      </section>
+    </template>
     <Footer />
   </section>
 </template>
@@ -58,6 +63,7 @@ import ImageBanner from '../components/Banner/ImageBanner'
 import Breadcrumb from '../components/Breadcrumb'
 import RestaurantInfo from '../components/RestaurantInfo'
 import CommentMedia from '../components/CommentMedia'
+import Loader from '../components/Loader'
 import restaurantsAPI from '../apis/restaurants'
 import { Toast } from '../utils/helpers'
 
@@ -68,7 +74,8 @@ export default {
     ImageBanner,
     Breadcrumb,
     RestaurantInfo,
-    CommentMedia
+    CommentMedia,
+    Loader
   },
   data () {
     return {
@@ -121,6 +128,8 @@ export default {
         ]
         this.totalPage = data.comments.pages
         this.currentPage += 1
+        // update loading status
+        this.isLoading = false
       } catch (error) {
         // update loading status
         this.isLoading = false
@@ -136,6 +145,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.restaurant {
+    &-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+}
+
 .comments {
     &-heading {
         padding-left: .6rem;

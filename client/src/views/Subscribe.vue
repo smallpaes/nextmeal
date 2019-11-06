@@ -1,55 +1,60 @@
 <template>
   <section class="subscribe">
     <TopLogoNavbar />
-    <div class="subscribe-content rounded">
-      <div class="subscribe-content-top row">
-        <div class="subscribe-content-top-header col-12 mb-4">
-          <h3>
-            方案選擇
-          </h3>
-          <h5>
-            根據自己的需求挑選月繳方案
-          </h5>
-        </div>
-        <div class="subscribe-content-top-choices col-12">
-          <button
-            v-for="plan in plans"
-            :key="plan.id"
-            type="button"
-            class="subscribe-choice"
-            :disabled="isProcessing"
-            @click.stop="handleSubscribe(plan.name, plan.quantity, plan.price)"
-          >
-            <h4 class="subscribe-choice-header">
-              {{ plan.name }}
-            </h4>
-            <h3 class="subscribe-choice-description">
-              {{ plan.quantity }} 餐
-              <span class="subscribe-choice-price d-block mt-2">月付 {{ plan.price }} 元</span>
+    <transition
+      appear
+      name="slide"
+    >
+      <div class="subscribe-content rounded">
+        <div class="subscribe-content-top row">
+          <div class="subscribe-content-top-header col-12 mb-4">
+            <h3>
+              方案選擇
             </h3>
-          </button>
+            <h5>
+              根據自己的需求挑選月繳方案
+            </h5>
+          </div>
+          <div class="subscribe-content-top-choices col-12">
+            <button
+              v-for="plan in plans"
+              :key="plan.id"
+              type="button"
+              class="subscribe-choice"
+              :disabled="isProcessing"
+              @click.stop="handleSubscribe(plan.name, plan.quantity, plan.price)"
+            >
+              <h4 class="subscribe-choice-header">
+                {{ plan.name }}
+              </h4>
+              <h3 class="subscribe-choice-description">
+                {{ plan.quantity }} 餐
+                <span class="subscribe-choice-price d-block mt-2">月付 {{ plan.price }} 元</span>
+              </h3>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="subscribe-content-bottom">
-        <p class="text-left m-0 mr-3">
-          計算方式：一個月以 30 天為標準
-        </p>
-      </div>
-      <form
-        ref="tradeForm"
-        action="https://ccore.newebpay.com/MPG/mpg_gateway"
-        method="POST"
-      >
-        <input
-          v-for="item in tradeInfo"
-          :key="item"
-          :ref="item"
-          type="text"
-          :name="item"
-          hidden
+        <div class="subscribe-content-bottom">
+          <p class="text-left m-0 mr-3">
+            計算方式：一個月以 30 天為標準
+          </p>
+        </div>
+        <form
+          ref="tradeForm"
+          action="https://ccore.newebpay.com/MPG/mpg_gateway"
+          method="POST"
         >
-      </form>
-    </div>
+          <input
+            v-for="item in tradeInfo"
+            :key="item"
+            :ref="item"
+            type="text"
+            :name="item"
+            hidden
+          >
+        </form>
+      </div>
+    </transition>
   </section>
 </template>
 
@@ -118,6 +123,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .subscribe {
     @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
     overflow-y: scroll;
