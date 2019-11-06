@@ -266,14 +266,16 @@ let userController = {
       const user_id = req.params.user_id || req.user.id
       // if params exist,it means you access this action as Admin ,hence you can set roles for users
       const user_role = req.params.user_id ? req.body.role : req.user.role
-      // check if email has been used
-      const duplicate_email = await User.findOne({ where: { email: req.body.email } })
-      if (duplicate_email && duplicate_email.email !== req.user.email) {
-        return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
-      }
+
 
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       let user = await User.findByPk(user_id)
+
+      // check if email has been used
+      const duplicate_email = await User.findOne({ where: { email: req.body.email } })
+      if (duplicate_email && duplicate_email.email !== user.email) {
+        return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
+      }
       const { file } = req
       // 如果上有照片
       if (file) {
