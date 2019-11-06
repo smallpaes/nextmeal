@@ -1,5 +1,6 @@
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const URL = process.env.URL
 
 const db = require('../models')
 const Subscription = db.Subscription
@@ -57,6 +58,13 @@ let userController = {
     if (req.body.password !== req.body.passwordCheck) {
       return res.json({ status: 'error', message: 'Two passwords do not match' })
     }
+
+    // check if email has been used
+    const duplicate_email = await User.findOne({ where: { email: req.body.email } })
+    if (duplicate_email) {
+      return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
+    }
+
     const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
     try {
       // create user
@@ -128,7 +136,7 @@ let userController = {
       })
 
     } catch (error) {
-      res.json({ status: 'error', message: error })
+      return res.json({ status: 'error', message: error })
     }
 
   },
@@ -196,7 +204,6 @@ let userController = {
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'you can countinue to describe the NextMeal.' })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -230,7 +237,8 @@ let userController = {
           })
           await sendEmail(req, res, subscription, data)
         }
-        return res.status(200).json({ status: 'success', data, message: 'Thank you for subscribing NextMeal, enjoy your day.' })
+        return res.redirect(`${URL}/users/orders/tomorrow/`)
+        // return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
       }
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -239,11 +247,11 @@ let userController = {
 
   getProfile: async (req, res) => {
     try {
-      if (req.user.id !== Number(req.params.user_id)) {
-        return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
-      }
+      // if (req.user.id !== Number(req.params.user_id)) {
+      //   return res.status(400).json({ status: 'error', message: 'You are not allow access this page.' })
+      // }
       const categories = await Category.findAll()
-      const user = await User.findByPk(req.params.user_id, {
+      const user = await User.findByPk(req.user.id, {
         attributes: {
           exclude: ['password']
         }
@@ -255,18 +263,34 @@ let userController = {
   },
   putProfile: async (req, res) => {
     try {
-      if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
-        return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
+
+      // if params exist,it means you access this action as Admin
+      const user_id = req.params.user_id || req.user.id
+      // if params exist,it means you access this action as Admin ,hence you can set roles for users
+      const user_role = req.params.user_id ? req.body.role : req.user.role
+      // check if email has been used
+      const duplicate_email = await User.findOne({ where: { email: req.body.email } })
+      if (duplicate_email && duplicate_email.email !== req.user.email) {
+        return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
       }
+
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
-      let user = await User.findByPk(req.params.user_id)
+      let user = await User.findByPk(user_id)
       const { file } = req
       // 如果上有照片
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
         imgur.upload(file.path, async (err, img) => {
           await user.update({
-            ...req.body,
+            name: req.body.name,
+            email: req.body.email,
+            address: req.body.address,
+            dob: req.body.dob,
+            prefer: req.body.prefer,
+            lat: req.body.lat,
+            lng: req.body.lng,
+            role: user_role,
+            location: req.body.location,
             avatar: file ? img.data.link : user.avatar,
             geometry: point
           })
@@ -278,12 +302,21 @@ let userController = {
       } else {
         // 如果沒上傳照片
         await user.update({
-          ...req.body,
+          name: req.body.name,
+          email: req.body.email,
+          address: req.body.address,
+          dob: req.body.dob,
+          prefer: req.body.prefer,
+          lat: req.body.lat,
+          lng: req.body.lng,
+          role: user_role,
+          location: req.body.location,
           geometry: point,
         })
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },

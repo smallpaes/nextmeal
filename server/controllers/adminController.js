@@ -19,10 +19,9 @@ const districts = require('../location/district.json')
 let adminController = {
   getRestaurants: async (req, res) => {
     try {
-      const { name, category, dist } = req.query
-      console.log(name, dist)
-      // let page = (Number(req.query.page) < 1 || req.query.page === undefined) ? 1 : Number(req.query.page)
-      let restaurants = await Restaurant.findAll({
+      const { name, category, dist, page } = req.query
+      let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
+      let restaurants = await Restaurant.findAndCountAll({
         where: {
           name: { [Op.substring]: name || '' },
           CategoryId: category ? { [Op.eq]: category } : { [Op.gt]: 0 },
@@ -36,23 +35,29 @@ let adminController = {
               model: Order,
               as: 'orders',
               where: { order_status: '今日' },
-            }],
+            }]
           }
         ],
         attributes: [
           'id', 'name', 'rating', 'location',
           [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
         ],
-        // offset: (page - 1) * pageLimit,
-        // limit: pageLimit,
-        // subQuery: false
-
+        order: [['rating', 'DESC'], ['id', 'DESC']],
+        offset: (pageNum - 1) * pageLimit,
+        limit: pageLimit,
+        distinct: true
       })
-      restaurants = restaurants.map(restaurant => ({
+      const count = restaurants.count
+      let pages = Math.ceil((count) / pageLimit)
+      const objRestaurants = restaurants.rows.map(restaurant => ({
         ...restaurant.dataValues,
         orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
       }))
-      restaurants.sort((a, b) => (a.orderCount < b.orderCount) ? 1 : -1)
+      restaurants = {
+        count: count,
+        pages: pages,
+        restaurants: objRestaurants
+      }
       res.status(200).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -231,7 +236,6 @@ let adminController = {
       if (order_status && order_status === '未取消') {
         whereQuery['order_status'] = { [Op.notLike]: '取消' }
       }
-      console.log(whereQuery)
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let orders = await Order.findAndCountAll({
         where: whereQuery,
@@ -247,7 +251,7 @@ let adminController = {
           customQuery.char.date,
           customQuery.char.time
         ],
-        order: [['require_date', 'ASC']],
+        order: [['require_date', 'ASC'], ['id', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
@@ -303,7 +307,6 @@ let adminController = {
       })
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }
