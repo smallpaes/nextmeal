@@ -14,8 +14,8 @@ const MerchantID = process.env.MERCHANT_ID; // 商店代號
 const HashKey = process.env.HASH_KEY; //API 金鑰
 const HashIV = process.env.HASH_IV; //API 金鑰
 const PayGateWay = "https://ccore.newebpay.com/MPG/mpg_gateway"; //付款網址
-const ReturnURL = URL + "/api/users/subscribe/spgateway/callback?from=ReturnURL"; //支付完成返還商店網址
-const NotifyURL = URL + "/api/users/subscribe/spgateway/callback?from=NotifyURL"; //支付通知網址
+const ReturnURL = "http://" + URL + "/api/users/subscribe/spgateway/callback?from=ReturnURL"; //支付完成返還商店網址
+const NotifyURL = "http://" + URL + "/api/users/subscribe/spgateway/callback?from=NotifyURL"; //支付通知網址
 const ClientBackURL = URL + "/subscribe"; //支付取消返回網址
 
 const transporter = nodemailer.createTransport({
