@@ -50,20 +50,19 @@ export default {
         lat: '',
         location: ''
       },
-      categories: ['中式料理', '日本料理', '義大利料理', '墨西哥料理', '素食料理', '美式料理', '複合式料理'],
+      categories: [],
       isLoading: true,
       isProcessing: false
     }
   },
   created () {
-    const { user_id: userId } = this.$route.params
-    this.fetchUser(userId)
+    this.fetchUser()
   },
   methods: {
-    async fetchUser (userId = 501) {
+    async fetchUser () {
       try {
         // fetch data from API
-        const { data, statusText } = await usersAPI.getProfile({ userId })
+        const { data, statusText } = await usersAPI.getProfile()
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
@@ -90,10 +89,8 @@ export default {
       try {
         // update processing status
         this.isProcessing = true
-        // get user id
-        const { user_id: userId = 501 } = this.$route.params
         // update profile
-        const { data, statusText } = await usersAPI.putProfile({ userId, formData })
+        const { data, statusText } = await usersAPI.putProfile({ formData })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // update user state to Vuex

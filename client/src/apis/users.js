@@ -14,11 +14,11 @@ export default {
     const searchParams = new URLSearchParams({ page, 'order_status': status })
     return apiHelper.get(`/users/orders?${searchParams}`)
   },
-  getProfile ({ userId }) {
-    return apiHelper.get(`/users/${userId}`)
+  getProfile () {
+    return apiHelper.get('/users/profile')
   },
-  putProfile ({ userId, formData }) {
-    return apiHelper.put(`/users/${userId}/edit`, formData)
+  putProfile ({ formData }) {
+    return apiHelper.put('/users/profile', formData)
   },
   getCurrentUser () {
     return apiHelper.get('/users/current_user')
