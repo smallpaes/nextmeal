@@ -56,6 +56,13 @@ let userController = {
     if (req.body.password !== req.body.passwordCheck) {
       return res.json({ status: 'error', message: 'Two passwords do not match' })
     }
+
+    // check if email has been used
+    const duplicate_email = await User.findOne({ where: { email: req.body.email } })
+    if (duplicate_email) {
+      return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
+    }
+
     const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
     try {
       // create user
@@ -258,6 +265,11 @@ let userController = {
       const user_id = req.params.user_id || req.user.id
       // if params exist,it means you access this action as Admin ,hence you can set roles for users
       const user_role = req.params.user_id ? req.body.role : req.user.role
+      // check if email has been used
+      const duplicate_email = await User.findOne({ where: { email: req.body.email } })
+      if (duplicate_email && duplicate_email.email !== req.user.email) {
+        return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
+      }
 
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       let user = await User.findByPk(user_id)
@@ -301,6 +313,7 @@ let userController = {
         res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },
