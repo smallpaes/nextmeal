@@ -253,11 +253,14 @@ let userController = {
   },
   putProfile: async (req, res) => {
     try {
-      // if (req.user.id !== Number(req.params.user_id) && req.user.role !== 'Admin') {
-      //   return res.status(400).json({ status: 'error', message: 'you are not authorized to do that' })
-      // }
+
+      // if params exist,it means you access this action as Admin
+      const user_id = req.params.user_id || req.user.id
+      // if params exist,it means you access this action as Admin ,hence you can set roles for users
+      const user_role = req.params.user_id ? req.body.role : req.user.role
+
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
-      let user = await User.findByPk(req.user.id)
+      let user = await User.findByPk(user_id)
       const { file } = req
       // 如果上有照片
       if (file) {
@@ -271,6 +274,7 @@ let userController = {
             prefer: req.body.prefer,
             lat: req.body.lat,
             lng: req.body.lng,
+            role: user_role,
             location: req.body.location,
             avatar: file ? img.data.link : user.avatar,
             geometry: point
@@ -290,6 +294,7 @@ let userController = {
           prefer: req.body.prefer,
           lat: req.body.lat,
           lng: req.body.lng,
+          role: user_role,
           location: req.body.location,
           geometry: point,
         })
