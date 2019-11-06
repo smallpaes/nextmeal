@@ -20,7 +20,9 @@ const defaultRestaurant1 = {
   lat: '25.017186',
   lng: '121.558462',
   description: '一家還不錯的店',
-  image: 'https://randomuser.me/api/portraits/lego/1.jpg'
+  image: 'https://randomuser.me/api/portraits/lego/1.jpg',
+  UserId: 1,
+  CategoryId: 1
 }
 
 describe('# Admin::Restaurant request', () => {
@@ -96,21 +98,23 @@ describe('# Admin::Restaurant request', () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body).to.have.property('restaurants')
-            expect(res.body.restaurants.length).to.be.at.most(10)
+            expect(res.body.restaurants.restaurants).to.be.an('array')
+            expect(res.body.restaurants.restaurants.length).to.be.at.most(10)
             return done()
           })
       })
       //not done yet
 
-      // it('should be able to filter restaurants by location', (done) => {
-      //   request(app)
-      //     .get(`/api/admin/restaurants?dist=${content}`)
-      //     .expect(200)
-      //     .end(async (err, res) => {
-      //       expect(res.body).to.be.equal(1)
-      //       return done()
-      //     })
-      // })
+      it('should be able to filter restaurants by location', (done) => {
+        request(app)
+          .get(`/api/admin/restaurants?dist=${content}`)
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body).to.have.property('restaurants')
+            expect(res.body.restaurants.restaurants).to.be.an('array')
+            return done()
+          })
+      })
 
       it('should see specific restaurant info', (done) => {
         request(app)
@@ -170,24 +174,24 @@ describe('# Admin::Restaurant request', () => {
 
       })
 
-      // it('should see today orders', (done) => {
-      //   request(app)
-      //     .get('/api/admin/orders')
-      //     .expect(200)
-      //     .end((err, res) => {
-      //       expect(res.body.message).to.be.equal('Successfully get Orders.')
-      //       res.body.orders.map(item => {
-      //         expect(item).to.have.property('User')
-      //         // expect(item).to.have.property('meals')
-      //         // expect(item).to.have.property('id')
-      //         // expect(item).to.have.property('require_time')
-      //         // expect(item).to.have.property('order_status')
-      //         // expect(item).to.have.property('date')
-      //         // expect(item).to.have.property('time')
-      //       })
-      //       return done()
-      //     })
-      // })
+      it('should be able to see tomorrow orders', (done) => {
+        request(app)
+          .get(`/api/admin/orders?date=${tmr}`)
+          .expect(200)
+          .end((err, res) => {
+            expect(res.body.message).to.be.equal('Successfully get Orders.')
+            res.body.orders.map(item => {
+              expect(item).to.have.property('User')
+              expect(item).to.have.property('meals')
+              expect(item).to.have.property('id')
+              expect(item).to.have.property('require_date')
+              expect(item).to.have.property('order_status')
+              expect(item).to.have.property('date')
+              expect(item).to.have.property('time')
+            })
+            return done()
+          })
+      })
 
       it('should see error message when orders can not be found', (done) => {
         request(app)
