@@ -53,7 +53,7 @@ function createRest(store) {
   for (let i = 0; i < store.length; i++) {
     const seedRest = {
       name: store[i].name,
-      description: store[i].description.substring(0, 350),
+      description: store[i].description.substring(0, 300),
       tel: `02-${randomPhone(4)}-${randomPhone(4)}`,
       location: store[i].location,
       address: store[i].address,
