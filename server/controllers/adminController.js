@@ -251,7 +251,7 @@ let adminController = {
           customQuery.char.date,
           customQuery.char.time
         ],
-        order: [['require_date', 'ASC']],
+        order: [['require_date', 'ASC'], ['id', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })

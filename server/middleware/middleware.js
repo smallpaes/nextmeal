@@ -2,6 +2,7 @@ const { check, validationResult } = require('express-validator')
 const moment = require('moment')
 const crypto = require("crypto"); // 加密
 const nodemailer = require("nodemailer"); // 寄送 mail
+const hbs = require('nodemailer-express-handlebars')
 const db = require('../models')
 const Subscription = db.Subscription
 const Comment = db.Comment
@@ -26,6 +27,15 @@ const transporter = nodemailer.createTransport({
     pass: process.env.GMAIL_PASSWORD,
   },
 })
+transporter.use('compile', hbs({
+  viewEngine: {
+    defaultLayout: false,
+    partialsDir: 'partials/',
+  },
+  viewPath: 'server/emailTemplate',
+  extName: '.hbs'
+}));
+
 // 將資料轉成字串
 const genDataChain = (TradeInfo) => {
   let results = [];
@@ -214,19 +224,11 @@ let middleware = {
       const mailOptions = {
         from: process.env.GMAIL_ACCOUNT,
         to: subscription.User.email,
-        subject: `親愛的客戶，恭喜你成功訂閱 NextMeal 。`,
-        html: `
-        <h1>Enjoy Your Next Meal!</h1>
-        <h3>您這次的訂閱資訊</h3>
-        <ul>
-          <li>訂閱編號: ${subscription.sn}</li>
-          <li>方案名稱: ${subscription.sub_name}</li>
-          <li>訂閱價格: ${subscription.sub_price}</li>
-          <li>訂閱餐點數: ${subscription.sub_balance} 餐</li>
-          <li>訂閱日期: ${subscription.sub_date}</li>
-          <li>有效期限: ${subscription.sub_expired_date}</li>
-        </ul>
-        ` // html body
+        subject: `親愛的客戶，恭喜你成功訂閱 NextMeal。`,
+        template: 'subscription',
+        context: {
+          subscription: subscription
+        }
       }
       await transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
@@ -257,9 +259,9 @@ let middleware = {
     }
   },
   stopOrder: (req, res, next) => {
-    const start = moment({hour: 23, minute: 58})
-    const end = moment({hour: 00, minute: 5})
-    if (moment() > start || moment() < end) return res.status(200).json({status:'success', message: 'Server is updating the information.'})
+    const start = moment({ hour: 23, minute: 58 })
+    const end = moment({ hour: 00, minute: 5 })
+    if (moment() > start || moment() < end) return res.status(200).json({ status: 'success', message: 'Server is updating the information.' })
     next()
   }
 }
