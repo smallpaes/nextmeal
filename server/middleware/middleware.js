@@ -72,7 +72,7 @@ let middleware = {
     check('name')
       .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
     check('description')
-      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 10-100 words'),
+      .isLength({ min: 10, max: 300 }).withMessage('Description should be between 10-100 words'),
     check('tel')
       .matches(/^0[2-9]-\d{4}-\d{3,4}$/).withMessage('Telephone number should be 02-2222-2222'),
     check('address')
@@ -88,7 +88,7 @@ let middleware = {
     check('name')
       .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
     check('description')
-      .isLength({ min: 10, max: 100 }).withMessage('Description should be between 10-100 words'),
+      .isLength({ min: 10, max: 300 }).withMessage('Description should be between 10-100 words'),
   ],
   validMenuForm: [
     check('quantity')
