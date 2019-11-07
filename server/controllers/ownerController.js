@@ -85,7 +85,7 @@ let ownerController = {
       if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'can not find address' })
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       if (!restaurant) {
-        return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
+        return res.status(400).json({ status: 'error', message: 'The restaurant does not exist.' })
       }
       const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
       const { file } = req
@@ -192,10 +192,10 @@ let ownerController = {
         include: [{ model: Restaurant, attributes: ['UserId'] }]
       })
       if (!meal) {
-        return res.status(422).json({ status: 'error', message: 'meal does not exist' })
+        return res.status(400).json({ status: 'error', meal, message: 'meal does not exist' })
       }
       if (meal.Restaurant.UserId !== req.user.id) {
-        return res.status(200).json({ status: 'success', message: 'You are not allow do this action.' })
+        return res.status(401).json({ status: 'error', message: 'You are not allow do this action.' })
       }
       return res.status(200).json({ status: 'success', meal, message: 'Successfully get the dish information.' })
     } catch (error) {
@@ -251,7 +251,7 @@ let ownerController = {
       const restaurant = await Restaurant.findOne({
         where: { UserId: req.user.id }, attributes: ['id'], include: [{ model: Meal, attributes: ['id', 'name'] }]
       })
-      if (!restaurant) return res.status(200).json({ status: 'success', message: 'you have not restaurant yet' })
+      if (!restaurant) return res.status(400).json({ status: 'error', message: 'you have not restaurant yet' })
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
@@ -319,7 +319,7 @@ let ownerController = {
       const start = moment().startOf('day').toDate()
       const end = moment().endOf('day').toDate()
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
-      if (req.user.id !== restaurant.UserId) return res.status(200).json({ status: 'success', message: 'you are not allow do this action' })
+      if (req.user.id !== restaurant.UserId) return res.status(400).json({ status: 'error', message: 'you are not allow do this action' })
       let orders = await Order.findAll({
         where: {
           order_status: { [Op.like]: '今日' },
@@ -342,7 +342,7 @@ let ownerController = {
       })
       // 11/1 加入處理order不存在時的情況 by Danny
       if (orders.length === 0) {
-        res.status(200).json({ status: 'success', message: 'Can not find any orders' })
+        res.status(200).json({ status: 'success', orders: {}, message: 'Can not find any orders' })
       }
 
 
