@@ -266,11 +266,19 @@ let middleware = {
       let newRestaurants = []
       for (let rest of restaurants.rows) {
         let rests = rest
-        let orders = await Order.findAndCountAll({
-          where: { order_status: '今日' },
-          include: [{ model: Meal, as: 'meals', where: { id: rest.Meals[0].id } }]
-        })
-        rests.dataValues.OrderCount = orders.count
+        if (rest.Meals.length > 0) {
+          let countNum = 0
+          for (let meal of rest.Meals) {
+            const orders = await Order.findAndCountAll({
+              where: { order_status: '今日' },
+              include: [{ model: Meal, as: 'meals', where: {id: meal.id} }]
+            })
+            countNum += orders.count
+          }
+          rests.dataValues.OrderCount = countNum
+        } else {
+          rests.dataValues.OrderCount = 0
+        }
         newRestaurants.push(rests)
       }
       return newRestaurants
