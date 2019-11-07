@@ -73,7 +73,7 @@ describe('# User: request', () => {
       })
       it('should get Unauthorized', (done) => {
         request(app)
-          .get('/api/users/1')
+          .get('/api/users/profile')
           .expect(401)
           .end((err, res) => {
             if (err) { return done(err) }
@@ -107,7 +107,7 @@ describe('# User: request', () => {
       })
       it('should get user info', (done) => {
         request(app)
-          .get('/api/users/1')
+          .get('/api/users/profile')
           .expect(200)
           .end((err, res) => {
             expect(res.body.user).to.have.property('name')
@@ -122,27 +122,12 @@ describe('# User: request', () => {
           })
       })
 
-      it('should be not get other users info', (done) => {
-        request(app)
-          .get('/api/users/2')
-          .expect(400)
-          .expect({ status: 'error', message: 'You are not allow access this page.' }, done)
-      })
-
 
       it('should be able to update user info', (done) => {
         request(app)
-          .put('/api/users/1/edit')
+          .put('/api/users/profile')
           .send('name=John&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121&location=大安區')
           .expect(200, done)
-      })
-
-      it('should not be able to update  other users info', (done) => {
-        request(app)
-          .put('/api/users/2/edit')
-          .send('name=John&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121&location=大安區')
-          .expect(400)
-          .expect({ status: 'error', message: 'you are not authorized to do that' }, done)
       })
 
       it('should be able to post a new order', (done) => {

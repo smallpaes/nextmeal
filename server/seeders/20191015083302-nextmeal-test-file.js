@@ -4,12 +4,23 @@ const bcrypt = require('bcryptjs')
 const moment = require('moment')
 const opening_hour = '11:00'
 const closing_hour = '14:00'
+const sequelize = require('sequelize')
 const users = require('../location/users.json')
 const stores = require('../location/stores.json')
 const foodImg = require('../location/foodImg.json')
 const restImg = require('../location/restImg.json')
 const categories = require('../location/categories.json')
 const userComment = require('../location/comment.json')
+
+function randomPhone(num) {
+  let random = ''
+  for (let i = 0; i < num; i++) {
+    let ramdomNum = Math.floor(Math.random() * 10)
+    random += ramdomNum
+  }
+  return random
+}
+
 function createUsers(users) {
   let userData = []
   for (let i = 0; i < users.length; i++) {
@@ -28,7 +39,7 @@ function createUsers(users) {
       address: users[i].address,
       lat: users[i].lat,
       lng: users[i].lng,
-      geometry: Sequelize.fn('ST_GeomFromText', `POINT(${users[i].lng} ${users[i].lat})`),
+      geometry: sequelize.fn('ST_GeomFromText', `POINT(${users[i].lng} ${users[i].lat})`),
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -42,8 +53,8 @@ function createRest(store) {
   for (let i = 0; i < store.length; i++) {
     const seedRest = {
       name: store[i].name,
-      description: store[i].description.substring(0, 101),
-      tel: faker.phone.phoneNumber(),
+      description: store[i].description.substring(0, 300),
+      tel: `02-${randomPhone(4)}-${randomPhone(4)}`,
       location: store[i].location,
       address: store[i].address,
       UserId: i + 3,
@@ -53,7 +64,7 @@ function createRest(store) {
       image: restImg[Math.floor(Math.random() * restImg.length)],
       lat: store[i].lat,
       lng: store[i].lng,
-      geometry: Sequelize.fn('ST_GeomFromText', `POINT(${store[i].lng} ${store[i].lat})`),
+      geometry: sequelize.fn('ST_GeomFromText', `POINT(${store[i].lng} ${store[i].lat})`),
       rating: parseFloat(Math.random() * 4 + 1).toFixed(1),
       createdAt: new Date(),
       updatedAt: new Date()
@@ -61,6 +72,26 @@ function createRest(store) {
     restData.push(seedRest)
   }
   return restData
+}
+
+function creatMeal(stores) {
+  let mealData = []
+  for (let i = 0; i < stores.length; i++) {
+    let random = Math.floor(Math.random() * foodImg.length)
+    const seedMeal = {
+      name: foodImg[random].name,
+      image: foodImg[random].image,
+      RestaurantId: i + 1,
+      quantity: 50,
+      description: foodImg[random].description,
+      isServing: true,
+      nextServing: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+    mealData.push(seedMeal)
+  }
+  return mealData
 }
 
 function randomTime(num) {
@@ -90,14 +121,14 @@ function orderThing(start, end) {
     let orderMeal = Math.ceil(Math.random() * (stores.length - 150)) + 2
     const random = Math.floor(Math.random() * 3) + 1
     if (i < 120) {
-      userId = Math.ceil(Math.random() * (users.length - stores.length + 2)) + stores.length + 2
+      userId = Math.ceil(Math.random() * (users.length - stores.length)) + stores.length
       user_text = userComment[Math.floor(Math.random() * userComment.length)]
     }
     // id 2 使用者歷史
     if (i > 119 && i < 151) userId = 2, user_text = userComment[Math.floor(Math.random() * userComment.length)]
     // id 1 餐廳歷史
     if (i > 150 && i < 170) {
-      userId = Math.ceil(Math.random() * (users.length - stores.length + 2)) + stores.length + 2
+      userId = Math.ceil(Math.random() * (users.length - stores.length)) + stores.length
       orderMeal = 1
       user_text = userComment[Math.floor(Math.random() * userComment.length)]
     }
@@ -120,7 +151,7 @@ function orderThing(start, end) {
     }
     // id 1 餐廳今日
     if (i > 190) {
-      userId = Math.ceil(Math.random() * (users.length - stores.length + 2)) + stores.length + 2
+      userId = Math.ceil(Math.random() * (users.length - stores.length)) + stores.length
       orderMeal = 1
       past = randomTime(0)
       order_status = '今日'
@@ -160,11 +191,11 @@ function orderThing(start, end) {
   }
   return { usersOrders, OrdersItem, commentRest }
 }
-const Sequelize = require('sequelize')
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    let allUser = createUsers(users)
-    let allStore = createRest(stores)
+    const allUser = createUsers(users)
+    const allStore = createRest(stores)
+    const allMeal = creatMeal(stores)
     //add Users
     await queryInterface.bulkInsert('Users', allUser, {})
 
@@ -183,20 +214,7 @@ module.exports = {
     ), {});
 
     // add meals
-    await queryInterface.bulkInsert("Meals",
-      Array.from({ length: stores.length }).map((item, index) => (
-        {
-          name: faker.name.findName(),
-          image: foodImg[Math.floor(Math.random() * foodImg.length)],
-          RestaurantId: index + 1,
-          quantity: 50,
-          description: faker.lorem.text(),
-          isServing: true,
-          nextServing: false,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }))
-      , {});
+    await queryInterface.bulkInsert("Meals", allMeal, {});
 
     // add orders
     const { usersOrders, OrdersItem, commentRest } = orderThing(0, 300)
@@ -207,7 +225,7 @@ module.exports = {
     await queryInterface.bulkInsert("Comments", commentRest, {});
     // add subscriptions
     return queryInterface.bulkInsert("Subscriptions",
-      Array.from({ length: users.length - stores.length + 1}).map((item, index) => (
+      Array.from({ length: users.length - stores.length + 1 }).map((item, index) => (
         {
           UserId: index < 3 ? index + 1 : index + stores.length,
           sub_name: '輕量型',
