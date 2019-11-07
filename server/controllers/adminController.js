@@ -14,7 +14,7 @@ const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 const pageLimit = 10
 const districts = require('../location/district.json')
-
+const { findOrder } = require('../middleware/middleware')
 
 let adminController = {
   getRestaurants: async (req, res) => {
@@ -27,39 +27,23 @@ let adminController = {
           CategoryId: category ? { [Op.eq]: category } : { [Op.gt]: 0 },
           location: { [Op.substring]: dist || '' }
         },
-        include: [
-          { model: Comment, attributes: ['id', 'user_text', 'res_text', 'rating', 'image', 'createdAt'] },
-          {
-            model: Meal,
-            include: [{
-              model: Order,
-              as: 'orders',
-              where: { order_status: '今日' },
-            }]
-          }
-        ],
+        include: [Comment, Meal],
         attributes: [
           'id', 'name', 'rating', 'location',
-          [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
+          [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount']
         ],
         order: [['rating', 'DESC'], ['id', 'DESC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
-        subQuery: false,
         distinct: true
       })
       const count = restaurants.count
       let pages = Math.ceil((count) / pageLimit)
-      const objRestaurants = restaurants.rows.map(restaurant => ({
-        ...restaurant.dataValues,
-        orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
-      }))
-      restaurants = {
-        count: count,
-        pages: pages,
-        restaurants: objRestaurants
-      }
-      res.status(200).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
+      return res.status(200).json({
+        status: 'success',
+        restaurants: { pages: pages, restaurants: await findOrder(restaurants) },
+        districts, message: 'Successfully get restautants'
+      })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
