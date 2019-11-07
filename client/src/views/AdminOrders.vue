@@ -127,12 +127,10 @@ export default {
       this.currentSearchInput = data.order_id
       this.currentFilterOption = data.order_status
       this.currentDate = data.date
-      this.order = []
-      console.log(data)
-      this.$router.push({ name: 'admin-orders', query: data })
+      this.orders = []
+      this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage)
     },
     handleAfterCancel (orderId) {
-      console.log('from parent', orderId)
       this.orders = this.orders.map(order => {
         if (order.id !== orderId) { return order }
         return ({

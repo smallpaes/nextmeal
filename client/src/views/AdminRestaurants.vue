@@ -13,17 +13,30 @@
       <hr class="restaurants-divider">
       <AdminFilterPanel
         :options="districts"
-        @after-search="handleAfterSearch"
-        @after-filter="handleAfterFilter"
+        @after-search="handleAfterFilter({page: 0, searchInput: $event, selectedOption: currentFilterOption})"
+        @after-filter="handleAfterFilter({page: 0, searchInput: currentSearchInput, selectedOption: $event})"
       >
         <template v-slot:filterOption>
           搜尋地區
         </template>
       </AdminFilterPanel>
-      <AdminRestaurantsTable
-        v-if="restaurants.length > 0"
-        :restaurants="restaurants"
-      />
+      <template v-if="restaurants.length > 0">
+        <AdminRestaurantsTable
+          :restaurants="restaurants"
+        />
+        <div
+          v-if="totalPage > 0 && currentPage !== totalPage"
+          class="btn-container mt-3 mt-md-4"
+        >
+          <button
+            class="btn"
+            href="#"
+            @click="fetchRestaurants(currentSearchInput, currentFilterOption, currentPage + 1)"
+          >
+            瀏覽更多
+          </button>
+        </div>
+      </template>
       <PlaceholderMessage v-else>
         <i class="fas fa-search mr-2" />沒有符合的結果
       </PlaceholderMessage>
@@ -54,29 +67,38 @@ export default {
       districts: [],
       currentSearchInput: '',
       currentFilterOption: '',
+      currentPage: 0,
+      totalPage: null,
       isLoading: true,
       navIsOpen: false
     }
   },
   created () {
     const { dist = '', name = '' } = this.$route.query
-    this.fetchRestaurants({ dist, name })
+    this.fetchRestaurants(dist, name, this.currentPage + 1)
   },
   beforeRouteUpdate (to, from, next) {
+    // Reset current page
+    this.currentPage = 0
+    // clear existing data
+    this.restaurants = []
     const { dist = '', name = '' } = to.query
-    this.fetchRestaurants({ dist, name })
+    this.fetchRestaurants(dist, name, this.currentPage + 1)
     next()
   },
   methods: {
-    async fetchRestaurants ({ name, dist }) {
+    async fetchRestaurants (name, dist, page) {
       try {
         // fetch data from API
-        const { data, statusText } = await adminAPI.restaurants.getRestaurants({ name, dist })
+        const { data, statusText } = await adminAPI.restaurants.getRestaurants({ name, dist, page })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
-        this.restaurants = data.restaurants
+        this.restaurants = [...this.restaurants, ...data.restaurants.restaurants]
         this.districts = data.districts.map(district => district['chinese_name'])
+        // update page data
+        this.totalPage = data.restaurants.pages
+        this.currentPage += 1
         // update loading status
         this.isLoading = false
       } catch (error) {
@@ -89,13 +111,12 @@ export default {
         })
       }
     },
-    handleAfterSearch (searchInput) {
-      this.currentSearchInput = searchInput
-      this.fetchRestaurants({ name: this.currentSearchInput, dist: this.currentFilterOption })
-    },
-    handleAfterFilter (selectedOption) {
-      this.currentFilterOption = selectedOption
-      this.fetchRestaurants({ name: this.currentSearchInput, dist: this.currentFilterOption })
+    handleAfterFilter (data) {
+      this.currentPage = 0
+      this.restaurants = []
+      this.currentFilterOption = data.selectedOption
+      this.currentSearchInput = data.searchInput
+      this.fetchRestaurants(this.currentSearchInput, this.currentFilterOption, this.currentPage)
     }
   }
 }
@@ -108,5 +129,16 @@ export default {
 
 .restaurants {
     @include controlPanelLayout;
+}
+
+.btn-container {
+    text-align: center;
+    .btn {
+        @include solidButton(150);
+
+        @include response(md) {
+            min-width: 200px;
+        }
+    }
 }
 </style>

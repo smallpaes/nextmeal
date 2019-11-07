@@ -2,8 +2,8 @@ import { apiHelper } from '../utils/helpers'
 
 export default {
   restaurants: {
-    getRestaurants ({ name, dist }) {
-      const searchParams = new URLSearchParams({ name, dist })
+    getRestaurants ({ name, dist, page }) {
+      const searchParams = new URLSearchParams({ name, dist, page })
       return apiHelper.get(`/admin/restaurants?${searchParams.toString()}`)
     },
     getRestaurant ({ restaurantId }) {

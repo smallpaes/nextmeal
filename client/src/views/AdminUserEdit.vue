@@ -104,6 +104,7 @@ export default {
         // redirect to admin users page
         this.$router.push({ name: 'admin-users' })
       } catch (error) {
+        console.log(error.message)
         // update loading status
         this.isProcessing = false
         // fire error messages
