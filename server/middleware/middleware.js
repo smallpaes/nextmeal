@@ -275,9 +275,9 @@ let middleware = {
             })
             countNum += orders.count
           }
-          rests.dataValues.OrderCount = countNum
+          rests.dataValues.orderCount = countNum
         } else {
-          rests.dataValues.OrderCount = 0
+          rests.dataValues.orderCount = 0
         }
         newRestaurants.push(rests)
       }
