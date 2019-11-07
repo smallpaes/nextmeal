@@ -1,83 +1,106 @@
 <template>
   <section>
-    <header>
-      <UserNavbar />
-      <ImageHeaderBanner
-        :background-photo="banner.image"
-        :banner-height="banner.height"
+    <!--Navbar-->
+    <UserNavbar />
+    <!--Loader-->
+    <Loader
+      v-if="isLoading"
+      :height="'100vh'"
+    />
+    <!--Header-->
+    <transition name="fade">
+      <header v-if="!isLoading">
+        <ImageHeaderBanner
+          :background-photo="banner.image"
+          :banner-height="banner.height"
+        >
+          <template v-slot:header>
+            <h1 class="banner-content-title">
+              明日餐點
+            </h1>
+            <h3 class="banner-content-description">
+              午餐免煩惱
+            </h3>
+          </template>
+        </ImageHeaderBanner>
+      </header>
+    </transition>
+    <!--Order Section-->
+    <transition name="slide">
+      <section
+        v-if="!isLoading"
+        class="order-wrapper"
       >
-        <template v-slot:header>
-          <h1 class="banner-content-title">
-            明日餐點
-          </h1>
-          <h3 class="banner-content-description">
-            午餐免煩惱
-          </h3>
-        </template>
-      </ImageHeaderBanner>
-    </header>
-    <section class="order-wrapper">
-      <div class="container order-container">
-        <div class="row order-content align-items-stretch">
+        <div
+          class="container order-container"
+        >
           <div
-            v-for="meal in [lunch, dinner]"
-            :key="meal.indicator"
-            class="col-12 col-md-6 col-lg-5 mb-4 order-card"
+            class="row order-content align-items-stretch"
           >
-            <MealVerticalCard
-              v-if="Object.keys(meal.order).length && !meal.isCommingSoon"
-              :order="meal.order"
+            <div
+              v-for="meal in [lunch, dinner]"
+              :key="meal.indicator"
+              class="col-12 col-md-6 col-lg-5 mb-4 order-card"
             >
-              <template v-slot:indicator>
-                <span class="card-indicator">{{ meal.indicator }}</span>
-              </template>
-              <template v-slot:footer>
-                <router-link
-                  :to="{name: 'order', params: {order_id: meal.order.id}}"
-                  class="btn"
-                >
-                  查看訂單
-                </router-link>
-              </template>
-            </MealVerticalCard>
-            <NewOrderCard
-              v-else
-              :style="{backgroundImage: !meal.isCommingSoon ? `url(${image.order})` : `url(${image.commingSoon})`}"
-            >
-              <template
-                v-if="!meal.isCommingSoon"
-                v-slot:content
+              <MealVerticalCard
+                v-if="Object.keys(meal.order).length && !meal.isCommingSoon"
+                :is-loading="isLoading"
+                :order="meal.order"
               >
-                <h5 class="card-title">
-                  <span class="card-indicator">{{ meal.indicator }}餐</span>
-                </h5>
-                <router-link
-                  v-if="currentUser.subscriptionBalance > 0"
-                  :to="{name: 'order-new'}"
-                  class="btn"
-                >
-                  訂購
-                </router-link>
-                <span
-                  v-else
-                  class="card-warning"
-                ><i class="far fa-surprise mr-1" />無餘額囉</span>
-              </template>
-              <template
+                <template v-slot:indicator>
+                  <span class="card-indicator">{{ meal.indicator }}</span>
+                </template>
+                <template v-slot:footer>
+                  <router-link
+                    :to="{name: 'order', params: {order_id: meal.order.id}}"
+                    class="btn"
+                  >
+                    查看訂單
+                  </router-link>
+                </template>
+              </MealVerticalCard>
+              <NewOrderCard
                 v-else
-                v-slot:content
+                :style="{backgroundImage: !meal.isCommingSoon ? `url(${image.order})` : `url(${image.commingSoon})`}"
               >
-                <h5 class="card-title text-center">
-                  <i class="fas fa-glass-cheers" />
-                  <span class="card-indicator d-block">Comming Soon</span>
-                </h5>
-              </template>
-            </NewOrderCard>
+                <template
+                  v-if="!meal.isCommingSoon"
+                  v-slot:content
+                >
+                  <h5 class="card-title">
+                    <span class="card-indicator">{{ meal.indicator }}餐</span>
+                  </h5>
+                  <router-link
+                    v-if="currentUser.subscriptionBalance > 0"
+                    :to="{name: 'order-new'}"
+                    class="btn"
+                  >
+                    訂購
+                  </router-link>
+                  <span
+                    v-else
+                    class="card-warning"
+                  ><i class="far fa-surprise mr-1" />無餘額囉</span>
+                </template>
+                <template
+                  v-else
+                  v-slot:content
+                >
+                  <h5 class="card-title text-center">
+                    <i class="fas fa-glass-cheers" />
+                    <span class="card-indicator d-block">Comming Soon</span>
+                  </h5>
+                </template>
+              </NewOrderCard>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-    <Footer />
+      </section>
+    </transition>
+    <!--Footer-->
+    <transition name="fade">
+      <Footer v-if="!isLoading" />
+    </transition>
   </section>
 </template>
 
@@ -87,6 +110,7 @@ import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import MealVerticalCard from '../components/Card/MealVerticalCard'
 import NewOrderCard from '../components/Card/NewOrderCard'
 import Footer from '../components/Footer'
+import Loader from '../components/Loader'
 import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
 import { mapState } from 'vuex'
@@ -97,7 +121,8 @@ export default {
     ImageHeaderBanner,
     MealVerticalCard,
     NewOrderCard,
-    Footer
+    Footer,
+    Loader
   },
   data () {
     return {
@@ -141,11 +166,10 @@ export default {
           this.lunch.order = { id: lunchOrderId, restaurant: lunchRestaurant, meal: lunchMeal }
         }
         // update loading status
-        this.isProcessing = false
+        this.isLoading = false
       } catch (error) {
-        console.log(error.message)
         // update loading status
-        this.isProcessing = false
+        this.isLoading = false
         // fire error messages
         Toast.fire({
           type: 'error',
@@ -158,6 +182,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+@include fadeAnimation;
+
 .order {
     &-content {
         position: relative;

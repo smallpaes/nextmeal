@@ -18,5 +18,11 @@ export default {
   },
   putCancelOrder ({ orderId }) {
     return apiHelper.put(`/order/${orderId}/cancel`, {})
+  },
+  getComment ({ orderId }) {
+    return apiHelper.get(`/order/${orderId}/comment`)
+  },
+  postComment ({ orderId, formData }) {
+    return apiHelper.post(`/order/${orderId}/comment`, formData)
   }
 }

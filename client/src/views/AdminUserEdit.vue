@@ -28,7 +28,6 @@ import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
 import UserProfileForm from '../components/UserProfileForm'
 import adminAPI from '../apis/admin'
-import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
 
 export default {
@@ -96,7 +95,7 @@ export default {
         // get user id
         const { user_id: userId } = this.$route.params
         // update profile
-        const { data, statusText } = await usersAPI.putProfile({ userId, formData })
+        const { data, statusText } = await adminAPI.users.putUser({ userId, formData })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // update processing

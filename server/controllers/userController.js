@@ -266,6 +266,7 @@ let userController = {
 
       // if params exist,it means you access this action as Admin
       const user_id = req.params.user_id || req.user.id
+
       // if params exist,it means you access this action as Admin ,hence you can set roles for users
       const user_role = req.params.user_id ? req.body.role : req.user.role
 
@@ -278,6 +279,7 @@ let userController = {
       if (duplicate_email && duplicate_email.email !== user.email) {
         return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
       }
+      
       const { file } = req
       // 如果上有照片
       if (file) {

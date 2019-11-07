@@ -1,23 +1,44 @@
 <template>
-  <div class="icecream-container py-5">
-    <h1
-      v-for="i in 3"
-      :key="i"
-      class="icecream"
-    >
-      <i class="fas fa-ice-cream" />
-    </h1>
-    <small class="icecream-description">
-      準備中
-    </small>
-  </div>
+  <section
+    class="icecream-container"
+    :style="{height: height}"
+  >
+    <div class="icecream-content py-5">
+      <h1
+        v-for="i in 3"
+        :key="i"
+        class="icecream"
+      >
+        <i class="fas fa-ice-cream" />
+      </h1>
+      <small class="icecream-description">
+        準備中
+      </small>
+    </div>
+  </section>
 </template>
+
+<script>
+export default {
+  props: {
+    height: {
+      type: String,
+      default: '100vh'
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .icecream {
+    @include positionCenter;
     animation: jumping 1.2s linear infinite;
 
     &-container {
+        width: 100%;
+    }
+
+    &-content {
         @include flexPosition(center, center, row);
         color: color(primary);
         flex-wrap: wrap;

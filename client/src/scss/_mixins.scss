@@ -524,3 +524,22 @@
         }
     }
 }
+
+@mixin slideInLeftAnimation {
+    .slide-in-left {
+        &-enter {
+            transform: translateX(-100%);
+            &-active {
+                transition: transform .5s ease-out;
+    
+            }
+        }
+    
+        &-leave {
+            &-active {
+                opacity: 0;
+                transition: opacity .5s linear;
+            }
+        }
+    }
+}

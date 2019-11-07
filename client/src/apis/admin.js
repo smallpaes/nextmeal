@@ -26,6 +26,9 @@ export default {
     },
     deleteUser ({ userId }) {
       return apiHelper.delete(`/admin/users/${userId}`)
+    },
+    putUser ({ userId, formData }) {
+      return apiHelper.put(`/admin/users/${userId}`, formData)
     }
   },
   orders: {

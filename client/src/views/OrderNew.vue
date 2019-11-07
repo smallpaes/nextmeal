@@ -1,110 +1,130 @@
 <template>
   <section>
-    <header>
-      <UserNavbar />
-      <ImageHeaderBanner
-        :background-photo="banner.image"
-        :banner-height="banner.height"
-      >
-        <template v-slot:header>
-          <h1 class="banner-content-title">
-            訂購餐點
-          </h1>
-          <h3
-            v-if="isChoosingMeal"
-            class="banner-content-description"
-          >
-            餐點二選一
-          </h3>
-          <h3
-            v-else
-            class="banner-content-description"
-          >
-            選擇數量與領餐時間
-          </h3>
-        </template>
-      </ImageHeaderBanner>
-    </header>
-    <!--Display two meal options-->
-    <section
-      v-if="isChoosingMeal"
-      class="meal-wrapper"
-    >
-      <div class="container meal-container">
-        <div
-          class="row meal-content align-items-stretch"
+    <!--Navbar-->
+    <UserNavbar />
+    <!--Loader-->
+    <Loader
+      v-if="isLoading"
+      :height="'100vh'"
+    />
+    <!--Header-->
+    <transition name="fade">
+      <header v-if="!isLoading">
+        <ImageHeaderBanner
+          :background-photo="banner.image"
+          :banner-height="banner.height"
         >
-          <div
-            v-for="index in 2"
-            :key="index"
-            class="col-12 col-md-6 col-lg-5 mb-4 meal-card"
-          >
-            <!--Display meal-->
-            <MealVerticalCard
-              v-if="meals[index - 1]"
-              :order="meals[index - 1]"
+          <template v-slot:header>
+            <h1 class="banner-content-title">
+              訂購餐點
+            </h1>
+            <h3
+              v-if="isChoosingMeal"
+              class="banner-content-description"
             >
-              <template v-slot:footer>
-                <button
-                  class="btn"
-                  type="button"
-                  @click.stop.prevent="handleOrder(meals[index - 1])"
-                >
-                  訂購餐點
-                </button>
-              </template>
-              <template v-slot:distance>
-                ({{ meals[index - 1].restaurant.distance }}公尺)
-              </template>
-            </MealVerticalCard>
-            <!--Display warning message-->
-            <NewOrderCard
+              餐點二選一
+            </h3>
+            <h3
               v-else
-              :style="{backgroundImage: `url(${image})`}"
+              class="banner-content-description"
             >
-              <template
-                v-slot:content
+              選擇數量與領餐時間
+            </h3>
+          </template>
+        </ImageHeaderBanner>
+      </header>
+    </transition>
+
+    <transition
+      name="slide"
+      mode="out-in"
+    >
+      <!--Display two meal options-->
+      <section
+        v-if="isChoosingMeal && !isLoading"
+        key="meals"
+        class="meal-wrapper"
+      >
+        <div class="container meal-container">
+          <div
+            class="row meal-content align-items-stretch"
+          >
+            <div
+              v-for="index in 2"
+              :key="index"
+              class="col-12 col-md-6 col-lg-5 mb-4 meal-card"
+            >
+              <!--Display meal-->
+              <MealVerticalCard
+                v-if="meals[index - 1]"
+                :order="meals[index - 1]"
               >
-                <h5 class="card-title">
-                  <span class="card-indicator">附近無其他美食</span>
-                </h5>
-                <router-link
-                  :to="{name: 'user-profile'}"
-                  class="btn"
+                <template v-slot:footer>
+                  <button
+                    class="btn"
+                    type="button"
+                    @click.stop.prevent="handleOrder(meals[index - 1])"
+                  >
+                    訂購餐點
+                  </button>
+                </template>
+                <template v-slot:distance>
+                  ({{ meals[index - 1].restaurant.distance }}公尺)
+                </template>
+              </MealVerticalCard>
+              <!--Display warning message-->
+              <NewOrderCard
+                v-else
+                :style="{backgroundImage: `url(${image})`}"
+              >
+                <template
+                  v-slot:content
                 >
-                  改地點
-                </router-link>
-              </template>
-            </NewOrderCard>
+                  <h5 class="card-title">
+                    <span class="card-indicator">附近無其他美食</span>
+                  </h5>
+                  <router-link
+                    :to="{name: 'user-profile'}"
+                    class="btn"
+                  >
+                    改地點
+                  </router-link>
+                </template>
+              </NewOrderCard>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-    <!--Display order form-->
-    <section
-      v-if="!isChoosingMeal"
-      class="order-wrapper"
-    >
-      <div class="container order-container">
-        <div
-          class="row order-content p-3"
-        >
-          <MealHorizontalCard
-            :order="chosenMeal"
-            class="order-display"
-          />
-          <OrderForm
-            class="order-display mt-3"
-            :order-info="{quantity: chosenMeal.meal.quantity, timeSlots: chosenMeal.timeSlots}"
-            :initial-processing="isProcessing"
-            :current-user="currentUser"
-            @change-order="isChoosingMeal = true"
-            @after-submit="handleAfterSubmit"
-          />
+      </section>
+      <!--Display order form-->
+      <section
+        v-if="!isChoosingMeal"
+        key="form"
+        class="order-wrapper"
+      >
+        <div class="container order-container">
+          <div
+            class="row order-content p-3"
+          >
+            <MealHorizontalCard
+              :order="chosenMeal"
+              class="order-display"
+            />
+            <OrderForm
+              class="order-display mt-3"
+              :order-info="{quantity: chosenMeal.meal.quantity, timeSlots: chosenMeal.timeSlots}"
+              :initial-processing="isProcessing"
+              :current-user="currentUser"
+              @change-order="isChoosingMeal = true"
+              @after-submit="handleAfterSubmit"
+            />
+          </div>
         </div>
-      </div>
-    </section>
-    <Footer />
+      </section>
+    </transition>
+    <!--Footer-->
+    <transition name="fade">
+      <Footer v-if="!isLoading" />
+    </transition>
   </section>
 </template>
 
@@ -116,6 +136,7 @@ import MealHorizontalCard from '../components/Card/MealHorizontalCard'
 import NewOrderCard from '../components/Card/NewOrderCard'
 import OrderForm from '../components/OrderForm'
 import Footer from '../components/Footer'
+import Loader from '../components/Loader'
 import orderAPI from '../apis/order'
 import { Toast } from '../utils/helpers'
 import { mapState } from 'vuex'
@@ -128,13 +149,14 @@ export default {
     NewOrderCard,
     MealHorizontalCard,
     OrderForm,
-    Footer
+    Footer,
+    Loader
   },
   data () {
     return {
       banner: {
         image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-        height: 450
+        height: 550
       },
       meals: [],
       isChoosingMeal: true,
@@ -208,6 +230,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+@include fadeAnimation;
+
 .meal {
     &-content {
         position: relative;

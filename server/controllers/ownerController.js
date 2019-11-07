@@ -133,7 +133,7 @@ let ownerController = {
         attributes: ['id', 'UserId']
       })
       if (restaurant.length === 0 || restaurant[0].dataValues.Meals.length === 0) {
-        return res.status(400).json({ status: 'error', message: 'You haven\'t setting restaurant or meal yet.' })
+        return res.status(200).json({ status: 'success', meals:[], message: 'You haven\'t setting restaurant or meal yet.' })
       }
       if (restaurant[0].dataValues.UserId !== req.user.id) {
         return res.status(400).json({ status: 'error', message: 'You are not allow do this action.' })

@@ -1,51 +1,66 @@
 <template>
   <section>
-    <header>
-      <UserNavbar />
-      <ImageHeaderBanner
-        :background-photo="banner.image"
-        :banner-height="banner.height"
-      >
-        <template v-slot:header>
-          <h1 class="banner-content-title">
-            編輯餐點
-          </h1>
-          <h3
-            class="banner-content-description"
-          >
-            更改數量或領餐時間
-          </h3>
-        </template>
-      </ImageHeaderBanner>
-    </header>
-    <!--Display order form-->
-    <section
-      class="order-wrapper"
-    >
-      <div class="container order-container">
-        <div
-          class="row order-content p-3"
+    <!--Navbar-->
+    <UserNavbar />
+    <!--Loader-->
+    <Loader
+      v-if="isLoading"
+      :height="'100vh'"
+    />
+    <!--Header-->
+    <transition name="fade">
+      <header v-if="!isLoading">
+        <ImageHeaderBanner
+          :background-photo="banner.image"
+          :banner-height="banner.height"
         >
-          <MealHorizontalCard
-            :order="order"
-            class="order-display"
-          />
-          <OrderForm
-            class="order-display mt-3"
-            :order-info="{quantity: order.meal.quantity + order.orderData.quantity, timeSlots: order.timeSlots}"
-            :initial-order="order.orderData"
-            :initial-processing="isProcessing"
-            :current-user="currentUser"
-            @after-submit="handleAfterSubmit"
+          <template v-slot:header>
+            <h1 class="banner-content-title">
+              編輯餐點
+            </h1>
+            <h3
+              class="banner-content-description"
+            >
+              更改數量或領餐時間
+            </h3>
+          </template>
+        </ImageHeaderBanner>
+      </header>
+    </transition>
+    <!--Display order form-->
+    <transition name="slide">
+      <section
+        v-if="!isLoading"
+        class="order-wrapper"
+      >
+        <div class="container order-container">
+          <div
+            class="row order-content p-3"
           >
-            <template #submit>
-              更新訂單
-            </template>
-          </OrderForm>
+            <MealHorizontalCard
+              :order="order"
+              class="order-display"
+            />
+            <OrderForm
+              class="order-display mt-3"
+              :order-info="{quantity: order.meal.quantity + order.orderData.quantity, timeSlots: order.timeSlots}"
+              :initial-order="order.orderData"
+              :initial-processing="isProcessing"
+              :current-user="currentUser"
+              @after-submit="handleAfterSubmit"
+            >
+              <template #submit>
+                更新訂單
+              </template>
+            </OrderForm>
+          </div>
         </div>
-      </div>
-    </section>
-    <Footer />
+      </section>
+    </transition>
+    <!--Footer-->
+    <transition name="fade">
+      <Footer v-if="!isLoading" />
+    </transition>
   </section>
 </template>
 
@@ -55,6 +70,7 @@ import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import MealHorizontalCard from '../components/Card/MealHorizontalCard'
 import OrderForm from '../components/OrderForm'
 import Footer from '../components/Footer'
+import Loader from '../components/Loader'
 import orderAPI from '../apis/order'
 import { Toast } from '../utils/helpers'
 import moment from 'moment'
@@ -66,13 +82,14 @@ export default {
     ImageHeaderBanner,
     MealHorizontalCard,
     OrderForm,
-    Footer
+    Footer,
+    Loader
   },
   data () {
     return {
       banner: {
         image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-        height: 450
+        height: 550
       },
       order: {
         restaurant: {
@@ -160,6 +177,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+@include fadeAnimation;
+
 .order {
   &-content {
     position: relative;

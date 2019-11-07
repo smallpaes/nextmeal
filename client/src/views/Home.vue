@@ -1,25 +1,35 @@
 <template>
   <section>
+    <!--Navbar-->
+    <UserNavbar />
+    <!--Header-->
     <header>
-      <UserNavbar />
-      <ImageHeaderBanner :background-photo="bannerImage">
-        <template v-slot:header>
-          <h1 class="banner-content-title">
-            吃飯免煩惱
-          </h1>
-          <h3 class="banner-content-description">
-            午餐不到 100 元
-          </h3>
-          <router-link
-            :to="{name: 'signup'}"
-            class="btn mt-2"
-          >
-            體驗看看
-          </router-link>
-        </template>
-      </ImageHeaderBanner>
+      <transition
+        name="fade"
+        appear
+      >
+        <!--Banner-->
+        <ImageHeaderBanner :background-photo="bannerImage">
+          <template v-slot:header>
+            <h1 class="banner-content-title">
+              吃飯免煩惱
+            </h1>
+            <h3 class="banner-content-description">
+              午餐不到 100 元
+            </h3>
+            <router-link
+              :to="{name: 'signup'}"
+              class="btn mt-2"
+            >
+              體驗看看
+            </router-link>
+          </template>
+        </ImageHeaderBanner>
+      </transition>
+      <!--Show Order Process-->
       <OrderProcess @learn-more="handleLearMore" />
     </header>
+    <!--Popular Restauurants Carousel-->
     <section class="popular">
       <div class="container pt-3 pb-0 pb-md-5">
         <div class="popular-heading">
@@ -36,6 +46,7 @@
         />
       </div>
     </section>
+    <!--Districts Options-->
     <section class="districts">
       <div class="container pt-3 pb-5">
         <div class="districts-heading">
@@ -128,6 +139,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include fadeAnimation;
+
 .popular {
     @include headingStyling;
     &-heading {

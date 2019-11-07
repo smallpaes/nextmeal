@@ -1,23 +1,35 @@
 <template>
   <section class="profile-container">
-    <header>
-      <UserNavbar />
-    </header>
-    <section class="container pt-4 pb-4 w-100">
-      <div class="profile-wrapper row profil">
-        <div class="profile-content-left col-12 col-md-3 p-2">
-          <UserProfileCard />
+    <!--Navbar-->
+    <UserNavbar />
+    <!--Loader-->
+    <Loader
+      v-if="isLoading"
+      :height="'100vh'"
+    />
+    <transition name="slide">
+      <section
+        v-if="!isLoading"
+        class="container pt-4 pb-4 w-100"
+      >
+        <div class="profile-wrapper row profil">
+          <!--Profile Card-->
+          <div class="profile-content-left col-12 col-md-3 p-2">
+            <UserProfileCard />
+          </div>
+          <!--Profile Form-->
+          <div class="col-12 col-md-9 p-2">
+            <UserProfileForm
+              :initial-user="user"
+              :categories="categories"
+              :initial-processing="isProcessing"
+              @after-submit="handleAfterSubmit"
+            />
+          </div>
         </div>
-        <div class="col-12 col-md-9 p-2">
-          <UserProfileForm
-            :initial-user="user"
-            :categories="categories"
-            :initial-processing="isProcessing"
-            @after-submit="handleAfterSubmit"
-          />
-        </div>
-      </div>
-    </section>
+      </section>
+    </transition>
+    <!--Footer-->
     <Footer class="w-100" />
   </section>
 </template>
@@ -25,6 +37,7 @@
 <script>
 import UserNavbar from '../components/Navbar/UserNavbar'
 import Footer from '../components/Footer'
+import Loader from '../components/Loader'
 import UserProfileCard from '../components/UserProfileCard'
 import UserProfileForm from '../components/UserProfileForm'
 import usersAPI from '../apis/users'
@@ -35,7 +48,8 @@ export default {
     UserNavbar,
     UserProfileCard,
     UserProfileForm,
-    Footer
+    Footer,
+    Loader
   },
   data () {
     return {
@@ -117,6 +131,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .profile {
     &-container {
         display: flex;
