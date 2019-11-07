@@ -160,7 +160,7 @@ describe('# Admin::User request', () => {
 
       it('should be able to update specific user info', (done) => {
         request(app)
-          .put('/api/users/1/edit')
+          .put('/api/admin/users/1')
           .send('name=john&email=user2@example.com&address=somewhere&dob=1991-04-14&prefer=nothing&lat=25&lng=121&location=somewhereInTaiwan&tel=04-2657-6099')
           .expect(200)
           .end(async (err, res) => {
