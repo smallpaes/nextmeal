@@ -127,7 +127,7 @@ let adminController = {
       }
 
       let users = await User.findAll({
-        where: { name: { [Op.substring]: name || '' } },
+        where: sequelize.where(sequelize.fn('lower', sequelize.col('User.name')), 'LIKE', `%${name ? name.toLowerCase() : ''}%`),
         include: [{
           model: Subscription,
           where: whereQuery
