@@ -12,6 +12,7 @@
         <select
           v-model.trim="selectedOption"
           class="form-control"
+          :disabled="isLoading"
           @input="e => $emit('after-filter', e.target.value)"
         >
           <option
@@ -37,6 +38,7 @@
         :last-date="getTomorrowDate"
         :has-label="false"
         :placeholder="'訂單日期'"
+        :disabled="isLoading"
         class="col-sm-6 my-1 col-md pl-md-2 pr-md-0"
         @handle-date="$emit('after-date-pick', $event)"
       />
@@ -51,6 +53,7 @@
           v-model.trim="searchInput"
           type="text"
           class="form-control"
+          :disabled="isLoading"
           :placeholder="inputPlaceholder"
         >
         <div class="input-group-append">
@@ -106,6 +109,10 @@ export default {
     inputPlaceholder: {
       type: String,
       default: '搜尋名稱'
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -131,6 +138,7 @@ export default {
 
   &-select-control {
     margin: 0 .3rem .6rem .3rem;
+    padding: 0;
 
     @include response(sm) {
       margin: 0;

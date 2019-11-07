@@ -1,6 +1,9 @@
 <template>
   <section class="wrapper d-flex vh-100">
+    <!--Left Side Navbar-->
     <AdminSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="restaurants flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
@@ -11,8 +14,11 @@
         餐廳管理
       </h1>
       <hr class="restaurants-divider">
+
+      <!--Filter And Search Panel-->
       <AdminFilterPanel
         :options="districts"
+        :is-loading="isLoading"
         @after-search="handleAfterFilter({page: 0, searchInput: $event, selectedOption: currentFilterOption})"
         @after-filter="handleAfterFilter({page: 0, searchInput: currentSearchInput, selectedOption: $event})"
       >
@@ -20,26 +26,44 @@
           搜尋地區
         </template>
       </AdminFilterPanel>
-      <template v-if="restaurants.length > 0">
-        <AdminRestaurantsTable
-          :restaurants="restaurants"
-        />
-        <div
-          v-if="totalPage > 0 && currentPage !== totalPage"
-          class="btn-container mt-3 mt-md-4"
-        >
-          <button
-            class="btn"
-            href="#"
-            @click="fetchRestaurants(currentSearchInput, currentFilterOption, currentPage + 1)"
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
+      />
+      <transition
+        name="slide"
+        mode="out-in"
+      >
+        <template v-if="!isLoading">
+          <!--Restaurant Data Table-->
+          <div
+            v-if="restaurants.length > 0"
+            class="restaurant-table"
           >
-            瀏覽更多
-          </button>
-        </div>
-      </template>
-      <PlaceholderMessage v-else>
-        <i class="fas fa-search mr-2" />沒有符合的結果
-      </PlaceholderMessage>
+            <AdminRestaurantsTable
+              key="table"
+              :restaurants="restaurants"
+            />
+            <div
+              v-if="totalPage > 0 && currentPage !== totalPage"
+              class="btn-container mt-3 mt-md-4"
+            >
+              <FetchMoreButton
+                :is-fetching="isFetching"
+                @fetch-more="fetchRestaurants(currentSearchInput, currentFilterOption, currentPage + 1)"
+              />
+            </div>
+          </div>
+          <!--Placeholder Messgae for Empty Data-->
+          <PlaceholderMessage
+            v-else
+            key="placeholder"
+          >
+            <i class="fas fa-search mr-2" />沒有符合的結果
+          </PlaceholderMessage>
+        </template>
+      </transition>
     </section>
   </section>
 </template>
@@ -50,6 +74,8 @@ import NavbarToggler from '../components/Navbar/NavbarToggler'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminRestaurantsTable from '../components/AdminRestaurantsTable.vue'
 import PlaceholderMessage from '../components/Placeholder/Message'
+import FetchMoreButton from '../components/Button/FetchMoreButton'
+import Loader from '../components/Loader'
 import adminAPI from '../apis/admin'
 import { Toast } from '../utils/helpers'
 
@@ -59,7 +85,9 @@ export default {
     NavbarToggler,
     AdminFilterPanel,
     AdminRestaurantsTable,
-    PlaceholderMessage
+    PlaceholderMessage,
+    Loader,
+    FetchMoreButton
   },
   data () {
     return {
@@ -70,6 +98,7 @@ export default {
       currentPage: 0,
       totalPage: null,
       isLoading: true,
+      isFetching: false,
       navIsOpen: false
     }
   },
@@ -89,6 +118,8 @@ export default {
   methods: {
     async fetchRestaurants (name, dist, page) {
       try {
+        // update fetching status
+        this.isFetching = true
         // fetch data from API
         const { data, statusText } = await adminAPI.restaurants.getRestaurants({ name, dist, page })
         // error handling
@@ -101,9 +132,13 @@ export default {
         this.currentPage += 1
         // update loading status
         this.isLoading = false
+        // update fetching status
+        this.isFetching = false
       } catch (error) {
         // update loading status
         this.isLoading = false
+        // update fetching status
+        this.isFetching = false
         // fire error messages
         Toast.fire({
           type: 'error',
@@ -112,6 +147,9 @@ export default {
       }
     },
     handleAfterFilter (data) {
+      // update loading status
+      this.isLoading = true
+      // reset data
       this.currentPage = 0
       this.restaurants = []
       this.currentFilterOption = data.selectedOption
@@ -123,6 +161,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation(false);
+@include fadeAnimation;
+
 .wrapper {
     background-color: color(quinary);
 }

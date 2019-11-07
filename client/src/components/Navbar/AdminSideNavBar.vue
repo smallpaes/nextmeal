@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="sidenav shadow-sm"
+    class="sidenav shadow"
     :class="{opened: navIsOpen}"
   >
     <div class="sidenav-brand-container text-center py-5">

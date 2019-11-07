@@ -1,6 +1,9 @@
 <template>
   <section class="wrapper d-flex vh-100">
+    <!--Left Side Navbar-->
     <AdminSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="users flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
@@ -11,23 +14,42 @@
         用戶管理
       </h1>
       <hr class="users-divider">
+
+      <!--Filter And Search Panel-->
       <AdminFilterPanel
         :options="subscriptionStatus"
         :input-placeholder="'搜尋名稱'"
-        @after-search="handleAfterSearch"
-        @after-filter="handleAfterFilter"
+        :is-loading="isLoading"
+        @after-search="handleAfterFilter({searchInput: $event, selectedOption: currentFilterOption})"
+        @after-filter="handleAfterFilter({searchInput: currentSearchInput, selectedOption: $event})"
       >
         <template v-slot:filterOption>
           訂單狀態
         </template>
       </AdminFilterPanel>
-      <AdminUsersTable
-        v-if="users.length > 0"
-        :users="users"
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
       />
-      <PlaceholderMessage v-else>
-        <i class="fas fa-search mr-2" />沒有符合的結果
-      </PlaceholderMessage>
+
+      <transition
+        name="slide"
+        mode="out-in"
+      >
+        <template v-if="!isLoading">
+          <!--User Data Table-->
+          <AdminUsersTable
+            v-if="users.length > 0"
+            :users="users"
+          />
+          <!--Placeholder Messgae for Empty Data-->
+          <PlaceholderMessage v-else>
+            <i class="fas fa-search mr-2" />沒有符合的結果
+          </PlaceholderMessage>
+        </template>
+      </transition>
     </section>
   </section>
 </template>
@@ -38,6 +60,7 @@ import NavbarToggler from '../components/Navbar/NavbarToggler'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminUsersTable from '../components/AdminUsersTable.vue'
 import PlaceholderMessage from '../components/Placeholder/Message'
+import Loader from '../components/Loader'
 import adminAPI from '../apis/admin'
 import { Toast } from '../utils/helpers'
 
@@ -47,7 +70,8 @@ export default {
     NavbarToggler,
     AdminFilterPanel,
     AdminUsersTable,
-    PlaceholderMessage
+    PlaceholderMessage,
+    Loader
   },
   data () {
     return {
@@ -90,12 +114,13 @@ export default {
         })
       }
     },
-    handleAfterSearch (searchInput) {
-      this.currentSearchInput = searchInput
-      this.fetchUsers({ subscriptionStatus: this.currentFilterOption, name: this.currentSearchInput })
-    },
-    handleAfterFilter (selectedOption) {
-      this.currentFilterOption = selectedOption
+    handleAfterFilter (data) {
+      // update loading status
+      this.isLoading = true
+      // reset data
+      this.users = []
+      this.currentFilterOption = data.selectedOption
+      this.currentSearchInput = data.searchInput
       this.fetchUsers({ subscriptionStatus: this.currentFilterOption, name: this.currentSearchInput })
     }
   }
@@ -103,6 +128,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation(false);
+@include fadeAnimation;
+
 .wrapper {
     background-color: color(quinary);
 }

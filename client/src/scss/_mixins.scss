@@ -160,6 +160,16 @@
             box-shadow: none;
             border-color: color(primary);
         }
+
+        &:disabled {
+            background-color: color(quaternary);
+            color: lighten(color(secondary), 45%);
+            border-color: lighten(color(secondary), 45%);
+
+            &::placeholder {
+                color: lighten(color(secondary), 45%);
+            }
+        }
     }
 }
 
@@ -467,7 +477,7 @@
     }
 }
 
-@mixin slideAnimation {
+@mixin slideAnimation($animateLeave:true) {
     .slide {
         &-enter {
             &-active {
@@ -475,10 +485,12 @@
     
             }
         }
-    
-        &-leave {
-            &-active {
-                animation: slide-out .5s ease-out forwards;
+
+        @if $animateLeave {
+            &-leave {
+                &-active {
+                    animation: slide-out .5s ease-out forwards;
+                }
             }
         }
     }

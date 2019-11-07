@@ -23,6 +23,7 @@
       :not-after="lastDate"
       :not-before="new Date('1900', '12', '12')"
       :editable="editable"
+      :disabled="disabled"
       @input="v ? v.$touch() : $emit('handle-date', $event)"
     />
     <small
@@ -61,13 +62,18 @@ export default {
     placeholder: {
       type: String,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
       inputAttribute: {
         required: true,
-        id: 'dob'
+        id: 'dob',
+        disabled: false
       },
       editable: false
     }
