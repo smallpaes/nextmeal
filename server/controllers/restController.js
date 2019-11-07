@@ -114,7 +114,7 @@ let restController = {
         let comments = await Comment.findAndCountAll({
           where: { RestaurantId: req.params.restaurant_id },
           include: [{ model: User, attributes: ['id', 'name', 'avatar'] }], //使用者名稱、照片、評分、評論內容
-          attributes: ['id', 'user_text', 'res_text', 'rating', 'createdAt'],
+          attributes: { exclude: ['createdAt', 'updatedAt'] },
           offset: (page - 1) * commentLimit,
           limit: commentLimit
         })
