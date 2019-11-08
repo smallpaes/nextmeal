@@ -112,7 +112,7 @@ let userController = {
       // check if the user has valid subscriptions
       const start = moment().startOf('day').toDate()
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: start } } })
-      const sub_status = user.expired_date > start ? true : false
+      const sub_status = user.expired_date >= start ? true : false
       const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
 
@@ -424,7 +424,7 @@ let userController = {
       // check if the user has valid subscriptions
       const start = moment().startOf('day').toDate()
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: start } } })
-      const sub_status = user.expired_date > start ? true : false
+      const sub_status = user.expired_date >= start ? true : false
       const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
       return res.status(200).json({
