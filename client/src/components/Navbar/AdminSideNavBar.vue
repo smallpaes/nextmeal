@@ -42,7 +42,7 @@
           <span class="nav-link-description">訂單</span>
         </router-link>
       </li>
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <a
           href="#"
           class="nav-link"
@@ -50,7 +50,7 @@
           <span class="icon"><i class="fas fa-chart-line" /></span>
           <span class="nav-link-description">分析</span>
         </a>
-      </li>
+      </li> -->
       <li class="nav-divider" />
       <li class="nav-item">
         <a

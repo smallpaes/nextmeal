@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { placeholderImageFilter } from '../utils/mixins'
+import { placeholderImageFilter } from '../../utils/mixins'
 import { mapState } from 'vuex'
 
 export default {

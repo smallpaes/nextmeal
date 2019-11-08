@@ -10,14 +10,13 @@
         class="form-group form-select-control col-sm-6 col-md my-1"
       >
         <select
-          v-model.trim="selectedOption"
+          v-model="selectedOption"
           class="form-control"
           :disabled="isLoading"
-          @input="e => $emit('after-filter', e.target.value)"
+          @change="e => $emit('after-filter', e.target.value)"
         >
           <option
             value=""
-            selected
           >
             <slot name="filterOption" />
           </option>
@@ -25,7 +24,7 @@
             v-for="option in options"
             :key="option"
             :value="option"
-            :selected="option === '未取消'"
+            :selected="option === selectedOption"
           >
             {{ option | transformName }}
           </option>

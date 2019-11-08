@@ -23,7 +23,7 @@
         @after-filter="handleAfterFilter({page: 0, searchInput: currentSearchInput, selectedOption: $event})"
       >
         <template v-slot:filterOption>
-          搜尋地區
+          篩選地區
         </template>
       </AdminFilterPanel>
       <!--Loader-->

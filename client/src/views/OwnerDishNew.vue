@@ -34,8 +34,7 @@
             </template>
           </OwnerDishForm>
         </div>
-        <transition />
-      </transition></transition>
+      </transition>
     </section>
   </section>
 </template>

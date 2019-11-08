@@ -38,7 +38,7 @@
 import UserNavbar from '../components/Navbar/UserNavbar'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
-import UserProfileCard from '../components/UserProfileCard'
+import UserProfileCard from '../components/Card/UserProfileCard'
 import UserProfileForm from '../components/UserProfileForm'
 import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
