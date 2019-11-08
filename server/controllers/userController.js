@@ -111,7 +111,7 @@ let userController = {
 
       // check if the user has valid subscriptions
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
-      const sub_status = validSubscriptions.length >= 1 ? true : false
+      const sub_status = user.expired_date > new Date() ? true : false
       const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
 
@@ -234,6 +234,11 @@ let userController = {
             sub_expired_date: sub_expired_date
           })
           await sendEmail(req, res, subscription, data)
+          const user = User.findByPk(req.user.id, {
+            include: [{ model: Subscription }]
+          });
+          await user.update({ expired_date: user.dataValues.Subscriptions[0].sub_expired_date })
+
         }
         return res.redirect(`${URL}/users/orders/tomorrow/`)
         // return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
@@ -416,7 +421,7 @@ let userController = {
 
       // check if the user has valid subscriptions
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
-      const sub_status = validSubscriptions.length >= 1 ? true : false
+      const sub_status = user.expired_date > new Date() ? true : false
       const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
       return res.status(200).json({
