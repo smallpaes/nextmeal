@@ -29,7 +29,6 @@ export default {
     @include imgOverlay(1);
 
     &-container {
-        @include setBackground("../../assets/placeholder-image/logo/1260x750.png", 480px);
         margin-top: 62px;
     }
 

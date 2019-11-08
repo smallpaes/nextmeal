@@ -3,6 +3,7 @@
     <header>
       <UserNavbar />
       <ImageBanner
+        v-if="!isLoading"
         :background-photo="restaurant.image"
       />
     </header>
