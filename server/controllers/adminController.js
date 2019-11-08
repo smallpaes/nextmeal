@@ -133,20 +133,41 @@ let adminController = {
     try {
       const { name, sub_status } = req.query
       const start = moment().startOf('day').toDate()
-      let whereQuery = {}
-      if (sub_status) {
-        if (sub_status === 'inactive') {
-          whereQuery = { [Op.or]: { payment_status: false, sub_expired_date: { [Op.lt]: start } } }
-        } else {
-          whereQuery = { payment_status: true, sub_expired_date: { [Op.gte]: start } }
+      let whereQuery = {};
+      // if (sub_status) {
+      //   if (sub_status === 'inactive') {
+      //     whereQuery = { [Op.or]: { payment_status: false, sub_expired_date: { [Op.lt]: start } } }
+      //   } else {
+      //     whereQuery = { payment_status: true, sub_expired_date: { [Op.gte]: start } }
+      //   }
+      // }
+      if (sub_status === 'inactive') {
+        whereQuery = {
+          name: { [Op.substring]: name || '' },
+          expired_date: {
+            [Op.or]: {
+              [Op.lt]: start,
+              [Op.eq]: null
+            }
+          }
         }
-      }
+      };
+      if (sub_status === 'active') {
+        whereQuery = {
+          name: { [Op.substring]: name || '' },
+          expired_date: {
+            [Op.or]: {
+              [Op.gte]: start
+            }
+          }
+        }
+      };
+
 
       let users = await User.findAll({
-        where: { name: { [Op.substring]: name || '' } },
+        where: whereQuery,
         include: [{
-          model: Subscription,
-          where: whereQuery
+          model: Subscription
         }],
         attributes: {
           include: [
@@ -170,6 +191,7 @@ let adminController = {
       }))
       return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ status: 'error', message: error })
     }
   },
