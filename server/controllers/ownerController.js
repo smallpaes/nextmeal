@@ -288,9 +288,12 @@ let ownerController = {
       if (today >= 6) {
         return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
-      let meal = await Meal.findByPk(req.body.id)
+      let meal = await Meal.findByPk(req.body.id, {
+        include: [Restaurant]
+      })
       //要修改的 meal
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist' })
+      if (req.user.id !== meal.Restaurant.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow do this action.' })
       let originNextWeeK = await Meal.findOne({
         where: { nextServing: true },
         include: [{ model: Restaurant, where: { UserId: req.user.id } }]
@@ -343,7 +346,6 @@ let ownerController = {
       if (orders.length === 0) {
         res.status(200).json({ status: 'success', message: 'Can not find any orders' })
       }
-
 
       orders = orders.map(order => ({
         ...order.dataValues,
