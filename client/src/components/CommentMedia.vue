@@ -16,11 +16,21 @@
         </div>
         <span class="media-title-right mb-2 mb-sm-0">{{ comment.createdAt | timeTransform }}</span>
       </div>
+      <!--Comment-->
       <p class="media-description mb-0 mt-1">
         {{ comment.user_text }}
       </p>
+      <!--Show placeholder review image while loading-->
       <img
-        src="https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
+        v-if="comment.image"
+        src="../assets/placeholder-image/logo/1260x750.png"
+        class="file-image file-image-placeholder my-3"
+        alt="評論照片"
+      >
+      <!--Show review image after-->
+      <img
+        v-if="comment.image"
+        :src="comment.image"
         class="file-image file-image-small my-3"
         :class="{large: isZoomIn}"
         alt="評論照片"
@@ -63,6 +73,7 @@ export default {
     }
 
     &-body {
+        min-height: 80px;
         border-bottom: 1px solid lighten(color(secondary), 50%);
     }
 
@@ -95,6 +106,7 @@ export default {
 
 .file {
     &-image {
+        position: relative;
         object-fit: cover;
         border-radius: .3rem;
         width: 80px;
@@ -111,6 +123,11 @@ export default {
                 width: 240px;
                 height: 180px;
             }
+        }
+
+        &-placeholder {
+          opacity: .9;
+          position: absolute;
         }
     }
 }
