@@ -235,9 +235,11 @@ let ownerController = {
 
   deleteDish: async (req, res) => {
     try {
-      let meal = await Meal.findByPk(req.params.dish_id)
+      let meal = await Meal.findByPk(req.params.dish_id, {
+        include: [Restaurant]
+      })
       if (!meal) return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
-
+      if (req.user.id !== meal.Restaurant.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow do this action.' })
       await meal.destroy()
       res.status(200).json({ status: 'success', message: 'meal was successfully destroyed.' })
     } catch (error) {
