@@ -40,7 +40,7 @@ let orderController = {
           required: true
         }],
         attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
-        // order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
+        order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
       restaurants = restaurants.map((restaurant, index) => ({
