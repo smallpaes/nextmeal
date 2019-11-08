@@ -6,6 +6,8 @@ const hbs = require('nodemailer-express-handlebars')
 const db = require('../models')
 const Subscription = db.Subscription
 const Comment = db.Comment
+const Order = db.Order
+const Meal = db.Meal
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 
@@ -220,7 +222,6 @@ let middleware = {
     }
   },
   sendEmail: (req, res, emailInfo) => {
-    console.log(emailInfo)
     const mailOptions = {
       from: process.env.GMAIL_ACCOUNT,
       to: process.env.GMAIL_ACCOUNT,
@@ -253,6 +254,33 @@ let middleware = {
       return res.status(500).json({ status: 'error', message: error })
     }
   },
+
+  findOrder: async (restaurants) => {
+    try {
+      let newRestaurants = []
+      for (let rest of restaurants.rows) {
+        let rests = rest
+        if (rest.Meals.length > 0) {
+          let countNum = 0
+          for (let meal of rest.Meals) {
+            const orders = await Order.findAndCountAll({
+              where: { order_status: '今日' },
+              include: [{ model: Meal, as: 'meals', where: {id: meal.id} }]
+            })
+            countNum += orders.count
+          }
+          rests.dataValues.orderCount = countNum
+        } else {
+          rests.dataValues.orderCount = 0
+        }
+        newRestaurants.push(rests)
+      }
+      return newRestaurants
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
   stopOrder: (req, res, next) => {
     const start = moment({ hour: 23, minute: 58 })
     const end = moment({ hour: 00, minute: 5 })
