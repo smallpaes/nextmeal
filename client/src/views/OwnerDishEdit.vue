@@ -1,6 +1,9 @@
 <template>
   <section class="wrapper d-flex h-100">
+    <!--Left Side Navbar-->
     <OwnerSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="dish flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
@@ -10,22 +13,39 @@
       <h1 class="dish-title">
         餐點資訊
       </h1>
+
+      <!--Menu and Dish Navbar-->
       <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dish-divider">
-      <div class="dish-form-container pb-4">
-        <OwnerDishForm
-          :initial-dish="dish"
-          :initial-processing="isProcessing"
-          @after-submit="handleAfterSubmit"
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
+      />
+
+      <!--Restaurant Info Edit Form-->
+      <transition
+        name="slide"
+      >
+        <div
+          v-if="!isLoading"
+          class="dish-form-container pb-4"
         >
-          <template v-slot:header>
-            <span>編輯</span>
-          </template>
-          <template v-slot:submitBtn>
-            <span>更新</span>
-          </template>
-        </OwnerDishForm>
-      </div>
+          <OwnerDishForm
+            :initial-dish="dish"
+            :initial-processing="isProcessing"
+            @after-submit="handleAfterSubmit"
+          >
+            <template v-slot:header>
+              <span>編輯</span>
+            </template>
+            <template v-slot:submitBtn>
+              <span>更新</span>
+            </template>
+          </OwnerDishForm>
+        </div>
+      </transition>
     </section>
   </section>
 </template>
@@ -35,6 +55,7 @@ import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishForm from '../components/OwnerDishForm'
+import Loader from '../components/Loader'
 import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
 
@@ -43,7 +64,8 @@ export default {
     OwnerSideNavBar,
     NavbarToggler,
     OwnerDishNavPill,
-    OwnerDishForm
+    OwnerDishForm,
+    Loader
   },
   data () {
     return {
@@ -68,9 +90,6 @@ export default {
   },
   methods: {
     async fetchDishData (dishId) {
-      // update processing status
-      this.isLoading = true
-
       try {
         // fetch dish
         const { data, statusText } = await ownerAPI.dishes.getEdit({ dishId })
@@ -91,7 +110,7 @@ export default {
         // fire error messages
         Toast.fire({
           type: 'error',
-          title: '無法取得資料，請稍後再試'
+          title: '無法更新資料，請稍後再試'
         })
       }
     },
@@ -108,7 +127,7 @@ export default {
         // redirect to dishes page
         this.$router.push({ name: 'owner-dishes' })
       } catch (error) {
-        // update loading status
+        // update processing status
         this.isProcessing = false
         // fire error messages
         Toast.fire({
@@ -122,6 +141,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .wrapper {
     background-color: color(quinary);
 }

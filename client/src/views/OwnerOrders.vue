@@ -1,6 +1,9 @@
 <template>
   <section class="wrapper d-flex vh-100">
+    <!--Left Side Navbar-->
     <OwnerSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="order flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
@@ -11,22 +14,36 @@
         今日訂單
       </h1>
       <hr class="order-divider">
-      <template v-if="Object.keys(orders).length > 0">
-        <OwnerOrdersTable
-          v-for="(timeSlotOrders, timeSlot) in orders"
-          :key="timeSlot"
-          :orders="timeSlotOrders"
-          :time-slot="timeSlot"
-          class="mb-3"
-        />
-      </template>
-      <PlaceholderMessage
-        v-else
-        class="placeholder-message col-12 py-4 text-center"
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
+      />
+      <transition
+        name="slide"
       >
-        <h1><i class="fas fa-utensils" /></h1>
-        今日無訂單
-      </PlaceholderMessage>
+        <template v-if="!isLoading">
+          <!--Display Orders-->
+          <template v-if="Object.keys(orders).length > 0">
+            <OwnerOrdersTable
+              v-for="(timeSlotOrders, timeSlot) in orders"
+              :key="timeSlot"
+              :orders="timeSlotOrders"
+              :time-slot="timeSlot"
+              class="mb-3"
+            />
+          </template>
+          <!--Placeholder Messgae for Empty Data-->
+          <PlaceholderMessage
+            v-else
+            class="placeholder-message col-12 py-4 text-center"
+          >
+            <h1><i class="fas fa-utensils" /></h1>
+            今日無訂單
+          </PlaceholderMessage>
+        </template>
+      </transition>
     </section>
   </section>
 </template>
@@ -35,8 +52,9 @@
 import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerOrdersTable from '../components/OwnerOrdersTable.vue'
-import ownerAPI from '../apis/owner'
+import Loader from '../components/Loader'
 import PlaceholderMessage from '../components/Placeholder/Message'
+import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
 
 export default {
@@ -44,6 +62,7 @@ export default {
     OwnerSideNavBar,
     NavbarToggler,
     OwnerOrdersTable,
+    Loader,
     PlaceholderMessage
   },
   data () {
@@ -68,6 +87,8 @@ export default {
           ...this.orders,
           ...data.orders
         }
+        // update loading status
+        this.isLoading = false
       } catch (error) {
         // update loading status
         this.isLoading = false
@@ -83,6 +104,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation(false);
+
 .wrapper {
     background-color: color(quinary);
 }

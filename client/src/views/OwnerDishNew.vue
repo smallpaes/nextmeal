@@ -1,6 +1,9 @@
 <template>
   <section class="wrapper d-flex h-100">
+    <!--Left Side Navbar-->
     <OwnerSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="dish flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
@@ -12,19 +15,27 @@
       </h1>
       <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dish-divider">
-      <div class="dish-form-container pb-4">
-        <OwnerDishForm
-          :initial-processing="isProcessing"
-          @after-submit="handleAfterSubmit"
-        >
-          <template v-slot:header>
-            <span>增添</span>
-          </template>
-          <template v-slot:submitBtn>
-            <span>新增</span>
-          </template>
-        </OwnerDishForm>
-      </div>
+
+      <!--New Dish Form-->
+      <transition
+        name="slide"
+        appear
+      >
+        <div class="dish-form-container pb-4">
+          <OwnerDishForm
+            :initial-processing="isProcessing"
+            @after-submit="handleAfterSubmit"
+          >
+            <template v-slot:header>
+              <span>增添</span>
+            </template>
+            <template v-slot:submitBtn>
+              <span>新增</span>
+            </template>
+          </OwnerDishForm>
+        </div>
+        <transition />
+      </transition></transition>
     </section>
   </section>
 </template>
@@ -77,6 +88,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .wrapper {
     @include hideScrollBar;
     background-color: color(quinary);

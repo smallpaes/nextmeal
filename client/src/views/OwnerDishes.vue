@@ -2,7 +2,10 @@
   <section
     class="wrapper d-flex vh-100"
   >
+    <!--Left Side Navbar-->
     <OwnerSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="dishes flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
@@ -19,16 +22,42 @@
       <h1 class="dishes-title">
         餐點資訊
       </h1>
+
+      <!--Menu and Order Navbar-->
       <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dishes-divider">
-      <div class="dishes-card-container row px-3 pb-4">
-        <OwnerDishCard
-          v-for="meal in meals"
-          :key="meal.id"
-          :meal="meal"
-          class="col-12 p-0"
-        />
-      </div>
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
+      />
+
+      <!--Display Meals-->
+      <transition
+        name="slide"
+      >
+        <div
+          v-if="!isLoading"
+          class="dishes-card-container row mx-0 p-3 mb-4 rounded-sm shadow-sm"
+        >
+          <OwnerDishCard
+            v-for="meal in meals"
+            :key="meal.id"
+            class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
+            :image="meal.image"
+            :edit-btn="true"
+            @edit="$router.push({name: 'owner-dish-edit', params: {dish_id: meal.id}})"
+          >
+            <template #title>
+              {{ meal.name }}
+            </template>
+            <template #primary-description>
+              {{ meal.description | textTruncate(20) }}
+            </template>
+          </OwnerDishCard>
+        </div>
+      </transition>
     </section>
   </section>
 </template>
@@ -37,8 +66,10 @@
 import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
-import OwnerDishCard from '../components/OwnerDishCard'
+import OwnerDishCard from '../components/Card/OwnerDishCard'
+import Loader from '../components/Loader'
 import ownerAPI from '../apis/owner'
+import { textTruncateFilter } from '../utils/mixins'
 import { Toast } from '../utils/helpers'
 
 export default {
@@ -46,8 +77,10 @@ export default {
     OwnerSideNavBar,
     NavbarToggler,
     OwnerDishNavPill,
-    OwnerDishCard
+    OwnerDishCard,
+    Loader
   },
+  mixins: [textTruncateFilter],
   data () {
     return {
       meals: [],
@@ -89,6 +122,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .wrapper {
     @include hideScrollBar;
     background-color: color(quinary);
@@ -96,6 +131,10 @@ export default {
 
 .dishes {
     @include controlPanelLayout;
+
+    &-card-container {
+        background-color: color(quaternary);
+    }
 
     &-divider {
         width: 100%;

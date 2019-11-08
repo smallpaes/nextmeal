@@ -1,6 +1,9 @@
 <template>
   <section class="wrapper d-flex vh-100">
+    <!--Left Side Navbar-->
     <OwnerSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="info flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
@@ -11,13 +14,25 @@
         餐廳資訊
       </h1>
       <hr class="info-divider">
-      <RestaurantInfoForm
-        v-if="!isLoading"
-        :initial-restaurant="restaurant"
-        :categories="categories"
-        :initial-processing="isProcessing"
-        @after-submit="hasRestaurantData ? updateRestaurant($event) : createRestaurant($event) "
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
       />
+
+      <!--Restaurant Info Edit Form-->
+      <transition
+        name="slide"
+      >
+        <RestaurantInfoForm
+          v-if="!isLoading"
+          :initial-restaurant="restaurant"
+          :categories="categories"
+          :initial-processing="isProcessing"
+          @after-submit="hasRestaurantData ? updateRestaurant($event) : createRestaurant($event) "
+        />
+      </transition>
     </section>
   </section>
 </template>
@@ -26,6 +41,7 @@
 import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
 import RestaurantInfoForm from '../components/RestaurantInfoForm'
+import Loader from '../components/Loader'
 import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
 
@@ -33,7 +49,8 @@ export default {
   components: {
     OwnerSideNavBar,
     NavbarToggler,
-    RestaurantInfoForm
+    RestaurantInfoForm,
+    Loader
   },
   data () {
     return {
@@ -147,6 +164,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .wrapper {
     background-color: color(quinary);
 }

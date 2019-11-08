@@ -2,34 +2,38 @@
   <div
     class="card d-flex flex-row rounded-sm rounded-0"
   >
-    <div class="card-left">
+    <div class="card-left d-none d-md-inline">
+      <!--Placeholder image when image is still loading-->
+      <SkelentonBox
+        class="skelenton-box"
+        :width="'120px'"
+        :height="'111px'"
+      />
       <img
-        :src="meal.image"
-        class="card-img rounded-0 d-none d-md-inline rounded-sm"
+        :src="image"
+        class="card-img rounded-0 rounded-sm"
         alt="Dish image"
       >
     </div>
     <div class="card-right">
       <div class="card-body px-3 py-0">
         <button
-          v-if="$route.query.ran === 'nextWeek' && currentDay !== 0"
+          v-if="editBtn"
           type="button"
           class="edit-btn btn p-0"
-          @click="$emit('edit-meal')"
+          @click="$emit('edit')"
         >
           <i class="fas fa-pencil-alt" />
         </button>
         <h5 class="card-title m-0">
-          {{ day }}
+          <slot name="title" />
         </h5>
         <div class="card-description mt-2">
           <p class="m-0 d-inline d-md-block">
-            <span class="d-none d-md-inline">餐點名稱：</span>
-            {{ meal.name }}
+            <slot name="primary-description" />
           </p>
           <p class="m-0 d-inline d-md-block">
-            <span class="d-none d-md-inline">供應數量</span>
-            ：{{ ran === 'thisWeek' ? meal.quantity : meal.nextServing_quantity }}份
+            <slot name="secondary-description" />
           </p>
         </div>
       </div>
@@ -38,25 +42,20 @@
 </template>
 
 <script>
+import SkelentonBox from '../Placeholder/SkeletonBox'
+
 export default {
-  props: {
-    meal: {
-      type: Object,
-      required: true
-    },
-    day: {
-      type: String,
-      required: true
-    },
-    ran: {
-      type: String,
-      required: true
-    }
+  components: {
+    SkelentonBox
   },
-  computed: {
-    currentDay: function () {
-      const date = new Date()
-      return date.getDay()
+  props: {
+    image: {
+      type: String,
+      required: true
+    },
+    editBtn: {
+      type: Boolean,
+      default: false
     }
   }
 }
@@ -76,7 +75,16 @@ export default {
         width: 100%;
     }
 
+    &-left {
+        position: relative;
+
+        .skelenton-box {
+            position: absolute;
+        }
+    }
+
     &-img {
+        position: relative;
         width: 120px;
         height: 100%;
         object-fit: cover;
@@ -85,9 +93,11 @@ export default {
     &-title {
         font-size: size(sm);
         color: color(secondary);
+        font-weight: weight(bold);
 
         @include response(md) {
             font-size: size(md);
+            font-weight: weight(normal);
         }
     }
 

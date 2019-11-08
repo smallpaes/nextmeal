@@ -1,44 +1,78 @@
 <template>
   <section class="wrapper d-flex vh-100">
+    <!--Left Side Navbar-->
     <OwnerSideNavBar :nav-is-open="navIsOpen" />
-    <section class="dishes flex-fill">
+
+    <!--Right Side Content-->
+    <section class="menu flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
         :nav-is-open="navIsOpen"
         @toggle-navbar="navIsOpen = !navIsOpen"
       />
-      <h1 class="dishes-title">
+      <h1 class="menu-title">
         餐點資訊
       </h1>
+
+      <!--Menu and Order Navbar-->
       <OwnerDishNavPill class="mt-4 ml-1" />
-      <hr class="dishes-divider">
-      <div class="dishes-card-container row mx-0 p-3 rounded-sm shadow-sm">
-        <template v-if="Object.keys(meal).length > 0">
-          <OwnerMenuCard
-            v-for="day in days"
-            :key="day"
-            class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
-            :meal="meal"
-            :day="day"
-            :ran="$route.query.ran"
-            @edit-meal="handleEditMeal"
-          />
-        </template>
-        <PlaceholderMessage
-          v-else
-          class="placeholder-message col-12 py-4 text-center"
-        >
-          <h1><i class="fas fa-utensils" /></h1>
-          尚未提供餐點
-        </PlaceholderMessage>
-      </div>
-      <OwnerMenuForm
-        v-if="$route.query.ran==='nextWeek'"
-        ref="editForm"
-        :initial-meal="Object.keys(meal).length > 0 ? meal : {}"
-        :options="options"
-        @after-submit="handleAfterSubmit"
+      <hr class="menu-divider">
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
       />
+
+      <transition
+        name="slide"
+      >
+        <section
+          v-if="!isLoading"
+          class="menu-content mb-4"
+        >
+          <div class="menu-card-container row mx-0 p-3 rounded-sm shadow-sm">
+            <!--Display Menu-->
+            <template v-if="Object.keys(meal).length > 0">
+              <OwnerDishCard
+                v-for="day in days"
+                :key="day"
+                class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
+                :image="meal.image"
+                :edit-btn="$route.query.ran === 'nextWeek' && currentDay !== 0"
+                @edit="handleEditMeal"
+              >
+                <template #title>
+                  {{ day }}
+                </template>
+                <template #primary-description>
+                  <span class="d-none d-md-inline">餐點名稱：</span>
+                  {{ meal.name }}
+                </template>
+                <template #secondary-description>
+                  <span class="d-none d-md-inline">供應數量</span>
+                  ：{{ $route.query.ran === 'thisWeek' ? meal.quantity : meal.nextServing_quantity }}份
+                </template>
+              </OwnerDishCard>
+            </template>
+            <PlaceholderMessage
+              v-else
+              class="placeholder-message col-12 py-4 text-center"
+            >
+              <h1><i class="fas fa-utensils" /></h1>
+              尚未提供餐點
+            </PlaceholderMessage>
+          </div>
+          <!--Form to Edit Next Week Meal-->
+          <OwnerMenuForm
+            v-if="$route.query.ran==='nextWeek'"
+            ref="editForm"
+            :initial-meal="Object.keys(meal).length > 0 ? meal : {}"
+            :options="options"
+            @after-submit="handleAfterSubmit"
+          />
+        </section>
+      </transition>
     </section>
   </section>
 </template>
@@ -47,9 +81,10 @@
 import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
-import OwnerMenuCard from '../components/OwnerMenuCard'
+import OwnerDishCard from '../components/Card/OwnerDishCard'
 import OwnerMenuForm from '../components/OwnerMenuForm'
 import PlaceholderMessage from '../components/Placeholder/Message'
+import Loader from '../components/Loader'
 import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
 
@@ -58,9 +93,10 @@ export default {
     OwnerSideNavBar,
     OwnerDishNavPill,
     NavbarToggler,
-    OwnerMenuCard,
+    OwnerDishCard,
     OwnerMenuForm,
-    PlaceholderMessage
+    PlaceholderMessage,
+    Loader
   },
   data () {
     return {
@@ -80,6 +116,12 @@ export default {
       navIsOpen: false
     }
   },
+  computed: {
+    currentDay: function () {
+      const date = new Date()
+      return date.getDay()
+    }
+  },
   created () {
     const { ran } = this.$route.query
     // redirect to 404 page when query string is not valid
@@ -97,6 +139,8 @@ export default {
   methods: {
     async fetchMeal (range) {
       try {
+        // update loading status
+        this.isLoading = true
         // fetch data from API
         const { data, statusText } = await ownerAPI.menu.getMenu({ ran: range })
         // error handling
@@ -136,12 +180,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation(false);
+
 .wrapper {
     @include hideScrollBar;
     background-color: color(quinary);
 }
 
-.dishes {
+.menu {
     @include controlPanelLayout;
 
     &-card-container {
