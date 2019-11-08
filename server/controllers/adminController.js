@@ -14,8 +14,7 @@ const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 const pageLimit = 10
 const districts = require('../location/district.json')
-
-
+const { sendEmail } = require('../middleware/middleware')
 let adminController = {
   getRestaurants: async (req, res) => {
     try {
@@ -275,10 +274,15 @@ let adminController = {
   putCancel: async (req, res) => {
     try {
       let order = await Order.findByPk(req.params.order_id, {
-        include: [{ model: Meal, as: 'meals' }]
+        include: [
+          User,
+          { model: Meal, as: 'meals' }
+        ]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-      let meal = await Meal.findByPk(order.meals[0].id)
+      let meal = await Meal.findByPk(order.meals[0].id, {
+        include: [Restaurant]
+      })
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist.' })
       if (order.order_status === '取消') {
         return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
@@ -296,7 +300,7 @@ let adminController = {
         order: [['sub_expired_date', 'DESC']]
       })
       let returnNum = subscription.sub_balance + order.amount
-      await subscription.update({
+      subscription = await subscription.update({
         sub_balance: returnNum
       })
       order = await order.update({
@@ -305,6 +309,20 @@ let adminController = {
       await meal.update({
         quantity: meal.quantity + order.amount
       })
+      const emailInfo = {
+        email: order.User.email,
+        template: 'orderInfo',
+        subject: '親愛的客戶，你訂購的餐點已經被取消。',
+        cancel: true,
+        order: {
+          ...order.dataValues,
+          order_date: moment(order.order_date).format('YYYY-MM-DD HH:mm'),
+          require_date: moment(order.require_date).format('YYYY-MM-DD HH:mm'),
+        },
+        meal,
+        subscription
+      }
+      sendEmail(req, res, emailInfo)
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })

@@ -107,6 +107,7 @@ let orderController = {
         sub_balance: subscription.sub_balance - quantity
       })
       const emailInfo = {
+        email: req.user.email,
         template: 'orderInfo',
         subject: '親愛的客戶，恭喜你成功訂購餐點。',
         order: {
@@ -249,6 +250,7 @@ let orderController = {
           quantity: newQuantity
         })
         const emailInfo = {
+          email: req.user.email,
           template: 'orderInfo',
           subject: '親愛的客戶，恭喜你修改訂購餐點。',
           order: {
@@ -345,11 +347,13 @@ let orderController = {
     try {
       // 先取得本訂單，需驗證剩下多少數量，取得數量
       let order = await Order.findByPk(req.params.order_id, {
-        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
+        include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
       if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
-      let meal = await Meal.findByPk(order.meals[0].id)
+      let meal = await Meal.findByPk(order.meals[0].id, {
+        include: [Restaurant]
+      })
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist.' })
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
@@ -367,12 +371,26 @@ let orderController = {
       await meal.update({
         quantity: returnQuantity
       })
-      await subscription.update({
+      subscription = await subscription.update({
         sub_balance: returnNum
       })
-      order = await order.update({
+      await order.update({
         order_status: '取消'
       })
+      const emailInfo = {
+        email: req.user.email,
+        template: 'orderInfo',
+        subject: '親愛的客戶，你訂購的餐點已經被取消。',
+        cancel: true,
+        order: {
+          ...order.dataValues,
+          order_date: moment(order.order_date).format('YYYY-MM-DD HH:mm'),
+          require_date: moment(order.require_date).format('YYYY-MM-DD HH:mm'),
+        },
+        meal,
+        subscription
+      }
+      sendEmail(req, res, emailInfo)
       return res.status(200).json({ status: 'success', message: 'Successfully cancel the order.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })

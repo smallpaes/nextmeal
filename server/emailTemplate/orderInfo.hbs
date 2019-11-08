@@ -9,6 +9,9 @@
 </head>
 
 <body>
+  {{#if emailInfo.cancel}}
+    <h1>取消訂單資訊</h1>
+  {{/if}}
   <ul>
     <li>訂單編號: {{emailInfo.order.id}}</li>
     <li>餐廳: {{emailInfo.meal.Restaurant.name}}</li>
@@ -18,8 +21,8 @@
     <li>點餐數量: {{emailInfo.order.amount}}</li>
     <li>訂餐時間: {{emailInfo.order.order_date}}</li>
     <li>取餐時間: {{emailInfo.order.require_date}}</li>
-    <li>訂閱餘額: {{emailInfo.subscription.sub_balance}}</li>
   </ul>
+  <h3>目前訂閱餘額: {{emailInfo.subscription.sub_balance}}</h3>
 </body>
 
 </html>
