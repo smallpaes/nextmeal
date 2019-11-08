@@ -321,8 +321,7 @@ let ownerController = {
       }
       meal = await Meal.findOne({
         where: {
-          id: req.body.id,
-          isDeleted: false
+          id: req.body.id
         }
       })
       meal = await meal.update({
