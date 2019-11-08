@@ -229,7 +229,7 @@ router.beforeEach(async (to, from, next) => {
   // if user is authenticated redirect to respected page
   if (isAuthenticated && (to.name === 'login' || to.name === 'signup')) {
     const routeName = store.getters.controlPanelRouteName
-    next(routeName)
+    next({ name: routeName })
   }
 
   // declare routes without authentication

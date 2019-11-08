@@ -13,6 +13,7 @@
         v-if="!isLoading"
         class="restaurant-container-bottom"
       >
+        <!--Restaurant Info Section-->
         <div
           class="info bg-white"
         >
@@ -24,6 +25,7 @@
             />
           </div>
         </div>
+        <!--Comment Section-->
         <section class="comments">
           <div class="comments-wrapper container py-5">
             <h3 class="comments-heading">

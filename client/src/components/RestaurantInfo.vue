@@ -33,6 +33,7 @@ export default {
 .info {
     &-title {
         font-weight: weight(bold);
+        font-size: size(lg);
     }
 
     &-sub-title {
@@ -45,6 +46,7 @@ export default {
 
     &-description {
       font-size: size(xs);
+      line-height: 1.8rem;
     }
 }
 
