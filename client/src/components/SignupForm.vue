@@ -155,6 +155,8 @@ export default {
           vm.isProcessing = true
           const { data, statusText } = await authorizationAPI.emailcheck({ email: val })
           if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
+          // update processing status
+          vm.isProcessing = false
           return data.isAvailable
         } catch (error) {
           // update processing status
