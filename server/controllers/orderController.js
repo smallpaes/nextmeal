@@ -280,10 +280,6 @@ let orderController = {
       if (order.meals.length === 0 || order.meals[0] === undefined) {
         return res.status(200).json({ status: 'success', message: 'meal or restaurant does not exist' })
       }
-      if (order.hasComment) return res.status(200).json({ status: 'success', message: 'This order has already been commented.' })
-      if (order.meals.length === 0 || order.meals[0] === undefined) {
-        return res.status(400).json({ status: 'error', message: 'meal or restaurant does not exist' })
-      }
       let restaurant = await Restaurant.findByPk(order.meals[0].RestaurantId)
       if (!restaurant) return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
       const { file } = req
