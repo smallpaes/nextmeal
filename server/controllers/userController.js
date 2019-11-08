@@ -234,11 +234,12 @@ let userController = {
             sub_date: sub_date,
             sub_expired_date: sub_expired_date
           })
-          await sendEmail(req, res, subscription, data)
+
           const user = User.findByPk(req.user.id, {
             include: [{ model: Subscription }]
           });
           await user.update({ expired_date: user.dataValues.Subscriptions[0].sub_expired_date })
+          await sendEmail(req, res, subscription, data)
 
         }
         return res.redirect(`${URL}/users/orders/tomorrow/`)
