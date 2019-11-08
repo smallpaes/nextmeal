@@ -57,7 +57,7 @@
           class="form-text"
         >電子信箱必填</small>
         <small
-          v-if="!$v.email.unique || !$v.email.email && $v.email.$dirty"
+          v-if="!isProcessing && $v.email.$dirty && (!$v.email.unique || !$v.email.email)"
           class="form-text"
         >電子信箱重複或格式錯誤</small>
       </div>
@@ -136,9 +136,6 @@ export default {
       email: '',
       password: '',
       passwordCheck: '',
-      validationMsg: {
-        passwordCheck: '請輸入 8-12 位密碼'
-      },
       isProcessing: false
     }
   },
@@ -151,13 +148,17 @@ export default {
     email: {
       required,
       email,
-      unique: async val => {
+      unique: async (val, vm) => {
         if (val === '') return true
         try {
+          // update processing status
+          vm.isProcessing = true
           const { data, statusText } = await authorizationAPI.emailcheck({ email: val })
           if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
           return data.isAvailable
         } catch (error) {
+          // update processing status
+          vm.isProcessing = false
           return false
         }
       }
