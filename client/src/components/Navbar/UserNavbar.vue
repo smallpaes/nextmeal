@@ -67,13 +67,18 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
+              <SkelentonBox
+                :width="'40px'"
+                :height="'40px'"
+                class="rounded-circle skelenton-box"
+              />
               <img
                 class="dropdown-img"
                 :src="currentUser.avatar"
               >
             </a>
             <div
-              class="dropdown-menu dropdown-menu-right shadow-lg mb-0"
+              class="dropdown-menu dropdown-menu-right shadow-sm mb-0"
               aria-labelledby="navbarDropdownMenuLink"
             >
               <router-link
@@ -126,9 +131,13 @@
 </template>
 
 <script>
+import SkelentonBox from '../Placeholder/SkeletonBox'
 import { mapState, mapGetters } from 'vuex'
 
 export default {
+  components: {
+    SkelentonBox
+  },
   computed: {
     ...mapState(['currentUser', 'isAuthenticated']),
     ...mapGetters(['controlPanelRouteName'])
@@ -184,8 +193,8 @@ export default {
 }
 
 .dropdown {
-
     &-img {
+        position: relative;
         height: 40px;
         width: 40px;
         object-fit: cover;
@@ -193,6 +202,7 @@ export default {
     }
 
     &-toggle {
+        cursor: pointer;
         &::after {
             border-top: none;
             border-left: none;
@@ -227,6 +237,7 @@ export default {
     &-item {
         text-align: center;
         color: color(secondary);
+        cursor: pointer;
 
         &.active {
             background-color: unset;
@@ -239,6 +250,10 @@ export default {
         &:active {
             @extend .dropdown-item.active
         }
+    }
+
+    .skelenton-box {
+        position: absolute;
     }
 }
 
