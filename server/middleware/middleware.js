@@ -224,7 +224,7 @@ let middleware = {
   sendEmail: (req, res, emailInfo) => {
     const mailOptions = {
       from: process.env.GMAIL_ACCOUNT,
-      to: process.env.GMAIL_ACCOUNT,
+      to: emailInfo.email,
       subject: emailInfo.subject,
       template: emailInfo.template,
       context: { emailInfo }
