@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <ul>
+    <li>訂單編號: {{emailInfo.order.id}}</li>
+    <li>餐廳: {{emailInfo.meal.Restaurant.name}}</li>
+    <li>餐廳地址: {{emailInfo.meal.Restaurant.address}}</li>
+    <li>餐廳電話: {{emailInfo.meal.Restaurant.tel}}</li>
+    <li>餐點名稱: {{emailInfo.meal.name}}</li>
+    <li>點餐數量: {{emailInfo.order.amount}}</li>
+    <li>訂餐時間: {{emailInfo.order.order_date}}</li>
+    <li>取餐時間: {{emailInfo.order.require_date}}</li>
+    <li>訂閱餘額: {{emailInfo.subscription.sub_balance}}</li>
+  </ul>
+</body>
+
+</html>

@@ -209,7 +209,7 @@ let userController = {
   spgatewayCallback: async (req, res) => {
     try {
       if (req.query.from === 'NotifyURL') {
-        res.status(200).json({ status: 'success', data, message: 'Get the NotifyURL.' })
+        res.status(200).json({ status: 'success', message: 'Get the NotifyURL.' })
       }
       if (req.query.from === 'ReturnURL') {
         const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
@@ -227,13 +227,20 @@ let userController = {
           sn: data.Result.MerchantOrderNo
         })
         if (req.body.Status === 'SUCCESS') {
-          await subscription.update({
+          subscription = await subscription.update({
             ...req.body,
             payment_status: true,
             sub_date: sub_date,
             sub_expired_date: sub_expired_date
           })
-          await sendEmail(req, res, subscription, data)
+          const emailInfo = {
+            ...subscription.dataValues,
+            sub_expired_date: moment(sub_expired_date).format('YYYY-MM-DD HH:mm'),
+            sub_date: moment(sub_date).format('YYYY-MM-DD HH:mm'),
+            template: 'subscription',
+            subject: '親愛的客戶，恭喜你成功訂閱 NextMeal。'
+          }
+          sendEmail(req, res, emailInfo)
         }
         return res.redirect(`${URL}/users/orders/tomorrow/`)
         // return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
