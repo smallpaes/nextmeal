@@ -86,6 +86,7 @@ function creatMeal(stores) {
       description: foodImg[random].description,
       isServing: true,
       nextServing: false,
+      isDeleted: false,
       createdAt: new Date(),
       updatedAt: new Date()
     }
