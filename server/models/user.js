@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     lat: DataTypes.FLOAT,
     lng: DataTypes.FLOAT,
+    expired_date: DataTypes.DATE,
     geometry: DataTypes.GEOMETRY('POINT', 4326),
   }, {});
   User.associate = function (models) {
