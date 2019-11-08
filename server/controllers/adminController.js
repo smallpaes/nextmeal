@@ -133,7 +133,7 @@ let adminController = {
     try {
       const { name, sub_status } = req.query
       const start = moment().startOf('day').toDate()
-      let whereQuery = {};
+      let whereQuery = { name: { [Op.substring]: name || '' } };
       // if (sub_status) {
       //   if (sub_status === 'inactive') {
       //     whereQuery = { [Op.or]: { payment_status: false, sub_expired_date: { [Op.lt]: start } } }
