@@ -292,9 +292,11 @@ export default {
             // validate if it's an unique email
             const { data, statusText } = await authorizationAPI.emailcheck({ email: val })
             if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
+            // update processing status
+            this.isProcessing = false
             return data.isAvailable
           } catch (error) {
-          // update processing status
+            // update processing status
             this.isProcessing = false
             return false
           }
