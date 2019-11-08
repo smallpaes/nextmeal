@@ -185,6 +185,8 @@ export default {
           type: 'error',
           title: '無法取得餐廳資料，請稍後再試'
         })
+        // rediect back to home page
+        this.$router.push({ name: 'home' })
       }
     }
   }

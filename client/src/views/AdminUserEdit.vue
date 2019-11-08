@@ -86,6 +86,8 @@ export default {
           type: 'error',
           title: '無法取得用戶資料，請稍後再試'
         })
+        // rediect back to last page
+        this.$router.go(-1)
       }
     },
     async handleAfterSubmit ({ formData }) {
@@ -103,7 +105,6 @@ export default {
         // redirect to admin users page
         this.$router.push({ name: 'admin-users' })
       } catch (error) {
-        console.log(error.message)
         // update loading status
         this.isProcessing = false
         // fire error messages

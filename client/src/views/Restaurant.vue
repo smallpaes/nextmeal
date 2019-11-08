@@ -147,6 +147,8 @@ export default {
           type: 'error',
           title: '無法取得餐廳資料，請稍後再試'
         })
+        // rediect back to last page
+        this.$router.go(-1)
       }
     }
   }
