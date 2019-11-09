@@ -144,7 +144,7 @@
     </div>
     <!--Image upload-->
     <p class="mb-2">
-      上傳餐廳照片
+      上傳大頭照
     </p>
     <div
       class="form-group"
