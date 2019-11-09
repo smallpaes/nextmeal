@@ -47,10 +47,10 @@
       </div>
       <div class="btn-container">
         <router-link
-          :to="{name: 'signup'}"
+          :to="{name: 'faq'}"
           class="btn mt-5"
         >
-          體驗看看
+          了解更多
         </router-link>
       </div>
     </div>
