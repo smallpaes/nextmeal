@@ -80,18 +80,14 @@
       <div
         v-if="dish.image"
         class="file-image-wrapper"
+        @click="user.image = ''"
       >
         <img
           :src="dish.image"
           class="file-image"
           alt="餐點照片"
         >
-        <span
-          v-if="!isProcessing"
-          class="close-btn"
-          aria-hidden="true"
-          @click="dish.image = ''; $v.dish.image.$touch()"
-        >&times;</span>
+        <i class="far fa-window-close" />
       </div>
       <!--Visible file upload button-->
       <label

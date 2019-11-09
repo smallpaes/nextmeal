@@ -1,6 +1,9 @@
 <template>
   <section class="wrapper d-flex vh-100">
+    <!--Left Side Navbar-->
     <AdminSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="user flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
@@ -11,14 +14,28 @@
         編輯用戶
       </h1>
       <hr class="user-divider">
-      <UserProfileForm
-        :initial-user="user"
-        :roles="roles"
-        :initial-processing="isProcessing"
-        :categories="categories"
-        @after-submit="handleAfterSubmit"
-        @after-delete="handleAfterDelete"
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
       />
+
+      <!--User Edit Form-->
+      <transition
+        name="slide"
+      >
+        <UserProfileForm
+          v-if="!isLoading"
+          class="user-form"
+          :initial-user="user"
+          :roles="roles"
+          :initial-processing="isProcessing"
+          :categories="categories"
+          @after-submit="handleAfterSubmit"
+          @after-delete="handleAfterDelete"
+        />
+      </transition>
     </section>
   </section>
 </template>
@@ -27,6 +44,7 @@
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
 import UserProfileForm from '../components/UserProfileForm'
+import Loader from '../components/Loader'
 import adminAPI from '../apis/admin'
 import { Toast } from '../utils/helpers'
 
@@ -34,7 +52,8 @@ export default {
   components: {
     AdminSideNavBar,
     NavbarToggler,
-    UserProfileForm
+    UserProfileForm,
+    Loader
   },
   data () {
     return {
@@ -143,6 +162,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .wrapper {
     background-color: color(quinary);
 }

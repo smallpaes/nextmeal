@@ -39,7 +39,7 @@
           <!--Restaurant Data Table-->
           <div
             v-if="restaurants.length > 0"
-            class="restaurant-table"
+            class="restaurants-table"
           >
             <AdminRestaurantsTable
               key="table"
@@ -59,6 +59,7 @@
           <PlaceholderMessage
             v-else
             key="placeholder"
+            class="restaurants-placeholder"
           >
             <i class="fas fa-search mr-2" />沒有符合的結果
           </PlaceholderMessage>

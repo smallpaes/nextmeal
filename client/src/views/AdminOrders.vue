@@ -4,16 +4,16 @@
     <AdminSideNavBar :nav-is-open="navIsOpen" />
 
     <!--Right Side Content-->
-    <section class="users flex-fill">
+    <section class="orders flex-fill">
       <!--Navbar toggler-->
       <NavbarToggler
         :nav-is-open="navIsOpen"
         @toggle-navbar="navIsOpen = !navIsOpen"
       />
-      <h1 class="users-title">
+      <h1 class="orders-title">
         訂單管理
       </h1>
-      <hr class="users-divider">
+      <hr class="orders-divider">
 
       <!--Filter And Search Panel-->
       <AdminFilterPanel
@@ -44,7 +44,7 @@
           <!--User Data Table-->
           <div
             v-if="orders.length > 0"
-            class="users-table"
+            class="orders-table"
           >
             <AdminOrdersTable
               :orders="orders"
@@ -61,7 +61,10 @@
             </div>
           </div>
           <!--Placeholder Messgae for Empty Data-->
-          <PlaceholderMessage v-else>
+          <PlaceholderMessage
+            v-else
+            class="orders-placeholder"
+          >
             <i class="fas fa-search mr-2" />沒有符合的結果
           </PlaceholderMessage>
         </template>
@@ -186,7 +189,7 @@ export default {
     background-color: color(quinary);
 }
 
-.users {
+.orders {
     @include controlPanelLayout;
 }
 
