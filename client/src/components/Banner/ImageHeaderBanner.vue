@@ -2,12 +2,17 @@
   <section
     class="“banner"
   >
-    <div class="banner-container">
+    <div
+      class="banner-container"
+      :style="{height: `${bannerHeight}px`}"
+    >
       <div
         class="banner-img"
-        :style="{backgroundImage: `url(${backgroundPhoto})`, height: `${bannerHeight}px`}"
+        :style="{backgroundImage: `url(${backgroundPhoto})`}"
       />
-      <div class="banner-overlay" />
+      <div
+        class="banner-overlay"
+      />
       <div class="banner-content">
         <slot name="header" />
       </div>
@@ -37,11 +42,11 @@ export default {
 
     &-container {
         margin-top: 62px;
-        @include setBackground("../../assets/placeholder-image/plain/1260x750.png", 550px);
+        @include setBackground("../../assets/placeholder-image/plain/1260x750.png");
     }
 
     &-img {
-      @include setBackground("https://via.placeholder.com/800x800/d3d3d3", 550px);
+      @include setBackground("https://via.placeholder.com/800x800/d3d3d3");
     }
     &-content {
         color: color(quaternary);

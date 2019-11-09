@@ -6,18 +6,22 @@
         class="footer-brand"
       >NextMeal</a>
       <div class="footer-nav mt-2">
-        <a
-          href="#"
+        <router-link
+          :to="{name: 'signup'}"
           class="footer-nav-link"
-        >前往體驗</a>
-        <a
-          href="#"
+        >
+          前往體驗
+        </router-link>
+        <router-link
+          :to="{name: 'faq'}"
           class="footer-nav-link"
-        >常見問題</a>
+        >
+          常見問題
+        </router-link>
         <a
-          href="#"
+          href="https://github.com/smallpaes/nextmeal"
           class="footer-nav-link"
-        >關於團隊</a>
+        >關於專案</a>
       </div>
     </div>
   </footer>

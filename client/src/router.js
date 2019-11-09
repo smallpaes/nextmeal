@@ -96,7 +96,7 @@ const router = new Router({
     {
       path: '/faq',
       name: 'faq',
-      component: () => import('./views/Questions')
+      component: () => import('./views/Faq')
     },
     {
       path: '/order/tomorrow',

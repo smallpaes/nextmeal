@@ -38,7 +38,7 @@
     flex-direction: $direction;
 }
 
-@mixin setBackground($imageUrl, $height) {
+@mixin setBackground($imageUrl, $height: 100%) {
     background-image: url($imageUrl);
     width: 100%;
     height: $height;
