@@ -102,7 +102,21 @@
         class="form-group form-address-group col-12 col-md"
         :class="{invalid: $v.user.address.$error}"
       >
-        <label for="address">地址</label>
+        <label for="address">
+          所在地址
+          <Tooltip
+            :width="'175px'"
+            :top="'-5px'"
+            :left="'160%'"
+          >
+            <template #icon>
+              <i class="far fa-question-circle" />
+            </template>
+            <template #message>
+              依此地址推薦餐廳給您
+            </template>
+          </Tooltip>
+        </label>
         <input
           id="address"
           v-model.trim="user.address"
@@ -212,13 +226,15 @@
 import CustomDatePicker from '../components/CustomDatePicker'
 import CustomSelect from '../components/CustomSelect'
 import authorizationAPI from '../apis/authorization'
+import Tooltip from '../components/Button/Tooltip'
 import { getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter } from '../utils/mixins'
 import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
 
 export default {
   components: {
     CustomDatePicker,
-    CustomSelect
+    CustomSelect,
+    Tooltip
   },
   mixins: [getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter],
   props: {
@@ -386,4 +402,5 @@ export default {
   background-color: color(tertiary);
   color: color(quaternary);
 }
+
 </style>
