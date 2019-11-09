@@ -61,17 +61,14 @@
         <div
           v-if="comment.image"
           class="file-image-wrapper"
+          @click="user.image = ''"
         >
           <img
             :src="comment.image"
             class="file-image"
             alt="評論照片"
           >
-          <span
-            class="close-btn"
-            aria-hidden="true"
-            @click="comment.image = ''"
-          >&times;</span>
+          <i class="far fa-window-close" />
         </div>
         <!--Visible file upload button-->
         <label

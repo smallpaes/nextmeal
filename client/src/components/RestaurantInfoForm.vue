@@ -187,17 +187,14 @@
       <div
         v-if="restaurant.image"
         class="file-image-wrapper"
+        @click="user.image = ''"
       >
         <img
           :src="restaurant.image"
           class="file-image"
           alt="餐廳照片"
         >
-        <span
-          class="close-btn"
-          aria-hidden="true"
-          @click="restaurant.image = ''"
-        >&times;</span>
+        <i class="far fa-window-close" />
       </div>
       <!--Visible file upload button-->
       <label

@@ -1,11 +1,14 @@
 <template>
   <nav class="navbar navbar-expand-sm navbar-light bg-white fixed-top shadow-sm">
+    <!--Left Side Logo-->
     <router-link
       class="navbar-brand"
       :to="{name: 'home'}"
     >
       NextMeal
     </router-link>
+
+    <!--Navbar Toggler-->
     <button
       class="navbar-toggler border-0"
       type="button"
@@ -18,6 +21,7 @@
       <span class="navbar-toggler-icon" />
     </button>
 
+    <!--Right Side Nav-->
     <div
       id="navbarContent"
       class="collapse navbar-collapse"
@@ -57,7 +61,42 @@
               購買方案
             </router-link>
           </li>
-          <li class="nav-item dropdown ml-0 ml-sm-3">
+
+          <!--Nav Items shown on extra small size screen-->
+          <li
+            class="nav-item"
+          >
+            <router-link
+              class="nav-link d-sm-none"
+              :to="{name: 'user-profile'}"
+            >
+              帳戶設定
+            </router-link>
+          </li>
+          <li
+            class="nav-item"
+          >
+            <router-link
+              class="nav-link d-sm-none"
+              :to="{name: 'user-order'}"
+            >
+              訂單管理
+            </router-link>
+          </li>
+          <li
+            class="nav-item"
+          >
+            <button
+              class="nav-link btn d-sm-none mx-auto"
+              type="button"
+              @click="logout"
+            >
+              登出帳號
+            </button>
+          </li>
+
+          <!--Avatar Drop Down Menu Shown on Small Size Screen-->
+          <li class="nav-item dropdown ml-0 ml-sm-3 d-none d-sm-inline">
             <a
               id="navbarDropdownMenuLink"
               class="dropdown-toggle p-0"
@@ -67,16 +106,19 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
+              <!--Avatar Placeholder Image-->
               <SkelentonBox
                 :width="'40px'"
                 :height="'40px'"
                 class="rounded-circle skelenton-box"
               />
+              <!--Avatar-->
               <img
                 class="dropdown-img"
                 :src="currentUser.avatar"
               >
             </a>
+            <!--Dropdown items-->
             <div
               class="dropdown-menu dropdown-menu-right shadow-sm mb-0"
               aria-labelledby="navbarDropdownMenuLink"

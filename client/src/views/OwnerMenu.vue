@@ -67,6 +67,7 @@
           <OwnerMenuForm
             v-if="$route.query.ran==='nextWeek'"
             ref="editForm"
+            class="menu-form"
             :initial-meal="Object.keys(meal).length > 0 ? meal : {}"
             :options="options"
             @after-submit="handleAfterSubmit"

@@ -27,6 +27,7 @@
       >
         <RestaurantInfoForm
           v-if="!isLoading"
+          class="info-form"
           :initial-restaurant="restaurant"
           :categories="categories"
           :initial-processing="isProcessing"

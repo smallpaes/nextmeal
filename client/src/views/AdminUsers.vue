@@ -43,9 +43,13 @@
           <AdminUsersTable
             v-if="users.length > 0"
             :users="users"
+            class="users-table"
           />
           <!--Placeholder Messgae for Empty Data-->
-          <PlaceholderMessage v-else>
+          <PlaceholderMessage
+            v-else
+            class="users-placeholder"
+          >
             <i class="fas fa-search mr-2" />沒有符合的結果
           </PlaceholderMessage>
         </template>

@@ -144,7 +144,7 @@
     </div>
     <!--Image upload-->
     <p class="mb-2">
-      上傳餐廳照片
+      上傳大頭照
     </p>
     <div
       class="form-group"
@@ -168,17 +168,14 @@
       <div
         v-if="user.image"
         class="file-image-wrapper"
+        @click="user.image = ''"
       >
         <img
           :src="user.image"
           class="file-image"
           alt="餐廳照片"
         >
-        <span
-          class="close-btn"
-          aria-hidden="true"
-          @click="user.image = ''"
-        >&times;</span>
+        <i class="far fa-window-close" />
       </div>
       <!--Visible file upload button-->
       <label
