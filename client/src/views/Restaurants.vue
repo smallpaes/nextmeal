@@ -35,23 +35,24 @@
           </template>
         </Header>
         <div class="card-wrapper row px-3">
-          <template v-if="isLoading">
+          <template v-if="!isLoading">
+            <div
+              v-for="restaurant in more_restaurants.restaurants"
+              :key="restaurant.id"
+              class="col-12 col-md-6 col-lg-4 p-2"
+            >
+              <RestaurantCard :restaurant="restaurant" />
+            </div>
+          </template>
+          <template v-if="isLoading || isFetching">
             <div
               v-for="index in 6"
               :key="index"
               class="col-12 col-md-6 col-lg-4 p-2"
             >
-              <RestaurantCard :is-loading="isLoading" />
+              <RestaurantCard :is-loading="isLoading || isFetching" />
             </div>
           </template>
-          <div
-            v-for="restaurant in more_restaurants.restaurants"
-            v-else
-            :key="restaurant.id"
-            class="col-12 col-md-6 col-lg-4 p-2"
-          >
-            <RestaurantCard :restaurant="restaurant" />
-          </div>
         </div>
         <div
           v-if="!isLoading"
@@ -61,7 +62,7 @@
             v-if="currentPage !== totalPage"
             class="btn mt-3"
             href="#"
-            @click="fetchRestaurants(currentDistrict, currentPage + 1)"
+            @click="fetchRestaurants(currentDistrict, currentPage + 1); isFetching = true"
           >
             瀏覽更多
           </button>
@@ -133,7 +134,8 @@ export default {
       currentDistrict: '',
       currentPage: 0,
       totalPage: null,
-      isLoading: true
+      isLoading: true,
+      isFetching: false
     }
   },
   created () {
@@ -151,13 +153,14 @@ export default {
     // Get the district name
     const { dist } = to.query
     this.currentDistrict = dist || '信義區'
+    // update loading status
+    this.isLoading = true
     // Refetch the restaurant data
     this.fetchRestaurants(dist, this.currentPage + 1)
     next()
   },
   methods: {
     async fetchRestaurants (dist, page) {
-      this.isLoading = true
       try {
         // fetch data from API
         const { data, statusText } = await restaurantsAPI.getRestaurants({ dist, page })
@@ -177,9 +180,12 @@ export default {
         // update current page number
         this.currentPage += 1
         this.isLoading = false
+        this.isFetching = false
       } catch (error) {
         // update loading status
         this.isLoading = false
+        // update fetching status
+        this.isFetching = false
         // fire error messages
         Toast.fire({
           type: 'error',
