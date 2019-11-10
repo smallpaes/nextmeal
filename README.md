@@ -87,8 +87,8 @@ Online platform for you to readily access to awesome restaurants nearby and orde
 As a visitor, you may: 
 1. Learn more about the platform and how it works
 2. Check out all the restaurants currently serving on the platform
-3. Check out the detail of all the meal plans available
-4. Visit our F.A.Q page for all the questions and response
+3. Check out the detail of all the subscription plans available
+4. Visit our F.A.Q page for all the frequently asked questions and answers
 5. Sign up for a Nextmeal account to start the journey
 
 
@@ -102,7 +102,7 @@ As a Nextmeal member, you may:
   - Credit card number(testing): 4000-2211-1111-1111
   - Credit card expiration date: Any random date
   - Credit card security code: Any random three numbers set
-- Choose between two restaurants we provide every day and order the meal in advance
+- Choose between two restaurants we provide(within 500 meters) every day and order the meal in advance
 - Update or cancel the order by the end of the day
 - Pick up the meal at the time you have chosen without having to wait in line
 - Edit your profile info--We always recommend you restaurants based on the address you provided
@@ -117,7 +117,7 @@ As a restaurant owner, you may:
 - Edit your restaurant info
 - Create and edit your restaurant menu
 - See the meal currently serving
-- Update the meal and amount you would like to serve next week
+- Update the meal and amount you would like to serve next week before Saturday
 - Readily check out all the orders of the day
 
 
