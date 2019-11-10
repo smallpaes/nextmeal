@@ -109,7 +109,7 @@ let orderController = {
       const emailInfo = {
         email: req.user.email,
         template: 'orderInfo',
-        subject: '親愛的客戶，恭喜你成功訂購餐點。',
+        subject: '【Nextmeal】訂購餐點已確認 ',
         order: {
           ...order.dataValues,
           order_date: moment(order.order_date).format('YYYY-MM-DD HH:mm'),
@@ -252,7 +252,7 @@ let orderController = {
         const emailInfo = {
           email: req.user.email,
           template: 'orderInfo',
-          subject: '親愛的客戶，恭喜你修改訂購餐點。',
+          subject: '【Nextmeal】訂購餐點已修改',
           order: {
             ...order.dataValues,
             order_date: moment(order.order_date).format('YYYY-MM-DD HH:mm'),
@@ -376,7 +376,7 @@ let orderController = {
       const emailInfo = {
         email: req.user.email,
         template: 'orderInfo',
-        subject: '親愛的客戶，你訂購的餐點已經被取消。',
+        subject: '【Nextmeal】訂購餐點已取消',
         cancel: true,
         order: {
           ...order.dataValues,

@@ -297,7 +297,7 @@ let adminController = {
       const emailInfo = {
         email: order.User.email,
         template: 'orderInfo',
-        subject: '親愛的客戶，你訂購的餐點已經被取消。',
+        subject: '【Nextmeal】訂購餐點已取消',
         cancel: true,
         order: {
           ...order.dataValues,
