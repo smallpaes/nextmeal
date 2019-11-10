@@ -9,8 +9,8 @@ export default {
     getRestaurant ({ restaurantId }) {
       return apiHelper.get(`/admin/restaurants/${restaurantId}`)
     },
-    putRestaurant ({ restaurantId }) {
-      return apiHelper.put(`/admin/restaurants/${restaurantId}`)
+    putRestaurant ({ restaurantId, formData }) {
+      return apiHelper.put(`/admin/restaurants/${restaurantId}`, formData)
     },
     deleteRestaurant ({ restaurantId }) {
       return apiHelper.delete(`/admin/restaurants/${restaurantId}`)

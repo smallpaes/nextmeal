@@ -114,8 +114,10 @@ export default {
         // update processing status
         this.isProcessing = true
 
+        const { restaurant_id: restaurantId } = this.$route.params
+
         // admin page
-        const { data, statusText } = await adminAPI.restaurants.putRestaurant({ restaurantId: this.restaurantId, formData })
+        const { data, statusText } = await adminAPI.restaurants.putRestaurant({ restaurantId, formData })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         this.$router.push('/admin')
