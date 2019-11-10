@@ -165,10 +165,10 @@ export default {
 @include slideAnimation;
 
 .wrapper {
-    background-color: color(quinary);
+  background-color: color(quinary);
 }
 
 .user {
-    @include controlPanelLayout;
+  @include controlPanelLayout;
 }
 </style>

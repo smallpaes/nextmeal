@@ -93,13 +93,13 @@ export default {
 
 <style lang="scss" scoped>
 /deep/ .form {
-    @include formControl;
+  @include formControl;
 
-    &-control {
-        &[readonly] {
-          background-color: transparent;
-        }
+  &-control {
+    &[readonly] {
+      background-color: transparent;
     }
+  }
 }
 
 .form {

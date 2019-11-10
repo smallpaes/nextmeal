@@ -196,34 +196,34 @@ export default {
 @include slideAnimation;
 
 .faq {
-    &-title {
-        color: color(primary);
-        padding: 0 0 .5rem 1rem;
+  &-title {
+    color: color(primary);
+    padding: 0 0 .5rem 1rem;
 
-        &-wrapper {
-            margin: 1.5rem 0 3rem 0;
-        }
+    &-wrapper {
+      margin: 1.5rem 0 3rem 0;
     }
+  }
 }
 
 .list {
 
-    &-group {
+  &-group {
 
-        &-item {
-            background-color: transparent;
-            padding-top: 1.5rem;
-        }
+    &-item {
+      background-color: transparent;
+      padding-top: 1.5rem;
     }
+  }
 
-    &-title {
-        font-size: size(sm);
-        margin-bottom: 1rem;
-        font-weight: weight(bold);
-    }
+  &-title {
+    font-size: size(sm);
+    margin-bottom: 1rem;
+    font-weight: weight(bold);
+  }
 
-    &-description {
-      font-size: size(xs);
-    }
+  &-description {
+    font-size: size(xs);
+  }
 }
 </style>

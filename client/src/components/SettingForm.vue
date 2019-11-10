@@ -219,31 +219,31 @@ export default {
 }
 
 .form {
-    @include inputValidation;
+  @include inputValidation;
 }
 
 .alert {
-    color: color(primary);
+  color: color(primary);
 }
 
 .btn {
-    @include solidButton(200, 1);
-    min-width: 100px;
+  @include solidButton(200, 1);
+  min-width: 100px;
 
-    &-update {
-      background-color: color(tertiary);
+  &-update {
+    background-color: color(tertiary);
 
-      &:hover {
-        background-color: darken(color(tertiary), 20%);
-      }
+    &:hover {
+    background-color: darken(color(tertiary), 20%);
     }
+  }
 
-    @include response(sm) {
-      min-width: 150px;
-    }
+  @include response(sm) {
+    min-width: 150px;
+  }
 
-    @include response(md) {
-      min-width: 170px;
-    }
+  @include response(md) {
+    min-width: 170px;
+  }
 }
 </style>

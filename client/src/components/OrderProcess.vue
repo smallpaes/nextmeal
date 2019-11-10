@@ -65,31 +65,31 @@ export default {
 @include slideInLeftAnimation;
 
 .process {
-    @include headingStyling;
-    text-align: center;
+  @include headingStyling;
+  text-align: center;
 
-    &-icon {
-        font-size: size(xxl);
-        color: color(tertiary);
-    }
+  &-icon {
+    font-size: size(xxl);
+    color: color(tertiary);
+  }
 
-    &-description {
-        font-size: size(sm);
-    }
+  &-description {
+    font-size: size(sm);
+  }
 
-    &:not(:last-child):after {
-        content: '';
-        position: absolute;
-        left: 90%;
-        top: 50%;
-        transform: translateY(-50%);
-        border-bottom: 1px dashed lighten(color(secondary), 30%);
-        width: 60px;
-        height: 0;
-    }
+  &:not(:last-child):after {
+    content: '';
+    position: absolute;
+    left: 90%;
+    top: 50%;
+    transform: translateY(-50%);
+    border-bottom: 1px dashed lighten(color(secondary), 30%);
+    width: 60px;
+    height: 0;
+  }
 
-    .btn {
-        @include buttonOutline;
-    }
+  .btn {
+    @include buttonOutline;
+  }
 }
 </style>

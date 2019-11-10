@@ -144,14 +144,14 @@ export default {
 @include slideAnimation;
 
 .wrapper {
-    background-color: color(quinary);
+  background-color: color(quinary);
 }
 
 .dish {
-    @include controlPanelLayout;
+  @include controlPanelLayout;
 
-    &-divider {
-        margin-top: 0;
-    }
+  &-divider {
+    margin-top: 0;
+  }
 }
 </style>

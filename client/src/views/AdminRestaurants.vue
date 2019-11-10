@@ -166,21 +166,21 @@ export default {
 @include fadeAnimation;
 
 .wrapper {
-    background-color: color(quinary);
+  background-color: color(quinary);
 }
 
 .restaurants {
-    @include controlPanelLayout;
+  @include controlPanelLayout;
 }
 
 .btn-container {
-    text-align: center;
-    .btn {
-        @include solidButton(150);
+  text-align: center;
+  .btn {
+    @include solidButton(150);
 
-        @include response(md) {
-            min-width: 200px;
-        }
+    @include response(md) {
+      min-width: 200px;
     }
+  }
 }
 </style>

@@ -62,28 +62,28 @@ export default {
 
 <style lang="scss" scoped>
 .detail {
-    width: 100%;
+  width: 100%;
 
-    &-wrapper {
-        background-color: color(quaternary);
-    }
+  &-wrapper {
+    background-color: color(quaternary);
+  }
 
+  &-title {
+    font-size: size(md);
+    font-weight: weight(bold);
+    color: color(primary);
+  }
+
+  &-content {
     &-title {
-        font-size: size(md);
-        font-weight: weight(bold);
-        color: color(primary);
+      font-size: size(sm);
+      color: lighten(color(secondary), 30%);
     }
 
-    &-content {
-        &-title {
-            font-size: size(sm);
-            color: lighten(color(secondary), 30%);
-        }
-
-        &-description {
-            font-size: size(sm);
-            font-weight: weight(bold);
-        }
+    &-description {
+      font-size: size(sm);
+      font-weight: weight(bold);
     }
+  }
 }
 </style>

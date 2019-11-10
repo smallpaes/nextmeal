@@ -97,12 +97,12 @@ export default {
 
 <style lang="scss" scoped>
 $headers: (
-    1: '編號',
-    2: '訂餐人',
-    3: '餐廳',
-    4: '日期',
-    5: '成交量',
-    6: '狀態'
+  1: '編號',
+  2: '訂餐人',
+  3: '餐廳',
+  4: '日期',
+  5: '成交量',
+  6: '狀態'
 );
 
 // table layout for small screen
@@ -111,14 +111,14 @@ $headers: (
 @include tableFullSize;
 
 .table tbody tr:hover {
-    cursor: unset;
+  cursor: unset;
 }
 
 .pointer {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .wait {
-    cursor: wait;
+  cursor: wait;
 }
 </style>

@@ -127,46 +127,46 @@ export default {
 }
 
 /deep/ .form {
-    @include formControl;
+  @include formControl;
 
-    &-content {
-        max-width: 450px;
-        background-color: color(quaternary);
-        margin-top: 70px;
-        margin: 0 auto;
+  &-content {
+    max-width: 450px;
+    background-color: color(quaternary);
+    margin-top: 70px;
+    margin: 0 auto;
 
-        &-top {
-            background-color: color(quaternary);
-            padding: 2.7rem;
+    &-top {
+      background-color: color(quaternary);
+      padding: 2.7rem;
 
-            &-header {
-                text-align: center;
+      &-header {
+        text-align: center;
 
-                h3 {
-                    font-size: size(lg);
-                }
-
-                h5 {
-                    font-size: size(sm);
-                }
-            }
+        h3 {
+          font-size: size(lg);
         }
 
-        &-bottom {
-            background-color: color(quinary);
-            padding: .8rem 2.7rem;
-            font-size: size(xs);
-            color:lighten(color(secondary), 10%);
-
-            a {
-                @include linkStyling(color(tertiary));
-            }
+        h5 {
+          font-size: size(sm);
         }
+      }
     }
 
-    &-text {
-        font-size: size(xs);
-        color:lighten(color(secondary), 10%);
+    &-bottom {
+      background-color: color(quinary);
+      padding: .8rem 2.7rem;
+      font-size: size(xs);
+      color:lighten(color(secondary), 10%);
+
+      a {
+        @include linkStyling(color(tertiary));
+      }
     }
+  }
+
+  &-text {
+    font-size: size(xs);
+    color:lighten(color(secondary), 10%);
+  }
 }
 </style>

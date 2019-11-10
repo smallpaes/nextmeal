@@ -155,19 +155,19 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-    @include inputValidation;
-    @include formControl;
-    background-color: color(quaternary);
-    color: color(secondary);
+  @include inputValidation;
+  @include formControl;
+  background-color: color(quaternary);
+  color: color(secondary);
 
-    &-header {
-        font-size: size(md);
-    }
+  &-header {
+    font-size: size(md);
+  }
 }
 
 .btn {
-    &-container {
-        text-align: center;
-    }
+  &-container {
+    text-align: center;
+  }
 }
 </style>

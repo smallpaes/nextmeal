@@ -60,27 +60,27 @@ export default {
   @include formSelectControl;
 
   &-control {
-      &:invalid {
-          margin-bottom: 0rem;
-      }
+    &:invalid {
+      margin-bottom: 0rem;
+    }
   }
 
   &-select-control {
-      position: relative;
+    position: relative;
 
-      .form {
-        &-control {
-          border: none;
-        }
+    .form {
+      &-control {
+        border: none;
       }
+    }
 
-      .invalid-feedback {
-          position: absolute;
-      }
+    .invalid-feedback {
+      position: absolute;
+    }
   }
 }
 
 .form-control {
-    border: none
+  border: none
 }
 </style>

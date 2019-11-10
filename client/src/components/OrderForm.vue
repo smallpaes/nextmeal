@@ -196,102 +196,98 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-    width: 100%;
+  width: 100%;
 
-    &-wrapper {
-        background-color: color(quaternary);
+  &-wrapper {
+    background-color: color(quaternary);
+  }
+
+  &-title {
+    font-size: size(md);
+    font-weight: weight(bold);
+    color: color(primary);
+  }
+
+  &-legend {
+    font-size: size(sm);
+  }
+
+  &-check {
+    &-label {
+      color: lighten(color(secondary), 20%);
+      padding: .2rem 1rem;
+      border-radius: .1rem;
+      margin-bottom: .75rem;
+      border: 1px solid lighten(color(secondary), 20%);
+      cursor: pointer;
+      transition: all .2s linear;
+
+      &:hover {
+        border-color: color(tertiary);
+        background: color(tertiary);
+        color: color(quaternary);
+      }
     }
 
-    &-title {
-        font-size: size(md);
-        font-weight: weight(bold);
-        color: color(primary);
+    &-input {
+      &:checked ~ .form-check-label {
+        border-color: color(tertiary);
+        background: color(tertiary);
+        color: color(quaternary);
+      }
+    }
+  }
+
+  &-quantity {
+    display: flex;
+
+    &-input {
+      background-color: transparent;
+      border: none;
     }
 
-    &-legend {
-        font-size: size(sm);
+    .btn {
+      border: 1px solid lighten(color(secondary), 20%);
+      color: lighten(color(secondary), 20%);
+      border-radius: .1rem;
+      padding: .1rem;
+      width: 1.5rem;
     }
 
-    &-check {
-        &-label {
-            color: lighten(color(secondary), 20%);
-            padding: .2rem 1rem;
-            border-radius: .1rem;
-            margin-bottom: .75rem;
-            border: 1px solid lighten(color(secondary), 20%);
-            cursor: pointer;
-            transition: all .2s linear;
-
-            &:hover {
-                border-color: color(tertiary);
-                background: color(tertiary);
-                color: color(quaternary);
-            }
-        }
-
-        &-input {
-            &:checked ~ .form-check-label {
-                border-color: color(tertiary);
-                background: color(tertiary);
-                color: color(quaternary);
-            }
-        }
+    .disable-btn {
+      color: lighten(color(secondary), 40%);
+      border: 1px solid lighten(color(secondary), 40%);
     }
-
-    &-quantity {
-        display: flex;
-
-        &-input {
-            background-color: transparent;
-            border: none;
-        }
-
-        .btn {
-            border: 1px solid lighten(color(secondary), 20%);
-            color: lighten(color(secondary), 20%);
-            border-radius: .1rem;
-            padding: .1rem;
-            width: 1.5rem;
-        }
-
-        .disable-btn {
-            color: lighten(color(secondary), 40%);
-            border: 1px solid lighten(color(secondary), 40%);
-        }
-    }
+  }
 }
 
 .btn-container {
-    text-align: center;
-    .btn {
-        margin-left: .8rem;
-        padding: 0;
-        line-height: 1.8rem;
-        min-width: 78px;
-        font-size: size(xs);
+  text-align: center;
+  .btn {
+    margin-left: .8rem;
+    padding: 0;
+    line-height: 1.8rem;
+    min-width: 78px;
+    font-size: size(xs);
 
-        &:last-child {
-            margin-left: 0;
-        }
-
-        @include response(md) {
-            font-size: size(sm);
-            min-width: 130px;
-            padding: .1rem 0;
-            margin-left: 1rem;
-
-            &:last-child {
-
-            }
-        }
+    &:last-child {
+      margin-left: 0;
     }
 
     @include response(md) {
-        text-align: right;
+      font-size: size(sm);
+      min-width: 130px;
+      padding: .1rem 0;
+      margin-left: 1rem;
     }
+  }
+
+  @include response(md) {
+    text-align: right;
+  }
 }
 
 .invalid-message {
-    color: color(primary);
+  color: color(primary);
 }
 </style>

@@ -200,9 +200,9 @@ export default {
 }
 
 .btn-container {
-    text-align: center;
-    .btn {
-        @include buttonOutline;
-    }
+  text-align: center;
+  .btn {
+    @include buttonOutline;
+  }
 }
 </style>

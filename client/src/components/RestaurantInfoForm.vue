@@ -380,21 +380,21 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-    @include fileUpload;
-    @include inputValidation;
-    @include formControl;
-    background-color: color(quaternary);
-    color: color(secondary);
+  @include fileUpload;
+  @include inputValidation;
+  @include formControl;
+  background-color: color(quaternary);
+  color: color(secondary);
 }
 
 .btn {
-    &-container {
-        @include flexPosition(center, center, row);
-    }
+  &-container {
+    @include flexPosition(center, center, row);
+  }
 }
 
 .alert {
-    background-color: color(tertiary);
-    color: color(quaternary);
+  background-color: color(tertiary);
+  color: color(quaternary);
 }
 </style>

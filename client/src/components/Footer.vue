@@ -29,29 +29,29 @@
 
 <style lang="scss" scoped>
 .footer{
-     @include brand(footer);
-     background-color: darken(color(secondary), 6%);
+  @include brand(footer);
+  background-color: darken(color(secondary), 6%);
 
-     &-nav-link {
-         position: relative;
-         padding: 0 1rem;
-         color: lighten(color(secondary), 30%);
-         font-size: size(xs);
-         transition: color .2s linear;
+  &-nav-link {
+    position: relative;
+    padding: 0 1rem;
+    color: lighten(color(secondary), 30%);
+    font-size: size(xs);
+    transition: color .2s linear;
 
-         &:hover {
-             color: lighten(color(secondary), 50%);
-         }
+    &:hover {
+      color: lighten(color(secondary), 50%);
+    }
 
-        &:not(:last-child):after {
-            content: '';
-            position: absolute;
-            left: 100%;
-            top: 23%;
-            border-left: 1px solid lighten(color(secondary), 30%);
-            height: 70%;
-            width: 1px;
-         }
-     }
+    &:not(:last-child):after {
+      content: '';
+      position: absolute;
+      left: 100%;
+      top: 23%;
+      border-left: 1px solid lighten(color(secondary), 30%);
+      height: 70%;
+      width: 1px;
+    }
+  }
 }
 </style>

@@ -57,9 +57,9 @@ export default {
 
 <style lang="scss" scoped>
 $headers: (
-    1: '編號',
-    2: '客戶',
-    3: '數量'
+  1: '編號',
+  2: '客戶',
+  3: '數量'
 );
 
 // table layout for small screen
@@ -68,56 +68,56 @@ $headers: (
 @include tableFullSize;
 
 .high-rating {
-    color: color(tertiary);
+  color: color(tertiary);
 }
 
 .low-rating {
-    color: color(primary);
+  color: color(primary);
 }
 
 .card {
 
-    &-header {
-      background-color: lighten(color(secondary), 10%);
+  &-header {
+    background-color: lighten(color(secondary), 10%);
 
-    }
+  }
 
-    &-title {
-        color: color(quaternary);
-    }
+  &-title {
+    color: color(quaternary);
+  }
 
-    &-text {
-        color: lighten(color(secondary), 50%);
-        font-size: size(xs);
-    }
+  &-text {
+    color: lighten(color(secondary), 50%);
+    font-size: size(xs);
+  }
 }
 
 .table {
-    tbody {
-        tr {
-            border-radius: 0;
-            box-shadow: none;
+  tbody {
+    tr {
+      border-radius: 0;
+      box-shadow: none;
 
-            &:not(:last-child) {
-                border-bottom: 1.5px dashed lighten(color(secondary), 40%);
+      &:not(:last-child) {
+        border-bottom: 1.5px dashed lighten(color(secondary), 40%);
 
-                @include response(md) {
-                    border-bottom: none;
-                }
-            }
-
-            &:hover {
-                transform: translateY(0px);
-                cursor: unset;
-                color: color(secondary);
-                box-shadow: none;
-
-                @include response(md) {
-                    font-weight: weight(bold);
-                }
-            }
+        @include response(md) {
+          border-bottom: none;
         }
+      }
+
+      &:hover {
+        transform: translateY(0px);
+        cursor: unset;
+        color: color(secondary);
+        box-shadow: none;
+
+        @include response(md) {
+          font-weight: weight(bold);
+        }
+      }
     }
+  }
 }
 
 </style>

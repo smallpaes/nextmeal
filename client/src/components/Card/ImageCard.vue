@@ -54,25 +54,25 @@ export default {
 
 <style lang="scss" scoped>
 .img {
-    @include positionCenter;
-    @include imgOverlay;
+  @include positionCenter;
+  @include imgOverlay;
 
-    &-container {
-        transition: transform .2s linear;
+  &-container {
+    transition: transform .2s linear;
 
-        &:hover {
-            transform: translateY(-2%);
-        }
+    &:hover {
+      transform: translateY(-2%);
     }
+  }
 
-    &-fluid {
-        height: 180px;
-        width: 100%;
-        object-fit: cover;
-    }
+  &-fluid {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+  }
 
-    &-content {
-        color: color(quaternary);
-    }
+  &-content {
+    color: color(quaternary);
+  }
 }
 </style>

@@ -234,18 +234,18 @@ export default {
 @include fadeAnimation;
 
 .meal {
-    &-content {
-        position: relative;
-        top: -7rem;
-    }
+  &-content {
+    position: relative;
+    top: -7rem;
+  }
 
-    &-card {
-        &:first-child {
-            @include response(lg) {
-                margin-left: 8.333333%;
-            }
-        }
+  &-card {
+    &:first-child {
+      @include response(lg) {
+        margin-left: 8.333333%;
+      }
     }
+  }
 }
 
 .order {

@@ -68,11 +68,11 @@ export default {
 
 <style lang="scss" scoped>
 $headers: (
-    1: '名稱',
-    2: '地區',
-    3: '評分',
-    4: '評論',
-    5: '成交量'
+  1: '名稱',
+  2: '地區',
+  3: '評分',
+  4: '評論',
+  5: '成交量'
 );
 
 // table layout for small screen
@@ -81,10 +81,10 @@ $headers: (
 @include tableFullSize;
 
 .high-rating {
-    color: color(tertiary);
+  color: color(tertiary);
 }
 
 .low-rating {
-    color: color(primary);
+  color: color(primary);
 }
 </style>

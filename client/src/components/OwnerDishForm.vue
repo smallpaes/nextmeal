@@ -200,66 +200,66 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-    @include fileUpload;
-    @include inputValidation;
-    @include formControl;
-    background-color: color(quaternary);
-    color: color(secondary);
+  @include fileUpload;
+  @include inputValidation;
+  @include formControl;
+  background-color: color(quaternary);
+  color: color(secondary);
 
-    &-heading {
-        margin: 0 0 1.5rem 0;
-        font-size: size(md);
-        color: darken(color(secondary), 8%);
-    }
+  &-heading {
+    margin: 0 0 1.5rem 0;
+    font-size: size(md);
+    color: darken(color(secondary), 8%);
+  }
 }
 
 .file {
-    &-input {
-        @include hiddenInput;
-    }
+  &-input {
+    @include hiddenInput;
+  }
 
-    /* Style label into button */
-    &-label {
-        @include flexPosition;
-        @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), 0.1);
+  /* Style label into button */
+  &-label {
+    @include flexPosition;
+    @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), 0.1);
+    cursor: pointer;
+  }
+
+  &-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    &-wrapper {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      padding: .2rem;
+      border-radius: .1rem;
+      border: 1px solid lighten(color(secondary), 50%);
+
+      .close-btn {
+        position: absolute;
+        top: 0;
+        right: 4px;
+        color: lighten(color(secondary), 15%);
         cursor: pointer;
-    }
 
-    &-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-
-        &-wrapper {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            padding: .2rem;
-            border-radius: .1rem;
-            border: 1px solid lighten(color(secondary), 50%);
-
-            .close-btn {
-                position: absolute;
-                top: 0;
-                right: 4px;
-                color: lighten(color(secondary), 15%);
-                cursor: pointer;
-
-                &:hover {
-                    color: lighten(color(secondary), 30%);
-                }
-            }
+        &:hover {
+          color: lighten(color(secondary), 30%);
         }
+      }
     }
+  }
 }
 
 .btn {
-    &-container {
-        text-align: center;
+  &-container {
+    text-align: center;
 
-        @include response(md) {
-            text-align: right;
-        }
+    @include response(md) {
+      text-align: right;
     }
+  }
 }
 </style>

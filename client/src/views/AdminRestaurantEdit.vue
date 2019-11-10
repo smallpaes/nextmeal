@@ -160,10 +160,10 @@ export default {
 @include slideAnimation;
 
 .wrapper {
-    background-color: color(quinary);
+  background-color: color(quinary);
 }
 
 .restaurant {
-    @include controlPanelLayout;
+  @include controlPanelLayout;
 }
 </style>

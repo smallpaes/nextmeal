@@ -87,58 +87,58 @@ export default {
 
 <style lang="scss" scoped>
 .banner {
-    @include positionCenter;
-    @include imgOverlay(0.9);
+  @include positionCenter;
+  @include imgOverlay(0.9);
 
-    &-container {
-        margin-top: 62px;
-    }
+  &-container {
+    margin-top: 62px;
+  }
 
-    &-img {
-        @include setBackground("https://cdn.pixabay.com/photo/2019/09/23/14/34/nyc-4498752_1280.jpg", 300px);
-    }
-    &-content {
-        color: color(quaternary);
-        text-shadow: 1px 1px 1px #636161;
+  &-img {
+    @include setBackground("https://cdn.pixabay.com/photo/2019/09/23/14/34/nyc-4498752_1280.jpg", 300px);
+  }
+  &-content {
+    color: color(quaternary);
+    text-shadow: 1px 1px 1px #636161;
 
-        &-title {
-            font-size: size(xxl);
-            font-weight: weight(bold);
-        }
+    &-title {
+      font-size: size(xxl);
+      font-weight: weight(bold);
     }
+  }
 }
 
 .dropdown {
-    &-toggle {
-        color: color(quaternary);
+  &-toggle {
+    color: color(quaternary);
+  }
+
+  &-menu {
+    position: relative;
+    transform: translate3d(15px, 32px, 0px) !important;
+    background-color: color(quaternary);
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-bottom: 8px solid color(quaternary);
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
     }
 
-    &-menu {
-        position: relative;
-        transform: translate3d(15px, 32px, 0px) !important;
-        background-color: color(quaternary);
-
-        &::before {
-            content: '';
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-bottom: 8px solid color(quaternary);
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-        }
-
-        .disabled {
-            color: color(primary);
-        }
+    .disabled {
+      color: color(primary);
     }
+  }
 
-    &-item {
-        color: color(secondary);
-        text-shadow: none;
-    }
+  &-item {
+    color: color(secondary);
+    text-shadow: none;
+  }
 }
 </style>

@@ -197,111 +197,111 @@ export default {
 
 <style lang="scss" scoped>
 .navbar{
-    &-brand {
-        font-family: 'Pacifico', cursive;
-        color: color(primary);
-        font-size: size(md);
+  &-brand {
+    font-family: 'Pacifico', cursive;
+    color: color(primary);
+    font-size: size(md);
 
-        &:hover {
-            @extend .navbar-brand;
-        }
-
-        &:focus {
-          color: color(primary);
-          outline: none;
-        }
+    &:hover {
+      @extend .navbar-brand;
     }
+
+    &:focus {
+      color: color(primary);
+      outline: none;
+    }
+  }
 }
 
 .nav {
-    &-link {
-        text-align: center;
-        color:lighten(color(secondary), 20%);
-        transition: color .2s linear;
+  &-link {
+    text-align: center;
+    color:lighten(color(secondary), 20%);
+    transition: color .2s linear;
 
-        &:after {
-            border-bottom: 2px solid color(primary);
-        }
-
-        &:hover {
-            color: color(secondary);
-            font-weight: weight(bold);
-        }
-
-        @include response(sm) {
-            @include buttonAnimation;
-        }
+    &:after {
+      border-bottom: 2px solid color(primary);
     }
+
+    &:hover {
+      color: color(secondary);
+      font-weight: weight(bold);
+    }
+
+    @include response(sm) {
+      @include buttonAnimation;
+    }
+  }
 }
 
 .dropdown {
-    &-img {
-        position: relative;
-        height: 40px;
-        width: 40px;
-        object-fit: cover;
-        border-radius: 50%;
+  &-img {
+    position: relative;
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  &-toggle {
+    cursor: pointer;
+    &::after {
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+  }
+
+  &-menu {
+    border-radius: .2rem;
+    top: 48.35px;
+    position: relative;
+    border: 1px solid lighten(color(secondary), 55%);
+    background-color: lighten(color(secondary),65%);
+
+    &::before {
+      position: absolute;
+      bottom: 100%;
+      right: 8%;
+      content: '';
+      border-bottom: 10px solid lighten(color(secondary), 55%);
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+     }
+
+     &::after {
+      @extend .dropdown-menu::before;
+      bottom: 99.5%;
+      border-bottom: 10px solid white;
+     }
+  }
+
+  &-item {
+    text-align: center;
+    color: color(secondary);
+    cursor: pointer;
+
+    &.active {
+      background-color: unset;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
     }
 
-    &-toggle {
-        cursor: pointer;
-        &::after {
-            border-top: none;
-            border-left: none;
-            border-right: none;
-        }
+    &:active {
+      @extend .dropdown-item.active
     }
+  }
 
-    &-menu {
-        border-radius: .2rem;
-        top: 48.35px;
-        position: relative;
-        border: 1px solid lighten(color(secondary), 55%);
-        background-color: lighten(color(secondary),65%);
-
-        &::before {
-            position: absolute;
-            bottom: 100%;
-            right: 8%;
-            content: '';
-            border-bottom: 10px solid lighten(color(secondary), 55%);
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-       }
-
-       &::after {
-            @extend .dropdown-menu::before;
-            bottom: 99.5%;
-            border-bottom: 10px solid white;
-       }
-    }
-
-    &-item {
-        text-align: center;
-        color: color(secondary);
-        cursor: pointer;
-
-        &.active {
-            background-color: unset;
-
-            &:hover {
-              background-color: #f8f9fa;
-            }
-        }
-
-        &:active {
-            @extend .dropdown-item.active
-        }
-    }
-
-    .skelenton-box {
-        position: absolute;
-    }
+  .skelenton-box {
+    position: absolute;
+  }
 }
 
 .icon {
-    display: inline-block;
-    width: 25px;
+  display: inline-block;
+  width: 25px;
 }
 
 .navbar-light .navbar-nav .nav-link.active {

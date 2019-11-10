@@ -159,42 +159,42 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-    @include fileUpload;
-    @include inputValidation;
-    @include formControl;
-    width: 100%;
+  @include fileUpload;
+  @include inputValidation;
+  @include formControl;
+  width: 100%;
 
-    &-wrapper {
-        background-color: color(quaternary);
-    }
+  &-wrapper {
+    background-color: color(quaternary);
+  }
 
-    &-title {
-        font-size: size(md);
-        font-weight: weight(bold);
-        color: color(primary);
-    }
+  &-title {
+    font-size: size(md);
+    font-weight: weight(bold);
+    color: color(primary);
+  }
 
-    &-legend {
-        font-size: size(sm);
-    }
+  &-legend {
+    font-size: size(sm);
+  }
 }
 
 .btn-container {
-    .btn {
-        @include solidButton(80, .3, primary);
-        margin-left: .8rem;
-        padding: .1rem;
-        line-height: 1.8rem;
+  .btn {
+    @include solidButton(80, .3, primary);
+    margin-left: .8rem;
+    padding: .1rem;
+    line-height: 1.8rem;
 
-        @include response(md) {
-            min-width: 180px;
-            padding: .2rem .5rem;
-            margin-left: 1rem;
-        }
+    @include response(md) {
+      min-width: 180px;
+      padding: .2rem .5rem;
+      margin-left: 1rem;
     }
+  }
 }
 
 .invalid-message {
-    color: color(primary);
+  color: color(primary);
 }
 </style>

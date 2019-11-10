@@ -78,39 +78,39 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-    transition: opacity .2s linear;
+  transition: opacity .2s linear;
 
-    &:hover {
-        opacity: .9;
+  &:hover {
+    opacity: .9;
+  }
+
+  &-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  &-body {
+    padding: .8rem;
+    min-height: 125px;
+
+    @include response(md) {
+      min-height: 145px;
     }
+  }
 
-    &-img-top {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
+  &-title {
+    font-size: size(sm);
+    color: color(secondary);
+  }
+
+  &-text {
+    font-size: size(xs);
+    color: lighten(color(secondary), 10%);
+
+    .rating {
+      color: color(primary);
     }
-
-    &-body {
-        padding: .8rem;
-        min-height: 125px;
-
-        @include response(md) {
-          min-height: 145px;
-        }
-    }
-
-    &-title {
-        font-size: size(sm);
-        color: color(secondary);
-    }
-
-    &-text {
-        font-size: size(xs);
-        color: lighten(color(secondary), 10%);
-
-        .rating {
-            color: color(primary);
-        }
-    }
+  }
 }
 </style>

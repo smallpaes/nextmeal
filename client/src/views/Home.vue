@@ -142,15 +142,15 @@ export default {
 @include fadeAnimation;
 
 .popular {
-    @include headingStyling;
-    &-heading {
-      text-align: center;
-    }
+  @include headingStyling;
+  &-heading {
+    text-align: center;
+  }
 }
 .districts {
   @include headingStyling;
-    &-heading {
-      text-align: center;
-    }
+  &-heading {
+    text-align: center;
+  }
 }
 </style>
