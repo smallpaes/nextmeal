@@ -133,34 +133,23 @@ let adminController = {
     try {
       const { name, sub_status } = req.query
       const start = moment().startOf('day').toDate()
-      let whereQuery = { name: { [Op.substring]: name || '' } };
-      // if (sub_status) {
-      //   if (sub_status === 'inactive') {
-      //     whereQuery = { [Op.or]: { payment_status: false, sub_expired_date: { [Op.lt]: start } } }
-      //   } else {
-      //     whereQuery = { payment_status: true, sub_expired_date: { [Op.gte]: start } }
-      //   }
-      // }
+
+      //if it runs on heroku,use iLike to fix case sensitive issue
+      let whereQuery = process.env.heroku ? { name: { [Op.iLike]: name || '' } } : { name: { [Op.substring]: name || '' } };
       if (sub_status === 'inactive') {
-        whereQuery = {
-          name: { [Op.substring]: name || '' },
-          expired_date: {
-            [Op.or]: {
-              [Op.lt]: start,
-              [Op.eq]: null
-            }
+        whereQuery['expired_date'] = {
+          [Op.or]: {
+            [Op.lt]: start,
+            [Op.eq]: null
           }
         }
       };
       if (sub_status === 'active') {
-        whereQuery = {
-          name: { [Op.substring]: name || '' },
-          expired_date: {
-            [Op.or]: {
-              [Op.gte]: start
-            }
+        whereQuery['expired_date'] = {
+          [Op.or]: {
+            [Op.gte]: start
           }
-        }
+        };
       };
 
 
