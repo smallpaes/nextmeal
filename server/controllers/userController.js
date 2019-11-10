@@ -234,11 +234,12 @@ let userController = {
             sub_expired_date: sub_expired_date
           })
           const emailInfo = {
+            email: subscription.User.email,
+            template: 'subscription',
+            subject: '親愛的客戶，恭喜你成功訂閱 NextMeal。',
             ...subscription.dataValues,
             sub_expired_date: moment(sub_expired_date).format('YYYY-MM-DD HH:mm'),
-            sub_date: moment(sub_date).format('YYYY-MM-DD HH:mm'),
-            template: 'subscription',
-            subject: '親愛的客戶，恭喜你成功訂閱 NextMeal。'
+            sub_date: moment(sub_date).format('YYYY-MM-DD HH:mm')
           }
           sendEmail(req, res, emailInfo)
         }
