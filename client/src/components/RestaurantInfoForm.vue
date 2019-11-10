@@ -13,127 +13,167 @@
     </div>
     <div class="form-row">
       <!--Name-->
-      <div class="form-group col-md-6">
+      <div
+        class="form-group col-md-6"
+        :class="{invalid: $v.restaurant.name.$error}"
+      >
         <label for="name">名稱</label>
         <input
           id="name"
           v-model.trim="restaurant.name"
+          :disabled="isProcessing"
           type="text"
           class="form-control"
           required
+          @blur="$v.restaurant.name.$touch()"
         >
-        <div class="invalid-feedback">
-          請輸入餐廳名稱
-        </div>
+        <small
+          v-if="$v.restaurant.name.$error"
+          class="form-text"
+        >請輸入 1-6 位餐廳名稱</small>
       </div>
       <!--Category-->
-      <div class="form-group col-md-6">
-        <label for="category">類別</label>
-        <select
-          v-model.trim="restaurant.Category.name"
-          class="form-control"
-          required
-        >
-          <option selected>
-            餐廳類別
-          </option>
-          <option
-            v-for="category in categories"
-            :key="category.id"
-            :value="category.name"
-            :selected="category.name === restaurant.Category.name"
-          >
-            {{ category.name }}
-          </option>
-        </select>
-        <div class="invalid-feedback">
-          請選擇餐廳類別
-        </div>
-      </div>
+      <CustomSelect
+        v-model="restaurant.Category.id"
+        class="col-md-6"
+        :options="categories"
+        :v="$v.restaurant.Category.id"
+        :target="'id'"
+        :is-processing="isProcessing"
+      >
+        <template v-slot:label>
+          類別
+        </template>
+        <template v-slot:option>
+          餐廳類別
+        </template>
+        <template v-slot:invalid>
+          請選擇一種餐廳類別
+        </template>
+      </CustomSelect>
     </div>
     <div class="form-row">
       <!--Opening time-->
-      <div class="form-group col-md-6">
+      <div
+        class="form-group col-md-6"
+        :class="{invalid: $v.restaurant.openingHour.$error}"
+      >
         <label for="opening-hour">開始營業時間</label>
         <input
           id="opening-hour"
-
-          :value="restaurant.openingHour"
+          v-model.trim="restaurant.openingHour"
           type="time"
+          disabled
           class="form-control"
           required
+          @input="$v.restaurant.openingHour.$touch()"
         >
-        <div class="invalid-feedback">
-          請輸入開始營業時間
-        </div>
       </div>
       <!--Closing time-->
-      <div class="form-group col-md-6">
+      <div
+        class="form-group col-md-6"
+        :class="{invalid: $v.restaurant.closingHour.$error}"
+      >
         <label for="closing-hour">結束營業時間</label>
         <input
           id="closing-hour"
           v-model.trim="restaurant.closingHour"
+          disabled
           type="time"
           class="form-control"
           required
+          @input="$v.restaurant.closingHour.$touch()"
         >
-        <div class="invalid-feedback">
-          請輸入結束營業時間
-        </div>
+        <small
+          v-if="$v.restaurant.closingHour.$error"
+          class="form-text"
+        >結束營業時間需晚於開店時間</small>
       </div>
     </div>
     <!--Address-->
-    <div class="form-group">
+    <div
+      class="form-group form-address-group"
+      :class="{invalid: $v.restaurant.address.$error}"
+    >
       <label for="address">地址</label>
       <input
         id="address"
         v-model.trim="restaurant.address"
+        :disabled="isProcessing"
         type="text"
         class="form-control"
         placeholder="台北市大安區..."
         required
+        @blur="$v.restaurant.address.$touch()"
       >
-      <div class="invalid-feedback">
-        {{ validationMsg.address }}
-      </div>
+      <small
+        v-if="$v.restaurant.address.$error"
+        class="form-text"
+      >請輸入地址</small>
+      <small
+        v-if="validationMsg.address"
+        class="form-text"
+      >{{ validationMsg.address }}</small>
     </div>
     <!--Phone number-->
-    <div class="form-group">
+    <div
+      class="form-group"
+      :class="{invalid: $v.restaurant.tel.$error}"
+    >
       <label for="tel">電話</label>
       <input
         id="tel"
         v-model.trim="restaurant.tel"
+        :disabled="isProcessing"
         type="tel"
         class="form-control"
-        pattern="[0-9]{2}-[0-9]{4}-[0-9]{4}"
         placeholder="02-2343-2344"
         required
+        @blur="$v.restaurant.tel.$touch()"
       >
-      <div class="invalid-feedback">
-        請輸入電話號碼
-      </div>
+      <small
+        v-if="!$v.restaurant.tel.required && $v.restaurant.tel.$dirty"
+        class="form-text"
+      >請輸入電話</small>
+      <small
+        v-if="!$v.restaurant.tel.telFormat && $v.restaurant.tel.required && $v.restaurant.tel.$dirty"
+        class="form-text"
+      >請輸入正確的電話格式: 0x-xxxx-xxxx</small>
     </div>
     <!--Description-->
-    <div class="form-group">
+    <div
+      class="form-group"
+      :class="{invalid: $v.restaurant.description.$error}"
+    >
       <label for="description">餐廳介紹</label>
       <textarea
         id="description"
         v-model.trim="restaurant.description"
+        :disabled="isProcessing"
         class="form-control"
         minlength="10"
         maxlength="100"
         rows="2"
         required
+        @blur="$v.restaurant.description.$touch()"
       />
-      <div class="invalid-feedback">
-        請輸入餐廳簡介，長度介於 10-100 之間
-      </div>
+      <small
+        v-if="$v.restaurant.description.$error"
+        class="form-text"
+      >請輸入餐廳簡介，長度介於 10-100 之間</small>
     </div>
     <!--Image upload-->
     <p class="mb-2">
       上傳餐廳照片
     </p>
-    <div class="form-group">
+    <div
+      class="form-group"
+      :class="{invalid: !$v.restaurant.image.hasImage}"
+    >
+      <small
+        v-if="!$v.restaurant.image.hasImage"
+        class="form-text mb-2"
+      >請上傳一張照片&#8595;</small>
       <!--Invisible file upload button-->
       <input
         id="file"
@@ -141,22 +181,20 @@
         class="file-input"
         accept=".png, .jpg, .jpeg"
         @change="handleFileChange($event, 'restaurant')"
+        @input="$v.restaurant.image.$touch()"
       >
       <!--Preview image-->
       <div
         v-if="restaurant.image"
         class="file-image-wrapper"
+        @click="user.image = ''"
       >
         <img
           :src="restaurant.image"
           class="file-image"
           alt="餐廳照片"
         >
-        <span
-          class="close-btn"
-          aria-hidden="true"
-          @click="restaurant.image = ''"
-        >&times;</span>
+        <i class="far fa-window-close" />
       </div>
       <!--Visible file upload button-->
       <label
@@ -166,14 +204,12 @@
       >
         <i class="fas fa-plus" />
       </label>
-      <div class="invalid-feedback">
-        請上傳一張圖片檔案
-      </div>
     </div>
     <div class="btn-container mt-3">
       <button
         class="btn"
         :class="{'btn-update': $route.name === 'admin-restaurant-edit'}"
+        :disabled="isProcessing || $v.$invalid"
         @click.stop.prevent="getLocation('restaurant')"
       >
         更新
@@ -181,7 +217,8 @@
       <button
         v-if="$route.name ==='admin-restaurant-edit'"
         class="btn"
-        @click.stop.prevent="deleteRestaurant"
+        :disabled="isProcessing"
+        @click.stop.prevent="$emit('after-delete')"
       >
         刪除
       </button>
@@ -191,40 +228,41 @@
 
 <script>
 import { getGeoMethods, handleFileChangeMethod } from '../utils/mixins'
-
-const dummyRestaurant = {
-  restaurant: {
-    name: '餐廳一號',
-    Category: {
-      id: 1,
-      name: '美式餐廳'
-    },
-    opening_hour: '11:00:00',
-    closing_hour: '14:00:00',
-    location: '信義區',
-    address: '台北市大安區延吉街50號',
-    tel: '02-2222-2222',
-    description: '火鍋店',
-    image: 'https://via.placeholder.com/200x200/d3d3d3'
-  },
-  categories: [
-    {
-      id: 1,
-      name: '美式餐廳'
-    },
-    {
-      id: 2,
-      name: '法式餐廳'
-    },
-    {
-      id: 3,
-      name: '義式餐廳'
-    }
-  ]
-}
+import { required, minLength, maxLength } from 'vuelidate/lib/validators'
+import CustomSelect from '../components/CustomSelect'
+import moment from 'moment'
 
 export default {
+  components: {
+    CustomSelect
+  },
   mixins: [getGeoMethods, handleFileChangeMethod],
+  props: {
+    initialRestaurant: {
+      type: Object,
+      default: () => ({
+        name: '',
+        Category: {},
+        openingHour: '',
+        closingHour: '',
+        location: '',
+        address: '',
+        tel: '',
+        description: '',
+        image: '',
+        lng: '',
+        lat: ''
+      })
+    },
+    categories: {
+      type: Array,
+      required: true
+    },
+    initialProcessing: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       restaurant: {
@@ -240,60 +278,93 @@ export default {
         lng: '',
         lat: ''
       },
-      categories: [],
-      hasRestaurantData: false,
       warningMessage: '',
       apiKey: process.env.VUE_APP_GOOGLE,
       validationMsg: {
-        address: '請輸入地址'
+        address: ''
+      },
+      formData: {},
+      isProcessing: false
+    }
+  },
+  validations: {
+    restaurant: {
+      address: {
+        required
+      },
+      Category: {
+        id: {
+          required
+        }
+      },
+      name: {
+        required,
+        minLength: minLength(1),
+        maxLength: maxLength(10)
+      },
+      image: {
+        hasImage: value => {
+          if (!value) return false
+          return true
+        }
+      },
+      openingHour: {
+        required
+      },
+      closingHour: {
+        required,
+        isLater: (value, vm) => {
+          const closingHour = moment(value, 'HH:mm')
+          const openingHour = moment(vm.openingHour, 'HH:mm')
+          return closingHour.isAfter(openingHour)
+        }
+      },
+      tel: {
+        required,
+        telFormat: value => /^0[1-8]-[0-9]{4}-[0-9]{4}$/.test(value)
+      },
+      description: {
+        required,
+        minLength: minLength(10),
+        maxLength: maxLength(300)
       }
     }
   },
-  created () {
-    this.fetchRestaurantData()
-  },
-  methods: {
-    fetchRestaurantData () {
-      // fetch data from api based on route name
-      console.log(this.$route.name)
-
-      // check if restaurant data alreadt exists
-      if (!dummyRestaurant) {
-        this.hasRestaurantData = false
-        return
-      }
-
-      // retrieve data
-      const {
-        restaurant: { opening_hour: openingHour, closing_hour: closingHour, ...restData },
-        categories
-      } = dummyRestaurant
-
-      // save data
+  watch: {
+    initialRestaurant (restaurant) {
       this.restaurant = {
         ...this.restaurant,
-        openingHour,
-        closingHour,
-        ...restData
+        ...restaurant
       }
-      this.categories = categories
-      this.hasRestaurantData = true
     },
+    initialProcessing (isProcessing) {
+      this.isProcessing = isProcessing
+    }
+  },
+  created () {
+    this.restaurant = {
+      ...this.restaurant,
+      ...this.initialRestaurant
+    }
+    this.isProcessing = this.initialProcessing
+  },
+  methods: {
     afterReceiveGeo () {
-      console.log(this.restaurant.lat, this.restaurant.lng)
-      this.hasRestaurantData ? this.updateRestaurant() : this.createRestaurant()
-    },
-    createRestaurant () {
-      // Send data to POST /api/owner
-      console.log('POST', this.restaurant)
-    },
-    updateRestaurant () {
-      // Send data to PUT /api/owner
-      console.log('PUT', this.restaurant)
-    },
-    deleteRestaurant () {
-      // Send data to DELETE /api/admin/restaurants/:id
-      console.log('DELETE', this.restaurant)
+      const formData = {
+        name: this.restaurant.name,
+        description: this.restaurant.description,
+        image: this.restaurant.image,
+        tel: this.restaurant.tel,
+        address: this.restaurant.address,
+        opening_hour: this.restaurant.openingHour,
+        closing_hour: this.restaurant.closingHour,
+        lat: this.restaurant.lat,
+        lng: this.restaurant.lng,
+        location: this.restaurant.location,
+        CategoryId: this.restaurant.Category.id
+      }
+      // notify parent view
+      this.$emit('after-submit', formData)
     }
   }
 }
@@ -301,14 +372,11 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-  @include fileUpload;
+    @include fileUpload;
+    @include inputValidation;
     @include formControl;
     background-color: color(quaternary);
     color: color(secondary);
-
-    &-control {
-        @include formValidation;
-    }
 }
 
 .btn {
@@ -322,21 +390,21 @@ export default {
     }
 
     &-update {
-      background-color: color(tertiary);
+        background-color: color(tertiary);
 
       &:hover {
-        background-color: darken(color(tertiary), 20%);
+          background-color: darken(color(tertiary), 20%);
       }
     }
 
     @include response(md) {
-      min-width: 200px;
-      padding: .375rem .75rem;
+        min-width: 200px;
+        padding: .375rem .75rem;
     }
 }
 
 .alert {
-  background-color: color(tertiary);
-  color: color(quaternary);
+    background-color: color(tertiary);
+    color: color(quaternary);
 }
 </style>

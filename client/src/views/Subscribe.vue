@@ -1,45 +1,67 @@
 <template>
   <section class="subscribe">
     <TopLogoNavbar />
-    <div class="subscribe-content rounded">
-      <div class="subscribe-content-top row">
-        <div class="subscribe-content-top-header col-12 mb-4">
-          <h3>
-            方案選擇
-          </h3>
-          <h5>
-            根據自己的需求挑選月繳方案
-          </h5>
-        </div>
-        <div class="subscribe-content-top-choices col-12">
-          <button
-            v-for="plan in plans"
-            :key="plan.id"
-            type="button"
-            class="subscribe-choice"
-            @click.stop="handleSubscribe(plan.name, plan.quantity, plan.price)"
-          >
-            <h4 class="subscribe-choice-header">
-              {{ plan.name }}
-            </h4>
-            <h3 class="subscribe-choice-description">
-              {{ plan.quantity }} 餐
-              <span class="subscribe-choice-price d-block mt-2">月付 {{ plan.price }} 元</span>
+    <transition
+      appear
+      name="slide"
+    >
+      <div class="subscribe-content rounded">
+        <div class="subscribe-content-top row">
+          <div class="subscribe-content-top-header col-12 mb-4">
+            <h3>
+              方案選擇
             </h3>
-          </button>
+            <h5>
+              根據自己的需求挑選月繳方案
+            </h5>
+          </div>
+          <div class="subscribe-content-top-choices col-12">
+            <button
+              v-for="plan in plans"
+              :key="plan.id"
+              type="button"
+              class="subscribe-choice"
+              :disabled="isProcessing"
+              @click.stop="handleSubscribe(plan.name, plan.quantity, plan.price)"
+            >
+              <h4 class="subscribe-choice-header">
+                {{ plan.name }}
+              </h4>
+              <h3 class="subscribe-choice-description">
+                {{ plan.quantity }} 餐
+                <span class="subscribe-choice-price d-block mt-2">月付 {{ plan.price }} 元</span>
+              </h3>
+            </button>
+          </div>
         </div>
+        <div class="subscribe-content-bottom">
+          <p class="text-left m-0 mr-3">
+            計算方式：一個月以 30 天為標準
+          </p>
+        </div>
+        <form
+          ref="tradeForm"
+          action="https://ccore.newebpay.com/MPG/mpg_gateway"
+          method="POST"
+        >
+          <input
+            v-for="item in tradeInfo"
+            :key="item"
+            :ref="item"
+            type="text"
+            :name="item"
+            hidden
+          >
+        </form>
       </div>
-      <div class="subscribe-content-bottom">
-        <p class="text-left m-0 mr-3">
-          計算方式：一個月以 30 天為標準
-        </p>
-      </div>
-    </div>
+    </transition>
   </section>
 </template>
 
 <script>
 import TopLogoNavbar from '../components/Navbar/TopLogoNavbar'
+import usersAPI from '../apis/users'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -60,25 +82,49 @@ export default {
           price: 2000,
           quantity: 20
         }
-      ]
+      ],
+      tradeInfo: ['MerchantID', 'TradeInfo', 'TradeSha', 'Version'],
+      isProcessing: false
     }
   },
   methods: {
-    handleSubscribe (name, quantity, price) {
-      // POST to /api/subscribe
+    async handleSubscribe (name, quantity, price) {
+      // prepare data for subscription
       const subscriptionData = {
         sub_balance: quantity,
-        sub_description: `${quantity} 餐`,
+        sub_description: `一個月${quantity}餐`,
         sub_name: name,
         sub_price: price
       }
-      console.log(subscriptionData)
+
+      try {
+        // update processing status
+        this.isProcessing = true
+        // create new subscription
+        const { data, statusText } = await usersAPI.postSubscribe({ formData: subscriptionData })
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // prepare form for 藍新
+        this.tradeInfo.forEach(item => this.$refs[item][0].setAttribute('value', data.tradeInfo[item]))
+        // submit the form
+        this.$refs.tradeForm.submit()
+      } catch (error) {
+        // update loading status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '訂閱失敗，請稍後再試'
+        })
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .subscribe {
     @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
     overflow-y: scroll;

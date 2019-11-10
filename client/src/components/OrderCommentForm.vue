@@ -12,46 +12,48 @@
       <fieldset class="form-group my-4">
         <legend class="form-legend">
           滿意度評分
-          <span
-            v-if="errorMessage.rating.length > 0"
-            class="invalid-message"
-          >({{ errorMessage.rating[0] }})</span>
         </legend>
         <!--Radio group-->
         <CustomRatingInput v-model="comment.rating" />
       </fieldset>
-      <!--Description-->
-      <div class="form-group my-4">
-        <label for="description">
+      <!--Comment-->
+      <div
+        class="form-group my-4"
+        :class="{invalid: $v.comment.content.$error}"
+      >
+        <label for="comment">
           餐點評價
-          <span
-            v-if="errorMessage.content.length > 0"
-            class="invalid-message"
-          >({{ errorMessage.content[0] }})</span>
         </label>
         <textarea
-          id="description"
+          id="comment"
           v-model.trim="comment.content"
+          :disabled="isProcessing"
           class="form-control"
           minlength="10"
           maxlength="100"
           rows="2"
+          name="user_text"
           required
+          @blur="$v.comment.content.$touch()"
         />
-        <div class="invalid-feedback">
-          請輸入餐點評價，長度介於 10-100 之間
-        </div>
+        <small
+          v-if="$v.comment.content.$error"
+          class="form-text"
+        >請輸入餐點評價，長度介於 10-100 之間</small>
       </div>
       <!--Image upload-->
       <p class="mb-2">
         上傳餐點照片
       </p>
-      <div class="form-group">
+      <div
+        class="form-group"
+      >
         <!--Invisible file upload button-->
         <input
           id="file"
           type="file"
           class="file-input"
+          name="image"
           accept=".png, .jpg, .jpeg"
           @change="handleFileChange($event, 'comment')"
         >
@@ -59,35 +61,30 @@
         <div
           v-if="comment.image"
           class="file-image-wrapper"
+          @click="user.image = ''"
         >
           <img
             :src="comment.image"
             class="file-image"
-            alt="餐點照片"
+            alt="評論照片"
           >
-          <span
-            class="close-btn"
-            aria-hidden="true"
-            @click="comment.image = ''"
-          >&times;</span>
+          <i class="far fa-window-close" />
         </div>
         <!--Visible file upload button-->
         <label
-          v-else
+          v-if="!comment.image || isProcessing"
           for="file"
           class="file-label"
         >
           <i class="fas fa-plus" />
         </label>
-        <div class="invalid-feedback">
-          請上傳一張圖片檔案
-        </div>
       </div>
       <hr class="form-divider mt-4">
       <div class="btn-container text-center">
         <button
           class="btn"
           type="submit"
+          :disabled="isProcessing || $v.$invalid"
         >
           送出評價
         </button>
@@ -99,6 +96,9 @@
 <script>
 import { handleFileChangeMethod } from '../utils/mixins'
 import CustomRatingInput from '../components/CustomRatingInput'
+import { required, minLength, maxLength } from 'vuelidate/lib/validators'
+import orderApi from '../apis/order'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -112,35 +112,46 @@ export default {
         rating: '',
         content: ''
       },
-      errorMessage: {
-        rating: [],
-        content: []
+      isProcessing: false
+    }
+  },
+  validations: {
+    comment: {
+      rating: {
+        required
+      },
+      content: {
+        required,
+        minLength: minLength(10),
+        maxLength: maxLength(100)
       }
     }
   },
   methods: {
-    handleSubmit () {
-    // validate rating
-      if (!this.comment.rating) {
-        return this.errorMessage.rating.push('請給予評價')
+    async handleSubmit (e) {
+      try {
+        // prepare a FormData
+        const form = e.target
+        const formData = new FormData(form)
+        const orderId = this.$route.params.order_id
+        // update processing status
+        this.isProcessing = true
+        // create new comment
+        // fetch order data from API
+        const { data, statusText } = await orderApi.postComment({ orderId, formData })
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // redirect to user order page
+        this.$router.push({ name: 'user-order' })
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法發出評論，請稍後再試'
+        })
       }
-
-      this.errorMessage.rating = []
-
-      // validate content
-      if (this.comment.content < 10 || this.comment.content > 100) {
-        return this.errorMessage.content.push('請輸入 10-100 字評論')
-      }
-
-      this.errorMessage.content = []
-
-      const formData = {
-        rating: this.comment.rating,
-        user_text: this.comment.content,
-        image: this.comment.image
-      }
-      // POST /api/order/:order_id/comment
-      console.log(formData)
     }
   }
 }
@@ -149,6 +160,7 @@ export default {
 <style lang="scss" scoped>
 .form {
     @include fileUpload;
+    @include inputValidation;
     @include formControl;
     width: 100%;
 

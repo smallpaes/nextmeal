@@ -58,7 +58,7 @@ let adminController = {
         return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
       }
       const categories = await Category.findAll()
-      return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get restautant' })
+      return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get restaurant' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
@@ -68,7 +68,7 @@ let adminController = {
     try {
       let restaurant = await Restaurant.findByPk(req.params.restaurant_id)
       if (!restaurant) {
-        return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
+        return res.status(400).json({ status: 'error', message: 'The restaurant does not exist.' })
       }
       const { file } = req
       if (file) {
@@ -242,7 +242,7 @@ let adminController = {
       })
       if (orders.rows.length < 1) {
         orders = []
-        return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+        return res.status(200).json({ status: 'success', orders, message: 'can not find any order' })
       }
       const count = orders.count
       orders = orders.rows.map(order => ({
@@ -252,6 +252,7 @@ let adminController = {
       let pages = Math.ceil((count) / pageLimit)
       return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },

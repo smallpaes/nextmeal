@@ -13,12 +13,13 @@
         {{ order.meal.name }}
       </h5>
       <p class="card-text mt-1">
-        <span class="rating">&#9733; {{ order.restaurant.rating }}</span>
+        <span class="rating">&#9733; {{ order.restaurant.rating | padEnd }}</span>
         <span class="mx-1">|</span>{{ order.restaurant.name }}
+        <slot name="distance" />
       </p>
       <slot name="indicator" />
       <p class="card-text">
-        {{ order.meal.description }}
+        {{ order.meal.description | textTruncate }}
       </p>
     </div>
     <div class="card-footer text-right">
@@ -28,7 +29,10 @@
 </template>
 
 <script>
+import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
+
 export default {
+  mixins: [padEndFilter, textTruncateFilter],
   props: {
     order: {
       type: Object,

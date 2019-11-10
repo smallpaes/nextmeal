@@ -1,7 +1,17 @@
 <template>
-  <section class="wrapper d-flex vh-100">
-    <SideNavBar />
+  <section
+    class="wrapper d-flex vh-100"
+  >
+    <!--Left Side Navbar-->
+    <OwnerSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="dishes flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <router-link
         :to="{name: 'owner-dish-new'}"
         class="new-dish"
@@ -12,124 +22,118 @@
       <h1 class="dishes-title">
         餐點資訊
       </h1>
+
+      <!--Menu and Order Navbar-->
       <OwnerDishNavPill class="mt-4 ml-1" />
       <hr class="dishes-divider">
-      <div class="dishes-card-container row px-3 pb-4">
-        <OwnerDishCard
-          v-for="meal in meals"
-          :key="meal.id"
-          :meal="meal"
-          class="col-12 p-0"
-        />
-      </div>
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
+      />
+
+      <!--Display Meals-->
+      <transition
+        name="slide"
+      >
+        <div
+          v-if="!isLoading"
+          class="dishes-card-container row mx-0 p-3 mb-4 rounded-sm shadow-sm"
+        >
+          <OwnerDishCard
+            v-for="meal in meals"
+            :key="meal.id"
+            class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
+            :image="meal.image"
+            :edit-btn="true"
+            @edit="$router.push({name: 'owner-dish-edit', params: {dish_id: meal.id}})"
+          >
+            <template #title>
+              {{ meal.name }}
+            </template>
+            <template #primary-description>
+              {{ meal.description | textTruncate(20) }}
+            </template>
+          </OwnerDishCard>
+        </div>
+      </transition>
     </section>
   </section>
 </template>
 
 <script>
-import SideNavBar from '../components/Navbar/SideNavBar'
+import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
-import OwnerDishCard from '../components/OwnerDishCard'
-
-const dummyMeals = {
-  meals: [
-    {
-      id: 1,
-      name: '菜餚一',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 2,
-      name: '菜餚二',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 3,
-      name: '菜餚三',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 4,
-      name: '菜餚四',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 5,
-      name: '菜餚五',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    },
-    {
-      id: 6,
-      name: '菜餚六',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu',
-      image: 'https://cdn.pixabay.com/photo/2014/11/05/15/57/salmon-518032_1280.jpg',
-      quantity: 50,
-      isServing: false,
-      nextServing: false
-    }
-  ]
-}
+import OwnerDishCard from '../components/Card/OwnerDishCard'
+import Loader from '../components/Loader'
+import ownerAPI from '../apis/owner'
+import { textTruncateFilter } from '../utils/mixins'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    SideNavBar,
+    OwnerSideNavBar,
+    NavbarToggler,
     OwnerDishNavPill,
-    OwnerDishCard
+    OwnerDishCard,
+    Loader
   },
+  mixins: [textTruncateFilter],
   data () {
     return {
-      meals: []
+      meals: [],
+      isLoading: true,
+      navIsOpen: false
     }
   },
   created () {
     this.fetchMeals()
   },
   methods: {
-    fetchMeals () {
-      this.meals = [
-        ...this.meals,
-        ...dummyMeals.meals
-      ]
+    async fetchMeals () {
+      try {
+        // fetch data from API
+        const { data, statusText } = await ownerAPI.dishes.getDishes()
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+
+        // store data
+        this.meals = [
+          ...this.meals,
+          ...data.meals
+        ]
+
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得資料，請稍後再試'
+        })
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+
 .wrapper {
     @include hideScrollBar;
     background-color: color(quinary);
 }
 
 .dishes {
-    position: relative;
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    transition: margin-left .1s linear;
+    @include controlPanelLayout;
 
-    &-title {
-        size: size(lg);
+    &-card-container {
+        background-color: color(quaternary);
     }
 
     &-divider {
@@ -137,22 +141,12 @@ export default {
         margin-top: 0;
     }
 
-    // set max-heigt for tablet
-    // &-card-container {
-    //     max-height: 560px;
-    //     overflow-y: scroll;
-    // }
-
     .new-dish {
         @include linkStyling(color(primary));
         position: absolute;
         right: 40px;
         top: 112px;
         font-size: size(xs);
-    }
-
-    @include response(md) {
-        margin-left: 145px;
     }
 }
 </style>

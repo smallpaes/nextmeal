@@ -34,11 +34,12 @@ let userController = {
       const user = await User.findOne({ where: { email } })
       //if user exsist , return error
       if (user) {
-        return res.status(200).json({ status: 'error', isAvailable: false, message: 'Email has been used' })
+        return res.status(200).json({ status: 'success', isAvailable: false, message: 'Email has been used' })
       }
       //otherwise return success
       return res.status(200).json({ status: 'success', isAvailable: true, message: 'Valid email' })
     } catch (error) {
+      console.log(error)
       res.json({ status: 'error', message: error })
     }
 
@@ -93,6 +94,7 @@ let userController = {
         }, token
       })
     } catch (error) {
+      console.log(error)
       res.json({ status: 'error', message: error })
     }
   },
@@ -264,6 +266,7 @@ let userController = {
 
       // if params exist,it means you access this action as Admin
       const user_id = req.params.user_id || req.user.id
+
       // if params exist,it means you access this action as Admin ,hence you can set roles for users
       const user_role = req.params.user_id ? req.body.role : req.user.role
 
@@ -276,6 +279,7 @@ let userController = {
       if (duplicate_email && duplicate_email.email !== user.email) {
         return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
       }
+      
       const { file } = req
       // 如果上有照片
       if (file) {
@@ -340,7 +344,7 @@ let userController = {
         attributes: ['id', 'require_date']
       })
       // 11/1 由於上方是findAll 此處更改為判斷陣列的長度
-      if (order.length === 0) return res.status(400).json({ status: 'error', message: 'not order yet.' })
+      if (order.length === 0) return res.status(200).json({ status: 'success', order: [],  message: 'no order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
@@ -396,7 +400,7 @@ let userController = {
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
       })
-      if (orders.rows.length === 0) return res.status(400).json({ status: 'error', message: 'Can not found any order.' })
+      if (orders.rows.length === 0) return res.status(200).json({ status: 'success', orders: [], message: 'Cannot find any order.' })
       let count = orders.count
       orders = orders.rows.map(order => ({
         ...order.dataValues,

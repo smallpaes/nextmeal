@@ -18,11 +18,11 @@
           v-if="order.restaurant.rating"
           class="card-text mt-1"
         >
-          <span class="rating">&#9733; {{ order.restaurant.rating }}</span>
+          <span class="rating">&#9733; {{ order.restaurant.rating | padEnd }}</span>
           <span class="mx-1">|</span>{{ order.restaurant.name }}
         </p>
         <p class="card-text d-none d-md-block">
-          {{ order.meal.description }}
+          {{ order.meal.description | textTruncate }}
         </p>
       </div>
     </div>
@@ -30,7 +30,10 @@
 </template>
 
 <script>
+import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
+
 export default {
+  mixins: [padEndFilter, textTruncateFilter],
   props: {
     order: {
       type: Object,

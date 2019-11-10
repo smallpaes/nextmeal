@@ -6,7 +6,7 @@
       id="star5"
       class="star-input"
       type="radio"
-      name="star"
+      name="rating"
       value="5"
       required
       @input="$emit('input', $event.target.value)"
@@ -20,7 +20,7 @@
 
       class="star-input"
       type="radio"
-      name="star"
+      name="rating"
       value="4"
       @input="$emit('input', $event.target.value)"
     >
@@ -33,7 +33,7 @@
 
       class="star-input"
       type="radio"
-      name="star"
+      name="rating"
       value="3"
       @input="$emit('input', $event.target.value)"
     >
@@ -46,7 +46,7 @@
 
       class="star-input"
       type="radio"
-      name="star"
+      name="rating"
       value="2"
       @input="$emit('input', $event.target.value)"
     >
@@ -59,7 +59,7 @@
 
       class="star-input"
       type="radio"
-      name="star"
+      name="rating"
       value="1"
       @input="$emit('input', $event.target.value)"
     >

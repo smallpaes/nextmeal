@@ -10,13 +10,13 @@
         class="form-group form-select-control col-sm-6 col-md my-1"
       >
         <select
-          v-model.trim="selectedOption"
+          v-model="selectedOption"
           class="form-control"
-          @input="e => $emit('after-filter', e.target.value)"
+          :disabled="isLoading"
+          @change="e => $emit('after-filter', e.target.value)"
         >
           <option
             value=""
-            selected
           >
             <slot name="filterOption" />
           </option>
@@ -24,8 +24,9 @@
             v-for="option in options"
             :key="option"
             :value="option"
+            :selected="option === selectedOption"
           >
-            {{ option }}
+            {{ option | transformName }}
           </option>
         </select>
       </div>
@@ -35,6 +36,8 @@
         v-model="selectedDate"
         :last-date="getTomorrowDate"
         :has-label="false"
+        :placeholder="'訂單日期'"
+        :disabled="isLoading"
         class="col-sm-6 my-1 col-md pl-md-2 pr-md-0"
         @handle-date="$emit('after-date-pick', $event)"
       />
@@ -49,8 +52,8 @@
           v-model.trim="searchInput"
           type="text"
           class="form-control"
+          :disabled="isLoading"
           :placeholder="inputPlaceholder"
-          required
         >
         <div class="input-group-append">
           <button
@@ -73,6 +76,13 @@ import moment from 'moment'
 export default {
   components: {
     CustomDatePicker
+  },
+  filters: {
+    transformName (name) {
+      if (name === 'active') return '已訂購'
+      if (name === 'inactive') return '未訂購'
+      return name
+    }
   },
   props: {
     hasOption: {
@@ -98,15 +108,17 @@ export default {
     inputPlaceholder: {
       type: String,
       default: '搜尋名稱'
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
       searchInput: '',
       selectedOption: '',
-      selectedDate: {
-        dob: moment().format('YYYY-MM-DD')
-      }
+      selectedDate: moment().format('YYYY-MM-DD')
     }
   },
   computed: {
@@ -123,12 +135,9 @@ export default {
   @include formSelectControl;
   background-color: color(quaternary);
 
-  &-control {
-      @include formValidation;
-  }
-
   &-select-control {
     margin: 0 .3rem .6rem .3rem;
+    padding: 0;
 
     @include response(sm) {
       margin: 0;

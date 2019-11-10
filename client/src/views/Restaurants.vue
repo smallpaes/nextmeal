@@ -1,14 +1,15 @@
 <template>
   <section>
     <header>
-      <Navbar />
+      <UserNavbar />
       <DropdownBanner
+        :is-loading="isLoading"
         :districts="districts"
         :current-district="currentDistrict"
       />
     </header>
     <section class="popular">
-      <div class="container pt-3 pb-5">
+      <div class="container pt-3 pb-0 pb-md-5">
         <Header>
           <template v-slot:title>
             熱門餐廳
@@ -17,7 +18,10 @@
             嘗試最受歡迎的餐廳
           </template>
         </Header>
-        <RestaurantCarousel :popular-restaurants="popular_restaurants" />
+        <CustomCarousel
+          :is-loading="isLoading"
+          :popular-restaurants="popular_restaurants"
+        />
       </div>
     </section>
     <section class="restaurants">
@@ -30,16 +34,29 @@
             探索更多在地餐廳
           </template>
         </Header>
-        <div class="card-wrapper row">
+        <div class="card-wrapper row px-3">
+          <template v-if="isLoading">
+            <div
+              v-for="index in 6"
+              :key="index"
+              class="col-12 col-md-6 col-lg-4 p-2"
+            >
+              <RestaurantCard :is-loading="isLoading" />
+            </div>
+          </template>
           <div
-            v-for="restaurant in more_restaurants.rows"
+            v-for="restaurant in more_restaurants.restaurants"
+            v-else
             :key="restaurant.id"
             class="col-12 col-md-6 col-lg-4 p-2"
           >
             <RestaurantCard :restaurant="restaurant" />
           </div>
         </div>
-        <div class="btn-container">
+        <div
+          v-if="!isLoading"
+          class="btn-container"
+        >
           <button
             v-if="currentPage !== totalPage"
             class="btn mt-3"
@@ -61,8 +78,13 @@
             探索最近的美食地圖
           </template>
         </Header>
+        <SkelentonBox
+          v-if="isLoading"
+          :width="'100%'"
+          :height="'400px'"
+        />
         <GMap
-          v-if="!isLoading"
+          v-else
           :center="{lat: parseFloat(map.center.lat), lng: parseFloat(map.center.lng)}"
           :locations="map.restaurants"
           :street-view-control="false"
@@ -78,176 +100,33 @@
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
+import UserNavbar from '../components/Navbar/UserNavbar'
 import Footer from '../components/Footer'
 import DropdownBanner from '../components/Banner/DropdownBanner'
-import RestaurantCarousel from '../components/RestaurantCarousel'
+import CustomCarousel from '../components/CustomCarousel'
 import RestaurantCard from '../components/RestaurantCard'
 import GMap from '../components/GMap'
 import Header from '../components/Header'
-
-const dummyRestaurantAndDistrict = {
-  popular_restaurants: [
-    { id: 1,
-      image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_1280.jpg',
-      name: '餐廳一號',
-      rating: 3.4,
-      category: '美式料理'
-    },
-    { id: 2,
-      image: 'https://cdn.pixabay.com/photo/2017/03/30/15/47/churros-2188871_1280.jpg',
-      name: '餐廳二號',
-      rating: 4.9,
-      category: '韓式料理'
-    },
-    { id: 3,
-      image: 'https://cdn.pixabay.com/photo/2016/10/03/23/15/ice-1713160_1280.jpg',
-      name: '餐廳三號',
-      rating: 4.4,
-      category: '美式料理'
-    },
-    { id: 4,
-      image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
-      name: '餐廳四號',
-      rating: 2.3,
-      category: '中東料理'
-    },
-    { id: 5,
-      image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
-      name: '餐廳五號',
-      rating: 5.4,
-      category: '中東料理'
-    },
-    { id: 6,
-      image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
-      name: '餐廳六號',
-      rating: 3.4,
-      category: '中東料理'
-    }
-  ],
-  more_restaurants: {
-    count: 16,
-    pages: 3,
-    rows: [
-      { id: 7,
-        image: 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_1280.jpg',
-        name: '餐廳一號',
-        rating: 3.4,
-        category: '美式料理'
-      },
-      { id: 8,
-        image: 'https://cdn.pixabay.com/photo/2017/03/30/15/47/churros-2188871_1280.jpg',
-        name: '餐廳二號',
-        rating: 4.9,
-        category: '韓式料理'
-      },
-      { id: 9,
-        image: 'https://cdn.pixabay.com/photo/2016/10/03/23/15/ice-1713160_1280.jpg',
-        name: '餐廳三號',
-        rating: 4.4,
-        category: '美式料理'
-      },
-      { id: 10,
-        image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
-        name: '餐廳四號',
-        rating: 2.3,
-        category: '中東料理'
-      },
-      { id: 11,
-        image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
-        name: '餐廳五號',
-        rating: 5.4,
-        category: '中東料理'
-      },
-      { id: 12,
-        image: 'https://via.placeholder.com/400x400/d3d3d3?text=Temp+Image',
-        name: '餐廳六號',
-        rating: 3.4,
-        category: '中東料理'
-      }
-    ]
-  },
-  map: {
-    center: {
-      'chinese_name': '信義區',
-      'eng_name': 'Xinyi',
-      'lng': '121.5716697',
-      'lat': '25.03062083'
-    },
-    restaurants: [
-      {
-        'id': 1,
-        'name': '餐廳一',
-        'lat': 25.0340,
-        'lng': 121.5645
-      },
-      {
-        'id': 2,
-        'name': '餐廳二',
-        'lat': 25.036643,
-        'lng': 121.567678
-      },
-      {
-        'id': 3,
-        'name': '餐廳三',
-        'lat': 25.033643,
-        'lng': 121.566678
-      },
-      {
-        'id': 4,
-        'name': '餐廳四',
-        'lat': 25.031569,
-        'lng': 121.568579
-      }
-    ]
-  },
-  districts: [
-    {
-      'chinese_name': '大安區',
-      'eng_name': "Da'an",
-      'image': 'https://cdn.pixabay.com/photo/2013/11/13/21/14/san-francisco-210230_1280.jpg',
-      'lng': '121.5434446',
-      'lat': '25.02677012'
-    },
-    {
-      'chinese_name': '信義區',
-      'eng_name': 'Xinyi',
-      'image': 'https://cdn.pixabay.com/photo/2019/09/23/14/34/nyc-4498752_1280.jpg',
-      'lng': '121.5716697',
-      'lat': '25.03062083'
-    },
-    {
-      'chinese_name': '中山區',
-      'eng_name': 'Zhongshan',
-      'image': 'https://cdn.pixabay.com/photo/2018/04/25/09/26/eiffel-tower-3349075_1280.jpg',
-      'lng': '121.7308913',
-      'lat': '25.14986365'
-    },
-    {
-      'chinese_name': '松山區',
-      'eng_name': 'Songshan',
-      'image': 'https://cdn.pixabay.com/photo/2016/10/31/04/19/lan-yang-museum-1784871_1280.jpg',
-      'lng': '121.5575876',
-      'lat': '25.05999101'
-    }
-  ]
-}
+import restaurantsAPI from '../apis/restaurants'
+import SkelentonBox from '../components/Placeholder/SkeletonBox'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    Navbar,
+    UserNavbar,
     Footer,
     DropdownBanner,
-    RestaurantCarousel,
+    CustomCarousel,
     RestaurantCard,
     GMap,
-    Header
+    Header,
+    SkelentonBox
   },
   data () {
     return {
       popular_restaurants: [],
       more_restaurants: {
-        rows: []
+        restaurants: []
       },
       map: {},
       districts: [],
@@ -266,7 +145,9 @@ export default {
     // Reset current page
     this.currentPage = 0
     // Clear existing restaurants
-    this.more_restaurants.rows = []
+    this.more_restaurants.restaurants = []
+    // clear districts
+    this.districts = []
     // Get the district name
     const { dist } = to.query
     this.currentDistrict = dist || '信義區'
@@ -275,20 +156,38 @@ export default {
     next()
   },
   methods: {
-    fetchRestaurants (dist, page) {
+    async fetchRestaurants (dist, page) {
       this.isLoading = true
-      // fetch data from api
-      this.popular_restaurants = dummyRestaurantAndDistrict.popular_restaurants || this.popular_restaurants
-      this.more_restaurants.rows = [
-        ...this.more_restaurants.rows,
-        ...dummyRestaurantAndDistrict.more_restaurants.rows
-      ]
-      this.totalPage = this.more_restaurants.pages
-      this.map = dummyRestaurantAndDistrict.map || this.map
-      this.districts = dummyRestaurantAndDistrict.districts || this.districts
-      // update current page number
-      this.currentPage += 1
-      this.isLoading = false
+      try {
+        // fetch data from API
+        const { data, statusText } = await restaurantsAPI.getRestaurants({ dist, page })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+
+        // fetch data from api
+        this.popular_restaurants = data.popular_restaurants || this.popular_restaurants
+        this.more_restaurants.restaurants = [
+          ...this.more_restaurants.restaurants,
+          ...data.more_restaurants.restaurants
+        ]
+        this.totalPage = data.more_restaurants.pages
+
+        this.map = data.map || this.map
+        this.districts = data.districts || this.districts
+        // update current page number
+        this.currentPage += 1
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得餐廳資料，請稍後再試'
+        })
+        // rediect back to home page
+        this.$router.push({ name: 'home' })
+      }
     }
   }
 }

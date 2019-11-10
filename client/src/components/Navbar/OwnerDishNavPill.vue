@@ -2,6 +2,7 @@
   <ul class="nav nav-pills">
     <li class="nav-item">
       <router-link
+        active-class="active"
         class="nav-link"
         :to="{name: 'owner-dishes'}"
       >

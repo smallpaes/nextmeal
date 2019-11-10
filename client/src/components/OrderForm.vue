@@ -8,7 +8,10 @@
         訂購資料
       </h2>
       <!--Time slot selection-->
-      <fieldset class="form-group">
+      <fieldset
+        class="form-group"
+        :disabled="isProcessing"
+      >
         <legend class="form-legend">
           預定領餐時間
           <span
@@ -44,7 +47,8 @@
           <button
             class="btn btn-minus"
             :class="{'disable-btn': formData.quantity === 1}"
-            @click.stop.prevent="formData.quantity === 1 ? formData.quantity = 1 : formData.quantity -= 1"
+            :disabled="isProcessing || formData.quantity === 1"
+            @click.stop.prevent="formData.quantity -= 1"
           >
             -
           </button>
@@ -59,8 +63,9 @@
           >
           <button
             class="btn btn-plus"
-            :class="{'disable-btn': orderInfo.quantity === formData.quantity }"
-            @click.stop.prevent="orderInfo.quantity === formData.quantity ? formData.quantity = orderInfo.quantity: formData.quantity += 1"
+            :class="{'disable-btn': orderInfo.quantity === formData.quantity || formData.quantity === currentUser.subscriptionBalance }"
+            :disabled="isProcessing || orderInfo.quantity === formData.quantity || formData.quantity === currentUser.subscriptionBalance"
+            @click.stop.prevent="formData.quantity += 1"
           >
             +
           </button>
@@ -78,6 +83,7 @@
         <button
           class="btn btn-next"
           type="submit"
+          :disabled="isProcessing"
         >
           <slot name="submit">
             確認訂購
@@ -101,6 +107,14 @@ export default {
         time: '',
         quantity: 1
       })
+    },
+    initialProcessing: {
+      type: Boolean,
+      default: false
+    },
+    currentUser: {
+      type: Object,
+      required: true
     }
   },
   data () {
@@ -109,15 +123,19 @@ export default {
         time: '',
         quantity: 1
       },
-      errorMessage: []
+      errorMessage: [],
+      isProcessing: false
     }
   },
   watch: {
     initialOrder (order) {
       this.formData = {
         ...this.formData,
-        ...this.order
+        ...order
       }
+    },
+    initialProcessing (isProcessing) {
+      this.isProcessing = isProcessing
     }
   },
   created () {
@@ -125,6 +143,7 @@ export default {
       ...this.formData,
       ...this.initialOrder
     }
+    this.isProcessing = this.initialProcessing
   },
   methods: {
     handleSubmit (e) {
@@ -132,6 +151,9 @@ export default {
         this.errorMessage.push('請選擇領餐時間')
         return
       }
+      // update processing status
+      this.isProcessing = true
+      // send data to parent
       const formData = { quantity: this.formData.quantity, require_date: this.formData.time }
       this.$emit('after-submit', formData)
     }

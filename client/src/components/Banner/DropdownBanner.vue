@@ -5,7 +5,7 @@
     <div class="banner-container">
       <div
         class="banner-img"
-        :style="{backgroundImage: getDistrictImageUrl(currentDistrict)}"
+        :style="{backgroundImage: `url(${districtImage})`}"
       />
       <div class="banner-overlay" />
       <div class="banner-content">
@@ -20,6 +20,7 @@
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
+            :disabled="isLoading"
           >
             切換地區
           </button>
@@ -53,11 +54,32 @@ export default {
     currentDistrict: {
       type: String,
       required: true
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   },
+  data () {
+    return {
+      districtImage: ''
+    }
+  },
+  watch: {
+    districts (value) {
+      this.getDistrictImage()
+    }
+  },
+  created () {
+    this.getDistrictImage()
+  },
   methods: {
-    getDistrictImageUrl (districtName) {
-      return `url(${this.districts.filter(district => district.chinese_name === districtName)})`
+    getDistrictImage () {
+      if (this.districts.length === 0) {
+        this.districtImage = ''
+        return
+      }
+      this.districtImage = this.districts.filter(district => district.chinese_name === this.currentDistrict)[0].image
     }
   }
 }

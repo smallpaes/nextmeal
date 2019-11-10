@@ -1,177 +1,186 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <AdminSideNavBar />
+    <!--Left Side Navbar-->
+    <AdminSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
     <section class="restaurants flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
       <h1 class="restaurants-title">
         餐廳管理
       </h1>
       <hr class="restaurants-divider">
+
+      <!--Filter And Search Panel-->
       <AdminFilterPanel
-        :options="locations"
-        @after-search="handleAfterSearch"
-        @after-filter="handleAfterFilter"
+        :options="districts"
+        :is-loading="isLoading"
+        @after-search="handleAfterFilter({page: 0, searchInput: $event, selectedOption: currentFilterOption})"
+        @after-filter="handleAfterFilter({page: 0, searchInput: currentSearchInput, selectedOption: $event})"
       >
         <template v-slot:filterOption>
-          搜尋地區
+          篩選地區
         </template>
       </AdminFilterPanel>
-      <AdminRestaurantsTable :restaurants="restaurants" />
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
+      />
+      <transition
+        name="slide"
+        mode="out-in"
+      >
+        <template v-if="!isLoading">
+          <!--Restaurant Data Table-->
+          <div
+            v-if="restaurants.length > 0"
+            class="restaurants-table"
+          >
+            <AdminRestaurantsTable
+              key="table"
+              :restaurants="restaurants"
+            />
+            <div
+              v-if="totalPage > 0 && currentPage !== totalPage"
+              class="btn-container mt-3 mt-md-4"
+            >
+              <FetchMoreButton
+                :is-fetching="isFetching"
+                @fetch-more="fetchRestaurants(currentSearchInput, currentFilterOption, currentPage + 1)"
+              />
+            </div>
+          </div>
+          <!--Placeholder Messgae for Empty Data-->
+          <PlaceholderMessage
+            v-else
+            key="placeholder"
+            class="restaurants-placeholder"
+          >
+            <i class="fas fa-search mr-2" />沒有符合的結果
+          </PlaceholderMessage>
+        </template>
+      </transition>
     </section>
   </section>
 </template>
 
 <script>
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminRestaurantsTable from '../components/AdminRestaurantsTable.vue'
-
-const dummyRestaurants = {
-  restaurants: [
-    {
-      id: '1',
-      name: '餐廳一',
-      rating: 4.6,
-      commentCount: 0,
-      location: '大安區',
-      Category: {
-        name: '日本料理'
-      },
-      Comments: [],
-      Meals: [],
-      orderCount: 2
-    },
-    {
-      id: '2',
-      name: '餐廳二',
-      rating: 3.4,
-      commentCount: 3,
-      location: '信義區',
-      Category: {
-        name: '美式料理'
-      },
-      Comments: [],
-      Meals: [],
-      orderCount: 3
-    },
-    {
-      id: '3',
-      name: '餐廳三',
-      rating: 4.2,
-      commentCount: 10,
-      location: '中山區',
-      Category: {
-        name: '日本料理'
-      },
-      Comments: [],
-      Meals: [],
-      orderCount: 12
-    },
-    {
-      id: '4',
-      name: '餐廳四',
-      rating: 2.4,
-      commentCount: 1,
-      location: '松山區',
-      Category: {
-        name: '美式料理'
-      },
-      Comments: [],
-      Meals: [],
-      orderCount: 3
-    }
-  ],
-  locations: [
-    {
-      'chinese_name': '大安區',
-      'eng_name': "Da'an",
-      'image': 'https://picsum.photos/1920/1080',
-      'lng': '121.5434446',
-      'lat': '25.02677012'
-    },
-    {
-      'chinese_name': '信義區',
-      'eng_name': 'Xinyi',
-      'image': 'https://picsum.photos/1920/1080',
-      'lng': '121.5716697',
-      'lat': '25.03062083'
-    },
-    {
-      'chinese_name': '中山區',
-      'eng_name': 'Zhongshan',
-      'image': 'https://picsum.photos/1920/1080',
-      'lng': '121.7308913',
-      'lat': '25.14986365'
-    },
-    {
-      'chinese_name': '松山區',
-      'eng_name': 'Songshan',
-      'image': 'https://picsum.photos/1920/1080',
-      'lng': '121.5575876',
-      'lat': '25.05999101'
-    }
-  ]
-}
+import PlaceholderMessage from '../components/Placeholder/Message'
+import FetchMoreButton from '../components/Button/FetchMoreButton'
+import Loader from '../components/Loader'
+import adminAPI from '../apis/admin'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
     AdminSideNavBar,
+    NavbarToggler,
     AdminFilterPanel,
-    AdminRestaurantsTable
+    AdminRestaurantsTable,
+    PlaceholderMessage,
+    Loader,
+    FetchMoreButton
   },
   data () {
     return {
       restaurants: [],
-      locations: [],
+      districts: [],
       currentSearchInput: '',
-      currentFilterOption: ''
+      currentFilterOption: '',
+      currentPage: 0,
+      totalPage: null,
+      isLoading: true,
+      isFetching: false,
+      navIsOpen: false
     }
   },
   created () {
-    this.fetchRestaurants()
+    const { dist = '', name = '' } = this.$route.query
+    this.fetchRestaurants(dist, name, this.currentPage + 1)
   },
-  beforeRouteUpdate () {
-    this.fetchRestaurants()
+  beforeRouteUpdate (to, from, next) {
+    // Reset current page
+    this.currentPage = 0
+    // clear existing data
+    this.restaurants = []
+    const { dist = '', name = '' } = to.query
+    this.fetchRestaurants(dist, name, this.currentPage + 1)
+    next()
   },
   methods: {
-    fetchRestaurants (name, category) {
-      // fetch data from API
-      this.restaurants = dummyRestaurants.restaurants
-      this.locations = dummyRestaurants.locations.map(location => location['chinese_name'])
+    async fetchRestaurants (name, dist, page) {
+      try {
+        // update fetching status
+        this.isFetching = true
+        // fetch data from API
+        const { data, statusText } = await adminAPI.restaurants.getRestaurants({ name, dist, page })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // store data
+        this.restaurants = [...this.restaurants, ...data.restaurants.restaurants]
+        this.districts = data.districts.map(district => district['chinese_name'])
+        // update page data
+        this.totalPage = data.restaurants.pages
+        this.currentPage += 1
+        // update loading status
+        this.isLoading = false
+        // update fetching status
+        this.isFetching = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // update fetching status
+        this.isFetching = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得資料，請稍後再試'
+        })
+      }
     },
-    handleAfterSearch (searchInput) {
-      this.currentSearchInput = searchInput
-      this.fetchRestaurants(this.currentSearchInput, this.currentFilterOption)
-    },
-    handleAfterFilter (selectedOption) {
-      this.currentFilterOption = selectedOption
-      this.fetchRestaurants(this.currentSearchInput, this.currentFilterOption)
+    handleAfterFilter (data) {
+      // update loading status
+      this.isLoading = true
+      // reset data
+      this.currentPage = 0
+      this.restaurants = []
+      this.currentFilterOption = data.selectedOption
+      this.currentSearchInput = data.searchInput
+      this.fetchRestaurants(this.currentSearchInput, this.currentFilterOption, this.currentPage)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation(false);
+@include fadeAnimation;
+
 .wrapper {
     background-color: color(quinary);
 }
 
 .restaurants {
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    transition: margin-left .1s linear;
-    overflow-y: scroll;
+    @include controlPanelLayout;
+}
 
-    &-title {
-        size: size(lg);
-    }
+.btn-container {
+    text-align: center;
+    .btn {
+        @include solidButton(150);
 
-    &-divider {
-        width: 100%;
-    }
-
-    @include response(md) {
-        margin-left: 145px;
+        @include response(md) {
+            min-width: 200px;
+        }
     }
 }
 </style>

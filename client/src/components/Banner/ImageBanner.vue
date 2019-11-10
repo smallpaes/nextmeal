@@ -17,7 +17,7 @@ export default {
   props: {
     backgroundPhoto: {
       type: String,
-      required: true
+      default: 'https://images.pexels.com/photos/277253/pexels-photo-277253.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
     }
   }
 }

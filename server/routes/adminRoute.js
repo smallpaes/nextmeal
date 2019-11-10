@@ -16,7 +16,7 @@ router.delete('/restaurants/:restaurant_id', adminController.deleteRestaurant)
 
 router.get('/users', adminController.getUsers)
 router.get('/users/:user_id', adminController.getUser)
-router.put('/users/:user_id', userController.putProfile)
+router.put('/users/:user_id', upload.single('avatar'),userController.putProfile)
 router.delete('/users/:user_id', adminController.deleteUser)
 
 router.get('/orders', adminController.getOrders)

@@ -164,6 +164,7 @@ let middleware = {
       if (!subscription) return res.status(400).json({ status: 'error', message: 'You need to subscribe next meal now.' })
       next()
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },

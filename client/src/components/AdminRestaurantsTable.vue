@@ -26,7 +26,7 @@
           :key="restaurant.id"
           @click="$router.push({name:'admin-restaurant-edit', params: {restaurant_id: restaurant.id}})"
         >
-          <td>{{ restaurant.name }}</td>
+          <td>{{ restaurant.name | textTruncate(10) }}</td>
           <td>{{ restaurant.location }}</td>
           <td>
             <span
@@ -53,7 +53,10 @@
 </template>
 
 <script>
+import { textTruncateFilter } from '../utils/mixins'
+
 export default {
+  mixins: [textTruncateFilter],
   props: {
     restaurants: {
       type: Array,

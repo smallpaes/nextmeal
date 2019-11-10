@@ -39,7 +39,7 @@ let orderController = {
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
-        attributes: ['id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
+        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
         order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
@@ -162,11 +162,11 @@ let orderController = {
         return res.status(400).json({ status: 'error', message: 'meal or restaurant does not exist' })
       }
       // 為了給前端 time_slots 取得餐廳開店與關店時間
-      let opening_hour = order.meals.dataValues.Restaurant.dataValues.opening_hour
-      let closing_hour = order.meals.dataValues.Restaurant.dataValues.closing_hour
+      let opening_hour = order.meals[0].dataValues.Restaurant.dataValues.opening_hour
+      let closing_hour = order.meals[0].dataValues.Restaurant.dataValues.closing_hour
       let time_slots = getTimeStop(opening_hour, closing_hour)
 
-      order = { ...order.dataValues, meals: order.dataValues.meals.dataValues }
+      order = { ...order.dataValues, meals: order.dataValues.meals[0].dataValues }
       // 回傳 subscription 數量，以及餐點剩餘數量
       return res.status(200).json({
         status: 'success',

@@ -9,21 +9,29 @@
           輕鬆三步驟
         </p>
       </div>
-      <div class="process-wrapper row">
-        <div
-          v-for="process in processes"
-          :key="process.description"
-          class="process text-center col-4"
-        >
-          <h2 class="process-icon">
-            <i :class="process.icon" />
-          </h2>
-          <h3 class="process-description">
-            {{ process.description }}
-          </h3>
+      <transition
+        name="slide-in-left"
+        appear
+      >
+        <div class="process-wrapper row">
+          <div
+            v-for="process in processes"
+            :key="process.description"
+            class="process text-center col-4"
+          >
+            <h2 class="process-icon">
+              <i :class="process.icon" />
+            </h2>
+            <h3 class="process-description">
+              {{ process.description }}
+            </h3>
+          </div>
         </div>
-      </div>
-      <button class="btn mt-5">
+      </transition>
+      <button
+        class="btn mt-5"
+        @click.stop.prevent="$emit('learn-more')"
+      >
         了解更多
       </button>
     </div>
@@ -54,6 +62,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideInLeftAnimation;
+
 .process {
     @include headingStyling;
     text-align: center;
