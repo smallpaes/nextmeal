@@ -187,7 +187,7 @@
       <div
         v-if="restaurant.image"
         class="file-image-wrapper"
-        @click="user.image = ''"
+        @click="restaurant.image = ''"
       >
         <img
           :src="restaurant.image"
@@ -206,27 +206,34 @@
       </label>
     </div>
     <div class="btn-container mt-3">
-      <button
+      <ProcessButton
         class="btn"
-        :class="{'btn-update': $route.name === 'admin-restaurant-edit'}"
-        :disabled="isProcessing || $v.$invalid"
-        @click.stop.prevent="getLocation('restaurant')"
+        :is-processing="isProcessing"
+        :v="$v"
+        :color="$route.name === 'admin-restaurant-edit' ? 'tertiary' : 'primary'"
+        @after-click="getLocation('restaurant')"
       >
-        更新
-      </button>
-      <button
+        <template #initial>
+          更新
+        </template>
+      </ProcessButton>
+      <ProcessButton
         v-if="$route.name ==='admin-restaurant-edit'"
         class="btn"
-        :disabled="isProcessing"
-        @click.stop.prevent="$emit('after-delete')"
+        :is-processing="isProcessing"
+        :v="$v"
+        @after-click="$emit('after-delete')"
       >
-        刪除
-      </button>
+        <template #initial>
+          刪除
+        </template>
+      </ProcessButton>
     </div>
   </form>
 </template>
 
 <script>
+import ProcessButton from '../components/Button/ProcessButton'
 import { getGeoMethods, handleFileChangeMethod } from '../utils/mixins'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import CustomSelect from '../components/CustomSelect'
@@ -234,7 +241,8 @@ import moment from 'moment'
 
 export default {
   components: {
-    CustomSelect
+    CustomSelect,
+    ProcessButton
   },
   mixins: [getGeoMethods, handleFileChangeMethod],
   props: {
@@ -380,26 +388,8 @@ export default {
 }
 
 .btn {
-    @include solidButton;
-    min-width: 100px;
-    margin: 0 .5rem;
-    padding: .28rem .7rem;
-
     &-container {
         @include flexPosition(center, center, row);
-    }
-
-    &-update {
-        background-color: color(tertiary);
-
-      &:hover {
-          background-color: darken(color(tertiary), 20%);
-      }
-    }
-
-    @include response(md) {
-        min-width: 200px;
-        padding: .375rem .75rem;
     }
 }
 

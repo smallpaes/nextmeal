@@ -80,7 +80,7 @@
       <div
         v-if="dish.image"
         class="file-image-wrapper"
-        @click="user.image = ''"
+        @click="dish.image = ''"
       >
         <img
           :src="dish.image"
@@ -99,22 +99,29 @@
       </label>
     </div>
     <div class="btn-container mt-3">
-      <button
+      <ProcessButton
         class="btn"
         type="submit"
-        :disabled="isProcessing || $v.$invalid"
+        :is-processing="isProcessing"
+        :v="$v"
       >
-        <slot name="submitBtn" />
-      </button>
+        <template #initial>
+          <slot name="submitBtn" />
+        </template>
+      </ProcessButton>
     </div>
   </form>
 </template>
 
 <script>
+import ProcessButton from '../components/Button/ProcessButton'
 import { handleFileChangeMethod } from '../utils/mixins'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 
 export default {
+  components: {
+    ProcessButton
+  },
   mixins: [handleFileChangeMethod],
   props: {
     initialDish: {
@@ -193,6 +200,7 @@ export default {
 
 <style lang="scss" scoped>
 .form {
+    @include fileUpload;
     @include inputValidation;
     @include formControl;
     background-color: color(quaternary);
@@ -246,20 +254,12 @@ export default {
 }
 
 .btn {
-    @include solidButton;
-    min-width: 100px;
-    transition: min-width .2s linear;
-
     &-container {
         text-align: center;
 
         @include response(md) {
             text-align: right;
         }
-    }
-
-    @include response(md) {
-        min-width: 200px;
     }
 }
 </style>

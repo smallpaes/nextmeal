@@ -201,23 +201,29 @@
       </label>
     </div>
     <div class="btn-container mt-3">
-      <button
+      <ProcessButton
         class="btn"
-        :class="{'btn-update': $route.name === 'admin-user-edit'}"
         type="submit"
-        :disabled="isProcessing || $v.$invalid"
-        @click.stop.prevent="getLocation('user')"
+        :is-processing="isProcessing"
+        :v="$v"
+        :color="$route.name === 'admin-user-edit' ? 'tertiary' : 'primary'"
+        @after-click="getLocation('user')"
       >
-        更新
-      </button>
-      <button
+        <template #initial>
+          更新
+        </template>
+      </ProcessButton>
+      <ProcessButton
         v-if="$route.name ==='admin-user-edit'"
         class="btn"
-        :disabled="isProcessing || $v.$invalid"
-        @click.stop.prevent="$emit('after-delete')"
+        :is-processing="isProcessing"
+        :v="$v"
+        @after-click="$emit('after-delete')"
       >
-        刪除
-      </button>
+        <template #initial>
+          刪除
+        </template>
+      </ProcessButton>
     </div>
   </form>
 </template>
@@ -227,6 +233,7 @@ import CustomDatePicker from '../components/CustomDatePicker'
 import CustomSelect from '../components/CustomSelect'
 import authorizationAPI from '../apis/authorization'
 import Tooltip from '../components/Button/Tooltip'
+import ProcessButton from '../components/Button/ProcessButton'
 import { getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter } from '../utils/mixins'
 import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
 
@@ -234,7 +241,8 @@ export default {
   components: {
     CustomDatePicker,
     CustomSelect,
-    Tooltip
+    Tooltip,
+    ProcessButton
   },
   mixins: [getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter],
   props: {
@@ -375,26 +383,8 @@ export default {
 }
 
 .btn {
-    @include solidButton;
-    min-width: 100px;
-    margin: 0 .5rem;
-    padding: .28rem .7rem;
-
     &-container {
         @include flexPosition(center, center, row);
-    }
-
-    &-update {
-      background-color: color(tertiary);
-
-      &:hover {
-        background-color: darken(color(tertiary), 20%);
-      }
-    }
-
-    @include response(md) {
-      min-width: 200px;
-      padding: .375rem .75rem;
     }
 }
 

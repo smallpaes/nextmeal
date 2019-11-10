@@ -1,8 +1,8 @@
 <template>
   <section class="form">
     <form
+      ref="form"
       class="form-wrapper rounded-sm shadow-sm p-3"
-      @submit.stop.prevent="handleSubmit"
     >
       <h2 class="form-title mb-4">
         訂購資料
@@ -72,15 +72,43 @@
         </div>
       </div>
       <hr class="form-divider mt-4">
-      <div class="btn-container text-right">
-        <button
+      <div class="btn-container">
+        <ProcessButton
+          class="btn"
+          :is-processing="isProcessing"
+          :v="{}"
+          :color="'tertiary'"
+          :border-radius="'.3rem'"
+          @after-click="$emit('change-order')"
+        >
+          <template #initial>
+            回上一頁
+          </template>
+        </ProcessButton>
+        <ProcessButton
+          class="btn"
+          :is-processing="isProcessing"
+          :v="{}"
+          :color="'primary'"
+          type="submit"
+          :border-radius="'.3rem'"
+          @after-click="handleSubmit"
+        >
+          <template #initial>
+            <slot name="submit">
+              確認訂購
+            </slot>
+          </template>
+        </ProcessButton>
+
+        <!-- <button
           v-if="$route.name==='order-new'"
           class="btn btn-last"
           @click.stop.prevent="$emit('change-order')"
         >
           回上一頁
-        </button>
-        <button
+        </button> -->
+        <!-- <button
           class="btn btn-next"
           type="submit"
           :disabled="isProcessing"
@@ -88,14 +116,19 @@
           <slot name="submit">
             確認訂購
           </slot>
-        </button>
+        </button> -->
       </div>
     </form>
   </section>
 </template>
 
 <script>
+import ProcessButton from '../components/Button/ProcessButton'
+
 export default {
+  components: {
+    ProcessButton
+  },
   props: {
     orderInfo: {
       type: Object,
@@ -229,24 +262,32 @@ export default {
 }
 
 .btn-container {
+    text-align: center;
     .btn {
         margin-left: .8rem;
-        padding: .1rem;
+        padding: 0;
         line-height: 1.8rem;
+        min-width: 78px;
+        font-size: size(xs);
 
-        &-last {
-            @include solidButton(80, .3, tertiary);
-        }
-
-        &-next {
-            @include solidButton(80, .3, primary);
+        &:last-child {
+            margin-left: 0;
         }
 
         @include response(md) {
-            min-width: 180px;
-            padding: .2rem .5rem;
+            font-size: size(sm);
+            min-width: 130px;
+            padding: .1rem 0;
             margin-left: 1rem;
+
+            &:last-child {
+
+            }
         }
+    }
+
+    @include response(md) {
+        text-align: right;
     }
 }
 

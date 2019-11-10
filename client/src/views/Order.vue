@@ -227,8 +227,9 @@ export default {
     width: 100%;
     .btn {
         margin-left: .8rem;
-        padding: .1rem;
+        padding: 0;
         line-height: 1.8rem;
+        font-size: size(xs);
 
         &-edit {
             @include solidButton(80, .3, tertiary);
@@ -239,9 +240,10 @@ export default {
         }
 
         @include response(md) {
-            min-width: 180px;
-            padding: .2rem .5rem;
+            min-width: 130px;
+            padding: .1rem 0;
             margin-left: 1rem;
+            font-size: size(sm);
         }
     }
 }
