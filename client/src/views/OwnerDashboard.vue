@@ -23,18 +23,24 @@
 
       <!--Chart Display-->
       <div class="row">
-        <div
-          class="col-md-6"
-        >
-          <LineChart
-            :chart-data="chartData"
-            :options="chartOptions"
-            :styles="myStyles"
-          />
+        <div class="col-md-6">
+          <div class="card rounded-sm">
+            <div class="card-header bg-white">
+              <i class="fas fa-clipboard-list mr-2" />訂單
+            </div>
+            <div class="card-body p-1">
+              <LineChart
+                :chart-data="chartData"
+                :options="chartOptions"
+                :styles="myStyles"
+              />
+            </div>
+          </div>
         </div>
+        <!--
         <div class="col-md-6">
           <LineChart />
-        </div>
+        </div> -->
       </div>
     </section>
   </section>
@@ -130,5 +136,11 @@ export default {
 
 .dashboard {
   @include controlPanelLayout;
+}
+
+.card {
+  &-header {
+    font-size: size(sm);
+  }
 }
 </style>
