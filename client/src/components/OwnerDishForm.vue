@@ -152,7 +152,7 @@ export default {
       name: {
         required,
         minLength: minLength(1),
-        maxLength: maxLength(10)
+        maxLength: maxLength(30)
       },
       image: {
         hasImage: value => {

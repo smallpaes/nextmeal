@@ -14,7 +14,7 @@
       </h5>
       <p class="card-text mt-1">
         <span class="rating">&#9733; {{ order.restaurant.rating | padEnd }}</span>
-        <span class="mx-1">|</span>{{ order.restaurant.name }}
+        <span class="mx-1">|</span>{{ order.restaurant.name | textTruncate(15) }}
         <slot name="distance" />
       </p>
       <slot name="indicator" />
