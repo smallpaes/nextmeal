@@ -31,7 +31,7 @@
           <td>#{{ order.id }}</td>
           <td>{{ order.User.name }}</td>
           <td>{{ order.meals.Restaurant.name | textTruncate(10) }}</td>
-          <td>{{ order.date.slice(4, 8) }}</td>
+          <td>{{ order.date.slice(2, 6) }}</td>
           <td>{{ order.time }}</td>
           <td v-if="order.order_status === '取消'">
             已取消

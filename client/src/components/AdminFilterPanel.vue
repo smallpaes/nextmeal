@@ -38,6 +38,7 @@
         :has-label="false"
         :placeholder="'訂單日期'"
         :disabled="isLoading"
+        :clearable="false"
         class="col-sm-6 my-1 col-md pl-md-2 pr-md-0"
         @handle-date="$emit('after-date-pick', $event)"
       />
@@ -79,8 +80,8 @@ export default {
   },
   filters: {
     transformName (name) {
-      if (name === 'active') return '已訂購'
-      if (name === 'inactive') return '未訂購'
+      if (name === 'active') return '已訂閱'
+      if (name === 'inactive') return '未訂閱'
       return name
     }
   },

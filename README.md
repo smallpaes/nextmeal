@@ -210,7 +210,6 @@ The following instructions will get you a copy of the project and the setting ne
 - [MySQL v8.0.16](https://dev.mysql.com/downloads/mysql/)
 - [MySQL Workbench v8.0.16](https://dev.mysql.com/downloads/workbench/)
 
-<p>&nbsp;</p>
 
 ### Clone
 
@@ -374,12 +373,15 @@ $ npm run serve
 - Database and model configuration, back-end automation testing and Node.js scheduler integration
 - Cooperate with teammates to come up with better user stories, wireframe, ERD model and RESTful API design
 - Cooperate with teammates to set up database, create seeders, and deploy the app
+- Cooperate with back-end teammate to design and use our own RESTful API
 - Code review for teammates
 
 
 ### [Mike Huang](https://github.com/smallpaes)
 
-- Entire front-end development--Project setup, features development, and new technologies implementation
+- Entire front-end development
+  - Project setup, features development, and new technologies implementation(Sass, Google Maps APIs, etc.)
+  - Pages for visitors, members, restaurants owner, and admin
 - UX and UI design
 - Github project creation and branch management
 - Cooperate with teammates to come up with better user stories, wireframe, ERD model and RESTful API design
