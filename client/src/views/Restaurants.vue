@@ -143,6 +143,10 @@ export default {
     this.currentDistrict = dist || '信義區'
     this.fetchRestaurants(dist, this.currentPage + 1)
   },
+  mounted () {
+    // scroll to top of the page
+    window.scrollTo(0, 0)
+  },
   beforeRouteUpdate (to, from, next) {
     // Reset current page
     this.currentPage = 0
