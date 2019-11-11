@@ -23,10 +23,13 @@
 
       <!--Chart Display-->
       <div class="row">
-        <div class="col-md-6">
+        <div
+          class="col-md-6"
+        >
           <LineChart
             :chart-data="chartData"
             :options="chartOptions"
+            :styles="myStyles"
           />
         </div>
         <div class="col-md-6">
@@ -69,10 +72,38 @@ export default {
         }]
       },
       chartOptions: {
+        legend: {
+          display: false
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            right: 5,
+            top: 5
+          }
+        },
+        tooltips: {
+
+        },
         scales: {
           yAxes: [{
             ticks: {
-
+              beginAtZero: true,
+              display: false
+            },
+            gridLines: {
+              display: true,
+              color: 'rgba(255,255,255,0)'
+            }
+          }],
+          xAxes: [{
+            ticks: {
+              display: false
+            },
+            gridLines: {
+              display: true,
+              color: 'rgba(255,255,255,0)'
             }
           }]
         }
@@ -80,9 +111,10 @@ export default {
     }
   },
   computed: {
-    smallLineChart () {
+    myStyles () {
       return {
-
+        height: `160px`,
+        position: 'relative'
       }
     }
   }
