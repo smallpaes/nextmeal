@@ -80,8 +80,8 @@ export default {
   },
   filters: {
     transformName (name) {
-      if (name === 'active') return '已訂購'
-      if (name === 'inactive') return '未訂購'
+      if (name === 'active') return '已訂閱'
+      if (name === 'inactive') return '未訂閱'
       return name
     }
   },

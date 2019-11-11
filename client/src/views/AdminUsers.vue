@@ -24,7 +24,7 @@
         @after-filter="handleAfterFilter({searchInput: currentSearchInput, selectedOption: $event})"
       >
         <template v-slot:filterOption>
-          訂單狀態
+          訂閱狀態
         </template>
       </AdminFilterPanel>
 
