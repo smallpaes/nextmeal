@@ -20,8 +20,8 @@
         :options="subscriptionStatus"
         :input-placeholder="'搜尋名稱'"
         :is-loading="isLoading"
-        @after-search="handleAfterFilter({searchInput: $event, selectedOption: currentFilterOption})"
-        @after-filter="handleAfterFilter({searchInput: currentSearchInput, selectedOption: $event})"
+        @after-search="handleAfterFilter({page: 0,searchInput: $event, selectedOption: currentFilterOption})"
+        @after-filter="handleAfterFilter({page: 0, searchInput: currentSearchInput, selectedOption: $event})"
       >
         <template v-slot:filterOption>
           訂閱狀態
@@ -40,11 +40,25 @@
       >
         <template v-if="!isLoading">
           <!--User Data Table-->
-          <AdminUsersTable
+          <div
             v-if="users.length > 0"
-            :users="users"
             class="users-table"
-          />
+          >
+            <AdminUsersTable
+
+              :users="users"
+            />
+            <div
+              v-if="totalPage > 0 && currentPage !== totalPage"
+              class="btn-container mt-3 mt-md-4"
+            >
+              <FetchMoreButton
+                :is-fetching="isFetching"
+                @fetch-more="fetchUsers(currentFilterOption, currentSearchInput, currentPage + 1)"
+              />
+            </div>
+          </div>
+
           <!--Placeholder Messgae for Empty Data-->
           <PlaceholderMessage
             v-else
@@ -64,6 +78,7 @@ import NavbarToggler from '../components/Navbar/NavbarToggler'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminUsersTable from '../components/AdminUsersTable.vue'
 import PlaceholderMessage from '../components/Placeholder/Message'
+import FetchMoreButton from '../components/Button/FetchMoreButton'
 import Loader from '../components/Loader'
 import adminAPI from '../apis/admin'
 import { Toast } from '../utils/helpers'
@@ -75,6 +90,7 @@ export default {
     AdminFilterPanel,
     AdminUsersTable,
     PlaceholderMessage,
+    FetchMoreButton,
     Loader
   },
   data () {
@@ -83,34 +99,50 @@ export default {
       subscriptionStatus: ['active', 'inactive'],
       currentSearchInput: '',
       currentFilterOption: '',
+      currentPage: 0,
+      totalPage: null,
       isLoading: true,
+      isFetching: false,
       navIsOpen: false
     }
   },
   created () {
     const { sub_status: subscriptionStatus = '', name = '' } = this.$route.query
-    this.fetchUsers({ subscriptionStatus, name })
+    this.fetchUsers(subscriptionStatus, name, this.currentPage + 1)
   },
   beforeRouteUpdate (to, from, next) {
+    // Reset current page
+    this.currentPage = 0
+    // clear existing data
+    this.users = []
     const { sub_status: subscriptionStatus = '', name = '' } = to.query
-    this.fetchUsers({ subscriptionStatus, name })
+    this.fetchUsers(subscriptionStatus, name, this.currentPage + 1)
     next()
   },
   methods: {
-    async fetchUsers ({ subscriptionStatus, name }) {
+    async fetchUsers (subscriptionStatus, name, page) {
       try {
+        // update fetching status
+        this.isFetching = true
         // fetch data from API
-        const { data, statusText } = await adminAPI.users.getUsers({ subscriptionStatus, name })
+        const { data, statusText } = await adminAPI.users.getUsers({ subscriptionStatus, name, page })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
-        this.users = data.users
+        this.users = [...this.users, ...data.users]
         this.subscriptionStatus = data.sub_status || this.subscriptionStatus
+        // update page data
+        this.totalPage = data.pages
+        this.currentPage += 1
         // update loading status
         this.isLoading = false
+        // update fetching status
+        this.isFetching = false
       } catch (error) {
         // update loading status
         this.isLoading = false
+        // update fetching status
+        this.isFetching = false
         // fire error messages
         Toast.fire({
           type: 'error',
@@ -122,10 +154,11 @@ export default {
       // update loading status
       this.isLoading = true
       // reset data
+      this.currentPage = 0
       this.users = []
       this.currentFilterOption = data.selectedOption
       this.currentSearchInput = data.searchInput
-      this.fetchUsers({ subscriptionStatus: this.currentFilterOption, name: this.currentSearchInput })
+      this.fetchUsers(this.currentFilterOption, this.currentSearchInput, this.currentPage)
     }
   }
 }
@@ -141,5 +174,16 @@ export default {
 
 .users {
   @include controlPanelLayout;
+}
+
+.btn-container {
+  text-align: center;
+  .btn {
+    @include solidButton(150);
+
+    @include response(md) {
+      min-width: 200px;
+    }
+  }
 }
 </style>
