@@ -135,7 +135,7 @@ let adminController = {
       const start = moment().startOf('day').toDate()
 
       //if it runs on heroku,use iLike to fix case sensitive issue
-      let whereQuery = process.env.heroku ? { name: { [Op.iLike]: name || '' } } : { name: { [Op.substring]: name || '' } };
+      let whereQuery = process.env.heroku ? { name: { [Op.iLike]: `%${name}%` || '' } } : { name: { [Op.substring]: name || '' } };
       if (sub_status === 'inactive') {
         whereQuery['expired_date'] = {
           [Op.or]: {
