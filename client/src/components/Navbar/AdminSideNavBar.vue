@@ -86,100 +86,100 @@ export default {
 
 <style lang="scss" scoped>
 .sidenav {
-    @include brand(sidenav);
-    position: fixed;
-    height: 100vh;
-    width: 0;
-    white-space: nowrap;
-    background-color: color(quaternary);
-    transition: width .2s linear;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    z-index: 3;
+  @include brand(sidenav);
+  position: fixed;
+  height: 100vh;
+  width: 0;
+  white-space: nowrap;
+  background-color: color(quaternary);
+  transition: width .2s linear;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  z-index: 3;
 
-    &-brand {
-      @include visibleTransition(visible);
-
-      @include response(sm) {
-        @include visibleTransition(invisible);
-      }
-
-      @include response(md) {
-        @include visibleTransition(visible);
-      }
-    }
-
-    &-nav {
-        list-style-type: none;
-    }
-
-    &.opened {
-      @extend .sidenav;
-      width: 100%;
-    }
+  &-brand {
+    @include visibleTransition(visible);
 
     @include response(sm) {
-      width: 80px;
+      @include visibleTransition(invisible);
     }
 
     @include response(md) {
-      width: 145px;
+      @include visibleTransition(visible);
     }
+  }
+
+  &-nav {
+    list-style-type: none;
+  }
+
+  &.opened {
+    @extend .sidenav;
+    width: 100%;
+  }
+
+  @include response(sm) {
+    width: 80px;
+  }
+
+  @include response(md) {
+    width: 145px;
+  }
 }
 
 .nav {
-    &-item {
-        padding: .9rem 0;
-    }
+  &-item {
+    padding: .9rem 0;
+  }
 
-    &-link {
-        @include linkStyling(lighten(color(secondary), 20%));
-        padding: 0;
-        font-size: size(md);
+  &-link {
+    @include linkStyling(lighten(color(secondary), 20%));
+    padding: 0;
+    font-size: size(md);
 
-        &.active {
-            color: color(tertiary);
-            @include pseudoStyling(before, tertiary, 0.4, 2.3);
+    &.active {
+      color: color(tertiary);
+      @include pseudoStyling(before, tertiary, 0.4, 2.3);
 
-            &::before {
-                background-color: transparent;
-
-                @include response(sm) {
-                    background-color: color(tertiary);
-                }
-            }
-        }
-
-        &-description {
-          transition: opacity .1s linear;
-
-          @include response(sm) {
-            opacity: 0;
-            display: none;
-          }
-
-          @include response(md) {
-            display: unset;
-            opacity: 1;
-          }
-        }
-    }
-
-    &-divider {
-        display: none;
-        border: .03rem solid lighten(color(secondary), 55%);
-        margin: 0 .6rem;
+      &::before {
+        background-color: transparent;
 
         @include response(sm) {
-          display: block;
+          background-color: color(tertiary);
         }
+      }
     }
+
+    &-description {
+      transition: opacity .1s linear;
+
+      @include response(sm) {
+        opacity: 0;
+        display: none;
+      }
+
+      @include response(md) {
+        display: unset;
+        opacity: 1;
+      }
+    }
+  }
+
+  &-divider {
+    display: none;
+    border: .03rem solid lighten(color(secondary), 55%);
+    margin: 0 .6rem;
+
+    @include response(sm) {
+      display: block;
+    }
+  }
 }
 
 .icon {
-    display: inline-block;
-    width: 30px;
-    margin-right: .3rem;
-    text-align: center;
+  display: inline-block;
+  width: 30px;
+  margin-right: .3rem;
+  text-align: center;
 }
 </style>

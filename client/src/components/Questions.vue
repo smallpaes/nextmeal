@@ -47,10 +47,10 @@
       </div>
       <div class="btn-container">
         <router-link
-          :to="{name: 'signup'}"
+          :to="{name: 'faq'}"
           class="btn mt-5"
         >
-          體驗看看
+          了解更多
         </router-link>
       </div>
     </div>
@@ -97,48 +97,48 @@ export default {
 .questions {
   @include headingStyling;
 
-    &-heading {
-      text-align: center;
-    }
+  &-heading {
+    text-align: center;
+  }
 }
 
 .card {
-    border: none;
+  border: none;
+  border-bottom: 1px solid lighten(color(secondary), 55%);
+  margin-bottom: .6rem;
+
+  &:first-of-type {
     border-bottom: 1px solid lighten(color(secondary), 55%);
-    margin-bottom: .6rem;
+  }
 
-    &:first-of-type {
-        border-bottom: 1px solid lighten(color(secondary), 55%);
+  &:not(:first-of-type):not(:last-of-type) {
+    @extend .card:first-of-type;
+  }
+
+  &-header {
+    border-top: none;
+    background-color: white;
+    border-bottom: none;
+    color: color(tertiary);
+    font-weight: weight(bold);
+    padding: 20px 20px 20px 0;
+
+    &:hover {
+      cursor: pointer;
     }
+  }
 
-    &:not(:first-of-type):not(:last-of-type) {
-      @extend .card:first-of-type;
-    }
-
-    &-header {
-        border-top: none;
-        background-color: white;
-        border-bottom: none;
-        color: color(tertiary);
-        font-weight: weight(bold);
-        padding: 20px 20px 20px 0;
-
-        &:hover {
-            cursor: pointer;
-        }
-    }
-
-    &-body {
-        color: lighten(color(secondary), 10%);
-        padding: 0 20px 20px 0;
-        font-size: size(xs);
-    }
+  &-body {
+    color: lighten(color(secondary), 10%);
+    padding: 0 20px 20px 0;
+    font-size: size(xs);
+  }
 }
 
 .btn-container {
-    text-align: center;
-    .btn {
-        @include solidButton;
-    }
+  text-align: center;
+  .btn {
+    @include solidButton;
+  }
 }
 </style>

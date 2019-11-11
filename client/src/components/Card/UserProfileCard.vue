@@ -59,60 +59,60 @@ export default {
 
 <style lang="scss" scoped>
 .profile {
-    &-card {
-        background-color: color(quaternary);
+  &-card {
+    background-color: color(quaternary);
 
-        &-top {
-            padding: 1.5rem;
-            text-align: center;
+    &-top {
+      padding: 1.5rem;
+      text-align: center;
 
-            &-name {
-                font-size: size(md);
-                font-weight: weight(bold);
-            }
+      &-name {
+        font-size: size(md);
+        font-weight: weight(bold);
+      }
 
-            img {
-                width: 120px;
-                height: 120px;
-                object-fit: cover;
-                border-radius: 50%;
-            }
-        }
-
-        &-bottom {
-            padding: .5rem 0;
-        }
+      img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+      }
     }
 
-    &-form {
-        border: 1px solid color(secondary);
+    &-bottom {
+      padding: .5rem 0;
     }
+  }
+
+  &-form {
+    border: 1px solid color(secondary);
+  }
 }
 
 .nav {
-    &-item {
-        text-align: center;
+  &-item {
+    text-align: center;
+  }
+
+  &-link {
+    @include linkStyling(lighten(color(secondary), 10%));
+    padding: .5rem 1rem;
+    font-size: size(sm);
+
+    &:hover {
+      color: color(primary);
     }
 
-    &-link {
-        @include linkStyling(lighten(color(secondary), 10%));
-        padding: .5rem 1rem;
-        font-size: size(sm);
-
-        &:hover {
-            color: color(primary);
-        }
-
-        &.active {
-            @include pseudoStyling(before, primary, .3, 1.6);
-            color: color(primary);
-        }
+    &.active {
+      @include pseudoStyling(before, primary, .3, 1.6);
+      color: color(primary);
     }
+  }
 }
 
 .icon {
-    display: inline-block;
-    width: 25px;
+  display: inline-block;
+  width: 25px;
 }
 
 </style>

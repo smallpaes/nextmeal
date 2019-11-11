@@ -48,26 +48,31 @@
     </div>
 
     <div class="btn-container mt-4">
-      <button
+      <ProcessButton
         class="btn"
         type="submit"
-        :disabled="isProcessing || $v.$invalid"
+        :is-processing="isProcessing"
+        :v="$v"
       >
-        更新
-      </button>
+        <template #initial>
+          更新
+        </template>
+      </ProcessButton>
     </div>
   </form>
 </template>
 
 <script>
 import CustomSelect from '../components/CustomSelect'
+import ProcessButton from '../components/Button/ProcessButton'
 import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
 import { required, between } from 'vuelidate/lib/validators'
 
 export default {
   components: {
-    CustomSelect
+    CustomSelect,
+    ProcessButton
   },
   props: {
     initialMeal: {
@@ -150,27 +155,19 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-    @include inputValidation;
-    @include formControl;
-    background-color: color(quaternary);
-    color: color(secondary);
+  @include inputValidation;
+  @include formControl;
+  background-color: color(quaternary);
+  color: color(secondary);
 
-    &-header {
-        font-size: size(md);
-    }
+  &-header {
+    font-size: size(md);
+  }
 }
 
 .btn {
-    @include solidButton;
-    min-width: 100px;
-    transition: min-width .2s linear;
-
-    &-container {
-        text-align: center;
-    }
-
-    @include response(md) {
-        min-width: 200px;
-    }
+  &-container {
+    text-align: center;
+  }
 }
 </style>

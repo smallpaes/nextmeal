@@ -184,29 +184,29 @@ export default {
 @include slideAnimation(false);
 
 .wrapper {
-    @include hideScrollBar;
-    background-color: color(quinary);
+  @include hideScrollBar;
+  background-color: color(quinary);
 }
 
 .menu {
-    @include controlPanelLayout;
+  @include controlPanelLayout;
 
-    &-card-container {
-        background-color: color(quaternary);
-    }
+  &-card-container {
+    background-color: color(quaternary);
+  }
 
-    &-divider {
-        width: 100%;
-        margin-top: 0;
-    }
+  &-divider {
+    width: 100%;
+    margin-top: 0;
+  }
 
-    .new-dish {
-        @include linkStyling(color(primary));
-        position: absolute;
-        right: 40px;
-        top: 112px;
-        font-size: size(xs);
-    }
+  .new-dish {
+    @include linkStyling(color(primary));
+    position: absolute;
+    right: 40px;
+    top: 112px;
+    font-size: size(xs);
+  }
 }
 
 .placeholder-message {

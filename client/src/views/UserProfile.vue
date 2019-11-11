@@ -134,15 +134,15 @@ export default {
 @include slideAnimation;
 
 .profile {
-    &-container {
-        display: flex;
-        flex-wrap: wrap;
-        align-content: space-between;
-        height: 100%;
-    }
+  &-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+    height: 100%;
+  }
 
-    &-wrapper {
-        margin-top: 62px;
-    }
+  &-wrapper {
+    margin-top: 62px;
+  }
 }
 </style>

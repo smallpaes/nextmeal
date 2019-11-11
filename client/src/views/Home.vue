@@ -15,7 +15,7 @@
               吃飯免煩惱
             </h1>
             <h3 class="banner-content-description">
-              午餐不到 100 元
+              午餐只要 100 元
             </h3>
             <router-link
               :to="{name: 'signup'}"
@@ -142,15 +142,15 @@ export default {
 @include fadeAnimation;
 
 .popular {
-    @include headingStyling;
-    &-heading {
-      text-align: center;
-    }
+  @include headingStyling;
+  &-heading {
+    text-align: center;
+  }
 }
 .districts {
   @include headingStyling;
-    &-heading {
-      text-align: center;
-    }
+  &-heading {
+    text-align: center;
+  }
 }
 </style>

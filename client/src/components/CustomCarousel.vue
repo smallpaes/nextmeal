@@ -64,43 +64,43 @@ export default {
 <style lang="scss" scoped>
 /deep/ .VueCarousel-navigation {
 
-    &-button {
-        display: none;
-        border-radius: 50%;
-        background-color: color(quaternary);
-        line-height: 8px;
-        color: lighten(color(secondary), 30%);
-        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+  &-button {
+    display: none;
+    border-radius: 50%;
+    background-color: color(quaternary);
+    line-height: 8px;
+    color: lighten(color(secondary), 30%);
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
 
-        &:focus {
-            outline: none;
-        }
-
-        &:hover {
-            color: lighten(color(secondary), 10%);
-        }
-
-        @include response(md) {
-            display: block;
-        }
+    &:focus {
+      outline: none;
     }
 
-    &--disabled {
-        display: none;
+    &:hover {
+      color: lighten(color(secondary), 10%);
     }
+
+    @include response(md) {
+      display: block;
+    }
+  }
+
+  &--disabled {
+    display: none;
+  }
 }
 
 /deep/ .VueCarousel-dot {
 
-    &:focus {
-        outline: none;
-    }
+  &:focus {
+    outline: none;
+  }
 
-    &-container {
-        @include response(md) {
-            display: none;
-        }
+  &-container {
+    @include response(md) {
+      display: none;
     }
+  }
 }
 
 </style>

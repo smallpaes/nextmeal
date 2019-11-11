@@ -90,15 +90,15 @@ export default {
 @include slideAnimation;
 
 .wrapper {
-    @include hideScrollBar;
-    background-color: color(quinary);
+  @include hideScrollBar;
+  background-color: color(quinary);
 }
 
 .dish {
-    @include controlPanelLayout;
+  @include controlPanelLayout;
 
-    &-divider {
-        margin-top: 0;
-    }
+  &-divider {
+    margin-top: 0;
+  }
 }
 </style>

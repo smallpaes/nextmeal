@@ -11,10 +11,10 @@
 
 <style lang="scss" scoped>
 .header {
-    @include headingStyling;
+  @include headingStyling;
 
-    &-heading {
-      text-align: center;
-    }
+  &-heading {
+    text-align: center;
+  }
 }
 </style>

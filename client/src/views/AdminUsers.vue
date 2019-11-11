@@ -136,10 +136,10 @@ export default {
 @include fadeAnimation;
 
 .wrapper {
-    background-color: color(quinary);
+  background-color: color(quinary);
 }
 
 .users {
-    @include controlPanelLayout;
+  @include controlPanelLayout;
 }
 </style>

@@ -65,70 +65,70 @@ export default {
 
 <style lang="scss" scoped>
 .media {
-    &-avatar {
-        height: 50px;
-        width: 50px;
-        object-fit: cover;
-        border-radius: 50%;
+  &-avatar {
+    height: 50px;
+    width: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  &-body {
+    min-height: 80px;
+    border-bottom: 1px solid lighten(color(secondary), 50%);
+  }
+
+  &-title {
+    display: flex;
+    flex-direction: column;
+    color: darken(color(secondary), 15%);
+    font-size: size(sm);
+
+    &-right {
+      font-size: size(xs);
+      color: lighten(color(secondary), 40%);
     }
 
-    &-body {
-        min-height: 80px;
-        border-bottom: 1px solid lighten(color(secondary), 50%);
+    @include response(sm) {
+      flex-direction: row;
+      justify-content: space-between;
     }
+  }
 
-    &-title {
-        display: flex;
-        flex-direction: column;
-        color: darken(color(secondary), 15%);
-        font-size: size(sm);
+  &-description {
+    font-size: size(xs);
+  }
 
-        &-right {
-            font-size: size(xs);
-            color: lighten(color(secondary), 40%);
-        }
-
-        @include response(sm) {
-            flex-direction: row;
-            justify-content: space-between;
-        }
-    }
-
-    &-description {
-        font-size: size(xs);
-    }
-
-    &-rating {
-        color: color(primary);
-        font-size: size(sm);
-    }
+  &-rating {
+    color: color(primary);
+    font-size: size(sm);
+  }
 }
 
 .file {
-    &-image {
-        position: relative;
-        object-fit: cover;
-        border-radius: .3rem;
-        width: 80px;
-        height: 60px;
-        cursor: zoom-in;
-        transition: all .2s ease-in;
+  &-image {
+    position: relative;
+    object-fit: cover;
+    border-radius: .3rem;
+    width: 80px;
+    height: 60px;
+    cursor: zoom-in;
+    transition: all .2s ease-in;
 
-        &.large {
-            width: 200px;
-            height: 150px;
-            cursor: zoom-out;
+    &.large {
+      width: 200px;
+      height: 150px;
+      cursor: zoom-out;
 
-            @include response(md) {
-                width: 240px;
-                height: 180px;
-            }
-        }
-
-        &-placeholder {
-          opacity: .9;
-          position: absolute;
-        }
+      @include response(md) {
+        width: 240px;
+        height: 180px;
+      }
     }
+
+    &-placeholder {
+      opacity: .9;
+      position: absolute;
+    }
+  }
 }
 </style>

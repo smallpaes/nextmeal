@@ -126,99 +126,100 @@ export default {
 @include slideAnimation;
 
 .subscribe {
-    @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
-    overflow-y: scroll;
-    max-height: 100vh;
-    padding: 120px 15px 30px 15px;
+  @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
+  max-height: 100vh;
+  padding: 120px 15px 30px 15px;
+  overflow-y: scroll;
 
-    &-content {
-        max-width: 450px;
-        background-color: color(quaternary);
-        margin-top: 70px;
-        margin: 0 auto;
-        overflow-y: hidden;
+  &-content {
+    max-width: 450px;
+    margin-top: 70px;
+    margin: 0 auto;
+    overflow-y: hidden;
+    background-color: color(quaternary);
 
-        &-top {
-            padding: 2.7rem;
-            margin: 0;
-            width: 100%;
+    &-top {
+      padding: 2.7rem;
+      margin: 0;
+      width: 100%;
 
-            &-header {
-                text-align: center;
+      &-header {
+        text-align: center;
 
-                h3 {
-                    font-size: size(lg);
-                }
-
-                h5 {
-                    font-size: size(sm);
-                }
-            }
-
-            &-choices {
-                @include flexPosition(space-between, center, row);
-            }
+        h3 {
+          font-size: size(lg);
         }
 
-        &-bottom {
-            background-color: color(quinary);
-            padding: .8rem 2.7rem;
-            font-size: size(xs);
-            color:lighten(color(secondary), 10%);
+        h5 {
+          font-size: size(sm);
         }
+      }
+
+      &-choices {
+        @include flexPosition(space-between, center, row);
+      }
     }
 
-    &-choice {
-        color: rgba(color(secondary), .7);
-        width: 45%;
-        background-color: color(quaternary);
-        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-        border-radius: .2rem;
-        border: 0px;
-        padding: 0;
-        overflow: hidden;
-        margin: 0;
-        transition: all .2s linear;
-
-        &-header {
-            position: relative;
-            color: color(quaternary);
-            background-color: rgba(color(primary), .9);
-            padding: .3rem 0;
-            font-size: size(md);
-            transition: all .2s linear;
-
-            &::after {
-                position: absolute;
-                content: '';
-                top: 100%;
-                left: 50%;
-                transform: translateX(-50%);
-                border-top: .5rem solid rgba(color(primary), .9);
-                border-left: .5rem solid transparent;
-                border-right: .5rem solid transparent;
-            }
-        }
-
-        &-description {
-            @include flexPosition(center, center, column);
-            min-height: 120px;
-            font-size: size(lg);
-        }
-
-        &-price {
-            font-size: size(sm);
-        }
-
-        &:hover {
-            color: color(primary);
-            box-shadow: 0 .35rem .5rem rgba(0,0,0,.15);
-            transform: translateY(-3px);
-
-            .subscribe-choice-header {
-                background-color: color(primary);
-            }
-        }
+    &-bottom {
+      padding: .8rem 2.7rem;
+      font-size: size(xs);
+      color:lighten(color(secondary), 10%);
+      background-color: color(quinary);
     }
+  }
+
+  &-choice {
+    width: 45%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    color: rgba(color(secondary), .7);
+
+    background-color: color(quaternary);
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    border-radius: .2rem;
+    border: 0px;
+    transition: all .2s linear;
+
+    &-header {
+      position: relative;
+      color: color(quaternary);
+      background-color: rgba(color(primary), .9);
+      padding: .3rem 0;
+      font-size: size(md);
+      transition: all .2s linear;
+
+      &::after {
+        position: absolute;
+        content: '';
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-top: .5rem solid rgba(color(primary), .9);
+        border-left: .5rem solid transparent;
+        border-right: .5rem solid transparent;
+      }
+    }
+
+    &-description {
+      @include flexPosition(center, center, column);
+      min-height: 120px;
+      font-size: size(lg);
+    }
+
+    &-price {
+      font-size: size(sm);
+    }
+
+    &:hover {
+      color: color(primary);
+      box-shadow: 0 .35rem .5rem rgba(0,0,0,.15);
+      transform: translateY(-3px);
+
+      .subscribe-choice-header {
+        background-color: color(primary);
+      }
+    }
+  }
 }
 </style>

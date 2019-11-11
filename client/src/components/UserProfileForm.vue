@@ -42,7 +42,7 @@
       <!--Email-->
       <div
         class="form-group col-md-6"
-        :class="{invalid: $v.user.email.$error}"
+        :class="{invalid: $v.user.email.$error && !$v.user.email.$pending}"
       >
         <label for="email">電子信箱</label>
         <input
@@ -55,7 +55,7 @@
           @blur="$v.user.email.$touch()"
         >
         <small
-          v-if="!$v.user.email.email && $v.user.email.$dirty && $v.user.email.unique"
+          v-if="!$v.user.email.email && $v.user.email.$dirty"
           class="form-text"
         >請輸入格式正確的電子信箱</small>
         <small
@@ -63,9 +63,9 @@
           class="form-text"
         >電子信箱必填</small>
         <small
-          v-if="!isProcessing && $v.user.email.$dirty && (!$v.user.email.unique || !$v.user.email.email)"
+          v-if="$v.user.email.$dirty && !$v.user.email.unique && !$v.user.email.$pending"
           class="form-text"
-        >電子信箱重複或格式錯誤</small>
+        >電子信箱已被註冊過</small>
       </div>
     </div>
     <div class="form-row">
@@ -102,7 +102,21 @@
         class="form-group form-address-group col-12 col-md"
         :class="{invalid: $v.user.address.$error}"
       >
-        <label for="address">地址</label>
+        <label for="address">
+          所在地址
+          <Tooltip
+            :width="'175px'"
+            :top="'-5px'"
+            :left="'160%'"
+          >
+            <template #icon>
+              <i class="far fa-question-circle" />
+            </template>
+            <template #message>
+              依此地址推薦餐廳給您
+            </template>
+          </Tooltip>
+        </label>
         <input
           id="address"
           v-model.trim="user.address"
@@ -187,23 +201,29 @@
       </label>
     </div>
     <div class="btn-container mt-3">
-      <button
+      <ProcessButton
         class="btn"
-        :class="{'btn-update': $route.name === 'admin-user-edit'}"
         type="submit"
-        :disabled="isProcessing || $v.$invalid"
-        @click.stop.prevent="getLocation('user')"
+        :is-processing="isProcessing"
+        :v="$v"
+        :color="$route.name === 'admin-user-edit' ? 'tertiary' : 'primary'"
+        @after-click="getLocation('user')"
       >
-        更新
-      </button>
-      <button
+        <template #initial>
+          更新
+        </template>
+      </ProcessButton>
+      <ProcessButton
         v-if="$route.name ==='admin-user-edit'"
         class="btn"
-        :disabled="isProcessing || $v.$invalid"
-        @click.stop.prevent="$emit('after-delete')"
+        :is-processing="isProcessing"
+        :v="$v"
+        @after-click="$emit('after-delete')"
       >
-        刪除
-      </button>
+        <template #initial>
+          刪除
+        </template>
+      </ProcessButton>
     </div>
   </form>
 </template>
@@ -212,13 +232,17 @@
 import CustomDatePicker from '../components/CustomDatePicker'
 import CustomSelect from '../components/CustomSelect'
 import authorizationAPI from '../apis/authorization'
+import Tooltip from '../components/Button/Tooltip'
+import ProcessButton from '../components/Button/ProcessButton'
 import { getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter } from '../utils/mixins'
 import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
 
 export default {
   components: {
     CustomDatePicker,
-    CustomSelect
+    CustomSelect,
+    Tooltip,
+    ProcessButton
   },
   mixins: [getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter],
   props: {
@@ -281,20 +305,14 @@ export default {
         required,
         email,
         unique: async function (val) {
-          // Pass this validation if it's empty or the original email
-          if (val === '' || val === this.initialUser.email) return true
+          // Pass this validation if it's empty, the original email, or the format is wrong
+          if (val === '' || val === this.initialUser.email || !this.$v.user.email.email) return true
           try {
-            // update processing status
-            this.isProcessing = true
             // validate if it's an unique email
             const { data, statusText } = await authorizationAPI.emailcheck({ email: val })
             if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
-            // update processing status
-            this.isProcessing = false
             return data.isAvailable
           } catch (error) {
-            // update processing status
-            this.isProcessing = false
             return false
           }
         }
@@ -351,39 +369,22 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-    @include fileUpload;
-    @include formControl;
-    @include inputValidation;
-    background-color: color(quaternary);
-    color: color(secondary);
+  @include fileUpload;
+  @include formControl;
+  @include inputValidation;
+  background-color: color(quaternary);
+  color: color(secondary);
 }
 
 .btn {
-    @include solidButton;
-    min-width: 100px;
-    margin: 0 .5rem;
-    padding: .28rem .7rem;
-
-    &-container {
-        @include flexPosition(center, center, row);
-    }
-
-    &-update {
-      background-color: color(tertiary);
-
-      &:hover {
-        background-color: darken(color(tertiary), 20%);
-      }
-    }
-
-    @include response(md) {
-      min-width: 200px;
-      padding: .375rem .75rem;
-    }
+  &-container {
+    @include flexPosition(center, center, row);
+  }
 }
 
 .alert {
   background-color: color(tertiary);
   color: color(quaternary);
 }
+
 </style>

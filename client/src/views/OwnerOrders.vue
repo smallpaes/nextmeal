@@ -107,10 +107,10 @@ export default {
 @include slideAnimation(false);
 
 .wrapper {
-    background-color: color(quinary);
+  background-color: color(quinary);
 }
 
 .order {
-    @include controlPanelLayout;
+  @include controlPanelLayout;
 }
 </style>

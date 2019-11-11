@@ -45,53 +45,53 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-    position: relative;
-    height: 130px;
-    overflow: hidden;
-    border: none;
+  position: relative;
+  height: 130px;
+  overflow: hidden;
+  border: none;
 
-    &-body {
-        @include flexPosition(center, flex-start, column);
-        height: 100%;
-        width: 100%;
+  &-body {
+    @include flexPosition(center, flex-start, column);
+    height: 100%;
+    width: 100%;
 
-    }
+  }
 
-    &-img {
-        width: 130px;
-        height: 100%;
-        object-fit: cover;
-
-        @include response(sm) {
-          width: 150px;
-        }
-
-        @include response(md) {
-          width: 170px;
-        }
-    }
-
-    &-title {
-        font-size: size(sm);
-        color: color(secondary);
-        font-weight: weight(bold);
-    }
-
-    &-text {
-        font-size: size(xs);
-        color: lighten(color(secondary), 10%);
-
-        .rating {
-            color: color(primary);
-        }
-    }
+  &-img {
+    width: 130px;
+    height: 100%;
+    object-fit: cover;
 
     @include response(sm) {
-        height: 150px;
+      width: 150px;
     }
 
     @include response(md) {
-        height: 170px;
+      width: 170px;
     }
+  }
+
+  &-title {
+    font-size: size(sm);
+    color: color(secondary);
+    font-weight: weight(bold);
+  }
+
+  &-text {
+    font-size: size(xs);
+    color: lighten(color(secondary), 10%);
+
+    .rating {
+      color: color(primary);
+    }
+  }
+
+  @include response(sm) {
+    height: 150px;
+  }
+
+  @include response(md) {
+    height: 170px;
+  }
 }
 </style>

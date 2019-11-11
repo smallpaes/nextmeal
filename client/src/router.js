@@ -94,6 +94,11 @@ const router = new Router({
       beforeEnter: authentication.isUser
     },
     {
+      path: '/faq',
+      name: 'faq',
+      component: () => import('./views/Faq')
+    },
+    {
       path: '/order/tomorrow',
       name: 'order-tomorrow',
       component: () => import('./views/OrdersTomorrow.vue'),
@@ -233,7 +238,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // declare routes without authentication
-  const pathWithoutAuth = ['signup', 'home', 'restaurants', 'restaurant', 'not-found']
+  const pathWithoutAuth = ['signup', 'home', 'restaurants', 'restaurant', 'not-found', 'faq']
   if (pathWithoutAuth.includes(to.name)) {
     next()
     return

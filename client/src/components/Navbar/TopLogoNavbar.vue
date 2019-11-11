@@ -11,17 +11,17 @@
 </template>
 
 <style lang="scss" scoped>
-    .navbar{
-        &-brand {
-            font-family: 'Pacifico', cursive;
-            color: color(primary);
-            font-size: size(md);
-            margin-left: auto;
-            margin-right: auto;
+  .navbar{
+    &-brand {
+      font-family: 'Pacifico', cursive;
+      color: color(primary);
+      font-size: size(md);
+      margin-left: auto;
+      margin-right: auto;
 
-            &:hover {
-                @extend .navbar-brand;
-            }
-        }
+      &:hover {
+        @extend .navbar-brand;
+      }
     }
+  }
 </style>

@@ -213,36 +213,38 @@ export default {
 
 .order {
   &-content {
-    position: relative;
-    top: -7rem;
+  position: relative;
+  top: -7rem;
   }
 
   &-display {
-    margin: 0 auto;
-    max-width: 760px;
+  margin: 0 auto;
+  max-width: 760px;
   }
 }
 
 .btn-container {
-    width: 100%;
-    .btn {
-        margin-left: .8rem;
-        padding: .1rem;
-        line-height: 1.8rem;
+  width: 100%;
+  .btn {
+    margin-left: .8rem;
+    padding: 0;
+    line-height: 1.8rem;
+    font-size: size(xs);
 
-        &-edit {
-            @include solidButton(80, .3, tertiary);
-        }
-
-        &-cancel {
-            @include solidButton(80, .3, primary);
-        }
-
-        @include response(md) {
-            min-width: 180px;
-            padding: .2rem .5rem;
-            margin-left: 1rem;
-        }
+    &-edit {
+      @include solidButton(80, .3, tertiary);
     }
+
+    &-cancel {
+      @include solidButton(80, .3, primary);
+    }
+
+    @include response(md) {
+      min-width: 130px;
+      padding: .1rem 0;
+      margin-left: 1rem;
+      font-size: size(sm);
+    }
+  }
 }
 </style>

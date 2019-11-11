@@ -80,39 +80,39 @@ export default {
 
 <style lang="scss" scoped>
 .form {
-    @include formControl;
-    @include formSelectControl;
-    @include inputValidation;
+  @include formControl;
+  @include formSelectControl;
+  @include inputValidation;
 
-    &-select-control {
-        position: relative;
+  &-select-control {
+    position: relative;
 
-        .form {
-            &-control {
-            border: none;
-            }
-        }
+    .form {
+      &-control {
+        border: none;
+      }
+    }
 
-        .invalid-feedback {
-            position: absolute;
-        }
+    .invalid-feedback {
+      position: absolute;
+    }
   }
 
-    &-group {
-        &.invalid {
-            .form-select-control {
-                border: 1px solid color(primary);
-                background-color: lighten(color(primary), 36%);
-            }
+  &-group {
+    &.invalid {
+      .form-select-control {
+        border: 1px solid color(primary);
+        background-color: lighten(color(primary), 36%);
+      }
 
-          .form-control {
-                border: none;
-          }
-        }
+      .form-control {
+        border: none;
+      }
     }
+  }
 }
 
 .form-control {
-    border: none
+  border: none
 }
 </style>

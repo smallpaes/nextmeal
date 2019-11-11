@@ -31,27 +31,27 @@ export default {
 
 <style lang="scss" scoped>
 .info {
-    &-title {
-        font-weight: weight(bold);
-        font-size: size(lg);
-    }
+  &-title {
+    font-weight: weight(bold);
+    font-size: size(lg);
+  }
 
-    &-sub-title {
-        color: lighten(color(secondary), 20%);
-    }
+  &-sub-title {
+    color: lighten(color(secondary), 20%);
+  }
 
-    .rating {
-        color: color(primary);
-    }
+  .rating {
+    color: color(primary);
+  }
 
-    &-description {
-      font-size: size(xs);
-      line-height: 1.8rem;
-    }
+  &-description {
+    font-size: size(xs);
+    line-height: 1.8rem;
+  }
 }
 
 .divider {
-    width: 20%;
-    border-bottom: 1px solid lighten(color(secondary), 40%);
+  width: 20%;
+  border-bottom: 1px solid lighten(color(secondary), 40%);
 }
 </style>

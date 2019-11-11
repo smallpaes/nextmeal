@@ -159,31 +159,31 @@ export default {
 @include slideAnimation;
 
 .restaurant {
-    &-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-    }
+  &-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
 }
 
 .comments {
-    &-heading {
-        padding-left: .6rem;
-        position: relative;
-        font-size: size(lg);
+  &-heading {
+    padding-left: .6rem;
+    position: relative;
+    font-size: size(lg);
 
-        &::before {
-            content: '';
-            position: absolute;
-            width: 4px;
-            left: 0;
-            height: 80%;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: color(primary);
-        }
+    &::before {
+      content: '';
+      position: absolute;
+      width: 4px;
+      left: 0;
+      height: 80%;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: color(primary);
     }
+  }
 }
 
 .placeholder-message {
@@ -191,9 +191,9 @@ export default {
 }
 
 .btn-container {
-    text-align: center;
-    .btn {
-        @include buttonOutline;
-    }
+  text-align: center;
+  .btn {
+    @include buttonOutline;
+  }
 }
 </style>

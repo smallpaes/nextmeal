@@ -84,59 +84,59 @@ export default {
 <style lang="scss" scoped>
 .star {
 
-    &-wrapper {
-        position: relative;
-        transform: rotateY(180deg);
+  &-wrapper {
+    position: relative;
+    transform: rotateY(180deg);
+  }
+
+  &-input {
+    display: none;
+
+    &:checked ~ label:after {
+      opacity: 1;
+    }
+  }
+
+  &-label {
+    display: block;
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    position: relative;
+    margin-right: .4rem;
+
+    &::before {
+      content: '\f005';
+      color: lighten(color(secondary), 50%);
+      font-weight: weight(bold);
+      font-family: "Font Awesome 5 Free";
+      position: relative;
+      display: block;
+      font-size: size(md);
     }
 
-    &-input {
-        display: none;
-
-        &:checked ~ label:after {
-            opacity: 1;
-        }
+    &::after {
+      content: '\f005';
+      color: color(primary);
+      font-weight: weight(bold);
+      font-family: "Font Awesome 5 Free";
+      position: absolute;
+      display: block;
+      font-size: size(md);
+      top: 0;
+      opacity: 0;
+      transition: .3s
     }
 
-    &-label {
-        display: block;
-        cursor: pointer;
-        width: 25px;
-        height: 25px;
-        position: relative;
-        margin-right: .4rem;
+    &:hover {
+      &::after {
+        opacity: 1;
+      }
 
-        &::before {
-            content: '\f005';
-            color: lighten(color(secondary), 50%);
-            font-weight: weight(bold);
-            font-family: "Font Awesome 5 Free";
-            position: relative;
-            display: block;
-            font-size: size(md);
-        }
-
-        &::after {
-            content: '\f005';
-            color: color(primary);
-            font-weight: weight(bold);
-            font-family: "Font Awesome 5 Free";
-            position: absolute;
-            display: block;
-            font-size: size(md);
-            top: 0;
-            opacity: 0;
-            transition: .3s
-        }
-
-        &:hover {
-            &::after {
-                opacity: 1;
-            }
-
-            & ~ label::after {
-                opacity: 1;
-            }
-        }
+      & ~ label::after {
+        opacity: 1;
+      }
     }
+  }
 }
 </style>

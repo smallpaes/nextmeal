@@ -2,12 +2,17 @@
   <section
     class="“banner"
   >
-    <div class="banner-container">
+    <div
+      class="banner-container"
+      :style="{height: `${bannerHeight}px`}"
+    >
       <div
         class="banner-img"
-        :style="{backgroundImage: `url(${backgroundPhoto})`, height: `${bannerHeight}px`}"
+        :style="{backgroundImage: `url(${backgroundPhoto})`}"
       />
-      <div class="banner-overlay" />
+      <div
+        class="banner-overlay"
+      />
       <div class="banner-content">
         <slot name="header" />
       </div>
@@ -32,47 +37,47 @@ export default {
 
 <style lang="scss" scoped>
 .banner {
-    @include positionCenter;
-    @include imgOverlay(.9);
+  @include positionCenter;
+  @include imgOverlay(.9);
 
-    &-container {
-        margin-top: 62px;
-        @include setBackground("../../assets/placeholder-image/plain/1260x750.png", 550px);
+  &-container {
+    margin-top: 62px;
+    @include setBackground("../../assets/placeholder-image/plain/1260x750.png");
+  }
+
+  &-img {
+    @include setBackground("https://via.placeholder.com/800x800/d3d3d3");
+  }
+  &-content {
+    color: color(quaternary);
+    text-shadow: 1px 1px 1px #636161;
+    width: 100%;
+
+    &-title {
+      font-size: size(xl);
+      font-weight: weight(bold);
     }
 
-    &-img {
-      @include setBackground("https://via.placeholder.com/800x800/d3d3d3", 550px);
+    &-description {
+      font-size: size(md);
+      font-weight: weight(bold);
     }
-    &-content {
-        color: color(quaternary);
-        text-shadow: 1px 1px 1px #636161;
-        width: 100%;
 
-        &-title {
-            font-size: size(xl);
-            font-weight: weight(bold);
-        }
-
-        &-description {
-            font-size: size(md);
-            font-weight: weight(bold);
-        }
-
-        .btn {
-            @include solidButton;
-        }
-
-        @include response(lg) {
-          &-title {
-            font-size: size(xxl);
-            font-weight: weight(bold);
-          }
-
-          &-description {
-              font-size: size(lg);
-              font-weight: weight(bold);
-          }
-        }
+    .btn {
+      @include solidButton;
     }
+
+    @include response(lg) {
+      &-title {
+      font-size: size(xxl);
+      font-weight: weight(bold);
+      }
+
+      &-description {
+        font-size: size(lg);
+        font-weight: weight(bold);
+      }
+    }
+  }
 }
 </style>

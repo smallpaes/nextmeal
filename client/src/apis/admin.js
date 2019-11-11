@@ -9,8 +9,8 @@ export default {
     getRestaurant ({ restaurantId }) {
       return apiHelper.get(`/admin/restaurants/${restaurantId}`)
     },
-    putRestaurant ({ restaurantId }) {
-      return apiHelper.put(`/admin/restaurants/${restaurantId}`)
+    putRestaurant ({ restaurantId, formData }) {
+      return apiHelper.put(`/admin/restaurants/${restaurantId}`, formData)
     },
     deleteRestaurant ({ restaurantId }) {
       return apiHelper.delete(`/admin/restaurants/${restaurantId}`)
@@ -22,6 +22,7 @@ export default {
     },
     getUsers ({ subscriptionStatus, name }) {
       const searchParams = new URLSearchParams({ 'sub_status': subscriptionStatus, name })
+      console.log(`/admin/users?${searchParams.toString()}`)
       return apiHelper.get(`/admin/users?${searchParams.toString()}`)
     },
     deleteUser ({ userId }) {

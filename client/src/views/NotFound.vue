@@ -50,81 +50,81 @@ export default {
 @import url('https://fonts.googleapis.com/css?family=Indie+Flower&display=swap');
 
 .not-found {
-    height: 100vh;
-    width: 100vw;
+  height: 100vh;
+  width: 100vw;
 }
 
 .message {
-    @include positionCenter;
+  @include positionCenter;
 
-    &-container {
-        height: 100%;
+  &-container {
+    height: 100%;
+  }
+
+  &-video-container {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  // make video responsive
+  &-video {
+    height: 100%;
+    width: 189.62962963vh;
+    min-width: 100%;
+    min-height: 52.734375vw;
+  }
+
+  &-content {
+    color: color(quaternary);
+    text-shadow: 1px 1px 1px lighten(color(secondary), 20%);
+    width: 100%;
+
+    &-heading {
+      font-family: 'Indie Flower', cursive;
+      font-size: 7rem;
     }
 
-    &-video-container {
-        height: 100%;
-        overflow: hidden;
+    &-description {
+      font-size: size(sm);
+      font-weight: weight(bold);
+
+      @include response(sm) {
+        font-size: size(md);
+      }
+
+      @include response(md) {
+        font-size: size(lg);
+      }
     }
 
-    // make video responsive
-    &-video {
-        height: 100%;
-        width: 189.62962963vh;
-        min-width: 100%;
-        min-height: 52.734375vw;
+    &-subdescription {
+      font-size: size(xs);
+      font-weight: weight(bold);
+
+      @include response(sm) {
+        font-size: size(sm);
+      }
+
+      @include response(md) {
+        font-size: size(md);
+      }
     }
-
-    &-content {
-        color: color(quaternary);
-        text-shadow: 1px 1px 1px lighten(color(secondary), 20%);
-        width: 100%;
-
-        &-heading {
-            font-family: 'Indie Flower', cursive;
-            font-size: 7rem;
-        }
-
-        &-description {
-            font-size: size(sm);
-            font-weight: weight(bold);
-
-            @include response(sm) {
-                font-size: size(md);
-            }
-
-            @include response(md) {
-                font-size: size(lg);
-            }
-        }
-
-        &-subdescription {
-            font-size: size(xs);
-            font-weight: weight(bold);
-
-            @include response(sm) {
-                font-size: size(sm);
-            }
-
-            @include response(md) {
-                font-size: size(md);
-            }
-        }
-    }
+  }
 }
 
 .home-btn {
-    @include solidButton;
-    text-shadow: none;
-    min-width: 120px;
-    font-size: size(xs);
+  @include solidButton;
+  text-shadow: none;
+  min-width: 120px;
+  font-size: size(xs);
 
-    @include response(sm) {
-        min-width: 150px;
-        font-size: size(sm);
-    }
+  @include response(sm) {
+    min-width: 150px;
+    font-size: size(sm);
+  }
 
-    @include response(md) {
-        min-width: 200px;
-    }
+  @include response(md) {
+    min-width: 200px;
+  }
 }
 </style>

@@ -69,11 +69,11 @@ export default {
 
 <style lang="scss" scoped>
 $headers: (
-    1: '名稱',
-    2: '用戶權限',
-    3: '訂閱狀態',
-    4: '訂閱方案',
-    5: '點餐量'
+  1: '名稱',
+  2: '用戶權限',
+  3: '訂閱狀態',
+  4: '訂閱方案',
+  5: '點餐量'
 );
 
 // table layout for small screen
@@ -82,10 +82,10 @@ $headers: (
 @include tableFullSize;
 
 .isTrue {
-    color: color(tertiary);
+  color: color(tertiary);
 }
 
 .isFalse {
-    color: color(primary);
+  color: color(primary);
 }
 </style>

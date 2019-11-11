@@ -149,39 +149,39 @@ export default {
 @include fadeAnimation;
 
 .order {
-    &-container {
-        display: flex;
-        flex-wrap: wrap;
-        align-content: space-between;
-        height: 100%;
-    }
+  &-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+    height: 100%;
+  }
 
+  &-wrapper {
+    margin-top: 62px;
+  }
+
+  &-display {
     &-wrapper {
-        margin-top: 62px;
+      background-color: color(quaternary);
     }
 
-    &-display {
-        &-wrapper {
-            background-color: color(quaternary);
-        }
-
-        &-divider {
-            width: 100%;
-            margin-top: 0;
-        }
+    &-divider {
+      width: 100%;
+      margin-top: 0;
     }
+  }
 }
 
 .btn-container {
-    text-align: center;
-    .btn {
-        @include solidButton(100, 1, secondary);
-        padding: .2rem 0;
+  text-align: center;
+  .btn {
+    @include solidButton(100, 1, secondary);
+    padding: .2rem 0;
 
-        @include response(md) {
-            min-width: 150px;
-            padding: .25em 0;
-        }
+    @include response(md) {
+      min-width: 150px;
+      padding: .25em 0;
     }
+  }
 }
 </style>

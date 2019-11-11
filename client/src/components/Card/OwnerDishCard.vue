@@ -63,63 +63,63 @@ export default {
 
 <style lang="scss" scoped>
 .card {
+  position: relative;
+  height: 80px;
+  overflow-y: scroll;
+  border: none;
+  border-bottom: 1px solid lighten(color(secondary), 50%);
+
+  &-body {
+    @include flexPosition(center, flex-start, column);
+    height: 100%;
+    width: 100%;
+  }
+
+  &-left {
     position: relative;
-    height: 80px;
-    overflow-y: scroll;
-    border: none;
-    border-bottom: 1px solid lighten(color(secondary), 50%);
 
-    &-body {
-        @include flexPosition(center, flex-start, column);
-        height: 100%;
-        width: 100%;
+    .skelenton-box {
+      position: absolute;
     }
+  }
 
-    &-left {
-        position: relative;
+  &-img {
+    position: relative;
+    width: 120px;
+    height: 100%;
+    object-fit: cover;
+  }
 
-        .skelenton-box {
-            position: absolute;
-        }
-    }
-
-    &-img {
-        position: relative;
-        width: 120px;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    &-title {
-        font-size: size(sm);
-        color: color(secondary);
-        font-weight: weight(bold);
-
-        @include response(md) {
-            font-size: size(md);
-            font-weight: weight(normal);
-        }
-    }
-
-    &-description {
-        font-size: size(sm);
-        color: lighten(color(secondary), 10%);
-    }
-
-    .edit-btn {
-        position: absolute;
-        right: 2%;
-        top: 15%;
-        cursor: pointer;
-        color: lighten(color(secondary), 10%);
-
-        @include response(md) {
-            top: 10%;
-        }
-    }
+  &-title {
+    font-size: size(sm);
+    color: color(secondary);
+    font-weight: weight(bold);
 
     @include response(md) {
-        height: 120px;
+      font-size: size(md);
+      font-weight: weight(normal);
     }
+  }
+
+  &-description {
+    font-size: size(sm);
+    color: lighten(color(secondary), 10%);
+  }
+
+  .edit-btn {
+    position: absolute;
+    right: 2%;
+    top: 15%;
+    cursor: pointer;
+    color: lighten(color(secondary), 10%);
+
+    @include response(md) {
+      top: 10%;
+    }
+  }
+
+  @include response(md) {
+    height: 120px;
+  }
 }
 </style>
