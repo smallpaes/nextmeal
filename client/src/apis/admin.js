@@ -22,7 +22,6 @@ export default {
     },
     getUsers ({ subscriptionStatus, name }) {
       const searchParams = new URLSearchParams({ 'sub_status': subscriptionStatus, name })
-      console.log(`/admin/users?${searchParams.toString()}`)
       return apiHelper.get(`/admin/users?${searchParams.toString()}`)
     },
     deleteUser ({ userId }) {
@@ -35,6 +34,7 @@ export default {
   orders: {
     getOrders ({ id, date, status, page }) {
       const searchParams = new URLSearchParams({ page, 'order_id': id, date, 'order_status': status })
+      console.log(searchParams.toString())
       return apiHelper.get(`/admin/orders?${searchParams.toString()}`)
     },
     putOrder ({ orderId }) {
