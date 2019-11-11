@@ -4,9 +4,9 @@
       {{ restaurant.name }}
     </h1>
     <p class="info-sub-title">
-      <span class="rating">&#9733; {{ restaurant.rating }}</span>
+      <span class="rating">&#9733; {{ restaurant.rating | padEnd }}</span>
       <span class="mx-2">|</span>
-      {{ restaurant.category.name }}
+      {{ restaurant.Category.name }}
     </p>
     <div class="divider my-4" />
     <p class="info-description">
@@ -16,7 +16,10 @@
 </template>
 
 <script>
+import { padEndFilter } from '../utils/mixins'
+
 export default {
+  mixins: [padEndFilter],
   props: {
     restaurant: {
       type: Object,
@@ -28,25 +31,27 @@ export default {
 
 <style lang="scss" scoped>
 .info {
-    &-title {
-        font-weight: weight(bold);
-    }
+  &-title {
+    font-weight: weight(bold);
+    font-size: size(lg);
+  }
 
-    &-sub-title {
-        color: lighten(color(secondary), 20%);
-    }
+  &-sub-title {
+    color: lighten(color(secondary), 20%);
+  }
 
-    .rating {
-        color: color(primary);
-    }
+  .rating {
+    color: color(primary);
+  }
 
-    &-description {
-      font-size: size(xs);
-    }
+  &-description {
+    font-size: size(xs);
+    line-height: 1.8rem;
+  }
 }
 
 .divider {
-    width: 20%;
-    border-bottom: 1px solid lighten(color(secondary), 40%);
+  width: 20%;
+  border-bottom: 1px solid lighten(color(secondary), 40%);
 }
 </style>

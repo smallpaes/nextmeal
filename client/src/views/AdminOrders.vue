@@ -1,109 +1,99 @@
 <template>
   <section class="wrapper d-flex vh-100">
-    <AdminSideNavBar />
-    <section class="users flex-fill">
-      <h1 class="users-title">
+    <!--Left Side Navbar-->
+    <AdminSideNavBar :nav-is-open="navIsOpen" />
+
+    <!--Right Side Content-->
+    <section class="orders flex-fill">
+      <!--Navbar toggler-->
+      <NavbarToggler
+        :nav-is-open="navIsOpen"
+        @toggle-navbar="navIsOpen = !navIsOpen"
+      />
+      <h1 class="orders-title">
         訂單管理
       </h1>
-      <hr class="users-divider">
+      <hr class="orders-divider">
+
+      <!--Filter And Search Panel-->
       <AdminFilterPanel
         :has-date="true"
         :options="subscriptionStatus"
         :input-placeholder="'搜尋編號'"
+        :is-loading="isLoading"
         @after-search="handleAfterFilter({ page: 0, order_id: $event, order_status: currentFilterOption, date: currentDate })"
         @after-filter="handleAfterFilter({ page: 0, order_id: currentSearchInput, order_status: $event, date: currentDate })"
-        @after-date-pick="handleAfterFilter({ page: 0, order_id: currentSearchInput, order_status: currentFilterOption, date: $event.dob })"
+        @after-date-pick="handleAfterFilter({ page: 0, order_id: currentSearchInput, order_status: currentFilterOption, date: $event })"
       >
         <template v-slot:filterOption>
           訂單狀態
         </template>
       </AdminFilterPanel>
-      <AdminOrdersTable
-        :orders="orders"
-        @after-cancel="handleAfterCancel"
+
+      <!--Loader-->
+      <Loader
+        v-if="isLoading"
+        :height="'300px'"
       />
-      <div class="btn-container mt-3 mt-md-4">
-        <button
-          v-if="currentPage !== totalPage"
-          class="btn"
-          href="#"
-          @click="fetchOrders(currentSearchInput, currentDate, currentFilterOption, currentPage + 1)"
-        >
-          瀏覽更多
-        </button>
-      </div>
+
+      <transition
+        name="slide"
+        mode="out-in"
+      >
+        <template v-if="!isLoading">
+          <!--User Data Table-->
+          <div
+            v-if="orders.length > 0"
+            class="orders-table"
+          >
+            <AdminOrdersTable
+              :orders="orders"
+              @after-cancel="handleAfterCancel"
+            />
+            <div
+              v-if="totalPage > 0 && currentPage !== totalPage"
+              class="btn-container mt-3 mt-md-4"
+            >
+              <FetchMoreButton
+                :is-fetching="isFetching"
+                @fetch-more="fetchOrders(currentSearchInput, currentFilterOption, currentPage + 1)"
+              />
+            </div>
+          </div>
+          <!--Placeholder Messgae for Empty Data-->
+          <PlaceholderMessage
+            v-else
+            class="orders-placeholder"
+          >
+            <i class="fas fa-search mr-2" />沒有符合的結果
+          </PlaceholderMessage>
+        </template>
+      </transition>
     </section>
   </section>
 </template>
 
 <script>
 import AdminSideNavBar from '../components/Navbar/AdminSideNavBar'
+import NavbarToggler from '../components/Navbar/NavbarToggler'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminOrdersTable from '../components/AdminOrdersTable.vue'
-
-const dummyOrders = {
-  orders: [
-    {
-      id: 1,
-      require_date: '2019-10-28T03:00:00.000Z',
-      order_status: '今日',
-      date: '20191028',
-      time: '11:00',
-      meals: {
-        id: 2,
-        name: '巨無霸套餐',
-        image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-        OrderItem: {
-          OrderId: 1,
-          MealId: 2,
-          quantity: 2
-        },
-        Restaurant: {
-          id: 1,
-          name: '美國家鄉菜'
-        }
-      },
-      User: {
-        id: 1,
-        name: 'Mike',
-        email: 'mike@example.com'
-      }
-    },
-    {
-      id: 2,
-      require_date: '2019-10-28T03:00:00.000Z',
-      order_status: '取消',
-      date: '20191028',
-      time: '11:00',
-      meals: {
-        id: 2,
-        name: '巨無霸套餐',
-        image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-        OrderItem: {
-          OrderId: 2,
-          MealId: 2,
-          quantity: 2
-        },
-        Restaurant: {
-          id: 1,
-          name: '美國家鄉菜'
-        }
-      },
-      User: {
-        id: 2,
-        name: 'Micky',
-        email: 'mike@example.com'
-      }
-    }
-  ],
-  pages: 3
-}
+import PlaceholderMessage from '../components/Placeholder/Message'
+import FetchMoreButton from '../components/Button/FetchMoreButton'
+import Loader from '../components/Loader'
+import adminAPI from '../apis/admin'
+import moment from 'moment'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
     AdminSideNavBar,
+    NavbarToggler,
     AdminFilterPanel,
-    AdminOrdersTable
+    AdminOrdersTable,
+    PlaceholderMessage,
+    FetchMoreButton,
+    Loader
   },
   data () {
     return {
@@ -113,13 +103,16 @@ export default {
       currentFilterOption: '',
       currentDate: '',
       currentPage: 0,
-      totalPage: null
+      totalPage: null,
+      isLoading: true,
+      isFetching: false,
+      navIsOpen: false
     }
   },
   created () {
     const { order_id: orderId, order_status: orderStatus, date } = this.$route.query
-    this.currentFilterOption = orderStatus || '非取消'
-    this.currentDate = date || new Date()
+    this.currentFilterOption = orderStatus || ''
+    this.currentDate = date || moment().format('YYYY-MM-DD')
     this.currentSearchInput = orderId || ''
     this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage + 1)
   },
@@ -129,27 +122,53 @@ export default {
     // clear existing data
     this.orders = []
     const { order_id: orderId, order_status: orderStatus, date } = to.query
-    this.currentFilterOption = orderStatus || '非取消'
-    this.currentDate = date || new Date()
+    this.currentFilterOption = orderStatus || ''
+    this.currentDate = date || moment().format('YYYY-MM-DD')
     this.currentSearchInput = orderId || ''
     this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage + 1)
     next()
   },
   methods: {
-    fetchOrders (id, date, status, page) {
-      // fetch data from API
-      this.orders = [...this.orders, ...dummyOrders.orders]
-      this.totalPage = dummyOrders.pages
+    async fetchOrders (id, date, status, page) {
+      try {
+        // update fetching status
+        this.isFetching = true
+        // fetch data from API
+        const { data, statusText } = await adminAPI.orders.getOrders({ id, date, status, page })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // fetch data from API
+        this.orders = [...this.orders, ...data.orders]
+        this.totalPage = data.pages
+        this.currentPage += 1
+        // update loading status
+        this.isLoading = false
+        // update fetching status
+        this.isFetching = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // update fetching status
+        this.isFetching = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得訂單資料，請稍後再試'
+        })
+      }
     },
     handleAfterFilter (data) {
+      // update loading status
+      this.isLoading = true
+      // reset data
       this.currentPage = 0
       this.currentSearchInput = data.order_id
       this.currentFilterOption = data.order_status
       this.currentDate = data.date
-      this.$router.push({ name: 'admin-orders', query: data })
+      this.orders = []
+      this.fetchOrders(this.currentSearchInput, this.currentDate, this.currentFilterOption, this.currentPage)
     },
     handleAfterCancel (orderId) {
-      console.log('from parent', orderId)
       this.orders = this.orders.map(order => {
         if (order.id !== orderId) { return order }
         return ({
@@ -163,38 +182,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation(false);
+@include fadeAnimation;
+
 .wrapper {
-    background-color: color(quinary);
+  background-color: color(quinary);
 }
 
-.users {
-    padding: 2.3rem 2rem;
-    max-width: 800px;
-    margin-left: 80px;
-    transition: margin-left .1s linear;
-    overflow-y: scroll;
-
-    &-title {
-        size: size(lg);
-    }
-
-    &-divider {
-        width: 100%;
-    }
-
-    @include response(md) {
-        margin-left: 145px;
-    }
+.orders {
+  @include controlPanelLayout;
 }
 
 .btn-container {
-    text-align: center;
-    .btn {
-        @include solidButton(150);
+  text-align: center;
+  .btn {
+    @include solidButton(150);
 
-        @include response(md) {
-            min-width: 200px;
-        }
+    @include response(md) {
+      min-width: 200px;
     }
+  }
 }
 </style>

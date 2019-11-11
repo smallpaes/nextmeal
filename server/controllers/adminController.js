@@ -14,7 +14,7 @@ const User = db.User
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 const pageLimit = 10
 const districts = require('../location/district.json')
-
+const { findOrder, sendEmail } = require('../middleware/middleware')
 
 let adminController = {
   getRestaurants: async (req, res) => {
@@ -27,39 +27,23 @@ let adminController = {
           CategoryId: category ? { [Op.eq]: category } : { [Op.gt]: 0 },
           location: { [Op.substring]: dist || '' }
         },
-        include: [
-          { model: Comment, attributes: ['id', 'user_text', 'res_text', 'rating', 'image', 'createdAt'] },
-          {
-            model: Meal,
-            include: [{
-              model: Order,
-              as: 'orders',
-              where: { order_status: '今日' },
-            }]
-          }
-        ],
+        include: [Comment, Meal],
         attributes: [
           'id', 'name', 'rating', 'location',
-          [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
+          [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount']
         ],
         order: [['rating', 'DESC'], ['id', 'DESC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
-        subQuery: false,
         distinct: true
       })
       const count = restaurants.count
       let pages = Math.ceil((count) / pageLimit)
-      const objRestaurants = restaurants.rows.map(restaurant => ({
-        ...restaurant.dataValues,
-        orderCount: (restaurant.dataValues.Meals[0]) ? restaurant.dataValues.Meals[0].orders.length : 0
-      }))
-      restaurants = {
-        count: count,
-        pages: pages,
-        restaurants: objRestaurants
-      }
-      res.status(200).json({ status: 'success', restaurants, districts, message: 'Successfully get restautants' })
+      return res.status(200).json({
+        status: 'success',
+        restaurants: { pages: pages, restaurants: await findOrder(restaurants) },
+        districts, message: 'Successfully get restautants'
+      })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -74,7 +58,7 @@ let adminController = {
         return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
       }
       const categories = await Category.findAll()
-      return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get restautant' })
+      return res.status(200).json({ status: 'success', restaurant, categories, message: 'Successfully get restaurant' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
@@ -84,7 +68,7 @@ let adminController = {
     try {
       let restaurant = await Restaurant.findByPk(req.params.restaurant_id)
       if (!restaurant) {
-        return res.status(400).json({ status: 'error', message: 'The restaurant is not exist.' })
+        return res.status(400).json({ status: 'error', message: 'The restaurant does not exist.' })
       }
       const { file } = req
       if (file) {
@@ -135,7 +119,7 @@ let adminController = {
       const start = moment().startOf('day').toDate()
 
       //if it runs on heroku,use iLike to fix case sensitive issue
-      let whereQuery = process.env.heroku ? { name: { [Op.iLike]: name || '' } } : { name: { [Op.substring]: name || '' } };
+      let whereQuery = process.env.heroku ? { name: { [Op.iLike]: `%${name}%` || '' } } : { name: { [Op.substring]: name || '' } };
       if (sub_status === 'inactive') {
         whereQuery['expired_date'] = {
           [Op.or]: {
@@ -268,7 +252,7 @@ let adminController = {
       })
       if (orders.rows.length < 1) {
         orders = []
-        return res.status(400).json({ status: 'error', orders, message: 'can not find any orders' })
+        return res.status(200).json({ status: 'success', orders, message: 'can not find any order' })
       }
       const count = orders.count
       orders = orders.rows.map(order => ({
@@ -278,6 +262,7 @@ let adminController = {
       let pages = Math.ceil((count) / pageLimit)
       return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -285,10 +270,15 @@ let adminController = {
   putCancel: async (req, res) => {
     try {
       let order = await Order.findByPk(req.params.order_id, {
-        include: [{ model: Meal, as: 'meals' }]
+        include: [
+          User,
+          { model: Meal, as: 'meals' }
+        ]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist' })
-      let meal = await Meal.findByPk(order.meals[0].id)
+      let meal = await Meal.findByPk(order.meals[0].id, {
+        include: [Restaurant]
+      })
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist.' })
       if (order.order_status === '取消') {
         return res.status(400).json({ status: 'error', message: 'order status had already cancel.' })
@@ -306,7 +296,7 @@ let adminController = {
         order: [['sub_expired_date', 'DESC']]
       })
       let returnNum = subscription.sub_balance + order.amount
-      await subscription.update({
+      subscription = await subscription.update({
         sub_balance: returnNum
       })
       order = await order.update({
@@ -315,6 +305,20 @@ let adminController = {
       await meal.update({
         quantity: meal.quantity + order.amount
       })
+      const emailInfo = {
+        email: order.User.email,
+        template: 'orderInfo',
+        subject: '【Nextmeal】訂購餐點已取消',
+        cancel: true,
+        order: {
+          ...order.dataValues,
+          order_date: moment(order.order_date).format('YYYY-MM-DD HH:mm'),
+          require_date: moment(order.require_date).format('YYYY-MM-DD HH:mm'),
+        },
+        meal,
+        subscription
+      }
+      sendEmail(req, res, emailInfo)
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })

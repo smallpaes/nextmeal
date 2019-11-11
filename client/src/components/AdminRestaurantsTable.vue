@@ -26,7 +26,7 @@
           :key="restaurant.id"
           @click="$router.push({name:'admin-restaurant-edit', params: {restaurant_id: restaurant.id}})"
         >
-          <td>{{ restaurant.name }}</td>
+          <td>{{ restaurant.name | textTruncate(10) }}</td>
           <td>{{ restaurant.location }}</td>
           <td>
             <span
@@ -53,7 +53,10 @@
 </template>
 
 <script>
+import { textTruncateFilter } from '../utils/mixins'
+
 export default {
+  mixins: [textTruncateFilter],
   props: {
     restaurants: {
       type: Array,
@@ -65,11 +68,11 @@ export default {
 
 <style lang="scss" scoped>
 $headers: (
-    1: '名稱',
-    2: '地區',
-    3: '評分',
-    4: '評論',
-    5: '成交量'
+  1: '名稱',
+  2: '地區',
+  3: '評分',
+  4: '評論',
+  5: '成交量'
 );
 
 // table layout for small screen
@@ -78,10 +81,10 @@ $headers: (
 @include tableFullSize;
 
 .high-rating {
-    color: color(tertiary);
+  color: color(tertiary);
 }
 
 .low-rating {
-    color: color(primary);
+  color: color(primary);
 }
 </style>

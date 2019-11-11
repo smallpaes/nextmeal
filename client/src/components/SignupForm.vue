@@ -13,35 +13,59 @@
           註冊您的專屬 NextMeal 帳號
         </h5>
       </div>
-      <div class="form-group">
+      <!--Name-->
+      <div
+        class="form-group"
+        :class="{invalid: $v.name.$error}"
+      >
         <input
           id="name"
           v-model="name"
           type="name"
           class="form-control"
           placeholder="名稱"
-          autofocus
+          minlength="1"
+          maxlength="6"
           required
+          @blur="$v.name.$touch()"
         >
-        <div class="invalid-feedback">
-          請輸入名稱
-        </div>
+        <small
+          v-if="$v.name.$error"
+          class="form-text"
+        >名稱長度介於 1-6 位</small>
       </div>
-      <div class="form-group">
+      <!--Email-->
+      <div
+        class="form-group"
+        :class="{invalid: $v.email.$error && !$v.email.$pending}"
+      >
         <input
           id="email"
-          v-model="email"
+          v-model.lazy="email"
           type="email"
           class="form-control"
           placeholder="電子信箱"
-          autofocus
           required
+          @blur="$v.email.$touch()"
         >
-        <div class="invalid-feedback">
-          請輸入格式正確的電子信箱
-        </div>
+        <small
+          v-if="!$v.email.email && $v.email.$dirty"
+          class="form-text"
+        >請輸入格式正確的電子信箱</small>
+        <small
+          v-if="!$v.email.required && $v.email.$dirty"
+          class="form-text"
+        >電子信箱必填</small>
+        <small
+          v-if="$v.email.$dirty && !$v.email.unique && !$v.email.$pending"
+          class="form-text"
+        >電子信箱已被註冊過</small>
       </div>
-      <div class="form-group">
+      <!--Password-->
+      <div
+        class="form-group"
+        :class="{invalid: $v.password.$error}"
+      >
         <input
           id="password"
           v-model="password"
@@ -51,12 +75,18 @@
           minlength="8"
           maxlength="12"
           required
+          @blur="$v.password.$touch()"
         >
-        <div class="invalid-feedback">
-          請輸入 8-12 位密碼
-        </div>
+        <small
+          v-if="$v.password.$error"
+          class="form-text"
+        >密碼 8-12 位，需包大小寫字母與至少一個符號</small>
       </div>
-      <div class="form-group">
+      <!--Password Check-->
+      <div
+        class="form-group"
+        :class="{invalid: $v.passwordCheck.$error}"
+      >
         <input
           id="passwordCheck"
           v-model="passwordCheck"
@@ -66,15 +96,18 @@
           minlength="8"
           maxlength="12"
           required
+          @blur="$v.passwordCheck.$touch()"
         >
-        <div class="invalid-feedback">
-          {{ validationMsg.passwordCheck }}
-        </div>
+        <small
+          v-if="$v.passwordCheck.$error"
+          class="form-text"
+        >輸入的兩組密碼須相同</small>
       </div>
       <div class="btn-container text-center">
         <button
           type="submit"
           class="btn mt-1"
+          :disabled="isProcessing || $v.$invalid"
         >
           註冊
         </button>
@@ -92,6 +125,10 @@
 </template>
 
 <script>
+import authorizationAPI from '../apis/authorization'
+import { Toast } from '../utils/helpers'
+import { required, email, minLength, maxLength, sameAs } from 'vuelidate/lib/validators'
+
 export default {
   data () {
     return {
@@ -99,36 +136,63 @@ export default {
       email: '',
       password: '',
       passwordCheck: '',
-      validationMsg: {
-        passwordCheck: '請輸入 8-12 位密碼'
+      isProcessing: false
+    }
+  },
+  validations: {
+    name: {
+      required,
+      minLength: minLength(1),
+      maxLength: maxLength(6)
+    },
+    email: {
+      required,
+      email,
+      unique: async function (val) {
+        console.log(!this.$v.email.email)
+        if (val === '' || !this.$v.email.email) return true
+        try {
+          const { data, statusText } = await authorizationAPI.emailcheck({ email: val })
+          if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
+          return data.isAvailable
+        } catch (error) {
+          return false
+        }
       }
+    },
+    password: {
+      required,
+      passwordFormat: value => /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/.test(value)
+    },
+    passwordCheck: {
+      sameAs: sameAs('password')
     }
   },
   methods: {
-    handleSubmit (e) {
-      // Validate form
-      const passwordCheckInput = document.getElementById('passwordCheck')
+    async handleSubmit (e) {
+      try {
+        // update processing status
+        this.isProcessing = true
 
-      if (this.password !== this.passwordCheck) {
-        passwordCheckInput.setCustomValidity('invalid')
-        this.validationMsg.passwordCheck = '兩組輸入密碼不相同'
-      } else {
-        passwordCheckInput.setCustomValidity('')
-        this.validationMsg.passwordcheck = '請輸入 8-12 位密碼'
+        // Send data to parents
+        this.$emit('after-signup', {
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          passwordCheck: this.passwordCheck
+        })
+        // update processing status
+        this.isProcessing = false
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '目前無法註冊，請稍後再試'
+        })
       }
-
-      if (e.target.checkValidity() === false) {
-        return e.target.classList.add('was-validated')
-      }
-
-      // Send api to check if email already existed
-      // Send data to parents
-      this.$emit('after-signup', {
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        passwordCheck: this.passwordCheck
-      })
     }
   }
 }
@@ -136,6 +200,10 @@ export default {
 
 <style lang="scss" scoped>
 .btn {
-    @include solidButton(200, 1);
+  @include solidButton(200, 1);
+}
+
+.form {
+  @include inputValidation;
 }
 </style>

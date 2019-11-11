@@ -1,131 +1,185 @@
 <template>
   <section>
-    <header>
-      <Navbar />
-      <ImageHeaderBanner
-        :background-photo="banner.image"
-        :banner-height="banner.height"
-      >
-        <template v-slot:header>
-          <h1 class="banner-content-title">
-            編輯餐點
-          </h1>
-          <h3
-            class="banner-content-description"
-          >
-            更改數量或領餐時間
-          </h3>
-        </template>
-      </ImageHeaderBanner>
-    </header>
-    <!--Display order form-->
-    <section
-      class="order-wrapper"
-    >
-      <div class="container order-container">
-        <div
-          class="row order-content p-3"
+    <!--Navbar-->
+    <UserNavbar />
+    <!--Loader-->
+    <Loader
+      v-if="isLoading"
+      :height="'100vh'"
+    />
+    <!--Header-->
+    <transition name="fade">
+      <header v-if="!isLoading">
+        <ImageHeaderBanner
+          :background-photo="banner.image"
+          :banner-height="banner.height"
         >
-          <MealHorizontalCard
-            :order="order"
-            class="order-display"
-          />
-          <OrderForm
-            class="order-display mt-3"
-            :order-info="{quantity: order.meal.quantity + order.orderData.quantity, timeSlots: order.timeSlots}"
-            :initial-order="order.orderData"
-            @after-submit="handleAfterSubmit"
+          <template v-slot:header>
+            <h1 class="banner-content-title">
+              編輯餐點
+            </h1>
+            <h3
+              class="banner-content-description"
+            >
+              更改數量或領餐時間
+            </h3>
+          </template>
+        </ImageHeaderBanner>
+      </header>
+    </transition>
+    <!--Display order form-->
+    <transition name="slide">
+      <section
+        v-if="!isLoading"
+        class="order-wrapper"
+      >
+        <div class="container order-container">
+          <div
+            class="row order-content p-3"
           >
-            <template #submit>
-              更新訂單
-            </template>
-          </OrderForm>
+            <MealHorizontalCard
+              :order="order"
+              class="order-display"
+            />
+            <OrderForm
+              class="order-display mt-3"
+              :order-info="{quantity: order.meal.quantity + order.orderData.quantity, timeSlots: order.timeSlots}"
+              :initial-order="order.orderData"
+              :initial-processing="isProcessing"
+              :current-user="currentUser"
+              @after-submit="handleAfterSubmit"
+            >
+              <template #submit>
+                更新訂單
+              </template>
+            </OrderForm>
+          </div>
         </div>
-      </div>
-    </section>
-    <Footer />
+      </section>
+    </transition>
+    <!--Footer-->
+    <transition name="fade">
+      <Footer v-if="!isLoading" />
+    </transition>
   </section>
 </template>
 
 <script>
-import Navbar from '../components/Navbar'
+import UserNavbar from '../components/Navbar/UserNavbar'
 import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import MealHorizontalCard from '../components/Card/MealHorizontalCard'
 import OrderForm from '../components/OrderForm'
 import Footer from '../components/Footer'
-
-const dummyOrder = {
-  order: {
-    id: 1,
-    amount: 9,
-    require_date: '2019-10-27T13:30:00.000Z',
-    meals: {
-      id: 2,
-      name: '巨無霸套餐',
-      description: '來自德州的巨無霸牛肉漢堡與特製醬料，搭配據杯可樂與現削現炸地瓜薯條，滿足你的味蕾',
-      image: 'https://images.pexels.com/photos/2454533/pexels-photo-2454533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-      quantity: 20,
-      Restaurant: {
-        id: 1,
-        name: '美國家鄉菜',
-        rating: 4.8,
-        distance: 220
-      }
-    },
-    OrderItem: {
-      OrderId: 2,
-      Meal: 2
-    }
-  },
-  time_slots: ['11:00', '11:30', '12:00', '12:30', '13:00', '13:30']
-}
+import Loader from '../components/Loader'
+import orderAPI from '../apis/order'
+import { Toast } from '../utils/helpers'
+import moment from 'moment'
+import { mapState } from 'vuex'
 
 export default {
   components: {
-    Navbar,
+    UserNavbar,
     ImageHeaderBanner,
     MealHorizontalCard,
     OrderForm,
-    Footer
+    Footer,
+    Loader
   },
   data () {
     return {
       banner: {
         image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-        height: 450
+        height: 550
       },
-      order: {}
+      order: {
+        restaurant: {
+          name: '',
+          rating: -1
+        },
+        meal: {
+          name: '',
+          description: '',
+          image: '',
+          quantity: -1
+        },
+        orderData: {
+          quantity: -1,
+          time: ''
+        },
+        timeSlots: []
+      },
+      isLoading: true,
+      isProcessing: false
     }
+  },
+  computed: {
+    ...mapState(['currentUser'])
   },
   created () {
     const { order_id: orderId } = this.$route.params
     this.fetchOrder(orderId)
   },
   methods: {
-    fetchOrder (orderId) {
-      // fetch order data from API
+    async fetchOrder (orderId) {
+      try {
+        // fetch order data from API
+        const { data, statusText } = await orderAPI.getEditOrder({ orderId })
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // retrieve data
+        const { order: { meals: { Restaurant: restaurant, ...meal }, amount: quantity, require_date: requireDate }, time_slots: timeSlots } = data
+        const orderData = {
+          quantity,
+          time: moment(new Date(requireDate)).format('HH:mm')
+        }
 
-      // retrieve data
-      const { order: { meals: { Restaurant: restaurant, ...meal }, amount: quantity, require_date: requireDate }, time_slots: timeSlots } = dummyOrder
-      const orderData = {
-        quantity,
-        time: requireDate.split('T')[1].slice(0, 5)
+        // save data
+        this.order = { ...this.order, restaurant, meal, orderData, timeSlots }
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得訂單資料，請稍後再試'
+        })
+        // redirect back to order tomorrow page
+        this.$router.push({ name: 'order-tomorrow' })
       }
-
-      // save data
-      this.order = { ...this.order, restaurant, meal, orderData, timeSlots }
     },
-    handleAfterSubmit (formData) {
-      // PUT /api/order/:order_id
-      console.log(formData)
-      // redirect to order detail page
-      this.$router.push({ name: 'order', params: { order_id: this.$route.params.order_id } })
+    async handleAfterSubmit (formData) {
+      try {
+        // send updated order data
+        const { data, statusText } = await orderAPI.putEditOrder({ orderId: this.$route.params.order_id, formData })
+        // error handling
+        if (statusText !== 'OK' || data.status !== 'success') throw new Error(data.message)
+        // update balance to Vuex
+        const quantity = this.order.orderData.quantity - formData.quantity
+        this.$store.commit('updateBalance', quantity)
+        // redirect to order detail pageasx
+        this.$router.push({ name: 'order', params: { order_id: this.$route.params.order_id } })
+      } catch (error) {
+        // update loading status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法更新訂購資料，請稍後再試'
+        })
+        // redirect back to last page
+        this.$router.go(-1)
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@include slideAnimation;
+@include fadeAnimation;
+
 .order {
   &-content {
     position: relative;

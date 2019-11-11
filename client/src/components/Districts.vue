@@ -1,58 +1,40 @@
 <template>
-  <div class="row">
-    <a
-      v-for="district in districts"
-      :key="district.eng_name"
-      class="img-wrapper col-12 col-md-6 col-lg-3 mb-3 px-2"
-      href="#"
-    >
-      <div class="img-container">
-        <img
-          :src="district.image"
-          alt="Restaurant image"
-          class="img-fluid shadow-sm rounded-sm"
-        >
-        <div class="img-overlay" />
-        <h3 class="img-content">
-          {{ district.chinese_name }}
-        </h3>
-      </div>
-    </a>
+  <div class="row px-3">
+    <!--Show placeholder box while loading-->
+    <template v-if="isLoading">
+      <ImageCard
+        v-for="index in 4"
+        :key="index"
+        :is-loading="isLoading"
+      />
+    </template>
+    <template v-else>
+      <ImageCard
+        v-for="district in districts"
+        :key="district.eng_name"
+        :district="district"
+        :is-loading="isLoading"
+      />
+    </template>
   </div>
 </template>
 
 <script>
+import ImageCard from './Card/ImageCard'
+
 export default {
+  components: {
+    ImageCard
+  },
   props: {
     districts: {
       type: Array,
       required: true
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.img {
-    @include positionCenter;
-    @include imgOverlay;
-
-    &-container {
-        transition: transform .2s linear;
-
-        &:hover {
-            transform: translateY(-2%);
-        }
-    }
-
-    &-fluid {
-        height: 180px;
-        width: 100%;
-        object-fit: cover;
-    }
-
-    &-content {
-        color: color(quaternary);
-    }
-}
-</style>

@@ -87,6 +87,7 @@ typings/
 .dynamodb/
 
 # ngrok 
+ngrok
 server/ngrok
 
 # temp upload file

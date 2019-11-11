@@ -30,15 +30,15 @@
           <td>{{ user.role }}</td>
           <td>
             <span
-              :inner-html.prop="user.subscription_status | getStatusIcon"
-              :class="{isTrue: user.subscription_status, isFalse: !user.subscription_status}"
+              :inner-html.prop="user.sub_status | getStatusIcon"
+              :class="{isTrue: user.sub_status === 'active', isFalse: user.sub_status === 'inactive'}"
             />
           </td>
           <td class="comment">
             {{ user.sub_description | getAmount }}
           </td>
           <td>
-            {{ user.order_num | getAmount }}
+            {{ user.order_num }} 餐
           </td>
         </tr>
       </tbody>
@@ -50,12 +50,12 @@
 export default {
   filters: {
     getStatusIcon (status) {
-      if (status) return `<i class="fas fa-check"></i>`
+      if (status === 'active') return `<i class="fas fa-check"></i>`
       return `<i class="fas fa-times"></i>`
     },
     getAmount (number) {
-      if (!Number(number)) return '-'
-      return `${number} 餐`
+      if (!number) return '-'
+      return `${number.slice(3, 5)} 餐`
     }
   },
   props: {
@@ -69,11 +69,11 @@ export default {
 
 <style lang="scss" scoped>
 $headers: (
-    1: '名稱',
-    2: '用戶權限',
-    3: '訂閱狀態',
-    4: '訂閱方案',
-    5: '點餐量'
+  1: '名稱',
+  2: '用戶權限',
+  3: '訂閱狀態',
+  4: '訂閱方案',
+  5: '點餐量'
 );
 
 // table layout for small screen
@@ -82,10 +82,10 @@ $headers: (
 @include tableFullSize;
 
 .isTrue {
-    color: color(tertiary);
+  color: color(tertiary);
 }
 
 .isFalse {
-    color: color(primary);
+  color: color(primary);
 }
 </style>

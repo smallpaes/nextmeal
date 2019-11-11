@@ -2,142 +2,150 @@
   <form
     class="form-content needs-validation rounded"
     novalidate
-    @submit.prevent.stop="getLocation"
+    @submit.prevent.stop="getLocation('user')"
   >
-    <!--Input data-->
-    <div
-      v-if="!showMap"
-      class="form-content-top rounded-top"
+    <transition
+      appear
+      mode="out-in"
+      name="fade"
     >
-      <div class="form-content-top-header mb-4">
-        <h3>
-          設定
-        </h3>
-        <h5>
-          完成偏好設定以獲得更好體驗
-        </h5>
-      </div>
-      <!--Show alert section-->
+      <!--Input data-->
       <div
-        v-if="warningMessage"
-        class="alert mb-0 pt-0"
-        role="alert"
+        v-if="!showMap"
+        key="basic"
+        class="form-content-top rounded-top"
       >
-        {{ warningMessage }}
-      </div>
-      <div class="form-group">
-        <input
-          id="address"
-          v-model="user.address"
-          type="text"
-          class="form-control"
-          placeholder="預設所在地址"
-          autofocus
-          required
-        >
-        <div class="invalid-feedback">
-          {{ validationMsg.address }}
+        <div class="form-content-top-header mb-4">
+          <h3>
+            設定
+          </h3>
+          <h5>
+            完成偏好設定以獲得更好體驗
+          </h5>
         </div>
-      </div>
-      <div class="form-group">
-        <select
-          v-model="user.prefer"
-          class="form-control"
-          required
+        <!--Show alert section-->
+        <div
+          v-if="warningMessage"
+          class="alert mb-0 pt-0"
+          role="alert"
         >
-          <option value="">
-            偏好餐廳類型
-          </option>
-          <option
-            v-for="category in categories"
-            :key="category"
-            :value="category"
+          {{ warningMessage }}
+        </div>
+        <div
+          class="form-group form-address-group"
+          :class="{invalid: $v.user.address.$error}"
+        >
+          <input
+            id="address"
+            v-model="user.address"
+            type="text"
+            class="form-control"
+            placeholder="預設所在地址"
+            autofocus
+            required
+            @blur="$v.user.address.$touch()"
           >
-            {{ category }}
-          </option>
-        </select>
-        <div class="invalid-feedback">
-          請選擇一種偏好餐廳
+          <small
+            v-if="$v.user.address.$error"
+            class="form-text"
+          >地址必填</small>
+          <small
+            v-if="validationMsg.address"
+            class="form-text"
+          >{{ validationMsg.address }}</small>
+        </div>
+        <!--Prefer-->
+        <CustomSelect
+          v-model="user.prefer"
+          class="p-0"
+          :options="categories"
+          :v="$v.user.prefer"
+          :target="'name'"
+        >
+          <template v-slot:option>
+            偏好餐廳類別
+          </template>
+          <template v-slot:invalid>
+            請選擇一種偏好餐廳類別
+          </template>
+        </CustomSelect>
+        <!--dob-->
+        <CustomDatePicker
+          v-model="user.dob"
+          :has-label="false"
+          :v="$v.user.dob"
+          :placeholder="'選擇出生年月日'"
+        />
+        <div class="btn-container text-center">
+          <button
+            class="btn mt-1"
+            type="submit"
+            :disabled="isProcessing || $v.$invalid"
+          >
+            送出
+          </button>
         </div>
       </div>
-      <!-- <div class="form-group">
-        <input
-          id="dob"
-          v-model="dob"
-          type="date"
-          class="form-control pr-0"
-          :max="Date.now() | dateTransform"
-          required
-        >
-        <small
-          id="dob-reminder"
-          v-if="!dob"
-          class="form-text text-left"
-        >填寫出生年月日</small>
-      </div> -->
-      <CustomDatePicker
-        v-model="user"
-        :has-label="false"
-      />
-      <div class="btn-container text-center">
-        <button
-          class="btn mt-1"
-          type="submit"
-        >
-          送出
-        </button>
-      </div>
-    </div>
 
-    <!--Map sidplay section-->
-    <div
-      v-if="showMap"
-      class="form-content-top rounded-top"
-    >
-      <GMap
-        :center="{lat: userLocation.lat, lng: userLocation.lng}"
-        :street-view-control="false"
-        :locations="[userLocation]"
-        :map-type-control="false"
-        :fullscreen-control="true"
-        :zoom-control="true"
-        :zoom="18"
-        class="shadow-sm rounded-sm"
-      />
-      <div class="form-buttons d-flex justify-content-center mt-3">
-        <button
-          class="btn btn-update"
-          @click.stop.prevent="handleSubmit"
-        >
-          位置正確
-        </button>
-        <button
-          class="btn ml-2"
-          @click.prevent.stop="showMap = false"
-        >
-          修改地址
-        </button>
+      <!--Map sidplay section-->
+      <div
+        v-if="showMap"
+        key="map"
+        class="form-content-top rounded-top"
+      >
+        <GMap
+          :center="{lat: user.lat, lng: user.lng}"
+          :street-view-control="false"
+          :locations="[user]"
+          :map-type-control="false"
+          :fullscreen-control="true"
+          :zoom-control="true"
+          :zoom="18"
+          class="shadow-sm rounded-sm"
+        />
+        <div class="form-buttons d-flex justify-content-center mt-3">
+          <button
+            class="btn btn-update"
+            :disabled="isProcessing"
+            @click.stop.prevent="handleSubmit"
+          >
+            位置正確
+          </button>
+          <button
+            class="btn ml-2"
+            :disabled="isProcessing || $v.$invalid"
+            @click.prevent.stop="showMap = false"
+          >
+            修改地址
+          </button>
+        </div>
       </div>
-    </div>
+    </transition>
   </form>
 </template>
 
 <script>
-import { dateTransformFilter } from '../utils/mixins'
+import { dateTransformFilter, getGeoMethods } from '../utils/mixins'
 import CustomDatePicker from '../components/CustomDatePicker'
-import axios from 'axios'
 import GMap from '../components/GMap'
+import CustomSelect from '../components/CustomSelect'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   components: {
     GMap,
-    CustomDatePicker
+    CustomDatePicker,
+    CustomSelect
   },
-  mixins: [dateTransformFilter],
+  mixins: [dateTransformFilter, getGeoMethods],
   props: {
     categories: {
       type: Array,
       required: true
+    },
+    initialProcessing: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -145,69 +153,57 @@ export default {
       user: {
         address: '',
         prefer: '',
-        dob: ''
+        dob: '',
+        name: '您的預設位置',
+        lat: '',
+        lng: '',
+        location: ''
       },
       warningMessage: '',
 
       apiKey: process.env.VUE_APP_GOOGLE,
       validationMsg: {
-        address: '請輸入地址'
+        address: ''
       },
       showMap: false,
-      userLocation: {
-        name: '您的預設位置',
-        lat: '',
-        lng: '',
-        location: ''
+      isProcessing: this.initialProcessing
+    }
+  },
+  validations: {
+    user: {
+      address: {
+        required
+      },
+      prefer: {
+        required
+      },
+      dob: {
+        required
       }
     }
   },
+  watch: {
+    initialProcessing (isProcessing) {
+      this.isProcessing = isProcessing
+    }
+  },
   methods: {
-    async getLocation (e) {
-      // Get geocoding location
-      try {
-        const BASE_URL = 'https://maps.googleapis.com/maps/api/geocode'
-        const language = 'zh-TW'
-        const addressInput = document.getElementById('address')
-        const activeDistricts = ['信義區', '大安區', '中山區', '松山區']
-        const { data } = await axios.get(`${BASE_URL}/json?address=${this.address}&language=${language}&components=country:TW&key=${this.apiKey}`)
-
-        // Retrieve district from data
-        const addressComponents = data.results[0].address_components
-        const district = addressComponents.filter(item => activeDistricts.includes(item.long_name))
-
-        // validate returned data from Google Maps API
-        if (data.status !== 'OK' || !district.length || addressComponents.length <= 4) {
-          addressInput.setCustomValidity('invalid')
-          this.validationMsg.address = '請確認為台北市信義、松山、大安、中山區的完整地址'
-        } else {
-          addressInput.setCustomValidity('')
-          this.validationMsg.address = '請輸入地址'
-        }
-
-        // Validate form data
-        if (e.target.checkValidity() === false) {
-          return e.target.classList.add('was-validated')
-        }
-
-        // update locaion data
-        this.userLocation.lat = data.results[0].geometry.location.lat
-        this.userLocation.lng = data.results[0].geometry.location.lng
-        this.userLocation.location = district[0].long_name
-        this.showMap = true
-      } catch (error) {
-        this.warningMessage = 'Oops！設定時有些狀況，請稍後再試！'
-      }
+    afterReceiveGeo () {
+      this.showMap = true
+      // update processing status
+      this.isProcessing = false
     },
     handleSubmit () {
+      // update processing status
+      this.isProcessing = true
       // Send data to parents
       this.$emit('after-setting', {
-        address: this.address,
-        prefer: this.prefer,
-        dob: this.dob,
-        lat: this.userLocation.lat,
-        lng: this.userLocation.lng,
-        location: this.userLocation.location
+        address: this.user.address,
+        prefer: this.user.prefer,
+        dob: this.user.dob,
+        lat: this.user.lat,
+        lng: this.user.lng,
+        location: this.user.location
       })
     }
   }
@@ -215,33 +211,39 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@include fadeAnimation;
+
 /deep/ .google-map {
   width: 100%;
   height: 400px;
 }
 
+.form {
+  @include inputValidation;
+}
+
 .alert {
-    color: color(primary);
+  color: color(primary);
 }
 
 .btn {
-    @include solidButton(200, 1);
-    min-width: 100px;
+  @include solidButton(200, 1);
+  min-width: 100px;
 
-    &-update {
-      background-color: color(tertiary);
+  &-update {
+    background-color: color(tertiary);
 
-      &:hover {
-        background-color: darken(color(tertiary), 20%);
-      }
+    &:hover {
+    background-color: darken(color(tertiary), 20%);
     }
+  }
 
-    @include response(sm) {
-      min-width: 150px;
-    }
+  @include response(sm) {
+    min-width: 150px;
+  }
 
-    @include response(md) {
-      min-width: 170px;
-    }
+  @include response(md) {
+    min-width: 170px;
+  }
 }
 </style>

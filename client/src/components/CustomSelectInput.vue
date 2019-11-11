@@ -1,29 +1,35 @@
 <template>
   <div class="form-group">
-    <label for="category">喜好餐廳</label>
+    <label
+      v-if="$slots.label"
+      for="category"
+    >
+      <slot name="label" />
+    </label>
     <div class="form-select-control">
       <select
-        :value="value.prefer"
+        :value="value[name]"
         class="form-control"
         required
-        @input="$emit('input', {...value, prefer: $event.target.value})"
+        @input="$emit('input', {...value, [name]: $event.target.value})"
       >
         <option
           value=""
           selected
         >
-          餐廳類別
+          <slot name="option" />
         </option>
         <option
-          v-for="category in categories"
+          v-for="category in options"
           :key="category.id"
           :value="category.name"
+          :selected="category.name === value[name]"
         >
           {{ category.name }}
         </option>
       </select>
       <div class="invalid-feedback">
-        請選擇類別
+        <slot name="invalid" />
       </div>
     </div>
   </div>
@@ -36,8 +42,12 @@ export default {
       type: Object,
       required: true
     },
-    categories: {
+    options: {
       type: Array,
+      required: true
+    },
+    name: {
+      type: String,
       required: true
     }
   }
@@ -50,19 +60,27 @@ export default {
   @include formSelectControl;
 
   &-control {
-      @include formValidation;
-
-      &:invalid {
-          margin-bottom: 0rem;
-      }
+    &:invalid {
+      margin-bottom: 0rem;
+    }
   }
 
   &-select-control {
-      position: relative;
+    position: relative;
 
-      .invalid-feedback {
-          position: absolute;
+    .form {
+      &-control {
+        border: none;
       }
+    }
+
+    .invalid-feedback {
+      position: absolute;
+    }
   }
+}
+
+.form-control {
+  border: none
 }
 </style>

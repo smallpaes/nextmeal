@@ -17,7 +17,7 @@ export default {
   props: {
     backgroundPhoto: {
       type: String,
-      required: true
+      default: 'https://images.pexels.com/photos/277253/pexels-photo-277253.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
     }
   }
 }
@@ -25,15 +25,15 @@ export default {
 
 <style lang="scss" scoped>
 .banner {
-    @include positionCenter;
-    @include imgOverlay(1);
+  @include positionCenter;
+  @include imgOverlay(1);
 
-    &-container {
-        margin-top: 62px;
-    }
+  &-container {
+    margin-top: 62px;
+  }
 
-    &-img {
-        @include setBackground("https://via.placeholder.com/800x800/d3d3d3", 480px);
-    }
+  &-img {
+    @include setBackground("https://via.placeholder.com/800x800/d3d3d3", 480px);
+  }
 }
 </style>

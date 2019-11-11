@@ -10,7 +10,7 @@ const Meal = db.Meal
 const moment = require('moment')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
-const { getTimeStop, avgRating } = require('../middleware/middleware')
+const { getTimeStop, avgRating, sendEmail } = require('../middleware/middleware')
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 
 let orderController = {
@@ -39,7 +39,7 @@ let orderController = {
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
-        attributes: ['id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
+        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
         order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
@@ -57,7 +57,9 @@ let orderController = {
   postNew: async (req, res) => {
     try {
       let start = moment().startOf('day').toDate()
-      let meal = await Meal.findByPk(req.body.meal_id)
+      let meal = await Meal.findByPk(req.body.meal_id, {
+        include: [Restaurant]
+      })
       let subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
@@ -104,6 +106,19 @@ let orderController = {
       subscription = await subscription.update({ // 減少點數
         sub_balance: subscription.sub_balance - quantity
       })
+      const emailInfo = {
+        email: req.user.email,
+        template: 'orderInfo',
+        subject: '【Nextmeal】訂購餐點已確認 ',
+        order: {
+          ...order.dataValues,
+          order_date: moment(order.order_date).format('YYYY-MM-DD HH:mm'),
+          require_date: moment(order.require_date).format('YYYY-MM-DD HH:mm'),
+        },
+        meal,
+        subscription
+      }
+      sendEmail(req, res, emailInfo)
       return res.status(200).json({ status: 'success', order_id: order.id, message: 'Successfully order the meal.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
@@ -162,11 +177,11 @@ let orderController = {
         return res.status(400).json({ status: 'error', message: 'meal or restaurant does not exist' })
       }
       // 為了給前端 time_slots 取得餐廳開店與關店時間
-      let opening_hour = order.meals.dataValues.Restaurant.dataValues.opening_hour
-      let closing_hour = order.meals.dataValues.Restaurant.dataValues.closing_hour
+      let opening_hour = order.meals[0].dataValues.Restaurant.dataValues.opening_hour
+      let closing_hour = order.meals[0].dataValues.Restaurant.dataValues.closing_hour
       let time_slots = getTimeStop(opening_hour, closing_hour)
 
-      order = { ...order.dataValues, meals: order.dataValues.meals.dataValues }
+      order = { ...order.dataValues, meals: order.dataValues.meals[0].dataValues }
       // 回傳 subscription 數量，以及餐點剩餘數量
       return res.status(200).json({
         status: 'success',
@@ -217,10 +232,10 @@ let orderController = {
         })
         // 更新原本訂單領餐日期
         order = await order.update({
-          require_date: tomorrow
+          require_date: tomorrow,
+          amount: Number(req.body.quantity)
         })
         // 更新訂單 order 和 orderitem 原本數量
-        await order.update({ amount: Number(req.body.quantity) })
         let orderItem = await OrderItem.findOne({
           where: { OrderId: req.params.order_id }
         })
@@ -228,10 +243,25 @@ let orderController = {
           quantity: Number(req.body.quantity),
         })
         // 修改 meal 的庫存
-        let meal = await Meal.findByPk(order.meals[0].dataValues.id)
+        let meal = await Meal.findByPk(order.meals[0].id, {
+          include: [Restaurant]
+        })
         await meal.update({
           quantity: newQuantity
         })
+        const emailInfo = {
+          email: req.user.email,
+          template: 'orderInfo',
+          subject: '【Nextmeal】訂購餐點已修改',
+          order: {
+            ...order.dataValues,
+            order_date: moment(order.order_date).format('YYYY-MM-DD HH:mm'),
+            require_date: moment(order.require_date).format('YYYY-MM-DD HH:mm'),
+          },
+          meal,
+          subscription
+        }
+        sendEmail(req, res, emailInfo)
         return res.status(200).json({ status: 'success', order, message: 'Successfully edit Order information.' })
       }
       return res.status(400).json({ status: 'error', message: 'Store\'s quantity is none in stock.' })
@@ -280,10 +310,6 @@ let orderController = {
       if (order.meals.length === 0 || order.meals[0] === undefined) {
         return res.status(200).json({ status: 'success', message: 'meal or restaurant does not exist' })
       }
-      if (order.hasComment) return res.status(200).json({ status: 'success', message: 'This order has already been commented.' })
-      if (order.meals.length === 0 || order.meals[0] === undefined) {
-        return res.status(400).json({ status: 'error', message: 'meal or restaurant does not exist' })
-      }
       let restaurant = await Restaurant.findByPk(order.meals[0].RestaurantId)
       if (!restaurant) return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
       const { file } = req
@@ -317,11 +343,13 @@ let orderController = {
     try {
       // 先取得本訂單，需驗證剩下多少數量，取得數量
       let order = await Order.findByPk(req.params.order_id, {
-        include: [{ model: Meal, as: 'meals', include: [Restaurant] }]
+        include: [{ model: Meal, as: 'meals' }]
       })
       if (!order) return res.status(400).json({ status: 'error', message: 'order does not exist.' })
       if (req.user.id !== Number(order.UserId)) return res.status(400).json({ status: 'error', message: 'You are not allow this action.' })
-      let meal = await Meal.findByPk(order.meals[0].id)
+      let meal = await Meal.findByPk(order.meals[0].id, {
+        include: [Restaurant]
+      })
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist.' })
       let start = moment().startOf('day').toDate()
       let subscription = await Subscription.findOne({
@@ -339,12 +367,26 @@ let orderController = {
       await meal.update({
         quantity: returnQuantity
       })
-      await subscription.update({
+      subscription = await subscription.update({
         sub_balance: returnNum
       })
-      order = await order.update({
+      await order.update({
         order_status: '取消'
       })
+      const emailInfo = {
+        email: req.user.email,
+        template: 'orderInfo',
+        subject: '【Nextmeal】訂購餐點已取消',
+        cancel: true,
+        order: {
+          ...order.dataValues,
+          order_date: moment(order.order_date).format('YYYY-MM-DD HH:mm'),
+          require_date: moment(order.require_date).format('YYYY-MM-DD HH:mm'),
+        },
+        meal,
+        subscription
+      }
+      sendEmail(req, res, emailInfo)
       return res.status(200).json({ status: 'success', message: 'Successfully cancel the order.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })

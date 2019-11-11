@@ -12,7 +12,7 @@
             訂單編號
           </h5>
           <h2 class="detail-content-description">
-            {{ order.MealId }}
+            #{{ order.OrderId }}
           </h2>
         </div>
         <div class="col-md-6 my-3">
@@ -62,28 +62,28 @@ export default {
 
 <style lang="scss" scoped>
 .detail {
-    width: 100%;
+  width: 100%;
 
-    &-wrapper {
-        background-color: color(quaternary);
-    }
+  &-wrapper {
+    background-color: color(quaternary);
+  }
 
+  &-title {
+    font-size: size(md);
+    font-weight: weight(bold);
+    color: color(primary);
+  }
+
+  &-content {
     &-title {
-        font-size: size(md);
-        font-weight: weight(bold);
-        color: color(primary);
+      font-size: size(sm);
+      color: lighten(color(secondary), 30%);
     }
 
-    &-content {
-        &-title {
-            font-size: size(sm);
-            color: lighten(color(secondary), 30%);
-        }
-
-        &-description {
-            font-size: size(sm);
-            font-weight: weight(bold);
-        }
+    &-description {
+      font-size: size(sm);
+      font-weight: weight(bold);
     }
+  }
 }
 </style>
