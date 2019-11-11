@@ -174,7 +174,7 @@ describe('# Admin::User request', () => {
       after(async () => {
         this.ensureAuthenticated.restore();
         this.getUser.restore();
-        // await db.User.destroy({ where: {}, truncate: true })
+        await db.User.destroy({ where: {}, truncate: true })
       })
     })
 
