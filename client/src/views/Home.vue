@@ -64,7 +64,7 @@
       </div>
     </section>
     <Questions ref="question" />
-    <Footer />
+    <Footer @to-top="scrollToTop" />
   </section>
 </template>
 
@@ -137,6 +137,10 @@ export default {
       const top = question.offsetTop
       // scroll to is currently not supported in IE, Edge, Safari
       window.scrollTo({ top: top, behavior: 'smooth' })
+    },
+    scrollToTop () {
+      // scroll to top of the page
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 }

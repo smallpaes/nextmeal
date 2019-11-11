@@ -4,6 +4,7 @@
       <router-link
         class="footer-brand"
         :to="{name: 'home'}"
+        @click.native="$route.name === 'home' ? $emit('to-top') : null"
       >
         NextMeal
       </router-link>
