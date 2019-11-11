@@ -5,4 +5,5 @@ const mainController = require('../controllers/mainController')
 
 router.get('/', mainController.getRestaurants)
 
+
 module.exports = router

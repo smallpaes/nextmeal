@@ -27,6 +27,9 @@ module.exports = {
         type: Sequelize.DATE
       },
       payment_status: {
+        type: Sequelize.BOOLEAN,
+      },
+      sn: {
         type: Sequelize.STRING
       },
       sub_balance: {

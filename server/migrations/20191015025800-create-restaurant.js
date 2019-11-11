@@ -32,11 +32,17 @@ module.exports = {
       address: {
         type: Sequelize.STRING
       },
-      latitude: {
-        type: Sequelize.STRING
+      lat: {
+        type: Sequelize.FLOAT
       },
-      longitude: {
-        type: Sequelize.STRING
+      lng: {
+        type: Sequelize.FLOAT
+      },
+      geometry: {
+        type: Sequelize.GEOMETRY
+      },
+      geometry: {
+        type: Sequelize.GEOMETRY
       },
       UserId: {
         type: Sequelize.INTEGER

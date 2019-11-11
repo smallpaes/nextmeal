@@ -4,11 +4,13 @@ module.exports = (sequelize, DataTypes) => {
     SubscriptionId: DataTypes.INTEGER,
     params: DataTypes.TEXT,
     amount: DataTypes.INTEGER,
-    paidAt: DataTypes.DATE
+    paidAt: DataTypes.DATE,
+    sn: DataTypes.STRING
   }, {});
   Payment.associate = function (models) {
     // associations can be defined here
     Payment.belongsTo(models.Subscription)
   };
+
   return Payment;
 };

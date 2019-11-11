@@ -20,6 +20,9 @@ module.exports = {
       quantity: {
         type: Sequelize.INTEGER
       },
+      nextServing_quantity: {
+        type: Sequelize.INTEGER
+      },
       RestaurantId: {
         type: Sequelize.INTEGER
       },
@@ -30,6 +33,10 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       nextServing: {
+        type: Sequelize.BOOLEAN
+      },
+      isDeleted: {
+        allowNull: false,
         type: Sequelize.BOOLEAN
       },
       createdAt: {

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "中式料理",
+    "image": "https://images.pexels.com/photos/3054690/pexels-photo-3054690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+  },
+  {
+    "name": "日本料理",
+    "image": "https://images.pexels.com/photos/2323398/pexels-photo-2323398.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+  },
+  {
+    "name": "義大利料理",
+    "image": "https://images.pexels.com/photos/2232/vegetables-italian-pizza-restaurant.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+  },
+  {
+    "name": "墨西哥料理",
+    "image": "https://images.pexels.com/photos/2087748/pexels-photo-2087748.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+  },
+  {
+    "name": "素食料理",
+    "image": "https://images.pexels.com/photos/1143754/pexels-photo-1143754.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+  },
+  {
+    "name": "美式料理",
+    "image": "https://images.pexels.com/photos/675951/pexels-photo-675951.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+  },
+  {
+    "name": "複合式料理",
+    "image": "https://images.pexels.com/photos/2089712/pexels-photo-2089712.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+  }
+]

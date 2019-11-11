@@ -13,16 +13,16 @@ let mainController = {
       let popular_restaurants = await Restaurant.findAll({
         include: [ {model: Category, attributes: ['name', 'image']} ],
         attributes: [
-          'id', 'image', 'name', 'rating',
+          'id', 'image', 'name', 'rating','description',
           [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
           'CategoryId'
         ],
         order: [['rating','DESC'], [sequelize.literal('"commentCount" DESC')]], //評分和評論數量排列
         limit: pageLimit
       })
-      res.json({ status: 'success', popular_restaurants, districts, message: 'Get main page information.'})
+      return res.status(200).json({ status: 'success', popular_restaurants, districts, message: 'Get main page information.'})
     } catch (error) {
-      res.status(500).json({ status: 'error', message: error })
+      return res.status(500).json({ status: 'error', message: error })
     }
   }
 }
