@@ -24,6 +24,7 @@
       :not-before="new Date('1900', '12', '12')"
       :editable="editable"
       :disabled="disabled"
+      :clearable="clearable"
       @input="v ? v.$touch() : $emit('handle-date', $event)"
     />
     <small
@@ -66,6 +67,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    clearable: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
