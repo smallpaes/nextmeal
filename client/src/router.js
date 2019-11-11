@@ -177,6 +177,12 @@ const router = new Router({
       beforeEnter: authentication.isOwner
     },
     {
+      path: '/owner/dashboard',
+      name: 'owner-dashboard',
+      component: () => import('./views/OwnerDashboard.vue'),
+      beforeEnter: authentication.isOwner
+    },
+    {
       path: '/admin',
       name: 'admin-panel',
       redirect: '/admin/restaurants'
