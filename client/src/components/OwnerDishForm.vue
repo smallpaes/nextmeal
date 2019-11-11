@@ -28,7 +28,7 @@
       <small
         v-if="$v.dish.name.$error"
         class="form-text"
-      >請輸入 1-10 位餐點名稱</small>
+      >請輸入 1-30 位餐點名稱</small>
     </div>
     <!--Description-->
     <div
@@ -43,7 +43,7 @@
         :disabled="isProcessing"
         name="description"
         minlength="10"
-        maxlength="100"
+        maxlength="300"
         rows="2"
         required
         @blur="$v.dish.description.$touch()"
@@ -51,7 +51,7 @@
       <small
         v-if="$v.dish.description.$error"
         class="form-text"
-      >請輸入餐點簡介，長度介於 10-100 之間</small>
+      >請輸入餐點簡介，長度介於 10-300 之間</small>
     </div>
     <!--Image upload-->
     <p class="mb-2">
