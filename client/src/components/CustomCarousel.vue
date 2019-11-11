@@ -62,45 +62,38 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ .VueCarousel-navigation {
+/deep/ .VueCarousel-navigation-button {
+  display: none;
+  border-radius: 50%;
+  background-color: color(quaternary);
+  line-height: 8px;
+  color: lighten(color(secondary), 30%);
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
 
-  &-button {
-    display: none;
-    border-radius: 50%;
-    background-color: color(quaternary);
-    line-height: 8px;
-    color: lighten(color(secondary), 30%);
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-
-    &:focus {
-      outline: none;
-    }
-
-    &:hover {
-      color: lighten(color(secondary), 10%);
-    }
-
-    @include response(md) {
-      display: block;
-    }
-  }
-
-  &--disabled {
-    display: none;
+  @include response(md) {
+    display: block;
   }
 }
 
-/deep/ .VueCarousel-dot {
-
-  &:focus {
-    outline: none;
-  }
-
-  &-container {
-    @include response(md) {
-      display: none;
-    }
-  }
+/deep/ .VueCarousel-navigation-button:focus {
+  outline: none;
 }
 
+/deep/ .VueCarousel-navigation-button:hover {
+  color: lighten(color(secondary), 10%);
+}
+
+/deep/ .VueCarousel-navigation--disabled {
+  display: none;
+}
+
+/deep/ .VueCarousel-dot:focus {
+  outline: none;
+}
+
+/deep/ .VueCarousel-dot-container {
+  @include response(md) {
+    display: none;
+  }
+}
 </style>
