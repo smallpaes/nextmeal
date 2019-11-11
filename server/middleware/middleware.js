@@ -222,27 +222,21 @@ let middleware = {
       res.status(400).json({ status: 'error', message: error })
     }
   },
-  sendEmail: async (req, res, subscription, data) => {
-    try {
-      const mailOptions = {
-        from: process.env.GMAIL_ACCOUNT,
-        to: subscription.User.email,
-        subject: `親愛的客戶，恭喜你成功訂閱 NextMeal。`,
-        template: 'subscription',
-        context: {
-          subscription: subscription
-        }
-      }
-      await transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log(error)
-        } else {
-          console.log('Email sent ' + info.response)
-        }
-      })
-    } catch (error) {
-      return res.status(400).json({ status: 'error', message: error })
+  sendEmail: (req, res, emailInfo) => {
+    const mailOptions = {
+      from: process.env.GMAIL_ACCOUNT,
+      to: emailInfo.email,
+      subject: emailInfo.subject,
+      template: emailInfo.template,
+      context: { emailInfo }
     }
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error)
+      } else {
+        console.log('Email sent ' + info.response)
+      }
+    })
   },
   avgRating: async (res, restaurant, comment, order) => {
     try {
