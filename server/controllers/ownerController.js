@@ -129,11 +129,11 @@ let ownerController = {
     try {
       let restaurant = await Restaurant.findAll({
         where: { UserId: req.user.id },
-        include: [Meal],
+        include: [{ model: Meal, where: { isDeleted: false } }],
         attributes: ['id', 'UserId']
       })
       if (restaurant.length === 0 || restaurant[0].dataValues.Meals.length === 0) {
-        return res.status(200).json({ status: 'success', meals:[], message: 'You haven\'t setting restaurant or meal yet.' })
+        return res.status(200).json({ status: 'success', meals: [], message: 'You haven\'t setting restaurant or meal yet.' })
       }
       if (restaurant[0].dataValues.UserId !== req.user.id) {
         return res.status(400).json({ status: 'error', message: 'You are not allow do this action.' })
@@ -188,8 +188,9 @@ let ownerController = {
 
   getDish: async (req, res) => {
     try {
-      let meal = await Meal.findByPk(req.params.dish_id, {
-        include: [{ model: Restaurant, attributes: ['UserId'] }]
+      let meal = await Meal.findOne({
+        include: [{ model: Restaurant, attributes: ['UserId'] }],
+        where: { id: req.params.dish_id, isDeleted: false }
       })
       if (!meal) {
         return res.status(400).json({ status: 'error', meal, message: 'meal does not exist' })
@@ -205,8 +206,9 @@ let ownerController = {
 
   putDish: async (req, res) => {
     try {
-      let meal = await Meal.findByPk(req.params.dish_id, {
-        include: [{ model: Restaurant, attributes: ['UserId'] }]
+      let meal = await Meal.findOne({
+        include: [{ model: Restaurant, attributes: ['UserId'] }],
+        where: { id: req.params.dish_id, isDeleted: false }
       })
       if (!meal) {
         return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
@@ -236,12 +238,15 @@ let ownerController = {
 
   deleteDish: async (req, res) => {
     try {
-      let meal = await Meal.findByPk(req.params.dish_id, {
-        include: [Restaurant]
+      let meal = await Meal.findOne({
+        where: {
+          id: req.params.dish_id,
+          isDeleted: false
+        }
       })
       if (!meal) return res.status(422).json({ status: 'error', message: 'meal is not exist.' })
-      if (req.user.id !== meal.Restaurant.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow do this action.' })
-      await meal.destroy()
+
+      await meal.update({ isDeleted: true })
       res.status(200).json({ status: 'success', message: 'meal was successfully destroyed.' })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
@@ -251,9 +256,15 @@ let ownerController = {
   getMenu: async (req, res) => {
     try {
       const restaurant = await Restaurant.findOne({
-        where: { UserId: req.user.id }, attributes: ['id'], include: [{ model: Meal, attributes: ['id', 'name'] }]
+        where: { UserId: req.user.id }, attributes: ['id'],
+        include: [{
+          model: Meal, attributes: ['id', 'name'],
+          where: {
+            isDeleted: false
+          }
+        }]
       })
-      if (!restaurant) return res.status(400).json({ status: 'error', message: 'you have not restaurant yet' })
+      if (!restaurant) return res.status(200).json({ status: 'success', message: 'you do have not restaurant or a meal yet' })
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
@@ -261,11 +272,11 @@ let ownerController = {
       }
 
       if (req.query.ran === 'thisWeek') {
-        whereQuery = { RestaurantId: restaurant.id, isServing: true }
+        whereQuery = { RestaurantId: restaurant.id, isServing: true, isDeleted: false }
         message = 'the meals for this week'
       }
       if (req.query.ran === 'nextWeek') {
-        whereQuery = { RestaurantId: restaurant.id, nextServing: true }
+        whereQuery = { RestaurantId: restaurant.id, nextServing: true, isDeleted: false }
         message = 'the meals for next week'
       }
 
@@ -291,14 +302,17 @@ let ownerController = {
       if (today >= 6) {
         return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })
       }
-      let meal = await Meal.findByPk(req.body.id, {
-        include: [Restaurant]
+      let meal = await Meal.findOne({
+        where: {
+          id: req.body.id,
+          isDeleted: false
+        }
       })
       //要修改的 meal
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist' })
       if (req.user.id !== meal.Restaurant.UserId) return res.status(400).json({ status: 'error', message: 'You are not allow do this action.' })
       let originNextWeeK = await Meal.findOne({
-        where: { nextServing: true },
+        where: { nextServing: true, isDeleted: false },
         include: [{ model: Restaurant, where: { UserId: req.user.id } }]
       })
       // 如果有先更新成 false
@@ -307,7 +321,11 @@ let ownerController = {
           nextServing: false
         })
       }
-      meal = await Meal.findByPk(req.body.id)
+      meal = await Meal.findOne({
+        where: {
+          id: req.body.id
+        }
+      })
       meal = await meal.update({
         nextServing_quantity: req.body.quantity || meal.quantity,
         nextServing: true

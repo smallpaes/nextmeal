@@ -50,6 +50,9 @@ module.exports = {
       geometry: {
         type: Sequelize.GEOMETRY
       },
+      expired_date: {
+        type: Sequelize.DATE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

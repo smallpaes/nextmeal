@@ -35,6 +35,10 @@ module.exports = {
       nextServing: {
         type: Sequelize.BOOLEAN
       },
+      isDeleted: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
