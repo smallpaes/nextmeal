@@ -22,6 +22,7 @@ export default {
     },
     getUsers ({ subscriptionStatus, name }) {
       const searchParams = new URLSearchParams({ 'sub_status': subscriptionStatus, name })
+      console.log(`/admin/users?${searchParams.toString()}`)
       return apiHelper.get(`/admin/users?${searchParams.toString()}`)
     },
     deleteUser ({ userId }) {

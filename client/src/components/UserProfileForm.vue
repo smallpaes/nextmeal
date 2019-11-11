@@ -42,7 +42,7 @@
       <!--Email-->
       <div
         class="form-group col-md-6"
-        :class="{invalid: $v.user.email.$error}"
+        :class="{invalid: $v.user.email.$error && !$v.user.email.$pending}"
       >
         <label for="email">電子信箱</label>
         <input
@@ -55,7 +55,7 @@
           @blur="$v.user.email.$touch()"
         >
         <small
-          v-if="!$v.user.email.email && $v.user.email.$dirty && $v.user.email.unique"
+          v-if="!$v.user.email.email && $v.user.email.$dirty"
           class="form-text"
         >請輸入格式正確的電子信箱</small>
         <small
@@ -63,9 +63,9 @@
           class="form-text"
         >電子信箱必填</small>
         <small
-          v-if="!isProcessing && $v.user.email.$dirty && (!$v.user.email.unique || !$v.user.email.email)"
+          v-if="$v.user.email.$dirty && !$v.user.email.unique && !$v.user.email.$pending"
           class="form-text"
-        >電子信箱重複或格式錯誤</small>
+        >電子信箱已被註冊過</small>
       </div>
     </div>
     <div class="form-row">
@@ -305,20 +305,14 @@ export default {
         required,
         email,
         unique: async function (val) {
-          // Pass this validation if it's empty or the original email
-          if (val === '' || val === this.initialUser.email) return true
+          // Pass this validation if it's empty, the original email, or the format is wrong
+          if (val === '' || val === this.initialUser.email || !this.$v.user.email.email) return true
           try {
-            // update processing status
-            this.isProcessing = true
             // validate if it's an unique email
             const { data, statusText } = await authorizationAPI.emailcheck({ email: val })
             if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
-            // update processing status
-            this.isProcessing = false
             return data.isAvailable
           } catch (error) {
-            // update processing status
-            this.isProcessing = false
             return false
           }
         }

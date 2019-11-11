@@ -155,7 +155,7 @@ export default {
         // fire error messages
         Toast.fire({
           type: 'error',
-          title: '帳號或密碼有誤'
+          title: '目前無法登入，請稍後再試'
         })
       }
     }

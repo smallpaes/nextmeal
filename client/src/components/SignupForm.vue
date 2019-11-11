@@ -37,7 +37,7 @@
       <!--Email-->
       <div
         class="form-group"
-        :class="{invalid: $v.email.$error}"
+        :class="{invalid: $v.email.$error && !$v.email.$pending}"
       >
         <input
           id="email"
@@ -49,7 +49,7 @@
           @blur="$v.email.$touch()"
         >
         <small
-          v-if="!$v.email.email && $v.email.$dirty && $v.email.unique"
+          v-if="!$v.email.email && $v.email.$dirty"
           class="form-text"
         >請輸入格式正確的電子信箱</small>
         <small
@@ -57,9 +57,9 @@
           class="form-text"
         >電子信箱必填</small>
         <small
-          v-if="!isProcessing && $v.email.$dirty && (!$v.email.unique || !$v.email.email)"
+          v-if="$v.email.$dirty && !$v.email.unique && !$v.email.$pending"
           class="form-text"
-        >電子信箱重複或格式錯誤</small>
+        >電子信箱已被註冊過</small>
       </div>
       <!--Password-->
       <div
@@ -148,19 +148,14 @@ export default {
     email: {
       required,
       email,
-      unique: async (val, vm) => {
-        if (val === '') return true
+      unique: async function (val) {
+        console.log(!this.$v.email.email)
+        if (val === '' || !this.$v.email.email) return true
         try {
-          // update processing status
-          vm.isProcessing = true
           const { data, statusText } = await authorizationAPI.emailcheck({ email: val })
           if (data.status !== 'success' || statusText !== 'OK') throw new Error(statusText)
-          // update processing status
-          vm.isProcessing = false
           return data.isAvailable
         } catch (error) {
-          // update processing status
-          vm.isProcessing = false
           return false
         }
       }
@@ -195,7 +190,7 @@ export default {
         // fire error messages
         Toast.fire({
           type: 'error',
-          title: '此帳號已註冊過'
+          title: '目前無法註冊，請稍後再試'
         })
       }
     }
