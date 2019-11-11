@@ -11,7 +11,7 @@ const foodImg = require('../location/foodImg.json')
 const restImg = require('../location/restImg.json')
 const categories = require('../location/categories.json')
 const userComment = require('../location/comment.json')
-
+faker.locale = 'zh_TW';
 function randomPhone(num) {
   let random = ''
   for (let i = 0; i < num; i++) {
@@ -25,10 +25,12 @@ function createUsers(users) {
   let userData = []
   for (let i = 0; i < users.length; i++) {
     let role = 'User'
+    let expired_date = moment().add(30, 'days').endOf('day').toDate()
     if (i === 0) role = 'Admin'
     if (i > 1 && i < (stores.length + 2)) role = 'Owner'
+    if (i > 3 & i < 319) expired_date = null
     const seedUser = {
-      name: i === 0 ? 'root' : faker.name.findName(),
+      name: i === 0 ? 'root' : faker.fake("{{name.firstName}}{{name.lastName}}"),
       email: i === 0 ? 'root@example.com' : `user${i}@example.com`,
       password: bcrypt.hashSync('Nextmeal!', 10),
       avatar: `https://i.pravatar.cc/400?img=${Math.floor(Math.random() * 70 + 1)}`,
@@ -41,7 +43,8 @@ function createUsers(users) {
       lng: users[i].lng,
       geometry: sequelize.fn('ST_GeomFromText', `POINT(${users[i].lng} ${users[i].lat})`),
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      expired_date: expired_date
     }
     userData.push(seedUser)
   }
@@ -52,7 +55,7 @@ function createRest(store) {
   let restData = []
   for (let i = 0; i < store.length; i++) {
     const seedRest = {
-      name: store[i].name,
+      name: store[i].name.length > 30 ? store[i].name.slice(30) : store[i].name,
       description: store[i].description.substring(0, 300),
       tel: `02-${randomPhone(4)}-${randomPhone(4)}`,
       location: store[i].location,
@@ -79,7 +82,7 @@ function creatMeal(stores) {
   for (let i = 0; i < stores.length; i++) {
     let random = Math.floor(Math.random() * foodImg.length)
     const seedMeal = {
-      name: foodImg[random].name,
+      name: foodImg[random].name.length > 30 ? foodImg[random].name.slice(30) : foodImg[random].name,
       image: foodImg[random].image,
       RestaurantId: i + 1,
       quantity: 50,

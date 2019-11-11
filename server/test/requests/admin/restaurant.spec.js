@@ -198,7 +198,7 @@ describe('# Admin::Restaurant request', () => {
           .get('/api/admin/orders')
           .expect(200)
           .end((err, res) => {
-            expect(res.body.message).to.be.equal('can not find any orders')
+            expect(res.body.message).to.be.equal('can not find any order')
             return done()
           })
       })

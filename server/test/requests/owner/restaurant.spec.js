@@ -77,7 +77,7 @@ describe('# Admin::Owner request', () => {
         await db.User.destroy({ where: {}, truncate: true })
         await db.Restaurant.destroy({ where: {}, truncate: true })
         await db.Meal.destroy({ where: {}, truncate: true })
-        await db.Meal.create({ name: '蒜泥白肉', RestaurantId: 1, isServing: 1, nextServing: 1 })
+        await db.Meal.create({ name: '蒜泥白肉', RestaurantId: 1, isServing: 1, nextServing: 1, isDeleted: false, quantity: 30 })
         // await db.Meal.create({ name: '蒜泥白肉2', RestaurantId: 1, isServing: true, nextServing: true })
 
 
@@ -179,8 +179,8 @@ describe('# Admin::Owner request', () => {
       it('fail to get specific meal info', (done) => {
         request(app)
           .get('/api/owner/dishes/17')
-          .expect(422)
-          .expect({ status: "error", message: "meal does not exist" }, done)
+          .expect(400)
+          .expect({ status: "error", meal: null, message: "meal does not exist" }, done)
 
       })
 
@@ -226,7 +226,7 @@ describe('# Admin::Owner request', () => {
           .expect(200)
           .end(async (err, res) => {
             const meal = await db.Meal.findByPk(1)
-            expect(meal).to.be.null
+            expect(meal.isDeleted).to.be.true
             return done()
           })
       })

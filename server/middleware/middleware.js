@@ -72,7 +72,7 @@ let middleware = {
   ],
   validRestaurantForm: [
     check('name')
-      .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
+      .isLength({ min: 1, max: 30 }).withMessage('Name should be between 1-30'),
     check('description')
       .isLength({ min: 10, max: 300 }).withMessage('Description should be between 10-100 words'),
     check('tel')
@@ -88,7 +88,7 @@ let middleware = {
   ],
   validDishForm: [
     check('name')
-      .isLength({ min: 1, max: 10 }).withMessage('Name should be between 1-10'),
+      .isLength({ min: 1, max: 30 }).withMessage('Name should be between 1-30'),
     check('description')
       .isLength({ min: 10, max: 300 }).withMessage('Description should be between 10-100 words'),
   ],
@@ -266,7 +266,7 @@ let middleware = {
           for (let meal of rest.Meals) {
             const orders = await Order.findAndCountAll({
               where: { order_status: '今日' },
-              include: [{ model: Meal, as: 'meals', where: {id: meal.id} }]
+              include: [{ model: Meal, as: 'meals', where: { id: meal.id } }]
             })
             countNum += orders.count
           }
