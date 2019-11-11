@@ -306,7 +306,8 @@ let ownerController = {
         where: {
           id: req.body.id,
           isDeleted: false
-        }
+        },
+        include: [{ model: Restaurant, where: { UserId: req.user.id } }]
       })
       //要修改的 meal
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist' })
@@ -332,6 +333,7 @@ let ownerController = {
       })
       return res.status(200).json({ status: 'success', meal, message: 'Successfully setting menu for next week' })
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ status: 'error', message: error })
     }
   },
