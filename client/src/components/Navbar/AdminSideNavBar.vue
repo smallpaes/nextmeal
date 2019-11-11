@@ -28,7 +28,7 @@
           active-class="active"
           class="nav-link"
         >
-          <span class="icon"><i class="fas fa-utensils" /></span>
+          <span class="icon"><i class="fas fa-user" /></span>
           <span class="nav-link-description">用戶</span>
         </router-link>
       </li>
