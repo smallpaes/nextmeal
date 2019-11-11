@@ -101,6 +101,10 @@ export default {
   created () {
     this.fetchRestaurantAndDistrict()
   },
+  mounted () {
+    // scroll to top of the page
+    window.scrollTo(0, 0)
+  },
   methods: {
     async fetchRestaurantAndDistrict () {
       try {
