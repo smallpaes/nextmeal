@@ -90,7 +90,6 @@
           :is-processing="isProcessing"
           :v="{}"
           :color="'primary'"
-          type="submit"
           :border-radius="'.3rem'"
           @after-click="handleSubmit"
         >
@@ -100,23 +99,6 @@
             </slot>
           </template>
         </ProcessButton>
-
-        <!-- <button
-          v-if="$route.name==='order-new'"
-          class="btn btn-last"
-          @click.stop.prevent="$emit('change-order')"
-        >
-          回上一頁
-        </button> -->
-        <!-- <button
-          class="btn btn-next"
-          type="submit"
-          :disabled="isProcessing"
-        >
-          <slot name="submit">
-            確認訂購
-          </slot>
-        </button> -->
       </div>
     </form>
   </section>
