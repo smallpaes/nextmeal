@@ -218,6 +218,12 @@ const router = new Router({
       beforeEnter: authentication.isAdmin
     },
     {
+      path: '/admin/dashboard',
+      name: 'admin-dashboard',
+      component: () => import('./views/AdminDashboard.vue'),
+      beforeEnter: authentication.isAdmin
+    },
+    {
       path: '*',
       name: 'not-found',
       component: NotFound
