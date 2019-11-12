@@ -21,57 +21,71 @@
         :height="'300px'"
       />
 
-      <!--Chart Display-->
-      <div class="row">
-        <div class="col-md-6">
-          <LineChartSpecific
-            :chart-data="ordersChartData"
-            :height="160"
-          >
-            <!-- <template #header>
-              <i class="fas fa-clipboard-list mr-2" />餐廳訂單
-            </template> -->
-            <template #title>
-              近一個月總訂單
-            </template>
-            <template #text>
-              325
-            </template>
-          </LineChartSpecific>
+      <transition
+        name="slide"
+      >
+        <!--Chart Display-->
+        <div
+          v-if="!isLoading"
+          class="row"
+        >
+          <!--Order Section-->
+          <div class="col-md-6">
+            <LineChartSpecific
+              :chart-data="ordersChartData"
+              :height="160"
+            >
+              <template #header>
+                <i class="fas fa-clipboard-list mr-2" />訂單
+              </template>
+              <template #title>
+                近一個月總訂單
+              </template>
+              <template #text>
+                325
+              </template>
+            </LineChartSpecific>
+          </div>
+          <!--Customers Section-->
+          <div class="col-md-6">
+            <LineChartSpecific
+              :chart-data="customerChartData"
+              :height="160"
+            >
+              <template #header>
+                <i class="fas fa-users mr-2" />客群
+              </template>
+              <template #title>
+                近一個月總客群數
+              </template>
+              <template #text>
+                <span :style="{color: customerChartData.datasets[0].borderColor}">232</span>
+              </template>
+            </LineChartSpecific>
+          </div>
+          <!--Reviews Section-->
+          <div class="col-md-6">
+            <BarChartHorizontal
+              :chart-data="reviewChartData"
+              :height="160"
+            >
+              <template #header>
+                <i class="fas fa-smile mr-2" />滿意度
+              </template>
+              <template #title>
+                用戶平均滿意度
+              </template>
+              <template #text>
+                <span :style="{color: reviewChartData.datasets[0].borderColor}">4.3</span>
+              </template>
+            </BarChartHorizontal>
+          </div>
+          <!--Comments Section-->
+          <div class="col-md-6 ">
+            <DashboardCommentCard :comments="comments" />
+          </div>
         </div>
-        <div class="col-md-6">
-          <LineChartSpecific
-            :chart-data="customerChartData"
-            :height="160"
-          >
-            <!-- <template #header>
-              <i class="fas fa-clipboard-list mr-2" />餐廳訂單
-            </template> -->
-            <template #title>
-              近一個月總客群數
-            </template>
-            <template #text>
-              <span :style="{color: customerChartData.datasets[0].borderColor}">232</span>
-            </template>
-          </LineChartSpecific>
-        </div>
-        <div class="col-md-6">
-          <BarChartHorizontal
-            :chart-data="reviewChartData"
-            :height="160"
-          >
-            <template #header>
-              <i class="fas fa-clipboard-list mr-2" />滿意度
-            </template>
-            <template #title>
-              用戶滿意度回饋
-            </template>
-            <template #text>
-              <span :style="{color: reviewChartData.datasets[0].borderColor}">4</span>
-            </template>
-          </BarChartHorizontal>
-        </div>
-      </div>
+      </transition>
     </section>
   </section>
 </template>
@@ -81,6 +95,7 @@ import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
 import LineChartSpecific from '../components/Card/LineChartSpecific'
 import BarChartHorizontal from '../components/Card/BarChartHorizontal'
+import DashboardCommentCard from '../components/Card/DashboardCommentCard'
 import Loader from '../components/Loader'
 
 const dummyChartData = {
@@ -95,7 +110,34 @@ const dummyChartData = {
   review: {
     labels: ['5星', '4星', '3星', '2星', '1星'],
     data: [32, 19, 10, 3, 2]
-  }
+  },
+  comments: [
+    {
+      name: 'Mike',
+      text: '份量大，非常美味！',
+      rating: 4.3
+    },
+    {
+      name: 'John',
+      text: '份量大，非常美味！',
+      rating: 3.3
+    },
+    {
+      name: 'Danny',
+      text: '份量大，非常美味！',
+      rating: 4.8
+    },
+    {
+      name: 'Tao',
+      text: '份量大，非常美味！',
+      rating: 5.0
+    },
+    {
+      name: 'Mike',
+      text: '份量大，非常美味！',
+      rating: 4.3
+    }
+  ]
 }
 
 export default {
@@ -104,11 +146,12 @@ export default {
     NavbarToggler,
     Loader,
     LineChartSpecific,
-    BarChartHorizontal
+    BarChartHorizontal,
+    DashboardCommentCard
   },
   data () {
     return {
-      isLoading: false, // true
+      isLoading: true,
       navIsOpen: false,
       color: 'rgb(239, 75, 77)',
       ordersChartData: {
@@ -141,15 +184,8 @@ export default {
           pointBorderWidth: 3,
           pointHoverBorderWidth: 2
         }]
-      }
-    }
-  },
-  computed: {
-    myStyles () {
-      return {
-        height: `160px`,
-        position: 'relative'
-      }
+      },
+      comments: []
     }
   },
   created () {
@@ -181,13 +217,17 @@ export default {
           data: dummyChartData.review.data
         }]
       }
+      // handle comments
+      this.comments = dummyChartData.comments
+      // update loading status
+      this.isLoading = false
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@include slideAnimation(false);
+@include slideAnimation;
 
 .wrapper {
   background-color: color(quinary);
@@ -195,5 +235,11 @@ export default {
 
 .dashboard {
   @include controlPanelLayout;
+
+  &-review {
+    height: 285.188px;
+    overflow: scroll;
+    background-color: color(quaternary);
+  }
 }
 </style>

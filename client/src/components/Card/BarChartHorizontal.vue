@@ -18,7 +18,7 @@
       <BarChartTemplate
         :chart-data="chartData"
         :options="chartOptions"
-        :styles="myStyles"
+        :styles="styles"
       />
     </div>
   </div>
@@ -96,7 +96,7 @@ export default {
     }
   },
   computed: {
-    myStyles () {
+    styles () {
       return {
         height: `${this.height}px`,
         position: 'relative'
@@ -111,7 +111,7 @@ export default {
   &-header {
     font-size: size(sm);
     color: color(secondary);
-    padding: 1rem 1.25rem;
+    padding: .6rem 1.25rem;
   }
 
   &-statistic {

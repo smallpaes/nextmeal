@@ -1,0 +1,92 @@
+<template>
+  <div class="card rounded-sm shadow-sm border-0 mb-4">
+    <div class="card-header bg-white">
+      <i class="fas fa-comment mr-2" />評論
+    </div>
+    <ul
+      v-if="comments.length > 0"
+      class="list-group list-group-flush"
+    >
+      <li
+        v-for="(comment, index) in comments"
+        :key="index"
+        class="list-group-item d-flex justify-content-between align-items-center"
+      >
+        <div>
+          <p class="list-title m-0">
+            {{ comment.name }}
+          </p>
+          <p class="list-text m-0">
+            {{ comment.text }}
+          </p>
+        </div>
+
+        <span class="list-rating">&#9733; {{ comment.rating | padEnd }}</span>
+      </li>
+    </ul>
+    <!--Placeholder Messgae for Empty Data-->
+    <div
+      v-else
+      class="card-body"
+    >
+      <i class="far fa-sticky-note" />
+      尚未有評論
+    </div>
+  </div>
+</template>
+
+<script>
+import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
+
+export default {
+  mixins: [padEndFilter, textTruncateFilter],
+  props: {
+    comments: {
+      type: Array,
+      required: true
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+
+.card {
+  height: 329.375px;
+  overflow: hidden;
+
+  &-header {
+    font-size: size(sm);
+    color: color(secondary);
+    padding: .6rem 1.25rem;
+  }
+
+  &-body {
+    @include flexPosition(center, center, column);
+    color: lighten(color(secondary), 30%);
+    font-size: size(xs);
+  }
+}
+
+.list {
+  &-group {
+    max-height: 286.188px;
+    overflow-y: scroll;
+  }
+
+  &-title {
+    font-size: size(xs);
+    font-weight: weight(bold);
+  }
+
+  &-text {
+    font-size: size(xs);
+    color: lighten(color(secondary), 20%);
+  }
+
+  &-rating {
+    font-size: size(xs);
+    color: color(primary);
+  }
+}
+</style>
