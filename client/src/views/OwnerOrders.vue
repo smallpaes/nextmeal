@@ -25,7 +25,10 @@
       >
         <template v-if="!isLoading">
           <!--Display Orders-->
-          <template v-if="Object.keys(orders).length > 0">
+          <div
+            v-if="Object.keys(orders).length > 0"
+            class="order-table"
+          >
             <OwnerOrdersTable
               v-for="(timeSlotOrders, timeSlot) in orders"
               :key="timeSlot"
@@ -33,7 +36,7 @@
               :time-slot="timeSlot"
               class="mb-3"
             />
-          </template>
+          </div>
           <!--Placeholder Messgae for Empty Data-->
           <PlaceholderMessage
             v-else
