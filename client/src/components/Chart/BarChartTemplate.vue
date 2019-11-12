@@ -1,9 +1,9 @@
 <script>
-import { Bar, mixins } from 'vue-chartjs'
+import { Bar, mixins, HorizontalBar } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
 export default {
-  extends: Bar,
+  extends: HorizontalBar,
   mixins: [reactiveProp],
   props: {
     chartData: {

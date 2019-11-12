@@ -55,20 +55,22 @@
             </template>
           </LineChartSpecific>
         </div>
-        <BarChartHorizontal
-          :chart-data="reviewChartData"
-          :height="160"
-        >
-          <template #header>
-            <i class="fas fa-clipboard-list mr-2" />滿意度
-          </template>
-          <template #title>
-            用戶滿意度回饋
-          </template>
-          <template #text>
-            <span :style="{color: reviewChartData.datasets[0].borderColor}">4</span>
-          </template>
-        </BarChartHorizontal>
+        <div class="col-md-6">
+          <BarChartHorizontal
+            :chart-data="reviewChartData"
+            :height="160"
+          >
+            <template #header>
+              <i class="fas fa-clipboard-list mr-2" />滿意度
+            </template>
+            <template #title>
+              用戶滿意度回饋
+            </template>
+            <template #text>
+              <span :style="{color: reviewChartData.datasets[0].borderColor}">4</span>
+            </template>
+          </BarChartHorizontal>
+        </div>
       </div>
     </section>
   </section>

@@ -67,6 +67,7 @@ export default {
         },
         scales: {
           yAxes: [{
+            stacked: true,
             ticks: {
               beginAtZero: true,
               // display: false
@@ -79,6 +80,7 @@ export default {
             }
           }],
           xAxes: [{
+            stacked: true,
             ticks: {
               display: true,
               fontColor: '#a9a7a5'
