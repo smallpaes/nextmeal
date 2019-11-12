@@ -56,7 +56,7 @@
             >
               <FetchMoreButton
                 :is-fetching="isFetching"
-                @fetch-more="fetchOrders(currentSearchInput, currentFilterOption, currentPage + 1)"
+                @fetch-more="fetchOrders(currentSearchInput, currentDate, currentFilterOption, currentPage + 1)"
               />
             </div>
           </div>

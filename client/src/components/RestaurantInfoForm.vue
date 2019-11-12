@@ -30,7 +30,7 @@
         <small
           v-if="$v.restaurant.name.$error"
           class="form-text"
-        >請輸入 1-6 位餐廳名稱</small>
+        >請輸入 1-30 位餐廳名稱</small>
       </div>
       <!--Category-->
       <CustomSelect
@@ -152,7 +152,7 @@
         :disabled="isProcessing"
         class="form-control"
         minlength="10"
-        maxlength="100"
+        maxlength="300"
         rows="2"
         required
         @blur="$v.restaurant.description.$touch()"
@@ -160,7 +160,7 @@
       <small
         v-if="$v.restaurant.description.$error"
         class="form-text"
-      >請輸入餐廳簡介，長度介於 10-100 之間</small>
+      >請輸入餐廳簡介，長度介於 10-300 之間</small>
     </div>
     <!--Image upload-->
     <p class="mb-2">
@@ -308,7 +308,7 @@ export default {
       name: {
         required,
         minLength: minLength(1),
-        maxLength: maxLength(10)
+        maxLength: maxLength(30)
       },
       image: {
         hasImage: value => {

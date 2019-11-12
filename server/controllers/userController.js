@@ -112,8 +112,9 @@ let userController = {
       if (!user) return res.status(401).json({ status: 'error', message: 'User does not exist' })
 
       // check if the user has valid subscriptions
-      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
-      const sub_status = validSubscriptions.length >= 1 ? true : false
+      const start = moment().startOf('day').toDate()
+      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: start } } })
+      const sub_status = user.expired_date >= start ? true : false
       const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
 
@@ -287,7 +288,7 @@ let userController = {
       if (duplicate_email && duplicate_email.email !== user.email) {
         return res.status(422).json({ status: 'error', message: 'This email has aleady been used' })
       }
-      
+
       const { file } = req
       // 如果上有照片
       if (file) {
@@ -352,7 +353,7 @@ let userController = {
         attributes: ['id', 'require_date']
       })
       // 11/1 由於上方是findAll 此處更改為判斷陣列的長度
-      if (order.length === 0) return res.status(200).json({ status: 'success', order: [],  message: 'no order yet.' })
+      if (order.length === 0) return res.status(200).json({ status: 'success', order: [], message: 'no order yet.' })
       return res.status(200).json({ status: 'success', order, message: 'getTomorrow.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
@@ -427,8 +428,9 @@ let userController = {
       })
 
       // check if the user has valid subscriptions
-      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
-      const sub_status = validSubscriptions.length >= 1 ? true : false
+      const start = moment().startOf('day').toDate()
+      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: start } } })
+      const sub_status = user.expired_date >= start ? true : false
       const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
       return res.status(200).json({

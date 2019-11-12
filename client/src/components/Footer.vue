@@ -1,10 +1,13 @@
 <template>
   <footer class="py-3 footer w-100">
     <div class="footer-wrapper container d-flex flex-column text-center">
-      <a
-        href="#"
+      <router-link
         class="footer-brand"
-      >NextMeal</a>
+        :to="{name: 'home'}"
+        @click.native="$route.name === 'home' ? $emit('to-top') : null"
+      >
+        NextMeal
+      </router-link>
       <div class="footer-nav mt-2">
         <router-link
           :to="{name: 'signup'}"

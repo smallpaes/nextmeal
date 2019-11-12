@@ -28,7 +28,7 @@
           active-class="active"
           class="nav-link"
         >
-          <span class="icon"><i class="fas fa-utensils" /></span>
+          <span class="icon"><i class="fas fa-user" /></span>
           <span class="nav-link-description">用戶</span>
         </router-link>
       </li>
@@ -93,9 +93,11 @@ export default {
   white-space: nowrap;
   background-color: color(quaternary);
   transition: width .2s linear;
-  overflow-y: scroll;
   overflow-x: hidden;
   z-index: 3;
+
+  // Hide scrollbar on Firefox
+  scrollbar-width: none;
 
   &-brand {
     @include visibleTransition(visible);
@@ -116,6 +118,11 @@ export default {
   &.opened {
     @extend .sidenav;
     width: 100%;
+  }
+
+  /*Hide scrollbar on Chrome, Opera, Safari*/
+  &::-webkit-scrollbar {
+    display: none;
   }
 
   @include response(sm) {

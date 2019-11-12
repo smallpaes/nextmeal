@@ -115,22 +115,31 @@ let adminController = {
 
   getUsers: async (req, res) => {
     try {
-      const { name, sub_status } = req.query
+      const { page, name, sub_status } = req.query
       const start = moment().startOf('day').toDate()
-      let whereQuery = {}
-      if (sub_status) {
-        if (sub_status === 'inactive') {
-          whereQuery = { [Op.or]: { payment_status: false, sub_expired_date: { [Op.lt]: start } } }
-        } else {
-          whereQuery = { payment_status: true, sub_expired_date: { [Op.gte]: start } }
+      let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
+      //if it runs on heroku,use iLike to fix case sensitive issue
+      let whereQuery = process.env.heroku ? { name: { [Op.iLike]: `%${name}%` || '' } } : { name: { [Op.substring]: name || '' } };
+      if (sub_status === 'inactive') {
+        whereQuery['expired_date'] = {
+          [Op.or]: {
+            [Op.lt]: start,
+            [Op.eq]: null
+          }
         }
-      }
+      };
+      if (sub_status === 'active') {
+        whereQuery['expired_date'] = {
+          [Op.or]: {
+            [Op.gte]: start
+          }
+        };
+      };
 
-      let users = await User.findAll({
-        where: sequelize.where(sequelize.fn('lower', sequelize.col('User.name')), 'LIKE', `%${name ? name.toLowerCase() : ''}%`),
+      let users = await User.findAndCountAll({
+        where: whereQuery,
         include: [{
-          model: Subscription,
-          where: whereQuery
+          model: Subscription
         }],
         attributes: {
           include: [
@@ -141,18 +150,19 @@ let adminController = {
             'address', 'lat', 'lng', 'createdAt', 'updatedAt'
           ]
         },
-        order: [[{ model: Subscription }, 'createdAt', 'DESC']]
+        order: [['expired_date', 'DESC'],['id', 'ASC']],
+        offset: (pageNum - 1) * pageLimit,
+        limit: pageLimit,
+        subQuery: false,
+        districts:true
       })
-      users = users.map(user => ({
+      let pages = Math.ceil((users.count) / pageLimit)
+      users = users.rows.map(user => ({
         ...user.dataValues,
-        sub_description: (user.dataValues.Subscriptions[0]) ?
-          user.dataValues.Subscriptions[0].dataValues.sub_description : false,
-        sub_status: (user.dataValues.Subscriptions[0]) ? (
-          user.dataValues.Subscriptions[0].dataValues.payment_status === true &&
-          user.dataValues.Subscriptions[0].dataValues.sub_expired_date >= start) ? 'active' : 'inactive'
-          : 'inactive'
+        sub_description: (user.Subscriptions[0]) ? user.Subscriptions[0].sub_description : false,
+        sub_status: (user.expired_date) ? (user.expired_date >= start) ? 'active' : 'inactive' : 'inactive'
       }))
-      return res.status(200).json({ status: 'success', users, message: 'Admin get users info.' })
+      return res.status(200).json({ status: 'success', users, pages, message: 'Admin get users info.' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }
