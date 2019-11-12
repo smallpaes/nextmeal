@@ -24,23 +24,51 @@
       <!--Chart Display-->
       <div class="row">
         <div class="col-md-6">
-          <div class="card rounded-sm">
-            <div class="card-header bg-white">
-              <i class="fas fa-clipboard-list mr-2" />訂單
-            </div>
-            <div class="card-body p-1">
-              <LineChart
-                :chart-data="chartData"
-                :options="chartOptions"
-                :styles="myStyles"
-              />
-            </div>
-          </div>
+          <LineChartSpecific
+            :chart-data="ordersChartData"
+            :height="160"
+          >
+            <!-- <template #header>
+              <i class="fas fa-clipboard-list mr-2" />餐廳訂單
+            </template> -->
+            <template #title>
+              近一個月總訂單
+            </template>
+            <template #text>
+              325
+            </template>
+          </LineChartSpecific>
         </div>
-        <!--
         <div class="col-md-6">
-          <LineChart />
-        </div> -->
+          <LineChartSpecific
+            :chart-data="customerChartData"
+            :height="160"
+          >
+            <!-- <template #header>
+              <i class="fas fa-clipboard-list mr-2" />餐廳訂單
+            </template> -->
+            <template #title>
+              近一個月總客群數
+            </template>
+            <template #text>
+              <span :style="{color: customerChartData.datasets[0].borderColor}">232</span>
+            </template>
+          </LineChartSpecific>
+        </div>
+        <BarChartHorizontal
+          :chart-data="reviewChartData"
+          :height="160"
+        >
+          <template #header>
+            <i class="fas fa-clipboard-list mr-2" />滿意度
+          </template>
+          <template #title>
+            用戶滿意度回饋
+          </template>
+          <template #text>
+            <span :style="{color: reviewChartData.datasets[0].borderColor}">4</span>
+          </template>
+        </BarChartHorizontal>
       </div>
     </section>
   </section>
@@ -49,26 +77,41 @@
 <script>
 import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
-import LineChart from '../components/Chart/LineChart'
+import LineChartSpecific from '../components/Card/LineChartSpecific'
+import BarChartHorizontal from '../components/Card/BarChartHorizontal'
 import Loader from '../components/Loader'
-import { Toast } from '../utils/helpers'
+
+const dummyChartData = {
+  orders: {
+    labels: ['11/1', '11/2', '11/3', '11/4', '11/5', '11/6', '11/7', '11/8', '11/9', '11/10', '11/11', '11/12', '11/13', '11/14', '11/15', '11/16', '11/17', '11/18', '11/19', '11/20', '11/21', '11/22'],
+    data: [40, 30, 45, 34, 30, 41, 32, 38, 35, 40, 38, 32, 40, 30, 45, 34, 30, 41, 32, 38, 35, 40]
+  },
+  customers: {
+    labels: ['11/1', '11/2', '11/3', '11/4', '11/5', '11/6', '11/7', '11/8', '11/9', '11/10', '11/11', '11/12', '11/13', '11/14', '11/15', '11/16', '11/17', '11/18', '11/19', '11/20', '11/21', '11/22'],
+    data: [40, 30, 45, 34, 30, 41, 32, 38, 35, 40, 38, 32, 40, 30, 45, 34, 30, 41, 32, 38, 35, 40]
+  },
+  review: {
+    labels: ['5星', '4星', '3星', '2星', '1星'],
+    data: [32, 19, 10, 3, 2]
+  }
+}
 
 export default {
   components: {
     OwnerSideNavBar,
     NavbarToggler,
     Loader,
-    LineChart
+    LineChartSpecific,
+    BarChartHorizontal
   },
   data () {
     return {
       isLoading: false, // true
       navIsOpen: false,
-      chartData: {
-        labels: ['11/1', '11/2', '11/3', '11/4', '11/5', '11/6', '11/7', '11/8', '11/9', '11/10', '11/11', '11/12'],
+      color: 'rgb(239, 75, 77)',
+      ordersChartData: {
         datasets: [{
-          label: ['訂單'],
-          data: [40, 30, 45, 34, 30, 41, 32, 38, 35, 40, 38, 32],
+          data: dummyChartData.orders.data,
           borderColor: 'rgb(247,185,36)',
           backgroundColor: 'rgb(253,241,211)',
           pointBackgroundColor: 'rgb(255,255,255)',
@@ -77,42 +120,25 @@ export default {
           pointHoverBorderWidth: 2
         }]
       },
-      chartOptions: {
-        legend: {
-          display: false
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            right: 5,
-            top: 5
-          }
-        },
-        tooltips: {
-
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-              display: false
-            },
-            gridLines: {
-              display: true,
-              color: 'rgba(255,255,255,0)'
-            }
-          }],
-          xAxes: [{
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              display: true,
-              color: 'rgba(255,255,255,0)'
-            }
-          }]
-        }
+      customerChartData: {
+        datasets: [{
+          borderColor: 'rgb(138,226,183)',
+          backgroundColor: 'rgb(242,251,247)',
+          pointBackgroundColor: 'rgb(255,255,255)',
+          pointHoverBackgroundColor: 'rgb(255,255,255)',
+          pointBorderWidth: 3,
+          pointHoverBorderWidth: 2
+        }]
+      },
+      reviewChartData: {
+        datasets: [{
+          borderColor: 'rgb(62,160,252)',
+          backgroundColor: 'rgb(62,160,252)',
+          pointBackgroundColor: 'rgb(255,255,255)',
+          pointHoverBackgroundColor: 'rgb(255,255,255)',
+          pointBorderWidth: 3,
+          pointHoverBorderWidth: 2
+        }]
       }
     }
   },
@@ -121,6 +147,37 @@ export default {
       return {
         height: `160px`,
         position: 'relative'
+      }
+    }
+  },
+  created () {
+    this.fetchData()
+  },
+  methods: {
+    fetchData () {
+      // handle orders
+      this.ordersChartData = {
+        labels: dummyChartData.orders.labels,
+        datasets: [{
+          ...this.ordersChartData.datasets[0],
+          data: dummyChartData.orders.data
+        }]
+      }
+      // handle customers
+      this.customerChartData = {
+        labels: dummyChartData.customers.labels,
+        datasets: [{
+          ...this.customerChartData.datasets[0],
+          data: dummyChartData.customers.data
+        }]
+      }
+      // handle review
+      this.reviewChartData = {
+        labels: dummyChartData.review.labels,
+        datasets: [{
+          ...this.reviewChartData.datasets[0],
+          data: dummyChartData.review.data
+        }]
       }
     }
   }
@@ -136,11 +193,5 @@ export default {
 
 .dashboard {
   @include controlPanelLayout;
-}
-
-.card {
-  &-header {
-    font-size: size(sm);
-  }
 }
 </style>
