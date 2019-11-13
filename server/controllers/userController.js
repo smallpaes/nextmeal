@@ -246,7 +246,7 @@ let userController = {
           }
           sendEmail(req, res, emailInfo)
         }
-        return res.redirect(`${URL}/#/order/tomorrow`)
+        return res.redirect(`${URL}/#/subscribe/callback`)
         // return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
       }
     } catch (error) {
