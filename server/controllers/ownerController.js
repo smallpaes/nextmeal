@@ -5,6 +5,7 @@ const sequelize = require('sequelize')
 const Op = sequelize.Op
 const Restaurant = db.Restaurant
 const Category = db.Category
+const Comment = db.Comment
 const Meal = db.Meal
 const Order = db.Order
 const User = db.User
@@ -378,6 +379,62 @@ let ownerController = {
       return res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders' })
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
+    }
+  },
+  dashborad: async (req, res) => {
+    try {
+      //算出本月開始、結束日期
+      const start = moment().startOf('month').toDate()
+      const end = moment().endOf('month').toDate()
+
+      const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
+      const orders = await Order.findAndCountAll({
+        include: [
+          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] },
+          { model: User, attributes: ['id', 'name', 'email'] }
+        ],
+        where: {
+          require_date: {
+            // 大於開始日
+            [Op.gte]: start,
+            // 小於結束日
+            [Op.lte]: end
+          }
+        },
+        attributes: [
+          customQuery.char.day,
+          [sequelize.literal(`COUNT(Order.id)`), 'orderCount'],
+          [sequelize.fn('COUNT', sequelize.col('UserId')), 'userCount']
+          // [sequelize.fn('SUM', sequelize.col('count')), 'total']
+        ],
+        group: [sequelize.fn('DAY', sequelize.col('require_date'))]
+      })
+
+      const comments = await Comment.findAndCountAll({
+        where: { RestaurantId: restaurant.id },
+        attributes: ['user_text', 'rating', [sequelize.literal('(SELECT name FROM Users WHERE Users.id = Comment.UserId)'), 'name'], 'createdAt'],
+        group: ['rating'],
+        order: [['createdAt', 'DESC'], ['rating', 'DESC']],
+      })
+      const sorted = comments.count.sort((a, b) => { return b.rating - a.rating })
+
+      const ratings = {
+        labels: ['5星', '4星', '3星', '2星', '1星'],
+        data: sorted.map(item => item.count),
+        tableName: '滿意度',
+        average: 3.5
+      }
+      // const sorted = comments.count.sort((a, b) => { return b.rating - a.rating })
+      console.log(comments.rows[0].dataValues);
+      // console.log(sorted);
+      console.log(ratings);
+
+
+      return res.status(200).json({ orders, comments, message: 'Successfully get owner dashboard' })
+
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ status: 'error', message: error })
     }
   }
 }
