@@ -220,7 +220,7 @@ let userController = {
         let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
         let subscription = await Subscription.findOne({
           where: { sn: data['Result']['MerchantOrderNo'] },
-          include: [{ model: User, attributes: ['name', 'email'] }]
+          include: [{ model: User, attributes: ['name', 'email','id'] }]
         })
         await Payment.create({
           SubscriptionId: subscription.id,
@@ -244,12 +244,18 @@ let userController = {
             sub_expired_date: moment(sub_expired_date).format('YYYY-MM-DD HH:mm'),
             sub_date: moment(sub_date).format('YYYY-MM-DD HH:mm')
           }
-          sendEmail(req, res, emailInfo)
+          const user = await User.findByPk(subscription.User.id, {
+            include: [{ model: Subscription }]
+          });
+          await user.update({ expired_date: user.dataValues.Subscriptions[0].sub_expired_date })
+          sendEmail(null, null, emailInfo)
         }
-        return res.redirect(`${URL}/users/orders/tomorrow/`)
+      
+        return res.redirect(`${URL}/#/subscribe/callback`)
         // return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
       }
     } catch (error) {
+      console.log(error.message)
       res.status(500).json({ status: 'error', message: error })
     }
   },

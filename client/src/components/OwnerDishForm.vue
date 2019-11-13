@@ -1,8 +1,8 @@
 <template>
   <form
+    ref="form"
     class="form p-3 rounded shadow-sm needs-validation"
     novalidate
-    @submit.stop.prevent="handleSubmit"
   >
     <h3 class="form-heading">
       <slot name="header" />餐點
@@ -102,11 +102,24 @@
       <ProcessButton
         class="btn"
         type="submit"
+        :color="$route.name === 'owner-dish-edit' ? 'tertiary' : 'primary'"
         :is-processing="isProcessing"
         :v="$v"
+        @after-click="handleSubmit"
       >
         <template #initial>
           <slot name="submitBtn" />
+        </template>
+      </ProcessButton>
+      <ProcessButton
+        v-if="$route.name === 'owner-dish-edit'"
+        class="btn"
+        :is-processing="isProcessing"
+        :v="{}"
+        @after-click="$emit('after-delete')"
+      >
+        <template #initial>
+          刪除
         </template>
       </ProcessButton>
     </div>
@@ -188,7 +201,7 @@ export default {
   methods: {
     handleSubmit (e) {
       // form validation
-      const form = e.target
+      const form = this.$refs.form
       // prepare a FormData
       const formData = new FormData(form)
       // notify and send to parent

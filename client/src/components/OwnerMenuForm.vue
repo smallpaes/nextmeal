@@ -2,7 +2,6 @@
   <form
     class="form p-4 rounded shadow-sm"
     novalidate
-    @submit.stop.prevent="handleSubmit"
   >
     <h3 class="form-header mb-4">
       更新下週菜單
@@ -50,9 +49,9 @@
     <div class="btn-container mt-4">
       <ProcessButton
         class="btn"
-        type="submit"
         :is-processing="isProcessing"
         :v="$v"
+        @after-click="handleSubmit"
       >
         <template #initial>
           更新
