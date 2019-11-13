@@ -38,7 +38,7 @@
         min="1"
         max="50"
         required
-        @blur="$v.quantity.$touch()"
+        @input="$v.quantity.$touch()"
       >
       <small
         v-if="$v.quantity.$error"
