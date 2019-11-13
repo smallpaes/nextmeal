@@ -11,9 +11,12 @@
         @toggle-navbar="navIsOpen = !navIsOpen"
       />
       <h1 class="dashboard-title">
-        餐廳分析
+        平台分析
       </h1>
       <hr class="dashboard-divider">
+
+      <!--Today Overview-->
+      <AdminDashboardToday />
 
       <!--Loader-->
       <Loader
@@ -93,6 +96,7 @@
 <script>
 import OwnerSideNavBar from '../components/Navbar/OwnerSideNavBar'
 import NavbarToggler from '../components/Navbar/NavbarToggler'
+import AdminDashboardToday from '../components/AdminDashboardToday'
 import LineChartSpecific from '../components/Card/LineChartSpecific'
 import BarChartHorizontal from '../components/Card/BarChartHorizontal'
 import DashboardCommentCard from '../components/Card/DashboardCommentCard'
@@ -145,6 +149,7 @@ export default {
     OwnerSideNavBar,
     NavbarToggler,
     Loader,
+    AdminDashboardToday,
     LineChartSpecific,
     BarChartHorizontal,
     DashboardCommentCard
