@@ -4,7 +4,7 @@
       <i class="fas fa-chart-area mr-2" />今日概況
     </div>
     <div class="card-body row">
-      <div class="col-6 col-lg-3 card-item">
+      <div class="col-6 col-lg-3 card-item mb-4 mb-lg-0">
         <div class="card-item-left">
           <div class="card-item-icon">
             <i class="fas fa-clipboard-list" />
@@ -15,7 +15,22 @@
             訂單量
           </div>
           <div class="card-item-text">
-            325
+            {{ orderToday.orderNum }}
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3 card-item mb-4 mb-lg-0">
+        <div class="card-item-left">
+          <div class="card-item-icon">
+            <i class="fas fa-store" />
+          </div>
+        </div>
+        <div class="card-item-right">
+          <div class="card-item-title">
+            餐廳數
+          </div>
+          <div class="card-item-text">
+            &#43; {{ orderToday.restIncreased }}
           </div>
         </div>
       </div>
@@ -30,24 +45,11 @@
             會員數
           </div>
           <div class="card-item-text">
-            &#43; 32
+            &#43; {{ orderToday.userIncreased }}
           </div>
         </div>
-      </div><div class="col-6 col-lg-3 card-item">
-        <div class="card-item-left">
-          <div class="card-item-icon">
-            <i class="fas fa-store" />
-          </div>
-        </div>
-        <div class="card-item-right">
-          <div class="card-item-title">
-            餐廳數
-          </div>
-          <div class="card-item-text">
-            &#43; 120
-          </div>
-        </div>
-      </div><div class="col-6 col-lg-3 card-item">
+      </div>
+      <div class="col-6 col-lg-3 card-item">
         <div class="card-item-left">
           <div class="card-item-icon">
             <i class="far fa-credit-card" />
@@ -58,7 +60,7 @@
             訂閱量
           </div>
           <div class="card-item-text">
-            &#43; 30
+            &#43; {{ orderToday.subIncreased }}
           </div>
         </div>
       </div>
@@ -66,11 +68,22 @@
   </div>
 </template>
 
+<script>
+export default {
+  props: {
+    orderToday: {
+      type: Object,
+      required: true
+    }
+  }
+}
+</script>
+
 <style lang="scss" scoped>
 $icon-colors: (
-  1: rgb(239,75,77),
+  1: rgb(247,185,36),
   2: rgb(78,202,138),
-  3: rgb(247,185,36),
+  3: rgb(239,75,77),
   4: rgb(62,160,252)
 );
 

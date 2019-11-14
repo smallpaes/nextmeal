@@ -11,7 +11,8 @@
         <slot name="title" />
       </p>
       <h3 class="card-text">
-        <slot name="text" />
+        <span class="mr-2"><slot name="text" /></span>
+        <span class="card-subtext"><slot name="subtext" /></span>
       </h3>
     </div>
     <div class="card-body pl-0 pr-3 pb-1">
@@ -112,6 +113,7 @@ export default {
   }
 
   &-statistic {
+    position: relative;
     padding-left: 1.6rem;
   }
 
@@ -124,7 +126,12 @@ export default {
   &-text {
     font-size: size(lg);
     font-weight: weight(bold);
-    color: rgb(247,185,36);
+    color: color(secondary);
+  }
+
+  &-subtext {
+    font-size: size(xs);
+    color: rgb(58,196,124);
   }
 }
 </style>

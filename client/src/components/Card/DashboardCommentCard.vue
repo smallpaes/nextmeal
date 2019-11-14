@@ -12,12 +12,12 @@
         :key="index"
         class="list-group-item d-flex justify-content-between align-items-center"
       >
-        <div>
+        <div class="list-group-item-wrapper">
           <p class="list-title m-0">
             {{ comment.name }}
           </p>
           <p class="list-text m-0">
-            {{ comment.text }}
+            {{ comment.user_text }} -- {{ comment.createdAt | timeTransform }}
           </p>
         </div>
 
@@ -36,10 +36,10 @@
 </template>
 
 <script>
-import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
+import { padEndFilter, textTruncateFilter, timeTransformFilter } from '../../utils/mixins'
 
 export default {
-  mixins: [padEndFilter, textTruncateFilter],
+  mixins: [padEndFilter, textTruncateFilter, timeTransformFilter],
   props: {
     comments: {
       type: Array,
@@ -72,6 +72,12 @@ export default {
   &-group {
     max-height: 286.188px;
     overflow-y: scroll;
+
+    &-item {
+      &-wrapper {
+        max-width: 80%;
+      }
+    }
   }
 
   &-title {
@@ -80,6 +86,11 @@ export default {
   }
 
   &-text {
+    font-size: size(xs);
+    color: lighten(color(secondary), 20%);
+  }
+
+  &-date {
     font-size: size(xs);
     color: lighten(color(secondary), 20%);
   }
