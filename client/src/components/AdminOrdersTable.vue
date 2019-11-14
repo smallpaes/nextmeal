@@ -24,26 +24,75 @@
         </tr>
       </thead>
       <tbody>
+        <!--Display data-->
         <tr
-          v-for="order in orders"
+          v-for="order in orderData"
           :key="order.id"
         >
-          <td>#{{ order.id }}</td>
-          <td>{{ order.User.name }}</td>
-          <td>{{ order.meals.Restaurant.name | textTruncate(10) }}</td>
-          <td>{{ order.date.slice(2, 6) }}</td>
-          <td>{{ order.time }}</td>
-          <td v-if="order.order_status === '取消'">
-            已取消
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'35px'"
+            />
+            <template v-else>
+              #{{ order.id }}
+            </template>
           </td>
-          <td
-            v-else
-            :class="{pointer: !isProcessing, wait: isProcessing}"
-            @click="isProcessing ? null : cancelOrder(order.id)"
-          >
-            未取消
-            <i class="fas fa-trash ml-1" />
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'48px'"
+            />
+            <template v-else>
+              {{ order.User.name }}
+            </template>
           </td>
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'112px'"
+            />
+            <template v-else>
+              {{ order.meals.Restaurant.name | textTruncate(10) }}
+            </template>
+          </td>
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'35px'"
+            />
+            <template v-else>
+              {{ order.date.slice(2, 6) }}
+            </template>
+          </td>
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'40px'"
+            />
+            <template v-else>
+              {{ order.time }}
+            </template>
+          </td>
+          <td v-if="isLoading">
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'48px'"
+            />
+          </td>
+          <template v-else>
+            <td v-if="order.order_status === '取消'">
+              已取消
+            </td>
+            <td
+              v-else
+              :class="{pointer: !isProcessing, wait: isProcessing}"
+              @click="isProcessing ? null : cancelOrder(order.id)"
+            >
+              未取消
+              <i class="fas fa-trash ml-1" />
+            </td>
+          </template>
         </tr>
       </tbody>
     </table>
@@ -52,20 +101,34 @@
 
 <script>
 import adminAPI from '../apis/admin'
+import SkelentonBox from './Placeholder/SkeletonBox'
 import { textTruncateFilter } from '../utils/mixins'
 import { Toast } from '../utils/helpers'
 
 export default {
+  components: {
+    SkelentonBox
+  },
   mixins: [textTruncateFilter],
   props: {
     orders: {
       type: Array,
       required: true
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
       isProcessing: false
+    }
+  },
+  computed: {
+    orderData () {
+      if (this.isLoading) return 10
+      return this.orders
     }
   },
   methods: {
