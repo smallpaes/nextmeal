@@ -10,7 +10,7 @@ module.exports = {
   char: {
     date: [sequelize.fn('date_format', sequelize.col('require_date'), '%Y%c%d'), 'date'],
     time: [sequelize.fn('date_format', sequelize.col('require_date'), '%H:%i'), 'time'],
-    day: [sequelize.fn('date_format', sequelize.col('require_date'), '%d'), 'day']
+    date_for_dashboard: [sequelize.fn('DATE_FORMAT', sequelize.col('require_date'), '%m/%e'), 'date']
   },
   geo: {
     geometry: 'ST_Distance_Sphere',

@@ -398,7 +398,7 @@ let ownerController = {
           }
         },
         attributes: [
-          [sequelize.fn('DATE_FORMAT', sequelize.col('require_date'), '%m/%e'), 'date'],
+          customQuery.char.date_for_dashboard,
           [sequelize.literal(`COUNT(*)`), 'count']
         ],
         group: ['date']
@@ -417,17 +417,17 @@ let ownerController = {
       const missing_fields_order_mod = dateArray.filter(v => currentDates.indexOf(v) === -1)
 
       // create the an end result object for later sorting
-      const result = orders.map(item => ({
+      const order_result = orders.map(item => ({
         date: item.dataValues.date,
         count: item.dataValues.count
       }))
 
       // if missing fields exist,fill in with value 0
       missing_fields_order_mod.map(async item => {
-        await result.push({ "date": item, count: 0 })
+        await order_result.push({ "date": item, count: 0 })
       })
       // sort the result 
-      result.sort((a, b) => { return new Date(a["date"]) - new Date(b["date"]) })
+      order_result.sort((a, b) => { return new Date(a["date"]) - new Date(b["date"]) })
 
 
 
@@ -449,7 +449,7 @@ let ownerController = {
         order: [['dob', 'DESC']]
       })
       // calculate user age and count by group
-      let end_result = {
+      let user_result = {
         "<20": 0,
         "20~30": 0,
         "30~40": 0,
@@ -460,12 +460,12 @@ let ownerController = {
       users = users.map(item => (
         { age: moment().diff(item.dob, 'years') }
       )).map(item => {
-        if (item.age < 20) end_result["<20"]++
-        if (item.age >= 20 && item.age < 30) end_result["20~30"]++
-        if (item.age >= 30 && item.age < 40) end_result["30~40"]++
-        if (item.age >= 40 && item.age < 50) end_result["40~50"]++
-        if (item.age >= 50 && item.age < 60) end_result["50~60"]++
-        if (item.age > 60) end_result[">60"]++
+        if (item.age < 20) user_result["<20"]++
+        if (item.age >= 20 && item.age < 30) user_result["20~30"]++
+        if (item.age >= 30 && item.age < 40) user_result["30~40"]++
+        if (item.age >= 40 && item.age < 50) user_result["40~50"]++
+        if (item.age >= 50 && item.age < 60) user_result["50~60"]++
+        if (item.age > 60) user_result[">60"]++
       })
 
 
@@ -504,17 +504,17 @@ let ownerController = {
       })
       // adjust user data format for front-end
       users = {
-        labels: Object.keys(end_result),
-        data: Object.values(end_result),
+        labels: Object.keys(user_result),
+        data: Object.values(user_result),
         tableName: '客群',
-        total: Object.values(end_result).reduce((total, current) => total + current)
+        total: Object.values(user_result).reduce((total, current) => total + current)
       }
       // adjust order data format for front-end
       orders = {
-        labels: result.map(item => item.date),
-        data: result.map(item => item.count),
+        labels: order_result.map(item => item.date),
+        data: order_result.map(item => item.count),
         tableName: '訂單',
-        total: Object.values(result).reduce((total, current) => total + current.count, 0)
+        total: Object.values(order_result).reduce((total, current) => total + current.count, 0)
       }
 
       return res.status(200).json({ orders, comments, ratings, users, message: 'Successfully get owner dashboard' })
