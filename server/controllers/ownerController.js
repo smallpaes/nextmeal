@@ -520,7 +520,6 @@ let ownerController = {
       return res.status(200).json({ orders, comments, ratings, users, message: 'Successfully get owner dashboard' })
 
     } catch (error) {
-      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   }
