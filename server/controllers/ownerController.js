@@ -387,7 +387,7 @@ let ownerController = {
       const pass_one_month = moment().subtract(1, 'months').toDate()
 
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
-      console.log(restaurant.id);
+
       let orders = await Order.findAll({
         include: [
           { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] }
@@ -429,8 +429,6 @@ let ownerController = {
       // sort the result 
       order_result.sort((a, b) => { return new Date(a["date"]) - new Date(b["date"]) })
 
-
-
       let users = await User.findAll({
         include: [{
           model: Order,
@@ -467,8 +465,6 @@ let ownerController = {
         if (item.age >= 50 && item.age < 60) user_result["50~60"]++
         if (item.age > 60) user_result[">60"]++
       })
-
-
 
       let comments = await Comment.findAndCountAll({
         where: { RestaurantId: restaurant.id },
