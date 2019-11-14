@@ -383,54 +383,141 @@ let ownerController = {
   },
   dashborad: async (req, res) => {
     try {
-      //算出本月開始、結束日期
-      const start = moment().startOf('month').toDate()
-      const end = moment().endOf('month').toDate()
+      // 取得一個月前的時間做為區間起點
+      const pass_one_month = moment().subtract(1, 'months').toDate()
 
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
-      const orders = await Order.findAndCountAll({
+      console.log(restaurant.id);
+      let orders = await Order.findAll({
         include: [
-          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] },
-          { model: User, attributes: ['id', 'name', 'email'] }
+          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] }
         ],
         where: {
           require_date: {
-            // 大於開始日
-            [Op.gte]: start,
-            // 小於結束日
-            [Op.lte]: end
+            [Op.gte]: pass_one_month
           }
         },
         attributes: [
-          customQuery.char.day,
-          [sequelize.literal(`COUNT(Order.id)`), 'orderCount'],
-          [sequelize.fn('COUNT', sequelize.col('UserId')), 'userCount']
-          // [sequelize.fn('SUM', sequelize.col('count')), 'total']
+          [sequelize.fn('DATE_FORMAT', sequelize.col('require_date'), '%m/%e'), 'date'],
+          [sequelize.literal(`COUNT(*)`), 'count']
         ],
-        group: [sequelize.fn('DAY', sequelize.col('require_date'))]
+        group: ['date']
+      })
+      // find all dates a month from now
+      var dateArray = [];
+      var currentDate = moment(pass_one_month);
+      var stopDate = moment();
+      while (currentDate <= stopDate) {
+        dateArray.push(moment(currentDate).format('MM/DD'))
+        currentDate = moment(currentDate).add(1, 'days')
+      };
+
+      // check if there's missing dates
+      const currentDates = orders.map(item => item.dataValues.date)
+      const missing_fields_order_mod = dateArray.filter(v => currentDates.indexOf(v) === -1)
+
+      // create the an end result object for later sorting
+      const result = orders.map(item => ({
+        date: item.dataValues.date,
+        count: item.dataValues.count
+      }))
+
+      // if missing fields exist,fill in with value 0
+      missing_fields_order_mod.map(async item => {
+        await result.push({ "date": item, count: 0 })
+      })
+      // sort the result 
+      result.sort((a, b) => { return new Date(a["date"]) - new Date(b["date"]) })
+
+
+
+      let users = await User.findAll({
+        include: [{
+          model: Order,
+          where: {
+            require_date: {
+              [Op.gte]: pass_one_month,
+            }
+          },
+          include: [{
+            model: Meal,
+            as: 'meals',
+            where: { RestaurantId: restaurant.id },
+            attributes: ['id', 'name', 'description', 'image']
+          }]
+        }],
+        order: [['dob', 'DESC']]
+      })
+      // calculate user age and count by group
+      let end_result = {
+        "<20": 0,
+        "20~30": 0,
+        "30~40": 0,
+        "40~50": 0,
+        "50~60": 0,
+        ">60": 0
+      }
+      users = users.map(item => (
+        { age: moment().diff(item.dob, 'years') }
+      )).map(item => {
+        if (item.age < 20) end_result["<20"]++
+        if (item.age >= 20 && item.age < 30) end_result["20~30"]++
+        if (item.age >= 30 && item.age < 40) end_result["30~40"]++
+        if (item.age >= 40 && item.age < 50) end_result["40~50"]++
+        if (item.age >= 50 && item.age < 60) end_result["50~60"]++
+        if (item.age > 60) end_result[">60"]++
       })
 
-      const comments = await Comment.findAndCountAll({
+
+
+      let comments = await Comment.findAndCountAll({
         where: { RestaurantId: restaurant.id },
-        attributes: ['user_text', 'rating', [sequelize.literal('(SELECT name FROM Users WHERE Users.id = Comment.UserId)'), 'name'], 'createdAt'],
+        attributes: ['user_text', 'rating', customQuery.literal.name, 'createdAt'],
         group: ['rating'],
         order: [['createdAt', 'DESC'], ['rating', 'DESC']],
       })
+
+      // check if the rating has missing field
+      const original_ratings = comments.count.map(item => item.rating)
+      const missing_fields = [1, 2, 3, 4, 5].filter(v => original_ratings.indexOf(v) === -1)
+
+      // if missing fields exist,fill in with value 0
+      missing_fields.map(item => {
+        comments.count.push({ rating: item, count: 0 })
+      })
+
+      // sort the result
       const sorted = comments.count.sort((a, b) => { return b.rating - a.rating })
 
+      // adjust rating data format for front-end
       const ratings = {
         labels: ['5星', '4星', '3星', '2星', '1星'],
         data: sorted.map(item => item.count),
         tableName: '滿意度',
-        average: 3.5
+        average: Number.parseFloat(sorted.reduce((total, current) => total + current.rating * current.count, 0) / sorted.reduce((total, current) => total + current.count, 0)).toFixed(1)
       }
-      // const sorted = comments.count.sort((a, b) => { return b.rating - a.rating })
-      console.log(comments.rows[0].dataValues);
-      // console.log(sorted);
-      console.log(ratings);
+      // adjust comment data format for front-end
+      comments = await Comment.findAll({
+        where: { RestaurantId: restaurant.id },
+        attributes: ['user_text', 'rating', [sequelize.literal('(SELECT name FROM Users WHERE Users.id = Comment.UserId)'), 'name'], 'createdAt'],
+        order: [['createdAt', 'DESC'], ['rating', 'DESC']],
+      })
+      // adjust user data format for front-end
+      users = {
+        labels: Object.keys(end_result),
+        data: Object.values(end_result),
+        tableName: '客群',
+        total: Object.values(end_result).reduce((total, current) => total + current)
+      }
+      // adjust order data format for front-end
+      orders = {
+        labels: result.map(item => item.date),
+        data: result.map(item => item.count),
+        tableName: '訂單',
+        total: Object.values(result).reduce((total, current) => total + current.count, 0)
+      }
 
-
-      return res.status(200).json({ orders, comments, message: 'Successfully get owner dashboard' })
+      return res.status(200).json({ orders, comments, ratings, users, message: 'Successfully get owner dashboard' })
 
     } catch (error) {
       console.log(error);

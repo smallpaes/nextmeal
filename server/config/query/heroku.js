@@ -14,5 +14,8 @@ module.exports = {
   geo: {
     geometry: 'ST_DistanceSphere',
     random: 'random()'
+  },
+  literal: {
+    name: [sequelize.literal('(SELECT name FROM "Users" WHERE "Users"."id" = "Comment"."UserId")'), 'name']
   }
 }
