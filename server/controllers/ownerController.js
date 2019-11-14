@@ -499,7 +499,7 @@ let ownerController = {
       // adjust comment data format for front-end
       comments = await Comment.findAll({
         where: { RestaurantId: restaurant.id },
-        attributes: ['user_text', 'rating', [sequelize.literal('(SELECT name FROM Users WHERE Users.id = Comment.UserId)'), 'name'], 'createdAt'],
+        attributes: ['user_text', 'rating', customQuery.literal.name, 'createdAt'],
         order: [['createdAt', 'DESC'], ['rating', 'DESC']],
       })
       // adjust user data format for front-end
