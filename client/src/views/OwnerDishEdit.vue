@@ -36,6 +36,7 @@
             :initial-dish="dish"
             :initial-processing="isProcessing"
             @after-submit="handleAfterSubmit"
+            @after-delete="handleAfterDelete"
           >
             <template v-slot:header>
               <span>編輯</span>
@@ -133,6 +134,28 @@ export default {
         Toast.fire({
           type: 'error',
           title: '無法更新餐點，請稍後再試'
+        })
+      }
+    },
+    async handleAfterDelete () {
+      // update processing status
+      this.isProcessing = true
+
+      try {
+        const { dish_id: dishId } = this.$route.params
+        // update dish data
+        const { data, statusText } = await ownerAPI.dishes.deleteDish({ dishId })
+        // error handling
+        if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // redirect to dishes page
+        this.$router.push({ name: 'owner-dishes' })
+      } catch (error) {
+        // update processing status
+        this.isProcessing = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法刪除餐點，請稍後再試'
         })
       }
     }
