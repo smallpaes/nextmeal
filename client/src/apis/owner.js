@@ -24,6 +24,9 @@ export default {
     },
     putEdit ({ dishId, formData }) {
       return apiHelper.put(`/owner/dishes/${dishId}/edit`, formData)
+    },
+    deleteDish ({ dishId }) {
+      return apiHelper.delete(`/owner/dishes/${dishId}`)
     }
   },
   menu: {
