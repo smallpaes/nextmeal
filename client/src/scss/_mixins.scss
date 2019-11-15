@@ -541,7 +541,7 @@
   }
 }
 
-@mixin fadeAnimation {
+@mixin fadeAnimation($animateLeave:true) {
   .fade {
     &-enter {
       opacity: 0;
@@ -551,7 +551,7 @@
       }
     }
   
-    &-leave {
+    @if $animateLeave {
       &-active {
         opacity: 0;
         transition: opacity .5s linear;

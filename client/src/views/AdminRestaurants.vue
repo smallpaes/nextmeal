@@ -19,52 +19,46 @@
       <AdminFilterPanel
         :options="districts"
         :is-loading="isLoading"
-        @after-search="handleAfterFilter({page: 0, searchInput: $event, selectedOption: currentFilterOption})"
-        @after-filter="handleAfterFilter({page: 0, searchInput: currentSearchInput, selectedOption: $event})"
+        @after-search="handleAfterFilter({name: $event, dist: $route.query.dist})"
+        @after-filter="handleAfterFilter({name: $route.query.name, dist: $event})"
       >
         <template v-slot:filterOption>
           篩選地區
         </template>
       </AdminFilterPanel>
-      <!--Loader-->
-      <Loader
-        v-if="isLoading"
-        :height="'300px'"
-      />
+
+      <!--Restaurant Data Table-->
       <transition
         name="slide"
-        mode="out-in"
+        appear
       >
-        <template v-if="!isLoading">
-          <!--Restaurant Data Table-->
-          <div
-            v-if="restaurants.length > 0"
-            class="restaurants-table"
-          >
-            <AdminRestaurantsTable
-              key="table"
-              :restaurants="restaurants"
-            />
-            <div
-              v-if="totalPage > 0 && currentPage !== totalPage"
-              class="btn-container mt-3 mt-md-4"
-            >
-              <FetchMoreButton
-                :is-fetching="isFetching"
-                @fetch-more="fetchRestaurants(currentSearchInput, currentFilterOption, currentPage + 1)"
-              />
-            </div>
-          </div>
-          <!--Placeholder Messgae for Empty Data-->
-          <PlaceholderMessage
-            v-else
-            key="placeholder"
-            class="restaurants-placeholder"
-          >
-            <i class="fas fa-search mr-2" />沒有符合的結果
-          </PlaceholderMessage>
-        </template>
+        <AdminRestaurantsTable
+          v-if="isLoading || !isLoading && restaurants.length > 0"
+          key="table"
+          :is-loading="isLoading"
+          :restaurants="restaurants"
+        />
       </transition>
+
+      <!--Pagination-->
+      <transition name="fade">
+        <Pagination
+          v-if="totalPage > 1"
+          class="mt-4"
+          :total-page="totalPage"
+          :current-page="Number($route.query.page) || 1"
+          :query="{name: this.$route.query.name, dist: this.$route.query.dist}"
+        />
+      </transition>
+
+      <!--Placeholder Messgae for Empty Data-->
+      <PlaceholderMessage
+        v-if="!isLoading && restaurants.length === 0"
+        key="placeholder"
+        class="restaurants-placeholder"
+      >
+        <i class="fas fa-search mr-2" />沒有符合的結果
+      </PlaceholderMessage>
     </section>
   </section>
 </template>
@@ -75,8 +69,7 @@ import NavbarToggler from '../components/Navbar/NavbarToggler'
 import AdminFilterPanel from '../components/AdminFilterPanel'
 import AdminRestaurantsTable from '../components/AdminRestaurantsTable.vue'
 import PlaceholderMessage from '../components/Placeholder/Message'
-import FetchMoreButton from '../components/Button/FetchMoreButton'
-import Loader from '../components/Loader'
+import Pagination from '../components/Pagination'
 import adminAPI from '../apis/admin'
 import { Toast } from '../utils/helpers'
 
@@ -87,59 +80,45 @@ export default {
     AdminFilterPanel,
     AdminRestaurantsTable,
     PlaceholderMessage,
-    Loader,
-    FetchMoreButton
+    Pagination
   },
   data () {
     return {
       restaurants: [],
       districts: [],
-      currentSearchInput: '',
-      currentFilterOption: '',
-      currentPage: 0,
       totalPage: null,
       isLoading: true,
-      isFetching: false,
       navIsOpen: false
     }
   },
   created () {
-    const { dist = '', name = '' } = this.$route.query
-    this.fetchRestaurants(dist, name, this.currentPage + 1)
+    const { dist, name, page } = this.$route.query
+    this.fetchRestaurants(dist, name, page)
   },
   beforeRouteUpdate (to, from, next) {
-    // Reset current page
-    this.currentPage = 0
-    // clear existing data
-    this.restaurants = []
-    const { dist = '', name = '' } = to.query
-    this.fetchRestaurants(dist, name, this.currentPage + 1)
+    const { dist, name, page } = to.query
+    this.fetchRestaurants(dist, name, page)
     next()
   },
   methods: {
-    async fetchRestaurants (name, dist, page) {
+    async fetchRestaurants (dist = '', name = '', page = 1) {
       try {
-        // update fetching status
-        this.isFetching = true
+        // update loading status
+        this.isLoading = true
         // fetch data from API
-        const { data, statusText } = await adminAPI.restaurants.getRestaurants({ name, dist, page })
+        const { data, statusText } = await adminAPI.restaurants.getRestaurants({ dist, name, page })
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
-        this.restaurants = [...this.restaurants, ...data.restaurants.restaurants]
+        this.restaurants = data.restaurants.restaurants
         this.districts = data.districts.map(district => district['chinese_name'])
         // update page data
         this.totalPage = data.restaurants.pages
-        this.currentPage += 1
         // update loading status
         this.isLoading = false
-        // update fetching status
-        this.isFetching = false
       } catch (error) {
         // update loading status
         this.isLoading = false
-        // update fetching status
-        this.isFetching = false
         // fire error messages
         Toast.fire({
           type: 'error',
@@ -147,15 +126,8 @@ export default {
         })
       }
     },
-    handleAfterFilter (data) {
-      // update loading status
-      this.isLoading = true
-      // reset data
-      this.currentPage = 0
-      this.restaurants = []
-      this.currentFilterOption = data.selectedOption
-      this.currentSearchInput = data.searchInput
-      this.fetchRestaurants(this.currentSearchInput, this.currentFilterOption, this.currentPage)
+    handleAfterFilter (query) {
+      this.$router.push({ name: 'admin-restaurants', query })
     }
   }
 }
@@ -163,7 +135,7 @@ export default {
 
 <style lang="scss" scoped>
 @include slideAnimation(false);
-@include fadeAnimation;
+@include fadeAnimation(false);
 
 .wrapper {
   background-color: color(quinary);
@@ -171,16 +143,5 @@ export default {
 
 .restaurants {
   @include controlPanelLayout;
-}
-
-.btn-container {
-  text-align: center;
-  .btn {
-    @include solidButton(150);
-
-    @include response(md) {
-      min-width: 200px;
-    }
-  }
 }
 </style>
