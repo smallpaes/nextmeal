@@ -41,9 +41,6 @@ module.exports = {
       geometry: {
         type: Sequelize.GEOMETRY
       },
-      geometry: {
-        type: Sequelize.GEOMETRY
-      },
       UserId: {
         type: Sequelize.INTEGER
       },

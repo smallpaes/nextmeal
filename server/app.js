@@ -1,11 +1,21 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+// include and initialize the rollbar library with your access token
+const Rollbar = require('rollbar')
 if (process.env.NODE_ENV !== 'production') { require('dotenv').config() }
 const cors = require('cors')
 const app = express()
 const port = process.env.PORT || 3000
 // enable all cors requests
 app.use(cors())
+
+const rollbar = new Rollbar({
+  accessToken: process.env.ACCESS_TOKEN,
+  captureUncaught: true,
+  captureUnhandledRejections: true
+});
+
+app.use(rollbar.errorHandler());
 
 // parse json
 app.use(bodyParser.urlencoded({ extended: true }))

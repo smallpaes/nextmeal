@@ -250,7 +250,6 @@ let userController = {
           await user.update({ expired_date: user.dataValues.Subscriptions[0].sub_expired_date })
           sendEmail(null, null, emailInfo)
         }
-      
         return res.redirect(`${URL}/#/subscribe/callback`)
         // return res.status(200).json({ status: 'success', data, message: 'Think you for subscribe NextMeal, enjoy your day.' })
       }
