@@ -21,24 +21,60 @@
         </tr>
       </thead>
       <tbody>
+        <!--Display data-->
         <tr
-          v-for="user in users"
+          v-for="user in userData"
           :key="user.id"
-          @click="$router.push({name:'admin-user-edit', params: {user_id: user.id}})"
+          :class="{loading: isLoading}"
+          @click="isLoading ? null : $router.push({name:'admin-user-edit', params: {user_id: user.id}})"
         >
-          <td>{{ user.name }}</td>
-          <td>{{ user.role }}</td>
           <td>
-            <span
-              :inner-html.prop="user.sub_status | getStatusIcon"
-              :class="{isTrue: user.sub_status === 'active', isFalse: user.sub_status === 'inactive'}"
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'50px'"
             />
+            <template v-else>
+              {{ user.name }}
+            </template>
+          </td>
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'50px'"
+            />
+            <template v-else>
+              {{ user.role }}
+            </template>
+          </td>
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'16px'"
+            />
+            <template v-else>
+              <span
+                :inner-html.prop="user.sub_status | getStatusIcon"
+                :class="{isTrue: user.sub_status === 'active', isFalse: user.sub_status === 'inactive'}"
+              />
+            </template>
           </td>
           <td class="comment">
-            {{ user.sub_description | getAmount }}
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'50px'"
+            />
+            <template v-else>
+              {{ user.sub_description | getAmount }}
+            </template>
           </td>
           <td>
-            {{ user.order_num }} 餐
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'50px'"
+            />
+            <template v-else>
+              {{ user.order_num }} 餐
+            </template>
           </td>
         </tr>
       </tbody>
@@ -47,7 +83,12 @@
 </template>
 
 <script>
+import SkelentonBox from './Placeholder/SkeletonBox'
+
 export default {
+  components: {
+    SkelentonBox
+  },
   filters: {
     getStatusIcon (status) {
       if (status === 'active') return `<i class="fas fa-check"></i>`
@@ -62,6 +103,16 @@ export default {
     users: {
       type: Array,
       required: true
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    userData () {
+      if (this.isLoading) return 10
+      return this.users
     }
   }
 }

@@ -368,7 +368,7 @@ let ownerController = {
       })
       // 11/1 加入處理order不存在時的情況 by Danny
       if (orders.length === 0) {
-        res.status(200).json({ status: 'success', orders: {}, message: 'Can not find any orders' })
+        return res.status(200).json({ status: 'success', orders: {}, message: 'Can not find any orders' })
       }
 
       orders = orders.map(order => ({
