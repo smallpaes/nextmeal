@@ -43,8 +43,6 @@ export default {
   },
   data () {
     return {
-      isLoading: false, // true
-      navIsOpen: false,
       chartOptions: {
         animation: {
           easing: 'easeOutQuad'
@@ -62,15 +60,11 @@ export default {
             bottom: 15
           }
         },
-        tooltips: {
-          // none
-        },
         scales: {
           yAxes: [{
             stacked: true,
             ticks: {
               beginAtZero: true,
-              // display: false
               stepSize: 10,
               fontColor: '#a9a7a5'
             },
@@ -83,7 +77,8 @@ export default {
             stacked: true,
             ticks: {
               display: true,
-              fontColor: '#a9a7a5'
+              fontColor: '#a9a7a5',
+              precision: 0 // rounded to 0 decimal place
             },
             gridLines: {
               display: false,

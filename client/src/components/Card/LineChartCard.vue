@@ -44,8 +44,6 @@ export default {
   },
   data () {
     return {
-      isLoading: false, // true
-      navIsOpen: false,
       chartOptions: {
         animation: {
           easing: 'easeOutQuad'
@@ -63,14 +61,10 @@ export default {
             bottom: 15
           }
         },
-        tooltips: {
-          // none
-        },
         scales: {
           yAxes: [{
             ticks: {
               beginAtZero: true,
-              // display: false
               stepSize: 10,
               fontColor: '#a9a7a5'
             },

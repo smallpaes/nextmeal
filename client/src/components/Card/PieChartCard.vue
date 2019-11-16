@@ -44,8 +44,6 @@ export default {
   },
   data () {
     return {
-      isLoading: false, // true
-      navIsOpen: false,
       chartOptions: {
         animation: {
           easing: 'easeOutQuad',
@@ -53,10 +51,7 @@ export default {
         },
         legend: {
           display: true,
-          position: 'right',
-          labels: {
-            // boxWidth: 20
-          }
+          position: 'right'
         },
         responsive: true,
         maintainAspectRatio: false,
@@ -67,9 +62,6 @@ export default {
             left: 5,
             bottom: 0
           }
-        },
-        tooltips: {
-          // none
         }
       }
     }

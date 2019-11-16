@@ -42,7 +42,7 @@
                 近一個月總{{ data.orders.name }}數
               </template>
               <template #text>
-                325
+                <span :style="{color: data.orders.datasets[0].borderColor}">{{ data.orders.total }}</span>
               </template>
             </LineChartCard>
           </div>
@@ -59,7 +59,7 @@
                 近一個月總{{ data.users.name }}數
               </template>
               <template #text>
-                <span :style="{color: 'rgb(93,90,87)'}">82</span>
+<span :style="{color: 'rgb(93,90,87)'}">{{ data.users.total }}</span>
               </template>
             </PieChartCard>
           </div>
@@ -98,55 +98,8 @@ import BarChartHorizontal from '../components/Card/BarChartHorizontal'
 import DashboardCommentCard from '../components/Card/DashboardCommentCard'
 import PieChartCard from '../components/Card/PieChartCard'
 import Loader from '../components/Loader'
-
-const dummyChartData = {
-  orders: {
-    labels: ['11/1', '11/2', '11/3', '11/4', '11/5', '11/6', '11/7', '11/8', '11/9', '11/10', '11/11', '11/12', '11/13', '11/14', '11/15', '11/16', '11/17', '11/18', '11/19', '11/20', '11/21', '11/22'],
-    data: [40, 30, 45, 34, 30, 41, 32, 38, 35, 40, 38, 32, 40, 30, 45, 34, 30, 41, 32, 38, 35, 40]
-  },
-  users: {
-    labels: ['<20', '20-30', '30-40', '40-50', '50-60', '>60'],
-    data: [12, 32, 40, 20, 25, 10],
-    total: 553
-  },
-  ratings: {
-    labels: ['5星', '4星', '3星', '2星', '1星'],
-    data: [32, 19, 10, 3, 2],
-    average: '3.4'
-  },
-  comments: [
-    {
-      name: 'Mike',
-      user_text: '份量大，非常美味！',
-      rating: 4.3,
-      createdAt: '2019-10-15T05:00:00.000Z'
-    },
-    {
-      name: 'John',
-      user_text: '份量大，非常美味！',
-      rating: 3.3,
-      createdAt: '2019-06-12T03:00:00.000Z'
-    },
-    {
-      name: 'Danny',
-      user_text: '份量大，非常美味！',
-      rating: 4.8,
-      createdAt: '2019-02-02T03:30:00.000Z'
-    },
-    {
-      name: 'Tao',
-      user_text: '份量大，非常美味！',
-      rating: 5.0,
-      createdAt: '2018-12-12T03:00:00.000Z'
-    },
-    {
-      name: 'Mike',
-      user_text: '份量大，非常美味！',
-      rating: 4.3,
-      createdAt: '2018-12-12T03:00:00.000Z'
-    }
-  ]
-}
+import ownerAPI from '../apis/owner'
+import { Toast } from '../utils/helpers'
 
 export default {
   components: {
@@ -167,7 +120,6 @@ export default {
         orders: {
           name: '訂單',
           datasets: [{
-            data: dummyChartData.orders.data,
             borderColor: 'rgb(247,185,36)',
             backgroundColor: 'rgb(253,241,211)',
             pointBackgroundColor: 'rgb(255,255,255)',
@@ -177,7 +129,7 @@ export default {
           }]
         },
         users: {
-          name: '會員',
+          name: '客群',
           datasets: [{
             backgroundColor: ['rgb(0,143,250)', 'rgb(119,93,207)', 'rgb(255,140,52)', 'rgb(239,75,77)', 'rgb(78,202,138)', 'rgb(247,185,37)']
           }]
@@ -201,25 +153,39 @@ export default {
     this.fetchData()
   },
   methods: {
-    fetchData () {
-      // handle orders, rating, users data
-      for (let prop in this.data) {
+    async fetchData () {
+      try {
+        // fetch data from API
+        const { data: dashboardData, statusText } = await ownerAPI.dashboard.getDashboard()
+        // error handling
+        if (dashboardData.status !== 'success' || statusText !== 'OK') throw new Error(dashboardData.message)
+        // handle orders, rating, users data
+        for (let prop in this.data) {
         // retrieve data from response
-        const { labels, data, average, total } = dummyChartData[prop]
-        // store data
-        this.data[prop] = {
-          ...this.data[prop],
-          average,
-          labels,
-          total,
-          datasets: [{ ...this.data[prop].datasets[0], data }]
+          const { labels, data, average, total } = dashboardData[prop]
+          // store data
+          this.data[prop] = {
+            ...this.data[prop],
+            average,
+            labels,
+            total,
+            datasets: [{ ...this.data[prop].datasets[0], data }]
+          }
         }
-      }
 
-      // handle comments
-      this.comments = dummyChartData.comments
-      // update loading status
-      this.isLoading = false
+        // handle comments
+        this.comments = dashboardData.comments
+        // update loading status
+        this.isLoading = false
+      } catch (error) {
+        // update loading status
+        this.isLoading = false
+        // fire error messages
+        Toast.fire({
+          type: 'error',
+          title: '無法取得資料，請稍後再試'
+        })
+      }
     }
   }
 }
