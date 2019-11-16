@@ -102,8 +102,12 @@ export default {
     text-shadow: 1px 1px 1px #636161;
 
     &-title {
-      font-size: size(xxl);
+      font-size: size(xl);
       font-weight: weight(bold);
+
+      @include response(sm) {
+        font-size: size(xxl);
+      }
     }
   }
 }
@@ -115,7 +119,7 @@ export default {
 
   &-menu {
     position: relative;
-    transform: translate3d(15px, 32px, 0px) !important;
+    transform: translate3d(-10px, 32px, 0px) !important;
     background-color: color(quaternary);
 
     &::before {
@@ -133,6 +137,10 @@ export default {
 
     .disabled {
       color: color(primary);
+    }
+
+    @include response(sm) {
+      transform: translate3d(25px, 32px, 0px) !important;
     }
   }
 
