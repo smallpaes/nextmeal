@@ -9,10 +9,14 @@ module.exports = {
   },
   char: {
     date: [sequelize.fn('to_char', sequelize.col('require_date'), 'YYMMDD'), 'date'],
-    time: [sequelize.fn('to_char', sequelize.col('require_date'), 'HH24:MI'), 'time']
+    time: [sequelize.fn('to_char', sequelize.col('require_date'), 'HH24:MI'), 'time'],
+    date_for_dashboard: [sequelize.fn('to_char', sequelize.col('require_date'), '%m/%e'), 'date']
   },
   geo: {
     geometry: 'ST_DistanceSphere',
     random: 'random()'
+  },
+  literal: {
+    name: [sequelize.literal('(SELECT name FROM "Users" WHERE "Users"."id" = "Comment"."UserId")'), 'name']
   }
 }
