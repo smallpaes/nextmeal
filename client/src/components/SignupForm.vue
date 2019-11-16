@@ -75,10 +75,11 @@
           minlength="8"
           maxlength="12"
           required
-          @blur="$v.password.$touch()"
+          @focus="showPasswordHint = true"
+          @blur="$v.password.$touch(); showPasswordHint = false"
         >
         <small
-          v-if="$v.password.$error"
+          v-if="(!$v.password.dirty && showPasswordHint) || $v.password.$error"
           class="form-text"
         >密碼 8-12 位，需包大小寫字母與至少一個符號</small>
       </div>
@@ -136,7 +137,8 @@ export default {
       email: '',
       password: '',
       passwordCheck: '',
-      isProcessing: false
+      isProcessing: false,
+      showPasswordHint: false
     }
   },
   validations: {

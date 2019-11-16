@@ -47,9 +47,6 @@ module.exports = {
       geometry: {
         type: Sequelize.GEOMETRY
       },
-      geometry: {
-        type: Sequelize.GEOMETRY
-      },
       expired_date: {
         type: Sequelize.DATE
       },

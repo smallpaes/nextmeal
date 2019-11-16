@@ -94,6 +94,15 @@ const router = new Router({
       beforeEnter: authentication.isUser
     },
     {
+      path: '/subscribe/callback',
+      name: 'subscribe-callback',
+      beforeEnter: async (to, from, next) => {
+        // update user data in store after successful subscription
+        await store.dispatch('fetchCurrentUser')
+        next({ name: 'order-tomorrow' })
+      }
+    },
+    {
       path: '/faq',
       name: 'faq',
       component: () => import('./views/Faq')

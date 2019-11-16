@@ -21,30 +21,65 @@
         </tr>
       </thead>
       <tbody>
+        <!--Display data-->
         <tr
-          v-for="restaurant in restaurants"
+          v-for="restaurant in restaurantData"
           :key="restaurant.id"
-          @click="$router.push({name:'admin-restaurant-edit', params: {restaurant_id: restaurant.id}})"
+          @click="isLoading ? null : $router.push({name:'admin-restaurant-edit', params: {restaurant_id: restaurant.id}})"
         >
-          <td>{{ restaurant.name | textTruncate(10) }}</td>
-          <td>{{ restaurant.location }}</td>
           <td>
-            <span
-              class="d-none d-md-inline pr-1"
-              :class="{'high-rating': restaurant.rating >= 4, 'low-rating': restaurant.rating < 4}"
-            >&#9733;</span>
-            <span
-              class="rating"
-              :class="{'high-rating': restaurant.rating >= 4, 'low-rating': restaurant.rating < 4}"
-            >{{ restaurant.rating }}</span>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'160px'"
+            />
+            <template v-else>
+              {{ restaurant.name | textTruncate(10) }}
+            </template>
+          </td>
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'50px'"
+            />
+            <template v-else>
+              {{ restaurant.location }}
+            </template>
+          </td>
+          <td>
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'43px'"
+            />
+            <template v-else>
+              <span
+                class="d-none d-md-inline pr-1"
+                :class="{'high-rating': restaurant.rating >= 4, 'low-rating': restaurant.rating < 4}"
+              >&#9733;</span>
+              <span
+                class="rating"
+                :class="{'high-rating': restaurant.rating >= 4, 'low-rating': restaurant.rating < 4}"
+              >{{ restaurant.rating | padEnd }}</span>
+            </template>
           </td>
           <td class="comment">
-            <i class="far fa-comment-alt mr-1 d-none d-md-inline" />
-            {{ restaurant.Comments.length }}
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'30px'"
+            />
+            <template v-else>
+              <i class="far fa-comment-alt mr-1 d-none d-md-inline" />
+              {{ restaurant.Comments.length }}
+            </template>
           </td>
           <td>
-            <i class="far fa-chart-bar mr-1 d-none d-md-inline" />
-            {{ restaurant.orderCount }}
+            <SkelentonBox
+              v-if="isLoading"
+              :width="'30px'"
+            />
+            <template v-else>
+              <i class="far fa-chart-bar mr-1 d-none d-md-inline" />
+              {{ restaurant.orderCount }}
+            </template>
           </td>
         </tr>
       </tbody>
@@ -53,14 +88,28 @@
 </template>
 
 <script>
-import { textTruncateFilter } from '../utils/mixins'
+import { padEndFilter, textTruncateFilter } from '../utils/mixins'
+import SkelentonBox from './Placeholder/SkeletonBox'
 
 export default {
-  mixins: [textTruncateFilter],
+  components: {
+    SkelentonBox
+  },
+  mixins: [padEndFilter, textTruncateFilter],
   props: {
     restaurants: {
       type: Array,
       required: true
+    },
+    isLoading: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    restaurantData () {
+      if (this.isLoading) return 10
+      return this.restaurants
     }
   }
 }
