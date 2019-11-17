@@ -77,6 +77,7 @@ export default {
         // check if restaurant data alreadt exists
         if (!data.restaurant) {
           this.hasRestaurantData = false
+          this.categories = data.categories
           // update loading status
           this.isLoading = false
           return
@@ -114,8 +115,8 @@ export default {
       try {
         // update processing status
         this.isProcessing = true
-
         const { data, statusText } = await ownerAPI.restaurants.post(formData)
+
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // alert success message
@@ -139,7 +140,6 @@ export default {
       try {
         // update processing status
         this.isProcessing = true
-
         const { data, statusText } = await ownerAPI.restaurants.put(formData)
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)

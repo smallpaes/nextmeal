@@ -1,5 +1,6 @@
 <template>
   <form
+    ref="form"
     class="form p-3 rounded shadow-sm"
     novalidate
   >
@@ -24,6 +25,7 @@
           :disabled="isProcessing"
           type="text"
           class="form-control"
+          name="name"
           required
           @blur="$v.restaurant.name.$touch()"
         >
@@ -34,10 +36,10 @@
       </div>
       <!--Category-->
       <CustomSelect
-        v-model="restaurant.Category.id"
+        v-model="restaurant.CategoryId"
         class="col-md-6"
         :options="categories"
-        :v="$v.restaurant.Category.id"
+        :v="$v.restaurant.CategoryId"
         :target="'id'"
         :is-processing="isProcessing"
       >
@@ -177,6 +179,7 @@
       <!--Invisible file upload button-->
       <input
         id="file"
+        ref="image"
         type="file"
         class="file-input"
         accept=".png, .jpg, .jpeg"
@@ -250,7 +253,7 @@ export default {
       type: Object,
       default: () => ({
         name: '',
-        Category: {},
+        CategoryId: '',
         openingHour: '',
         closingHour: '',
         location: '',
@@ -275,9 +278,9 @@ export default {
     return {
       restaurant: {
         name: '',
-        Category: {},
-        openingHour: '',
-        closingHour: '',
+        CategoryId: '',
+        openingHour: '11:00',
+        closingHour: '14:00',
         location: '',
         address: '',
         tel: '',
@@ -300,10 +303,8 @@ export default {
       address: {
         required
       },
-      Category: {
-        id: {
-          required
-        }
+      CategoryId: {
+        required
       },
       name: {
         required,
@@ -358,19 +359,17 @@ export default {
   },
   methods: {
     afterReceiveGeo () {
-      const formData = {
-        name: this.restaurant.name,
-        description: this.restaurant.description,
-        image: this.restaurant.image,
-        tel: this.restaurant.tel,
-        address: this.restaurant.address,
-        opening_hour: this.restaurant.openingHour,
-        closing_hour: this.restaurant.closingHour,
-        lat: this.restaurant.lat,
-        lng: this.restaurant.lng,
-        location: this.restaurant.location,
-        CategoryId: this.restaurant.Category.id
+      // prepare formData
+      const formData = new FormData(this.$refs.form)
+
+      for (let data in this.restaurant) {
+        formData.append(data, this.restaurant[data])
       }
+
+      formData.append('opening_hour', this.restaurant.openingHour)
+      formData.append('closing_hour', this.restaurant.closingHour)
+      formData.append('image', this.$refs.image.files[0])
+
       // notify parent view
       this.$emit('after-submit', formData)
     }
