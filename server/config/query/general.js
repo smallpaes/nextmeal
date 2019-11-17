@@ -20,13 +20,13 @@ module.exports = {
   literal: {
     name: [sequelize.literal('(SELECT name FROM Users WHERE Users.id = Comment.UserId)'), 'name'],
     subscribeUsers: function (now) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.expired_date > '${now}')`), 'subscribeUsers']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.role ='User' AND Users.expired_date > '${now}')`), 'subscribeUsers']
     },
     nonsubscribeUsers: function (now) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.expired_date < '${now}' OR Users.expired_date IS NULL)`), 'nonsubscribeUsers']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.role ='User' AND (Users.expired_date < '${now}' OR Users.expired_date IS NULL))`), 'nonsubscribeUsers']
     },
     userIncreased: function (end, start) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.createdAt < '${end}')-(SELECT COUNT(*) FROM Users WHERE Users.createdAt < '${start}')`), 'userIncreased']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.createdAt < '${end}' AND Users.role ='User')-(SELECT COUNT(*) FROM Users WHERE Users.createdAt < '${start}' AND Users.role ='User')`), 'userIncreased']
     },
     restIncreased: function (end, start) {
       return [sequelize.literal(`(SELECT COUNT(*) FROM Restaurants WHERE Restaurants.createdAt < '${end}')-(SELECT COUNT(*) FROM Restaurants WHERE Restaurants.createdAt < '${start}')`), 'restIncreased']
