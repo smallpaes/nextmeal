@@ -1,9 +1,5 @@
 const sequelize = require('sequelize')
-const moment = require('moment')
-const today = moment().toISOString()
-let yesterday = moment().subtract(1, 'days').toISOString()
-const start = moment().startOf('day').toISOString()
-const end = moment().endOf('day').toISOString()
+
 module.exports = {
   Comment: {
     RestaurantId: '(SELECT COUNT(*) FROM "Comments" WHERE "Comments"."RestaurantId" = "Restaurant"."id")'
