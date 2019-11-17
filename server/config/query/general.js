@@ -1,7 +1,6 @@
 const sequelize = require('sequelize')
 const moment = require('moment')
 const today = moment().toISOString()
-console.log(today);
 let yesterday = moment().subtract(1, 'days').toISOString()
 const start = moment().startOf('day').toISOString()
 const end = moment().endOf('day').toISOString()
