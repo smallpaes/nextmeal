@@ -326,11 +326,7 @@ let adminController = {
   },
   dashboard: async (req, res) => {
     try {
-      const today = moment().toISOString()
-      console.log(today);
-      let yesterday = moment().subtract(1, 'days').toISOString()
-      const start = moment().startOf('day').toISOString()
-      const end = moment().endOf('day').toISOString()
+
       // 取得一個月前的時間做為區間起點
       const pass_one_month = moment().subtract(1, 'months').toDate()
 
@@ -494,7 +490,6 @@ let adminController = {
       res.status(200).json({ status: 'success', userIncreased, restIncreased, subtIncreased, order_num, subscriptions, restaurants, users, orders, message: 'Successfully get admin dashboard info' })
 
     } catch (error) {
-      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   }
