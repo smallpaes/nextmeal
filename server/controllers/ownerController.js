@@ -448,22 +448,22 @@ let ownerController = {
       })
       // calculate user age and count by group
       let user_result = {
-        "<20": 0,
-        "20~30": 0,
-        "30~40": 0,
-        "40~50": 0,
-        "50~60": 0,
-        ">60": 0
+        "<20歲": 0,
+        "20~30歲": 0,
+        "30~40歲": 0,
+        "40~50歲": 0,
+        "50~60歲": 0,
+        ">60歲": 0
       }
       users = users.map(item => (
         { age: moment().diff(item.dob, 'years') }
       )).map(item => {
-        if (item.age < 20) user_result["<20"]++
-        if (item.age >= 20 && item.age < 30) user_result["20~30"]++
-        if (item.age >= 30 && item.age < 40) user_result["30~40"]++
-        if (item.age >= 40 && item.age < 50) user_result["40~50"]++
-        if (item.age >= 50 && item.age < 60) user_result["50~60"]++
-        if (item.age > 60) user_result[">60"]++
+        if (item.age < 20) user_result["<20歲"]++
+        if (item.age >= 20 && item.age < 30) user_result["20~30歲"]++
+        if (item.age >= 30 && item.age < 40) user_result["30~40歲"]++
+        if (item.age >= 40 && item.age < 50) user_result["40~50歲"]++
+        if (item.age >= 50 && item.age < 60) user_result["50~60歲"]++
+        if (item.age > 60) user_result[">60歲"]++
       })
 
       let comments = await Comment.findAndCountAll({
@@ -513,7 +513,7 @@ let ownerController = {
         total: Object.values(order_result).reduce((total, current) => total + current.count, 0)
       }
 
-      return res.status(200).json({ orders, comments, ratings, users, message: 'Successfully get owner dashboard' })
+      return res.status(200).json({ status: 'success', orders, comments, ratings, users, message: 'Successfully get owner dashboard' })
 
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
