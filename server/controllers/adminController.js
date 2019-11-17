@@ -337,9 +337,9 @@ let adminController = {
       // get all user relative counts
       let users = await User.findAll({
         attributes: [
-          [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.expired_date > '${today}')`), 'subscribeUsers'],
-          [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.expired_date < '${today}' OR Users.expired_date IS NULL)`), 'nonsubscribeUsers'],
-          [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.createdAt < '${today}')-(SELECT COUNT(*) FROM Users WHERE Users.createdAt < '${yesterday}')`), 'userIncreased'],
+          customQuery.literal.subscribeUsers,
+          customQuery.literal.nonsubscribeUsers,
+          customQuery.literal.userIncreased
         ]
       })
 
@@ -353,10 +353,10 @@ let adminController = {
           }
         },
         attributes: [
-          [sequelize.fn('date_format', sequelize.col('createdAt'), '%m/%d'), 'date'],
+          customQuery.char.date_for_admin_dashboard,
           [sequelize.literal(`COUNT(*)`), 'count'],
-          [sequelize.literal(`(SELECT COUNT(*) FROM Restaurants WHERE Restaurants.createdAt < '${today}')-(SELECT COUNT(*) FROM Restaurants WHERE Restaurants.createdAt < '${yesterday}')`), 'restIncreased'],
-          [sequelize.literal(`(SELECT COUNT(*) FROM Subscriptions WHERE Subscriptions.createdAt < '${today}')-(SELECT COUNT(*) FROM Subscriptions WHERE Subscriptions.createdAt < '${yesterday}')`), 'subtIncreased']
+          customQuery.literal.restIncreased,
+          customQuery.literal.subtIncreased
         ],
         group: ['date']
       })
@@ -375,8 +375,8 @@ let adminController = {
           }
         },
         attributes: [
-          [sequelize.literal(`(SELECT COUNT(*) FROM Orders WHERE Orders.require_date > '${start}' AND Orders.require_date < '${end}')`), 'todayOrders'],
-          [sequelize.fn('date_format', sequelize.col('require_date'), '%m/%d'), 'date'],
+          customQuery.literal.todayOrders,
+          customQuery.char.date_for_dashboard,
           [sequelize.literal(`COUNT(*)`), 'count']
         ],
         group: ['date']
