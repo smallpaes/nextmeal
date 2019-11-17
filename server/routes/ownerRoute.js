@@ -23,4 +23,7 @@ router.put('/menu', stopOrder, validMenuForm, ownerController.putMenu)
 
 router.get('/orders', ownerController.getOrders)
 
+// owner dashboard
+router.get('/dashboard', ownerController.dashborad)
+
 module.exports = router
