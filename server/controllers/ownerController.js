@@ -268,7 +268,7 @@ let ownerController = {
           }
         }]
       })
-      if (!restaurant) return res.status(200).json({ status: 'success', message: 'you do have not restaurant or a meal yet' })
+      if (!restaurant) return res.status(200).json({ status: 'success',meals: [], options: [], message: 'you do not have your restaurant info filled or a meal yet' })
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
