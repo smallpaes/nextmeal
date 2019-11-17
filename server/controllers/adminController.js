@@ -471,7 +471,7 @@ let adminController = {
         labels: ['訂閱中', '未訂閱'],
         data: [users[0].dataValues.subscribeUsers, users[0].dataValues.nonsubscribeUsers],
         tableName: '會員',
-        total: users.length
+        total: users[0].dataValues.subscribeUsers + users[0].dataValues.nonsubscribeUsers
       }
 
       // adjust subscriptions data format for front-end
