@@ -59,7 +59,7 @@
                 近一個月總{{ data.users.name }}數
               </template>
               <template #text>
-<span :style="{color: 'rgb(93,90,87)'}">{{ data.users.total }}</span>
+                <span :style="{color: 'rgb(93,90,87)'}">{{ data.users.total }}</span>
               </template>
             </PieChartCard>
           </div>

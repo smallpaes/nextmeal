@@ -60,7 +60,7 @@
             訂閱量
           </div>
           <div class="card-item-text">
-            &#43; {{ orderToday.subIncreased }}
+            &#43; {{ orderToday.subtIncreased }}
           </div>
         </div>
       </div>
