@@ -119,6 +119,8 @@ export default {
 
         // error handling
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
+        // update data to Vuex
+        this.$store.commit('setCurrentUser', { hasRestaurant: true })
         // alert success message
         Toast.fire({
           type: 'success',
