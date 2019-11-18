@@ -326,6 +326,9 @@ let adminController = {
   },
   dashboard: async (req, res) => {
     try {
+      const now = moment().toISOString()
+      const start = moment().startOf('day').toISOString()
+      const end = moment().endOf('day').toISOString()
 
       // 取得一個月前的時間做為區間起點
       const pass_one_month = moment().subtract(1, 'months').toDate()
@@ -333,9 +336,9 @@ let adminController = {
       // get all user relative counts
       let users = await User.findAll({
         attributes: [
-          customQuery.literal.subscribeUsers,
-          customQuery.literal.nonsubscribeUsers,
-          customQuery.literal.userIncreased
+          customQuery.literal.subscribeUsers(now),
+          customQuery.literal.nonsubscribeUsers(now),
+          customQuery.literal.userIncreased(end, start)
         ]
       })
 
@@ -351,8 +354,8 @@ let adminController = {
         attributes: [
           customQuery.char.date_for_admin_dashboard,
           [sequelize.literal(`COUNT(*)`), 'count'],
-          customQuery.literal.restIncreased,
-          customQuery.literal.subtIncreased
+          customQuery.literal.restIncreased(end, start),
+          customQuery.literal.subtIncreased(end, start)
         ],
         group: ['date']
       })
@@ -371,7 +374,7 @@ let adminController = {
           }
         },
         attributes: [
-          customQuery.literal.todayOrders,
+          customQuery.literal.todayOrders(start, end),
           customQuery.char.date_for_dashboard,
           [sequelize.literal(`COUNT(*)`), 'count']
         ],
@@ -468,7 +471,7 @@ let adminController = {
         labels: ['訂閱中', '未訂閱'],
         data: [users[0].dataValues.subscribeUsers, users[0].dataValues.nonsubscribeUsers],
         tableName: '會員',
-        total: users.length
+        total: users[0].dataValues.subscribeUsers + users[0].dataValues.nonsubscribeUsers
       }
 
       // adjust subscriptions data format for front-end
