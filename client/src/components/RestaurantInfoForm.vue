@@ -368,7 +368,12 @@ export default {
 
       formData.append('opening_hour', this.restaurant.openingHour)
       formData.append('closing_hour', this.restaurant.closingHour)
-      formData.append('image', this.$refs.image.files[0])
+
+      if (this.$refs.image.files[0]) {
+        formData.append('image', this.$refs.image.files[0])
+      } else {
+        formData.delete('image')
+      }
 
       // notify parent view
       this.$emit('after-submit', formData)

@@ -37,14 +37,12 @@ let ownerController = {
 
   postRestaurant: async (req, res) => {
     try {
-      console.log(req)
       let { lat, lng } = req.body
       if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'need lat and lng' })
       let restaurant = await Restaurant.findAll({ where: { UserId: req.user.id } })
       if (restaurant.length > 0) return res.status(400).json({ status: 'error', message: 'You already have a restaurant.' });
       const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
       const { file } = req
-      console.log(req.file)
       if (!file) return res.status(400).json({ status: 'error', message: 'You need to pick a picture' })
       if (file) {
         imgur.setClientID(IMGUR_CLIENT_ID)
@@ -77,14 +75,12 @@ let ownerController = {
         })
       }
     } catch (error) {
-      console.log(error.message)
       res.status(500).json({ status: 'error', message: error })
     }
   },
 
   putRestaurant: async (req, res) => {
     try {
-      console.log(req.file)
       const { lat, lng } = req.body
       if (!lat || !lng) return res.status(400).json({ status: 'error', message: 'can not find address' })
       let restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
@@ -125,6 +121,7 @@ let ownerController = {
         })
       }
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
