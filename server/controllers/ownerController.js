@@ -386,8 +386,13 @@ let ownerController = {
       // 取得一個月前的時間做為區間起點
       const pass_one_month = moment().subtract(1, 'months').toDate()
 
+      // 取得該owner的餐廳資料
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
 
+      // 若找不到餐廳，則回傳錯誤訊息供前端判斷
+      if (!restaurant) return res.status(200).json({ status: 'success', message: 'You do not have a restaurant yet.', restaurantExist: false })
+
+      // query過去一個月內每日的訂單
       let orders = await Order.findAll({
         include: [
           { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] }
@@ -490,7 +495,7 @@ let ownerController = {
         labels: ['5星', '4星', '3星', '2星', '1星'],
         data: sorted.map(item => item.count),
         tableName: '滿意度',
-        average: Number.parseFloat(sorted.reduce((total, current) => total + current.rating * current.count, 0) / sorted.reduce((total, current) => total + current.count, 0)).toFixed(1)
+        average: sorted.every(item => item.count === 0) ? 0 : Number.parseFloat(sorted.reduce((total, current) => total + current.rating * current.count, 0) / sorted.reduce((total, current) => total + current.count, 0)).toFixed(1)
       }
       // adjust comment data format for front-end
       comments = await Comment.findAll({
@@ -513,7 +518,7 @@ let ownerController = {
         total: Object.values(order_result).reduce((total, current) => total + current.count, 0)
       }
 
-      return res.status(200).json({ status: 'success', orders, comments, ratings, users, message: 'Successfully get owner dashboard' })
+      return res.status(200).json({ status: 'success', orders, comments, ratings, users, message: 'Successfully get owner dashboard', restaurantExist: true })
 
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
