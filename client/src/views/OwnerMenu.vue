@@ -33,7 +33,7 @@
         >
           <div class="menu-card-container row mx-0 p-3 rounded-sm shadow-sm">
             <!--Display Menu-->
-            <template v-if="Object.keys(meal).length > 0">
+            <template v-if="Object.keys(meal).length > 0 && ($route.query.ran === 'thisWeek' || $route.query.ran === 'nextWeek' && meal.nextServing_quantity)">
               <OwnerDishCard
                 v-for="day in days"
                 :key="day"
@@ -51,7 +51,7 @@
                 </template>
                 <template #secondary-description>
                   <span class="d-none d-md-inline">供應數量</span>
-                  ：{{ $route.query.ran === 'thisWeek' ? meal.quantity : meal.nextServing_quantity }}份
+                  ：{{ $route.query.ran === 'thisWeek' ? meal.quantity : meal.nextServing_quantity || 0 }}份
                 </template>
               </OwnerDishCard>
             </template>
