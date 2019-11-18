@@ -1,5 +1,5 @@
 <template>
-  <div class="card rounded-sm shadow-sm border-0 mb-4">
+  <div class="card rounded-sm shadow-sm border-0">
     <div
       v-if="$slots.header"
       class="card-header bg-white"
@@ -15,7 +15,9 @@
         <span class="card-subtext"><slot name="subtext" /></span>
       </h3>
     </div>
-    <div class="card-body pl-0 pr-3 pb-1">
+    <div
+      class="card-body pl-0 pr-3 pb-1"
+    >
       <LineChartTemplate
         :chart-data="chartData"
         :options="chartOptions"

@@ -1,5 +1,5 @@
 <template>
-  <div class="card rounded-sm shadow-sm border-0 mb-4">
+  <div class="card rounded-sm shadow-sm border-0">
     <div class="card-header bg-white">
       <i class="fas fa-comment mr-2" />評論
     </div>
@@ -52,7 +52,7 @@ export default {
 <style lang="scss" scoped>
 
 .card {
-  height: 329.375px;
+  height: 100%;
   overflow: hidden;
 
   &-header {

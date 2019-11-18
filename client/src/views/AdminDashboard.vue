@@ -15,14 +15,21 @@
       </h1>
       <hr class="dashboard-divider">
 
-      <!--Today Overview-->
-      <AdminDashboardToday :order-today="orderToday" />
-
       <!--Loader-->
       <Loader
         v-if="isLoading"
         :height="'300px'"
       />
+
+      <transition
+        name="slide"
+      >
+        <!--Today Overview-->
+        <AdminDashboardToday
+          v-if="!isLoading"
+          :order-today="orderToday"
+        />
+      </transition>
 
       <transition
         name="slide"
@@ -33,7 +40,7 @@
           class="row"
         >
           <!--Order Section-->
-          <div class="col-md-6">
+          <div class="col-md-6 mb-4">
             <LineChartCard
               :chart-data="data.singleData.orders"
               :height="160"
@@ -53,7 +60,7 @@
             </LineChartCard>
           </div>
           <!--Customers Section-->
-          <div class="col-md-6">
+          <div class="col-md-6 mb-4">
             <LineChartCard
               :chart-data="data.singleData.restaurants"
               :height="160"
@@ -73,7 +80,7 @@
             </LineChartCard>
           </div>
           <!--Subscriptions Section-->
-          <div class="col-md-6">
+          <div class="col-md-6 mb-4">
             <LineChartCard
               :chart-data="data.multipleData.subscriptions"
               :height="160"
@@ -94,7 +101,7 @@
             </LineChartCard>
           </div>
           <!--User Section-->
-          <div class="col-md-6">
+          <div class="col-md-6 mb-4">
             <PieChartCard
               :chart-data="data.singleData.users"
               :height="160"

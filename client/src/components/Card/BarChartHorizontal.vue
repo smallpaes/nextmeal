@@ -1,5 +1,5 @@
 <template>
-  <div class="card rounded-sm shadow-sm border-0 mb-4">
+  <div class="card rounded-sm shadow-sm border-0">
     <div
       v-if="$slots.header"
       class="card-header bg-white"
@@ -14,7 +14,9 @@
         <slot name="text" />
       </h3>
     </div>
-    <div class="card-body pl-0 pr-3 pb-1">
+    <div
+      class="card-body pl-0 pr-3 pb-1"
+    >
       <BarChartTemplate
         :chart-data="chartData"
         :options="chartOptions"

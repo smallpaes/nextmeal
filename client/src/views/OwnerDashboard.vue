@@ -29,10 +29,10 @@
           <!--Chart Display-->
           <div
             v-if="currentUser.hasRestaurant"
-            class="row"
+            class="row align-items-stretch"
           >
             <!--Order Section-->
-            <div class="col-md-6">
+            <div class="col-md-6 mb-4">
               <LineChartCard
                 :chart-data="data.orders"
                 :height="160"
@@ -49,7 +49,7 @@
               </LineChartCard>
             </div>
             <!--Customers Section-->
-            <div class="col-md-6">
+            <div class="col-md-6 mb-4">
               <PieChartCard
                 :chart-data="data.users"
                 :height="160"
@@ -66,7 +66,7 @@
               </PieChartCard>
             </div>
             <!--ratings Section-->
-            <div class="col-md-6">
+            <div class="col-md-6 mb-4">
               <BarChartHorizontal
                 :chart-data="data.ratings"
                 :height="160"
@@ -83,7 +83,7 @@
               </BarChartHorizontal>
             </div>
             <!--Comments Section-->
-            <div class="col-md-6 ">
+            <div class="col-md-6 mb-4 ">
               <DashboardCommentCard :comments="comments" />
             </div>
           </div>
