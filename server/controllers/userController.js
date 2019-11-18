@@ -124,6 +124,14 @@ let userController = {
       // generate and provide user with a token
       const payload = { id: user.id }
       const token = jwt.sign(payload, process.env.JWT_SECRET)
+
+      // check if the user own a restaurant
+      const restaurant = await Restaurant.findOne({
+        where: {
+          UserId: user.id
+        }
+      })
+
       return res.status(200).json({
         status: 'success', message: 'Successfully log in', token,
         user: {
@@ -132,7 +140,8 @@ let userController = {
           avatar: user.avatar,
           role: user.role,
           sub_status,
-          sub_balance
+          sub_balance,
+          hasRestaurant: restaurant ? true : false
         }
       })
 
@@ -220,7 +229,7 @@ let userController = {
         let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
         let subscription = await Subscription.findOne({
           where: { sn: data['Result']['MerchantOrderNo'] },
-          include: [{ model: User, attributes: ['name', 'email','id'] }]
+          include: [{ model: User, attributes: ['name', 'email', 'id'] }]
         })
         await Payment.create({
           SubscriptionId: subscription.id,
@@ -432,6 +441,15 @@ let userController = {
         where: { email: req.user.email }
       })
 
+      if (!user) return res.status(200).json({ status: 'success', message: 'User does not exist' })
+
+      // check if the user own a restaurant
+      const restaurant = await Restaurant.findOne({
+        where: {
+          UserId: req.user.id
+        }
+      })
+
       // check if the user has valid subscriptions
       const start = moment().startOf('day').toDate()
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: start } } })
@@ -446,7 +464,8 @@ let userController = {
           avatar: user.avatar,
           role: user.role,
           sub_status,
-          sub_balance
+          sub_balance,
+          hasRestaurant: restaurant ? true : false
         }
       })
 
