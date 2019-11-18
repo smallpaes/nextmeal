@@ -389,9 +389,6 @@ let ownerController = {
       // 取得該owner的餐廳資料
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
 
-      // 若找不到餐廳，則回傳錯誤訊息供前端判斷
-      if (!restaurant) return res.status(200).json({ status: 'success', message: 'You do not have a restaurant yet.', restaurantExist: false })
-
       // query過去一個月內每日的訂單
       let orders = await Order.findAll({
         include: [
@@ -518,7 +515,7 @@ let ownerController = {
         total: Object.values(order_result).reduce((total, current) => total + current.count, 0)
       }
 
-      return res.status(200).json({ status: 'success', orders, comments, ratings, users, message: 'Successfully get owner dashboard', restaurantExist: true })
+      return res.status(200).json({ status: 'success', orders, comments, ratings, users, message: 'Successfully get owner dashboard' })
 
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
