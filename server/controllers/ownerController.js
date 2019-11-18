@@ -404,13 +404,33 @@ let ownerController = {
           }
         },
         attributes: [
-          'id',
+          'id', 'require_date',
           customQuery.char.date_for_dashboard,
-          [sequelize.literal(`COUNT(*)`), 'count']
+          // [sequelize.literal(`COUNT(*)`), 'count']
         ],
-        group: ['date'],
+        // group: ['date'],
 
       })
+
+      let results = orders.reduce((obj, item) => {
+        if (item.dataValues.date in obj) {
+          obj[item.dataValues.date] += 1
+        } else {
+          obj[item.dataValues.date] = 1
+        }
+        return obj
+      }, {})
+      console.log(results);
+      const arr = []
+      for (i in results) {
+        arr.push({
+          date: i,
+          count: results[i]
+        })
+        console.log(i);
+        console.log(results[i]);
+      }
+      console.log(arr);
       // find all dates a month from now
       var dateArray = [];
       var currentDate = moment(pass_one_month);
@@ -421,13 +441,13 @@ let ownerController = {
       };
 
       // check if there's missing dates
-      const currentDates = orders.map(item => item.dataValues.date)
+      const currentDates = arr.map(item => item.date)
       const missing_fields_order_mod = dateArray.filter(v => currentDates.indexOf(v) === -1)
 
       // create the an end result object for later sorting
-      const order_result = orders.map(item => ({
-        date: item.dataValues.date,
-        count: item.dataValues.count
+      const order_result = arr.map(item => ({
+        date: item.date,
+        count: item.count
       }))
 
       // if missing fields exist,fill in with value 0
