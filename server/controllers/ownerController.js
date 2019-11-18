@@ -404,14 +404,10 @@ let ownerController = {
           }
         },
         attributes: [
-          'id', 'require_date',
           customQuery.char.date_for_dashboard,
-          // [sequelize.literal(`COUNT(*)`), 'count']
-        ],
-        // group: ['date'],
-
+        ]
       })
-
+      // 手動加總不同日期的訂單量
       let results = orders.reduce((obj, item) => {
         if (item.dataValues.date in obj) {
           obj[item.dataValues.date] += 1
@@ -420,17 +416,14 @@ let ownerController = {
         }
         return obj
       }, {})
-      console.log(results);
-      const arr = []
+      // 複寫orders的結果達到與group by相同的輸出
+      orders = []
       for (i in results) {
-        arr.push({
+        orders.push({
           date: i,
           count: results[i]
         })
-        console.log(i);
-        console.log(results[i]);
       }
-      console.log(arr);
       // find all dates a month from now
       var dateArray = [];
       var currentDate = moment(pass_one_month);
@@ -441,11 +434,11 @@ let ownerController = {
       };
 
       // check if there's missing dates
-      const currentDates = arr.map(item => item.date)
+      const currentDates = orders.map(item => item.date)
       const missing_fields_order_mod = dateArray.filter(v => currentDates.indexOf(v) === -1)
 
       // create the an end result object for later sorting
-      const order_result = arr.map(item => ({
+      const order_result = orders.map(item => ({
         date: item.date,
         count: item.count
       }))
@@ -516,9 +509,9 @@ let ownerController = {
       // adjust rating data format for front-end
       const ratings = {
         labels: ['5星', '4星', '3星', '2星', '1星'],
-        data: sorted.map(item => item.count),
+        data: sorted.map(item => Number(item.count)),
         tableName: '滿意度',
-        average: sorted.every(item => item.count === 0) ? 0 : Number.parseFloat(sorted.reduce((total, current) => total + current.rating * current.count, 0) / sorted.reduce((total, current) => total + current.count, 0)).toFixed(1)
+        average: sorted.every(item => Number(item.count) === 0) ? 0 : Number.parseFloat(sorted.reduce((total, current) => total + Number(current.rating) * Number(current.count), 0) / sorted.reduce((total, current) => total + Number(current.count), 0)).toFixed(1)
       }
       // adjust comment data format for front-end
       comments = await Comment.findAll({
@@ -531,14 +524,14 @@ let ownerController = {
         labels: Object.keys(user_result),
         data: Object.values(user_result),
         tableName: '客群',
-        total: Object.values(user_result).reduce((total, current) => total + current)
+        total: Object.values(user_result).reduce((total, current) => total + Number(current), 0)
       }
       // adjust order data format for front-end
       orders = {
         labels: order_result.map(item => item.date),
         data: order_result.map(item => item.count),
         tableName: '訂單',
-        total: Object.values(order_result).reduce((total, current) => total + current.count, 0)
+        total: Object.values(order_result).reduce((total, current) => total + Number(current.count), 0)
       }
 
       return res.status(200).json({ status: 'success', orders, comments, ratings, users, message: 'Successfully get owner dashboard' })
