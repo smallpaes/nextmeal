@@ -382,7 +382,6 @@ let ownerController = {
       orders = _.mapObject(_.groupBy(orders, 'time'))
       return res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders' })
     } catch (error) {
-      console.log(error.message)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
