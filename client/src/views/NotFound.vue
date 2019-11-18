@@ -68,16 +68,16 @@ export default {
 
   // make video responsive
   &-video {
-    height: 100%;
     width: 189.62962963vh;
     min-width: 100%;
+    height: 100%;
     min-height: 52.734375vw;
   }
 
   &-content {
+    width: 100%;
     color: color(quaternary);
     text-shadow: 1px 1px 1px lighten(color(secondary), 20%);
-    width: 100%;
 
     &-heading {
       font-family: 'Indie Flower', cursive;
@@ -114,9 +114,9 @@ export default {
 
 .home-btn {
   @include solidButton;
-  text-shadow: none;
   min-width: 120px;
   font-size: size(xs);
+  text-shadow: none;
 
   @include response(sm) {
     min-width: 150px;

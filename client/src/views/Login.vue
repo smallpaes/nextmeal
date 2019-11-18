@@ -168,9 +168,9 @@ export default {
 
 .login {
   @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
-  overflow-y: scroll;
   max-height: 100vh;
   padding: 120px 15px 30px 15px;
+  overflow-y: scroll;
 }
 
 .form {
@@ -179,14 +179,14 @@ export default {
 
   &-content {
     max-width: 450px;
-    background-color: color(quaternary);
-    margin-top: 70px;
     margin: 0 auto;
+    margin-top: 70px;
     overflow-y: hidden;
+    background-color: color(quaternary);
 
     &-top {
-      background-color: color(quaternary);
       padding: 2.7rem;
+      background-color: color(quaternary);
 
       &-header {
         text-align: center;
@@ -202,10 +202,10 @@ export default {
     }
 
     &-bottom {
-      background-color: color(quinary);
       padding: .8rem 2.7rem;
       font-size: size(xs);
       color:lighten(color(secondary), 10%);
+      background-color: color(quinary);
 
       a {
         color: color(tertiary);
