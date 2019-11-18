@@ -10,7 +10,7 @@
         :height="'111px'"
       />
       <img
-        :src="image"
+        :src="image || '@/assets/placeholder-image/logo/200x200.png'"
         class="card-img rounded-0 rounded-sm"
         alt="Dish image"
       >
