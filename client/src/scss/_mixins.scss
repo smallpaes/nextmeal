@@ -2,11 +2,11 @@
   position: relative;
   text-decoration: none;
     &:after {
-      content: '';
       position: absolute;
       bottom: 0;
       left: 0;
       width: 0%;
+      content: '';
       border-bottom: 2px solid color(primary);
       transition: all .2s linear;
     }
@@ -23,35 +23,35 @@
   }
 
   &-content {
-    text-align: center;
     position: absolute;
     top: 50%;
     left: 50%;
+    text-align: center;
     transform: translate(-50%, -50%);
   }
 }
 
 @mixin flexPosition($justCont:center, $alignIte: center, $direction: column) {
   display: flex;
-  justify-content: $justCont;
-  align-items: $alignIte;
   flex-direction: $direction;
+  align-items: $alignIte;
+  justify-content: $justCont;
 }
 
 @mixin setBackground($imageUrl, $height: 100%) {
-  background-image: url($imageUrl);
   width: 100%;
   height: $height;
+  background-image: url($imageUrl);
+  background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  background-repeat: no-repeat;
 }
 
 @mixin solidButton($width: 200 ,$radius: 1,$color: primary) {
-  background-color: color($color);
   min-width: #{$width}px;
   max-width: #{$width}px;
   color: color(quaternary);
+  background-color: color($color);
   border-radius: #{$radius}rem;
   transition: all .2s linear;
 
@@ -64,14 +64,14 @@
   width: #{$width}px;
   height: #{$height}px;
   color: $color;
-  border-radius: #{$radius}rem;
   border: 1px solid $color;
+  border-radius: #{$radius}rem;
   transition: all .2s linear;
 
   &:hover {
-    border-color: $hoverColor;
-    background-color: $bgColor;
     color: $hoverColor;
+    background-color: $bgColor;
+    border-color: $hoverColor;
   }
 }
 
@@ -86,8 +86,9 @@
 
 @mixin headingStyling {
   &-heading {
-    text-align: center;
     padding: 1.5rem 0;
+    text-align: center;
+    
     &-title {
       font-size: size(lg);
     }
@@ -104,11 +105,11 @@
     position: relative;
     background-image: none;
     &::before {
-      content: $content;
       position: absolute;
       top: 0%;
-      color: color(secondary);
       font-size: size(lg);
+      color: color(secondary);
+      content: $content; 
     }
   }
 }
