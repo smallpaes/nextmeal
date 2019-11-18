@@ -394,8 +394,10 @@ let ownerController = {
       // 取得一個月前的時間做為區間起點
       const pass_one_month = moment().subtract(1, 'months').toDate()
 
+      // 取得該owner的餐廳資料
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
 
+      // query過去一個月內每日的訂單
       let orders = await Order.findAll({
         include: [
           { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] }
@@ -498,7 +500,7 @@ let ownerController = {
         labels: ['5星', '4星', '3星', '2星', '1星'],
         data: sorted.map(item => item.count),
         tableName: '滿意度',
-        average: Number.parseFloat(sorted.reduce((total, current) => total + current.rating * current.count, 0) / sorted.reduce((total, current) => total + current.count, 0)).toFixed(1)
+        average: sorted.every(item => item.count === 0) ? 0 : Number.parseFloat(sorted.reduce((total, current) => total + current.rating * current.count, 0) / sorted.reduce((total, current) => total + current.count, 0)).toFixed(1)
       }
       // adjust comment data format for front-end
       comments = await Comment.findAll({
