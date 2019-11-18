@@ -348,6 +348,10 @@ let ownerController = {
       const start = moment().startOf('day').toDate()
       const end = moment().endOf('day').toDate()
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
+      // 處理餐廳資料尚未創建的情況
+      if (!restaurant) {
+        return res.status(200).json({ status: 'success', orders: {}, message: 'You haven\'t provided your restaurant info yet.' })
+      }
       if (req.user.id !== restaurant.UserId) return res.status(400).json({ status: 'error', message: 'you are not allow do this action' })
       let orders = await Order.findAll({
         where: {
@@ -381,6 +385,7 @@ let ownerController = {
       orders = _.mapObject(_.groupBy(orders, 'time'))
       return res.status(200).json({ status: 'success', orders, message: 'Successfully get Orders' })
     } catch (error) {
+      console.log(error.message)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
