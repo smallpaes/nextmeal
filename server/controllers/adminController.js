@@ -450,20 +450,20 @@ let adminController = {
 
       // adjust order data format for front-end
       orders = {
-        labels: order_result.map(item => item.date),
+        labels: dateArray,
         data: order_result.map(item => item.count),
         tableName: '訂單',
         total: total_orders,
-        thisMonth: Object.values(order_result).reduce((total, current) => total + current.count, 0)
+        thisMonth: Object.values(order_result).reduce((total, current) => total + Number(current.count), 0)
       }
 
       // adjust restaurant data format for front-end
       restaurants = {
-        labels: rest_result.map(item => item.date),
+        labels: dateArray,
         data: rest_result.map(item => item.count),
         tableName: '餐廳',
         total: total_restaurants,
-        thisMonth: Object.values(rest_result).reduce((total, current) => total + current.count, 0)
+        thisMonth: Object.values(rest_result).reduce((total, current) => total + Number(current.count), 0)
       }
 
       // adjust user data format for front-end
