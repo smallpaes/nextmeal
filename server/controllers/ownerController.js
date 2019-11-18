@@ -396,7 +396,7 @@ let ownerController = {
       // query過去一個月內每日的訂單
       let orders = await Order.findAll({
         include: [
-          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] }
+          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: [] }
         ],
         where: {
           require_date: {
@@ -404,10 +404,12 @@ let ownerController = {
           }
         },
         attributes: [
+          'id',
           customQuery.char.date_for_dashboard,
           [sequelize.literal(`COUNT(*)`), 'count']
         ],
-        group: ['date', 'id']
+        group: ['date'],
+
       })
       // find all dates a month from now
       var dateArray = [];
