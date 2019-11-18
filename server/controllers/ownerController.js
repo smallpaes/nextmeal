@@ -265,7 +265,7 @@ let ownerController = {
           }
         }]
       })
-      if (!restaurant) return res.status(200).json({ status: 'success',meals: [], options: [], message: 'you do not have your restaurant info filled or a meal yet' })
+      if (!restaurant) return res.status(200).json({ status: 'success', meals: [], options: [], message: 'you do not have your restaurant info filled or a meal yet' })
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
@@ -396,7 +396,7 @@ let ownerController = {
       // query過去一個月內每日的訂單
       let orders = await Order.findAll({
         include: [
-          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] }
+          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: [] }
         ],
         where: {
           require_date: {
@@ -404,10 +404,12 @@ let ownerController = {
           }
         },
         attributes: [
+          'id',
           customQuery.char.date_for_dashboard,
           [sequelize.literal(`COUNT(*)`), 'count']
         ],
-        group: ['date']
+        group: ['date'],
+
       })
       // find all dates a month from now
       var dateArray = [];
