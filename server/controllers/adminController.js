@@ -477,7 +477,7 @@ let adminController = {
       // adjust subscriptions data format for front-end
       const subscriptions = {
         labels: dateArray,
-        dataset: [
+        datasets: [
           {
             label: '10餐',
             data: light_package

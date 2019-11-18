@@ -69,8 +69,12 @@ export default {
   text-align: center;
 
   &-icon {
-    font-size: size(xxl);
+    font-size: size(xl);
     color: color(tertiary);
+
+    @include response(md) {
+      font-size: size(xxl);
+    }
   }
 
   &-description {
@@ -84,8 +88,16 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     border-bottom: 1px dashed lighten(color(secondary), 30%);
-    width: 60px;
+    width: 35px;
     height: 0;
+
+    @include response(md) {
+      width: 60px;
+    }
+
+    @include response(lg) {
+      width: 90px;
+    }
   }
 
   .btn {

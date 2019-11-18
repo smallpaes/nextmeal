@@ -10,7 +10,7 @@
     />
     <img
       v-else
-      :src="restaurant.image"
+      :src="restaurant.image || '@/assets/placeholder-image/logo/1260x750.png'"
       alt="photo of the restaurant"
       class="card-img-top"
     >

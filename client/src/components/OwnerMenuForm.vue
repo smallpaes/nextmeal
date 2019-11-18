@@ -115,6 +115,7 @@ export default {
   },
   methods: {
     async handleSubmit (e) {
+      console.log('done')
       // prepare form data
       const formData = {
         id: this.id,

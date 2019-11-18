@@ -4,7 +4,7 @@
     :class="'btn-' + color + '-color'"
     :disabled="isProcessing || v.$invalid"
     :style="{'border-radius': borderRadius}"
-    @click="$emit('after-click'); isCurrentButton = true"
+    @click.stop.prevent="$emit('after-click'); isCurrentButton = true"
   >
     <template v-if="!isProcessing || (isProcessing && !isCurrentButton)">
       <slot name="initial" />

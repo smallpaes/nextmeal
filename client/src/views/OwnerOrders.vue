@@ -42,7 +42,7 @@
             v-else
             class="placeholder-message col-12 py-4 text-center"
           >
-            <h1><i class="fas fa-utensils" /></h1>
+            <h1><i class="fas fa-clipboard-list" /></h1>
             今日無訂單
           </PlaceholderMessage>
         </template>

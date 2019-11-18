@@ -41,5 +41,10 @@ export default {
     getOrders () {
       return apiHelper.get('/owner/orders')
     }
+  },
+  dashboard: {
+    getDashboard () {
+      return apiHelper.get('/owner/dashboard')
+    }
   }
 }

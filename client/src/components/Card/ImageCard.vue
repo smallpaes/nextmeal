@@ -11,8 +11,8 @@
       />
       <img
         v-else
-        :src="district.image"
-        alt="Restaurant image"
+        :src="district.image || '@/assets/placeholder-image/plain/1260x750.png'"
+        alt="District image"
         class="img-fluid shadow-sm rounded-sm"
       >
       <div :class="{'img-overlay': !isLoading}" />

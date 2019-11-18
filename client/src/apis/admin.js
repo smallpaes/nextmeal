@@ -39,5 +39,10 @@ export default {
     putOrder ({ orderId }) {
       return apiHelper.put(`/admin/orders/${orderId}`, {})
     }
+  },
+  dashboard: {
+    getDashboard () {
+      return apiHelper.get('/admin/dashboard')
+    }
   }
 }
