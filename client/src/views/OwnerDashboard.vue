@@ -23,68 +23,79 @@
 
       <transition
         name="slide"
+        appear
       >
-        <!--Chart Display-->
-        <div
-          v-if="!isLoading"
-          class="row"
-        >
-          <!--Order Section-->
-          <div class="col-md-6">
-            <LineChartCard
-              :chart-data="data.orders"
-              :height="160"
-            >
-              <template #header>
-                <i class="fas fa-clipboard-list mr-2" />{{ data.orders.name }}
-              </template>
-              <template #title>
-                近一個月總{{ data.orders.name }}數
-              </template>
-              <template #text>
-                <span :style="{color: data.orders.datasets[0].borderColor}">{{ data.orders.total }}</span>
-              </template>
-            </LineChartCard>
+        <template v-if="!isLoading">
+          <!--Chart Display-->
+          <div
+            v-if="currentUser.hasRestaurant"
+            class="row"
+          >
+            <!--Order Section-->
+            <div class="col-md-6">
+              <LineChartCard
+                :chart-data="data.orders"
+                :height="160"
+              >
+                <template #header>
+                  <i class="fas fa-clipboard-list mr-2" />{{ data.orders.name }}
+                </template>
+                <template #title>
+                  近一個月總{{ data.orders.name }}數
+                </template>
+                <template #text>
+                  <span :style="{color: data.orders.datasets[0].borderColor}">{{ data.orders.total || 0 }}</span>
+                </template>
+              </LineChartCard>
+            </div>
+            <!--Customers Section-->
+            <div class="col-md-6">
+              <PieChartCard
+                :chart-data="data.users"
+                :height="160"
+              >
+                <template #header>
+                  <i class="fas fa-users mr-2" />{{ data.users.name }}
+                </template>
+                <template #title>
+                  近一個月總{{ data.users.name }}數
+                </template>
+                <template #text>
+                  <span :style="{color: 'rgb(93,90,87)'}">{{ data.users.total || 0 }}</span>
+                </template>
+              </PieChartCard>
+            </div>
+            <!--ratings Section-->
+            <div class="col-md-6">
+              <BarChartHorizontal
+                :chart-data="data.ratings"
+                :height="160"
+              >
+                <template #header>
+                  <i class="fas fa-smile mr-2" />{{ data.ratings.name }}
+                </template>
+                <template #title>
+                  用戶平均{{ data.ratings.name }}
+                </template>
+                <template #text>
+                  <span :style="{color: data.ratings.datasets[0].borderColor}">{{ data.ratings.average || 0 }}</span>
+                </template>
+              </BarChartHorizontal>
+            </div>
+            <!--Comments Section-->
+            <div class="col-md-6 ">
+              <DashboardCommentCard :comments="comments" />
+            </div>
           </div>
-          <!--Customers Section-->
-          <div class="col-md-6">
-            <PieChartCard
-              :chart-data="data.users"
-              :height="160"
-            >
-              <template #header>
-                <i class="fas fa-users mr-2" />{{ data.users.name }}
-              </template>
-              <template #title>
-                近一個月總{{ data.users.name }}數
-              </template>
-              <template #text>
-                <span :style="{color: 'rgb(93,90,87)'}">{{ data.users.total }}</span>
-              </template>
-            </PieChartCard>
-          </div>
-          <!--ratings Section-->
-          <div class="col-md-6">
-            <BarChartHorizontal
-              :chart-data="data.ratings"
-              :height="160"
-            >
-              <template #header>
-                <i class="fas fa-smile mr-2" />{{ data.ratings.name }}
-              </template>
-              <template #title>
-                用戶平均{{ data.ratings.name }}
-              </template>
-              <template #text>
-                <span :style="{color: data.ratings.datasets[0].borderColor}">{{ data.ratings.average }}</span>
-              </template>
-            </BarChartHorizontal>
-          </div>
-          <!--Comments Section-->
-          <div class="col-md-6 ">
-            <DashboardCommentCard :comments="comments" />
-          </div>
-        </div>
+          <!--Placeholder Messgae when restaurat info is empty-->
+          <PlaceholderMessage
+            v-else
+            class="placeholder-message col-12 py-4 text-center"
+          >
+            <h1><i class="fas fa-exclamation-circle" /></h1>
+            請先至「餐廳」頁面填寫資料<br>完成開店流程
+          </PlaceholderMessage>
+        </template>
       </transition>
     </section>
   </section>
@@ -97,9 +108,11 @@ import LineChartCard from '../components/Card/LineChartCard'
 import BarChartHorizontal from '../components/Card/BarChartHorizontal'
 import DashboardCommentCard from '../components/Card/DashboardCommentCard'
 import PieChartCard from '../components/Card/PieChartCard'
+import PlaceholderMessage from '../components/Placeholder/Message'
 import Loader from '../components/Loader'
 import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -109,7 +122,8 @@ export default {
     LineChartCard,
     BarChartHorizontal,
     DashboardCommentCard,
-    PieChartCard
+    PieChartCard,
+    PlaceholderMessage
   },
   data () {
     return {
@@ -149,8 +163,12 @@ export default {
       comments: []
     }
   },
+  computed: {
+    ...mapState(['currentUser'])
+  },
   created () {
-    this.fetchData()
+    if (this.currentUser.hasRestaurant) return this.fetchData()
+    this.isLoading = false
   },
   methods: {
     async fetchData () {

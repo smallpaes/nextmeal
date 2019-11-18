@@ -13,6 +13,7 @@
         @toggle-navbar="navIsOpen = !navIsOpen"
       />
       <router-link
+        v-if="currentUser.hasRestaurant"
         :to="{name: 'owner-dish-new'}"
         class="new-dish"
       >
@@ -36,6 +37,7 @@
       <!--Display Meals-->
       <transition
         name="slide"
+        appear
       >
         <div
           v-if="!isLoading"
@@ -62,8 +64,14 @@
             v-else
             class="placeholder-message col-12 py-4 text-center"
           >
-            <h1><i class="fas fa-utensils" /></h1>
-            尚無菜單
+            <template v-if="currentUser.hasRestaurant">
+              <h1><i class="fas fa-utensils" /></h1>
+              尚無菜單
+            </template>
+            <template v-else>
+              <h1><i class="fas fa-exclamation-circle" /></h1>
+              請先至「餐廳」頁面填寫資料<br>完成開店流程
+            </template>
           </PlaceholderMessage>
         </div>
       </transition>
@@ -81,6 +89,7 @@ import PlaceholderMessage from '../components/Placeholder/Message'
 import ownerAPI from '../apis/owner'
 import { textTruncateFilter } from '../utils/mixins'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -99,8 +108,12 @@ export default {
       navIsOpen: false
     }
   },
+  computed: {
+    ...mapState(['currentUser'])
+  },
   created () {
-    this.fetchMeals()
+    if (this.currentUser.hasRestaurant) return this.fetchMeals()
+    this.isLoading = false
   },
   methods: {
     async fetchMeals () {
