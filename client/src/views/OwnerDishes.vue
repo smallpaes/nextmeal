@@ -13,6 +13,7 @@
         @toggle-navbar="navIsOpen = !navIsOpen"
       />
       <router-link
+        v-if="currentUser.hasRestaurant"
         :to="{name: 'owner-dish-new'}"
         class="new-dish"
       >
@@ -36,26 +37,42 @@
       <!--Display Meals-->
       <transition
         name="slide"
+        appear
       >
         <div
           v-if="!isLoading"
           class="dishes-card-container row mx-0 p-3 mb-4 rounded-sm shadow-sm"
         >
-          <OwnerDishCard
-            v-for="meal in meals"
-            :key="meal.id"
-            class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
-            :image="meal.image"
-            :edit-btn="true"
-            @edit="$router.push({name: 'owner-dish-edit', params: {dish_id: meal.id}})"
+          <template v-if="meals.length > 0">
+            <OwnerDishCard
+              v-for="meal in meals"
+              :key="meal.id"
+              class="col-12 pb-0 pb-md-2 px-0 mb-0 mb-md-2"
+              :image="meal.image"
+              :edit-btn="true"
+              @edit="$router.push({name: 'owner-dish-edit', params: {dish_id: meal.id}})"
+            >
+              <template #title>
+                {{ meal.name }}
+              </template>
+              <template #primary-description>
+                {{ meal.description | textTruncate(20) }}
+              </template>
+            </OwnerDishCard>
+          </template>
+          <PlaceholderMessage
+            v-else
+            class="placeholder-message col-12 py-4 text-center"
           >
-            <template #title>
-              {{ meal.name }}
+            <template v-if="currentUser.hasRestaurant">
+              <h1><i class="fas fa-utensils" /></h1>
+              尚無菜單
             </template>
-            <template #primary-description>
-              {{ meal.description | textTruncate(20) }}
+            <template v-else>
+              <h1><i class="fas fa-exclamation-circle" /></h1>
+              請先至「餐廳」頁面填寫資料<br>完成開店流程
             </template>
-          </OwnerDishCard>
+          </PlaceholderMessage>
         </div>
       </transition>
     </section>
@@ -68,9 +85,11 @@ import NavbarToggler from '../components/Navbar/NavbarToggler'
 import OwnerDishNavPill from '../components/Navbar/OwnerDishNavPill'
 import OwnerDishCard from '../components/Card/OwnerDishCard'
 import Loader from '../components/Loader'
+import PlaceholderMessage from '../components/Placeholder/Message'
 import ownerAPI from '../apis/owner'
 import { textTruncateFilter } from '../utils/mixins'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -78,6 +97,7 @@ export default {
     NavbarToggler,
     OwnerDishNavPill,
     OwnerDishCard,
+    PlaceholderMessage,
     Loader
   },
   mixins: [textTruncateFilter],
@@ -88,8 +108,12 @@ export default {
       navIsOpen: false
     }
   },
+  computed: {
+    ...mapState(['currentUser'])
+  },
   created () {
-    this.fetchMeals()
+    if (this.currentUser.hasRestaurant) return this.fetchMeals()
+    this.isLoading = false
   },
   methods: {
     async fetchMeals () {

@@ -33,7 +33,7 @@
         >
           <div class="menu-card-container row mx-0 p-3 rounded-sm shadow-sm">
             <!--Display Menu-->
-            <template v-if="Object.keys(meal).length > 0">
+            <template v-if="Object.keys(meal).length > 0 && ($route.query.ran === 'thisWeek' || $route.query.ran === 'nextWeek' && meal.nextServing_quantity)">
               <OwnerDishCard
                 v-for="day in days"
                 :key="day"
@@ -51,7 +51,7 @@
                 </template>
                 <template #secondary-description>
                   <span class="d-none d-md-inline">供應數量</span>
-                  ：{{ $route.query.ran === 'thisWeek' ? meal.quantity : meal.nextServing_quantity }}份
+                  ：{{ $route.query.ran === 'thisWeek' ? meal.quantity : meal.nextServing_quantity || 0 }}份
                 </template>
               </OwnerDishCard>
             </template>
@@ -59,13 +59,19 @@
               v-else
               class="placeholder-message col-12 py-4 text-center"
             >
-              <h1><i class="fas fa-utensils" /></h1>
-              尚未提供餐點
+              <template v-if="currentUser.hasRestaurant">
+                <h1><i class="fas fa-utensils" /></h1>
+                尚未提供餐點
+              </template>
+              <template v-else>
+                <h1><i class="fas fa-exclamation-circle" /></h1>
+                請先至「餐廳」頁面填寫資料<br>完成開店流程
+              </template>
             </PlaceholderMessage>
           </div>
           <!--Form to Edit Next Week Meal-->
           <OwnerMenuForm
-            v-if="$route.query.ran==='nextWeek'"
+            v-if="$route.query.ran==='nextWeek' && currentUser.hasRestaurant"
             ref="editForm"
             class="menu-form"
             :initial-meal="Object.keys(meal).length > 0 ? meal : {}"
@@ -88,6 +94,7 @@ import PlaceholderMessage from '../components/Placeholder/Message'
 import Loader from '../components/Loader'
 import ownerAPI from '../apis/owner'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   components: {
@@ -118,6 +125,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['currentUser']),
     currentDay: function () {
       const date = new Date()
       return date.getDay()

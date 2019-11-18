@@ -150,11 +150,11 @@ let adminController = {
             'address', 'lat', 'lng', 'createdAt', 'updatedAt'
           ]
         },
-        order: [['expired_date', 'DESC'],['id', 'ASC']],
+        order: [['expired_date', 'DESC'], ['id', 'ASC']],
         offset: (pageNum - 1) * pageLimit,
         limit: pageLimit,
         subQuery: false,
-        districts:true
+        districts: true
       })
       let pages = Math.ceil((users.count) / pageLimit)
       users = users.rows.map(user => ({
@@ -320,6 +320,178 @@ let adminController = {
       }
       sendEmail(req, res, emailInfo)
       return res.status(200).json({ status: 'success', subscription, message: 'Successfully cancel the order.' })
+    } catch (error) {
+      res.status(500).json({ status: 'error', message: error })
+    }
+  },
+  dashboard: async (req, res) => {
+    try {
+      const now = moment().toISOString()
+      const start = moment().startOf('day').toISOString()
+      const end = moment().endOf('day').toISOString()
+
+      // 取得一個月前的時間做為區間起點
+      const pass_one_month = moment().subtract(1, 'months').toDate()
+
+      // get all user relative counts
+      let users = await User.findAll({
+        attributes: [
+          customQuery.literal.subscribeUsers(now),
+          customQuery.literal.nonsubscribeUsers(now),
+          customQuery.literal.userIncreased(end, start)
+        ]
+      })
+
+      const userIncreased = users[0].dataValues.userIncreased
+
+      // get all restaurant relative counts (for a month period)
+      let restaurants = await Restaurant.findAll({
+        where: {
+          createdAt: {
+            [Op.gte]: pass_one_month
+          }
+        },
+        attributes: [
+          customQuery.char.date_for_admin_dashboard,
+          [sequelize.literal(`COUNT(*)`), 'count'],
+          customQuery.literal.restIncreased(end, start),
+          customQuery.literal.subtIncreased(end, start)
+        ],
+        group: ['date']
+      })
+      const total_restaurants = await Restaurant.count()
+      const restIncreased = restaurants[0].dataValues.restIncreased
+      const subtIncreased = restaurants[0].dataValues.subtIncreased
+
+      // count orders overall
+      const total_orders = await Order.count()
+
+      // query order for the past one month
+      let orders = await Order.findAll({
+        where: {
+          require_date: {
+            [Op.gte]: pass_one_month
+          }
+        },
+        attributes: [
+          customQuery.literal.todayOrders(start, end),
+          customQuery.char.date_for_dashboard,
+          [sequelize.literal(`COUNT(*)`), 'count']
+        ],
+        group: ['date']
+      })
+      // get todays order counts
+      const order_num = orders[0].dataValues.todayOrders
+
+
+      // find all dates a month from now
+      var dateArray = [];
+      let light_package = []
+      let heavy_package = []
+      var currentDate = moment(pass_one_month);
+      var stopDate = moment();
+      while (currentDate <= stopDate) {
+        let light_subs = await Subscription.count({
+          where: {
+            sub_date: {
+              [Op.lt]: currentDate
+            },
+            sub_name: {
+              [Op.eq]: '輕量型'
+            },
+            payment_status: true
+          }
+        })
+        light_package.push(light_subs)
+        let heavy_subs = await Subscription.count({
+          where: {
+            sub_date: {
+              [Op.lt]: currentDate
+            },
+            sub_name: {
+              [Op.eq]: '滿足型'
+            },
+            payment_status: true
+          }
+        })
+        heavy_package.push(heavy_subs)
+        dateArray.push(moment(currentDate).format('MM/DD'))
+        currentDate = moment(currentDate).add(1, 'days')
+      };
+
+      // check if there's missing dates
+      const currentDates = orders.map(item => item.dataValues.date)
+      const restDates = restaurants.map(item => item.date)
+      const missing_fields_orders = dateArray.filter(v => currentDates.indexOf(v) === -1)
+      const missing_fields_restaurants = dateArray.filter(v => restDates.indexOf(v) === -1)
+
+      // create the an end result object for later sorting
+      const order_result = orders.map(item => ({
+        date: item.dataValues.date,
+        count: item.dataValues.count
+      }))
+
+      const rest_result = restaurants.map(item => ({
+        date: item.dataValues.date,
+        count: item.dataValues.count
+      }))
+
+      // if missing fields exist,fill in with value 0
+      missing_fields_orders.map(async item => {
+        await order_result.push({ "date": item, count: 0 })
+      })
+
+      missing_fields_restaurants.map(async item => {
+        await rest_result.push({ "date": item, count: 0 })
+      })
+      // sort the result 
+      order_result.sort((a, b) => { return new Date(a["date"]) - new Date(b["date"]) })
+      rest_result.sort((a, b) => { return new Date(a["date"]) - new Date(b["date"]) })
+
+      // adjust order data format for front-end
+      orders = {
+        labels: order_result.map(item => item.date),
+        data: order_result.map(item => item.count),
+        tableName: '訂單',
+        total: total_orders,
+        thisMonth: Object.values(order_result).reduce((total, current) => total + current.count, 0)
+      }
+
+      // adjust restaurant data format for front-end
+      restaurants = {
+        labels: rest_result.map(item => item.date),
+        data: rest_result.map(item => item.count),
+        tableName: '餐廳',
+        total: total_restaurants,
+        thisMonth: Object.values(rest_result).reduce((total, current) => total + current.count, 0)
+      }
+
+      // adjust user data format for front-end
+      users = {
+        labels: ['訂閱中', '未訂閱'],
+        data: [users[0].dataValues.subscribeUsers, users[0].dataValues.nonsubscribeUsers],
+        tableName: '會員',
+        total: users[0].dataValues.subscribeUsers + users[0].dataValues.nonsubscribeUsers
+      }
+
+      // adjust subscriptions data format for front-end
+      const subscriptions = {
+        labels: dateArray,
+        datasets: [
+          {
+            label: '10餐',
+            data: light_package
+          },
+          {
+            label: '20餐',
+            data: heavy_package
+          },
+        ],
+        tableName: '訂閱',
+        total: light_package[light_package.length - 1] + heavy_package[heavy_package.length - 1]
+      }
+      res.status(200).json({ status: 'success', userIncreased, restIncreased, subtIncreased, order_num, subscriptions, restaurants, users, orders, message: 'Successfully get admin dashboard info' })
+
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }

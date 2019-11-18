@@ -13,7 +13,8 @@ export default new Vuex.Store({
       avatar: '',
       role: '',
       subscriptionStatus: false,
-      subscriptionBalance: -1
+      subscriptionBalance: -1,
+      hasRestaurant: false
     },
     isAuthenticated: false,
     token: ''
@@ -53,7 +54,8 @@ export default new Vuex.Store({
           avatar: data.user.avatar,
           role: data.user.role,
           subscriptionStatus: data.user.sub_status,
-          subscriptionBalance: data.user.sub_balance
+          subscriptionBalance: data.user.sub_balance,
+          hasRestaurant: data.user.hasRestaurant
         })
         // is authenticated
         return true

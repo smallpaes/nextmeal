@@ -186,6 +186,12 @@ const router = new Router({
       beforeEnter: authentication.isOwner
     },
     {
+      path: '/owner/dashboard',
+      name: 'owner-dashboard',
+      component: () => import('./views/OwnerDashboard.vue'),
+      beforeEnter: authentication.isOwner
+    },
+    {
       path: '/admin',
       name: 'admin-panel',
       redirect: '/admin/restaurants'
@@ -218,6 +224,12 @@ const router = new Router({
       path: '/admin/orders',
       name: 'admin-orders',
       component: () => import('./views/AdminOrders.vue'),
+      beforeEnter: authentication.isAdmin
+    },
+    {
+      path: '/admin/dashboard',
+      name: 'admin-dashboard',
+      component: () => import('./views/AdminDashboard.vue'),
       beforeEnter: authentication.isAdmin
     },
     {

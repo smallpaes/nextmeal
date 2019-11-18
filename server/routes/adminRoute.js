@@ -16,12 +16,13 @@ router.delete('/restaurants/:restaurant_id', adminController.deleteRestaurant)
 
 router.get('/users', adminController.getUsers)
 router.get('/users/:user_id', adminController.getUser)
-router.put('/users/:user_id', upload.single('avatar'),userController.putProfile)
+router.put('/users/:user_id', upload.single('avatar'), userController.putProfile)
 router.delete('/users/:user_id', adminController.deleteUser)
 
 router.get('/orders', adminController.getOrders)
 // router.get('/orders/:order_id', adminController.getOrder)
 router.put('/orders/:order_id', stopOrder, adminController.putCancel) // admin 取消訂單使用，沒有編輯功能!
 
-
+// dashboard
+router.get('/dashboard', adminController.dashboard)
 module.exports = router
