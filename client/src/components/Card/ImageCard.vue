@@ -60,9 +60,7 @@ export default {
   &-container {
     transition: transform .2s linear;
 
-    &:hover {
-      transform: translateY(-2%);
-    }
+    &:hover { transform: translateY(-2%); }
   }
 
   &-fluid {
@@ -71,8 +69,6 @@ export default {
     object-fit: cover;
   }
 
-  &-content {
-    color: color(quaternary);
-  }
+  &-content { color: color(quaternary); }
 }
 </style>

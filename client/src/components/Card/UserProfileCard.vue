@@ -79,29 +79,21 @@ export default {
       }
     }
 
-    &-bottom {
-      padding: .5rem 0;
-    }
+    &-bottom { padding: .5rem 0; }
   }
 
-  &-form {
-    border: 1px solid color(secondary);
-  }
+  &-form { border: 1px solid color(secondary); }
 }
 
 .nav {
-  &-item {
-    text-align: center;
-  }
+  &-item { text-align: center; }
 
   &-link {
     @include linkStyling(lighten(color(secondary), 10%));
     padding: .5rem 1rem;
     font-size: size(sm);
 
-    &:hover {
-      color: color(primary);
-    }
+    &:hover { color: color(primary); }
 
     &.active {
       @include pseudoStyling(before, primary, .3, 1.6);

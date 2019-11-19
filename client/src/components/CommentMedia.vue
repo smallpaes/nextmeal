@@ -94,9 +94,7 @@ export default {
     }
   }
 
-  &-description {
-    font-size: size(xs);
-  }
+  &-description { font-size: size(xs); }
 
   &-rating {
     font-size: size(sm);

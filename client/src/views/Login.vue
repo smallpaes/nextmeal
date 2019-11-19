@@ -190,14 +190,8 @@ export default {
 
       &-header {
         text-align: center;
-
-        h3 {
-          font-size: size(lg);
-        }
-
-        h5 {
-          font-size: size(sm);
-        }
+        h3 { font-size: size(lg); }
+        h5 { font-size: size(sm); }
       }
     }
 
@@ -211,15 +205,11 @@ export default {
         color: color(tertiary);
         transition: color .2s linear;
 
-        &:hover {
-          color: darken(color(tertiary), 5%);
-        }
+        &:hover { color: darken(color(tertiary), 5%); }
       }
     }
   }
 }
 
-.btn {
-  @include solidButton(200, 1);
-}
+.btn { @include solidButton(200, 1); }
 </style>

@@ -142,13 +142,8 @@ export default {
       &-header {
         text-align: center;
 
-        h3 {
-          font-size: size(lg);
-        }
-
-        h5 {
-          font-size: size(sm);
-        }
+        h3 { font-size: size(lg); }
+        h5 { font-size: size(sm); }
       }
     }
 
@@ -158,9 +153,7 @@ export default {
       color:lighten(color(secondary), 10%);
       background-color: color(quinary);
 
-      a {
-        @include linkStyling(color(tertiary));
-      }
+      a { @include linkStyling(color(tertiary)); }
     }
   }
 

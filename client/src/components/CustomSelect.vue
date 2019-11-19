@@ -93,26 +93,19 @@ export default {
       }
     }
 
-    .invalid-feedback {
-      position: absolute;
-    }
+    .invalid-feedback { position: absolute; }
   }
 
   &-group {
     &.invalid {
+      .form-control { border: none; }
       .form-select-control {
         border: 1px solid color(primary);
         background-color: lighten(color(primary), 36%);
       }
-
-      .form-control {
-        border: none;
-      }
     }
   }
-}
 
-.form-control {
-  border: none
+  &-control { border: none; }
 }
 </style>

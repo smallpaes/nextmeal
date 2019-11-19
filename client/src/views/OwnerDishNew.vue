@@ -96,9 +96,6 @@ export default {
 
 .dish {
   @include controlPanelLayout;
-
-  &-divider {
-    margin-top: 0;
-  }
+  &-divider { margin-top: 0; }
 }
 </style>

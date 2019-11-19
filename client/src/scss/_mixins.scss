@@ -11,16 +11,12 @@
       transition: all .2s linear;
     }
     &:hover {
-      &:after {
-        width: 100%;
-      }
+      &:after { width: 100%; }
     }
 }
 
 @mixin positionCenter {
-  &-container {
-    position: relative;
-  }
+  &-container { position: relative; }
 
   &-content {
     position: absolute;
@@ -55,9 +51,7 @@
   border-radius: #{$radius}rem;
   transition: all .2s linear;
 
-  &:hover {
-    background-color: darken(color($color), 20%);
-  }
+  &:hover { background-color: darken(color($color), 20%); }
 }
 
 @mixin buttonOutline($width: 200 ,$height: 38, $color: color(primary), $hoverColor: color(quaternary), $bgColor: color(primary), $radius: 1) {
@@ -79,9 +73,7 @@
   color: $color;
   transition: color .2s linear;
 
-  &:hover {
-    color: darken($color, 10%);
-  }
+  &:hover { color: darken($color, 10%); }
 }
 
 @mixin headingStyling {
@@ -89,9 +81,7 @@
     padding: 1.5rem 0;
     text-align: center;
     
-    &-title {
-      font-size: size(lg);
-    }
+    &-title { font-size: size(lg); }
 
     &-description{
       font-size: size(sm);
@@ -144,9 +134,7 @@
     font-size: size(md);
     color: color(primary);
 
-    &:hover {
-      @extend .#{$name}-brand;
-    }
+    &:hover { @extend .#{$name}-brand; }
   }
 }
 
@@ -167,9 +155,7 @@
       background-color: color(quaternary);
       border-color: lighten(color(secondary), 45%);
 
-      &::placeholder {
-        color: lighten(color(secondary), 45%);
-      }
+      &::placeholder { color: lighten(color(secondary), 45%); }
     }
   }
 }
@@ -197,9 +183,7 @@
         border: 1px solid color(primary);
       }
   
-      small {
-        color: color(primary);
-      }
+      small { color: color(primary); }
     }
   }
 }
@@ -284,9 +268,7 @@
         box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
         transition: transform .2s linear, box-shadow .2s linear;
   
-        &:last-child {
-          margin-bottom: 0;
-        }
+        &:last-child { margin-bottom: 0; }
   
         &:hover {
           color: color(secondary);
@@ -301,9 +283,7 @@
         position: relative;    
         padding-left: 50%;
 
-        &:not(:last-child) {
-          border-bottom: 1px solid lighten(color(secondary), 55%);
-        }
+        &:not(:last-child) { border-bottom: 1px solid lighten(color(secondary), 55%); }
   
         &::before {
           position: absolute;
@@ -381,9 +361,7 @@
             white-space: nowrap;
           }
 
-          &:not(:last-child) {
-            border-bottom: none;
-          }
+          &:not(:last-child) { border-bottom: none; }
   
           @for $i from 1 through 6 {
             &:nth-of-type(#{$i}) {
@@ -400,9 +378,7 @@
 
 @mixin fileUpload {
   .file {
-    &-input {
-      @include hiddenInput;
-    }
+    &-input { @include hiddenInput; }
   
     /* Style label into button */
     &-label {
@@ -428,13 +404,8 @@
 
         &:hover {
           cursor: pointer;
-          & .file-image {
-            opacity: .3;
-          }
-  
-          & .fa-window-close {
-            opacity: 1;   
-          }
+          & .file-image { opacity: .3; }
+          & .fa-window-close { opacity: 1; }
         }
 
         .fa-window-close {
@@ -470,50 +441,22 @@
   margin-left: 0;
   transition: margin-left .1s linear;
 
-  @include response(sm) {
-    margin-left: 80px;
-  }
+  @include response(sm) { margin-left: 80px; }
+  @include response(md) { margin-left: 145px; }
 
-  @include response(md) {
-    margin-left: 145px;
-  }
-
-  &-title {
-    size: size(lg);
-  }
-
-  &-divider {
-    width: 100%;
-  }
-  
-  &-table {
-    margin-bottom: 30px;
-  }
-
-  &-placeholder {
-    margin-bottom: 30px;
-  }
-
-  &-form {
-    margin-bottom: 30px;
-  }
+  &-title { size: size(lg); }
+  &-divider { width: 100%; }
+  &-table { margin-bottom: 30px; }
+  &-placeholder { margin-bottom: 30px; }
+  &-form { margin-bottom: 30px; }
 }
 
 @mixin slideAnimation($animateLeave:true) {
   .slide {
-    &-enter {
-      &-active {
-        animation: slide-in .5s ease-out forwards;
-  
-      }
-    }
+    &-enter-active { animation: slide-in .5s ease-out forwards; }
 
     @if $animateLeave {
-      &-leave {
-        &-active {
-          animation: slide-out .5s ease-out forwards;
-        }
-      }
+      &-leave-active { animation: slide-out .5s ease-out forwards; }
     }
   }
   
@@ -544,10 +487,7 @@
   .fade {
     &-enter {
       opacity: 0;
-      &-active {
-        transition: opacity .5s linear;
-  
-      }
+      &-active { transition: opacity .5s linear; }
     }
   
     @if $animateLeave {
@@ -563,10 +503,7 @@
   .slide-in-left {
     &-enter {
       transform: translateX(-100%);
-      &-active {
-        transition: transform .5s ease-out;
-  
-      }
+      &-active { transition: transform .5s ease-out; }
     }
   
     &-leave {
@@ -617,9 +554,7 @@
       padding: 0 1.1rem .7rem 0;
       font-size: size(sm);
 
-      @include response(sm) {
-        padding: 0 1.5rem .7rem 0;
-      }
+      @include response(sm) { padding: 0 1.5rem .7rem 0; }
   
       &.active {
         @include pseudoStyling(before, tertiary, 2.1, .15);
@@ -627,13 +562,9 @@
         color: color(tertiary);
         background-color: transparent;
 
-        @include response(md) {
-          @include pseudoStyling(before, tertiary, 4.2, .15);
-        }
+        @include response(md) { @include pseudoStyling(before, tertiary, 4.2, .15); }
   
-        &::before {
-          top: 97%;
-        }
+        &::before { top: 97%; }
       }
     }
   }

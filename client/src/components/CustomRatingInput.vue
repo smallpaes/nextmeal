@@ -90,9 +90,7 @@ export default {
 
   &-input {
     display: none;
-    &:checked ~ label:after {
-      opacity: 1;
-    }
+    &:checked ~ label:after { opacity: 1; }
   }
 
   &-label {
@@ -127,13 +125,8 @@ export default {
     }
 
     &:hover {
-      &::after {
-        opacity: 1;
-      }
-
-      & ~ label::after {
-        opacity: 1;
-      }
+      &::after { opacity: 1; }
+      & ~ label::after { opacity: 1; }
     }
   }
 }

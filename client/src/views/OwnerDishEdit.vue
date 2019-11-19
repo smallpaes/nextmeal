@@ -166,9 +166,7 @@ export default {
 <style lang="scss" scoped>
 @include slideAnimation;
 
-.wrapper {
-  background-color: color(quinary);
-}
+.wrapper { background-color: color(quinary); }
 
 .dish {
   @include controlPanelLayout;

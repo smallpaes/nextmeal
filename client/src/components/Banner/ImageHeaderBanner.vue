@@ -75,9 +75,7 @@ export default {
       }
     }
 
-    .btn {
-      @include solidButton;
-    }
+    .btn { @include solidButton; }
   }
 }
 </style>

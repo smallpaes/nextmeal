@@ -270,9 +270,9 @@ export default {
      }
 
      &::after {
-      @extend .dropdown-menu::before;
-      bottom: 99.5%;
-      border-bottom: 10px solid white;
+       @extend .dropdown-menu::before;
+       bottom: 99.5%;
+       border-bottom: 10px solid white;
      }
   }
 
@@ -283,20 +283,13 @@ export default {
 
     &.active {
       background-color: unset;
-
-      &:hover {
-        background-color: #f8f9fa;
-      }
+      &:hover { background-color: #f8f9fa; }
     }
 
-    &:active {
-      @extend .dropdown-item.active
-    }
+    &:active { @extend .dropdown-item.active; }
   }
 
-  .skelenton-box {
-    position: absolute;
-  }
+  .skelenton-box { position: absolute; }
 }
 
 .icon {
@@ -304,11 +297,6 @@ export default {
   width: 25px;
 }
 
-.navbar-light .navbar-nav .nav-link.active {
-  color:lighten(color(secondary), 20%);
-}
-
-.navbar-light .navbar-nav .nav-link.active:hover {
-  color: color(secondary);
-}
+.navbar-light .navbar-nav .nav-link.active { color:lighten(color(secondary), 20%); }
+.navbar-light .navbar-nav .nav-link.active:hover { color: color(secondary); }
 </style>

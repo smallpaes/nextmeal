@@ -42,9 +42,7 @@
     color: lighten(color(secondary), 30%);
     transition: color .2s linear;
 
-    &:hover {
-      color: lighten(color(secondary), 50%);
-    }
+    &:hover { color: lighten(color(secondary), 50%); }
 
     &:not(:last-child):after {
       content: '';

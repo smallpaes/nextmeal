@@ -97,9 +97,7 @@ export default {
 .questions {
   @include headingStyling;
 
-  &-heading {
-    text-align: center;
-  }
+  &-heading { text-align: center; }
 }
 
 .card {
@@ -107,13 +105,9 @@ export default {
   border: none;
   border-bottom: 1px solid lighten(color(secondary), 55%);
 
-  &:first-of-type {
-    border-bottom: 1px solid lighten(color(secondary), 55%);
-  }
+  &:first-of-type { border-bottom: 1px solid lighten(color(secondary), 55%); }
 
-  &:not(:first-of-type):not(:last-of-type) {
-    @extend .card:first-of-type;
-  }
+  &:not(:first-of-type):not(:last-of-type) { @extend .card:first-of-type; }
 
   &-header {
     padding: 20px 20px 20px 0;
@@ -122,9 +116,7 @@ export default {
     background-color: white;
     border-top: none;
     border-bottom: none;
-    &:hover {
-      cursor: pointer;
-    }
+    &:hover { cursor: pointer; }
   }
 
   &-body {
@@ -136,8 +128,6 @@ export default {
 
 .btn-container {
   text-align: center;
-  .btn {
-    @include solidButton;
-  }
+  .btn { @include solidButton; }
 }
 </style>

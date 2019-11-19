@@ -51,10 +51,7 @@ export default {
 
   &-link {
     color: color(tertiary);
-
-    &:hover {
-      color: darken(color(tertiary), 5%);
-    }
+    &:hover { color: darken(color(tertiary), 5%); }
   }
 }
 </style>

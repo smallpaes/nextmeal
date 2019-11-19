@@ -50,13 +50,8 @@ export default {
   overflow: hidden;
   border: none;
 
-  @include response(sm) {
-    height: 150px;
-  }
-
-  @include response(md) {
-    height: 170px;
-  }
+  @include response(sm) { height: 150px; }
+  @include response(md) { height: 170px; }
 
   &-body {
     @include flexPosition(center, flex-start, column);
@@ -69,13 +64,8 @@ export default {
     height: 100%;
     object-fit: cover;
 
-    @include response(sm) {
-      width: 150px;
-    }
-
-    @include response(md) {
-      width: 170px;
-    }
+    @include response(sm) { width: 150px; }
+    @include response(md) { width: 170px;}
   }
 
   &-title {
@@ -88,9 +78,7 @@ export default {
     font-size: size(xs);
     color: lighten(color(secondary), 10%);
 
-    .rating {
-      color: color(primary);
-    }
+    .rating { color: color(primary); }
   }
 }
 </style>

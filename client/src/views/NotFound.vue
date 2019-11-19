@@ -57,9 +57,7 @@ export default {
 .message {
   @include positionCenter;
 
-  &-container {
-    height: 100%;
-  }
+  &-container { height: 100%; }
 
   &-video-container {
     height: 100%;
@@ -88,26 +86,16 @@ export default {
       font-size: size(sm);
       font-weight: weight(bold);
 
-      @include response(sm) {
-        font-size: size(md);
-      }
-
-      @include response(md) {
-        font-size: size(lg);
-      }
+      @include response(sm) { font-size: size(md); }
+      @include response(md) { font-size: size(lg); }
     }
 
     &-subdescription {
       font-size: size(xs);
       font-weight: weight(bold);
 
-      @include response(sm) {
-        font-size: size(sm);
-      }
-
-      @include response(md) {
-        font-size: size(md);
-      }
+      @include response(sm) { font-size: size(sm); }
+      @include response(md) { font-size: size(md); }
     }
   }
 }
@@ -123,8 +111,6 @@ export default {
     font-size: size(sm);
   }
 
-  @include response(md) {
-    min-width: 200px;
-  }
+  @include response(md) { min-width: 200px; }
 }
 </style>

@@ -67,22 +67,13 @@ $headers: (
 // table layout for large screen
 @include tableFullSize;
 
-.high-rating {
-  color: color(tertiary);
-}
-
-.low-rating {
-  color: color(primary);
-}
+.high-rating { color: color(tertiary); }
+.low-rating { color: color(primary); }
 
 .card {
-  &-header {
-    background-color: lighten(color(secondary), 10%);
-  }
+  &-header { background-color: lighten(color(secondary), 10%); }
 
-  &-title {
-    color: color(quaternary);
-  }
+  &-title { color: color(quaternary); }
 
   &-text {
     font-size: size(xs);
@@ -98,10 +89,7 @@ $headers: (
 
       &:not(:last-child) {
         border-bottom: 1.5px dashed lighten(color(secondary), 40%);
-
-        @include response(md) {
-          border-bottom: none;
-        }
+        @include response(md) { border-bottom: none; }
       }
 
       &:hover {
@@ -109,13 +97,9 @@ $headers: (
         cursor: unset;
         box-shadow: none;
         transform: translateY(0);
-
-        @include response(md) {
-          font-weight: weight(bold);
-        }
+        @include response(md) { font-weight: weight(bold); }
       }
     }
   }
 }
-
 </style>

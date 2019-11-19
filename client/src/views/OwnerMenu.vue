@@ -199,9 +199,7 @@ export default {
 .menu {
   @include controlPanelLayout;
 
-  &-card-container {
-    background-color: color(quaternary);
-  }
+  &-card-container { background-color: color(quaternary); }
 
   &-divider {
     width: 100%;
@@ -217,7 +215,5 @@ export default {
   }
 }
 
-.placeholder-message {
-  border-bottom: 1px solid lighten(color(secondary), 50%);
-}
+.placeholder-message { border-bottom: 1px solid lighten(color(secondary), 50%); }
 </style>

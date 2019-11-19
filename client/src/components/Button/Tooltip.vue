@@ -57,8 +57,6 @@ export default {
     }
   }
 
-  &:hover .tip-message {
-    visibility: visible;
-  }
+  &:hover .tip-message { visibility: visible; }
 }
 </style>

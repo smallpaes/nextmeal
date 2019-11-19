@@ -37,9 +37,7 @@ export default {
     font-size: size(md);
     transition: all .2s linear;
 
-    @include response(sm) {
-      display: none;
-    }
+    @include response(sm) { display: none; }
 
     &-line {
       width: 30px;
@@ -52,22 +50,12 @@ export default {
     &.opened {
       transform: rotateZ(90deg);
 
-      .hamburger-menu-line-1 {
-        transform: rotateZ(-40deg);
-      }
-
-      .hamburger-menu-line-2 {
-        opacity: 0;
-      }
-
-      .hamburger-menu-line-3 {
-        transform: rotateZ(40deg);
-      }
+      .hamburger-menu-line-1 { transform: rotateZ(-40deg); }
+      .hamburger-menu-line-2 { opacity: 0; }
+      .hamburger-menu-line-3 { transform: rotateZ(40deg); }
     }
 
-    &:hover .hamburger-menu-line {
-      background-color: lighten(color(secondary), 20%);
-    }
+    &:hover .hamburger-menu-line { background-color: lighten(color(secondary), 20%); }
   }
 }
 </style>

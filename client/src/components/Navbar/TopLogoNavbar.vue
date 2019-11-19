@@ -19,9 +19,7 @@
       font-size: size(md);
       color: color(primary);
 
-      &:hover {
-        @extend .navbar-brand;
-      }
+      &:hover { @extend .navbar-brand; }
     }
   }
 </style>

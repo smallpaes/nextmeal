@@ -21,26 +21,13 @@
   border: none;
 
   &:hover  {
-    .card-title {
-      color: darken(color(secondary), 10%);
-    }
-
-    .card-warning {
-      color: darken(color(secondary), 10%);
-    }
-
-    .card-overlay {
-      background-color: transparentize(color(quaternary), .7);
-    }
-
-    .fa-glass-cheers {
-      animation: spin 1s linear infinite;
-    }
+    .card-title { color: darken(color(secondary), 10%); }
+    .card-warning { color: darken(color(secondary), 10%); }
+    .card-overlay { background-color: transparentize(color(quaternary), .7); }
+    .fa-glass-cheers { animation: spin 1s linear infinite; }
   }
 
-  &-overlay {
-    transition: background-color .1s linear;
-  }
+  &-overlay { transition: background-color .1s linear; }
 
   &-body {
     @include flexPosition(center, center, column);
@@ -53,9 +40,7 @@
     color: color(secondary);
   }
 
-  &-warning {
-    font-weight: weight(normal);
-  }
+  &-warning { font-weight: weight(normal);}
 }
 
 .btn {

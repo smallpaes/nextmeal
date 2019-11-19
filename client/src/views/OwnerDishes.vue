@@ -156,9 +156,7 @@ export default {
 .dishes {
   @include controlPanelLayout;
 
-  &-card-container {
-    background-color: color(quaternary);
-  }
+  &-card-container { background-color: color(quaternary); }
 
   &-divider {
     width: 100%;

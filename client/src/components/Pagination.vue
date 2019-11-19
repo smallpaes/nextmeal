@@ -109,29 +109,18 @@ export default {
     height: 31px;
     text-align: center;
     border-radius: 50%;
+    @include response(sm) { margin: 0 .4rem; }
 
-    @include response(sm) {
-      margin: 0 .4rem;
-    }
-
-    &-control {
-      border: 1px solid color(tertiary);
-    }
+    &-control { border: 1px solid color(tertiary); }
 
     &.active {
-      .page-link {
-        background-color: color(tertiary);
-      }
+      .page-link { background-color: color(tertiary); }
     }
 
-    &:hover {
-      font-weight: weight(bold);
-    }
+    &:hover { font-weight: weight(bold); }
   }
 
-  &-placeholder {
-    color: lighten(color(secondary), 35%);
-  }
+  &-placeholder { color: lighten(color(secondary), 35%); }
 }
 
 </style>

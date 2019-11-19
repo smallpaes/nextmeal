@@ -98,29 +98,16 @@ export default {
   background-color: color(quaternary);
   transition: width .2s linear;
 
-  @include response(sm) {
-    width: 80px;
-  }
-
-  @include response(md) {
-    width: 145px;
-  }
+  @include response(sm) { width: 80px; }
+  @include response(md) { width: 145px; }
 
   &-brand {
     @include visibleTransition(visible);
-
-    @include response(sm) {
-      @include visibleTransition(invisible);
-    }
-
-    @include response(md) {
-      @include visibleTransition(visible);
-    }
+    @include response(sm) { @include visibleTransition(invisible); }
+    @include response(md) { @include visibleTransition(visible); }
   }
 
-  &-nav {
-    list-style-type: none;
-  }
+  &-nav { list-style-type: none; }
 
   &.opened {
     @extend .sidenav;
@@ -128,15 +115,11 @@ export default {
   }
 
   /*Hide scrollbar on Chrome, Opera, Safari*/
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  &::-webkit-scrollbar { display: none; }
 }
 
 .nav {
-  &-item {
-    padding: .9rem 0;
-  }
+  &-item { padding: .9rem 0; }
 
   &-link {
     @include linkStyling(lighten(color(secondary), 20%));
@@ -149,10 +132,7 @@ export default {
 
       &::before {
         background-color: transparent;
-
-        @include response(sm) {
-          background-color: color(tertiary);
-        }
+        @include response(sm) { background-color: color(tertiary); }
       }
     }
 
@@ -175,10 +155,7 @@ export default {
     display: none;
     margin: 0 .6rem;
     border: .03rem solid lighten(color(secondary), 55%);
-
-    @include response(sm) {
-      display: block;
-    }
+    @include response(sm) { display: block; }
   }
 }
 

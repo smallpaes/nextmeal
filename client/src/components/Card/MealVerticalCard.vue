@@ -47,26 +47,16 @@ export default {
   border: none;
   transition: opacity .2s linear;
 
-  &:hover {
-    opacity: .9;
-  }
+  &:hover { opacity: .9; }
 
   &-img-top {
     width: 100%;
     height: 350px;
     object-fit: cover;
 
-    @include response(sm) {
-      height: 300px;
-    }
-
-    @include response(md) {
-      height: 340px;
-    }
-
-    @include response(lg) {
-      height: 380px;
-    }
+    @include response(sm) { height: 300px; }
+    @include response(md) { height: 340px; }
+    @include response(lg) { height: 380px; }
   }
 
   &-body {
@@ -74,13 +64,8 @@ export default {
     min-height: 145px;
     padding: .8rem;
 
-    @include response(md) {
-      height: 185px;
-    }
-
-    @include response(lg) {
-      height: 167px;
-    }
+    @include response(md) { height: 185px; }
+    @include response(lg) { height: 167px; }
   }
 
   &-indicator {
@@ -105,9 +90,7 @@ export default {
     font-size: size(xs);
     color: lighten(color(secondary), 10%);
 
-    .rating {
-      color: color(primary);
-    }
+    .rating { color: color(primary); }
   }
 
   &-footer {

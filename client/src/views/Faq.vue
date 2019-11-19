@@ -204,9 +204,7 @@ export default {
     padding: 0 0 .5rem 1rem;
     color: color(primary);
 
-    &-wrapper {
-      margin: 1.5rem 0 3rem 0;
-    }
+    &-wrapper { margin: 1.5rem 0 3rem 0; }
   }
 }
 
@@ -225,8 +223,6 @@ export default {
     font-weight: weight(bold);
   }
 
-  &-description {
-    font-size: size(xs);
-  }
+  &-description { font-size: size(xs); }
 }
 </style>

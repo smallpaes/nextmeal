@@ -186,14 +186,10 @@ export default {
   }
 }
 
-.placeholder-message {
-  color: lighten(color(secondary), 20%);
-}
+.placeholder-message { color: lighten(color(secondary), 20%); }
 
 .btn-container {
   text-align: center;
-  .btn {
-    @include buttonOutline;
-  }
+  .btn { @include buttonOutline; }
 }
 </style>

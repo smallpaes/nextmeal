@@ -146,18 +146,11 @@ export default {
       &-header {
         text-align: center;
 
-        h3 {
-          font-size: size(lg);
-        }
-
-        h5 {
-          font-size: size(sm);
-        }
+        h3 { font-size: size(lg); }
+        h5 { font-size: size(sm); }
       }
 
-      &-choices {
-        @include flexPosition(space-between, center, row);
-      }
+      &-choices { @include flexPosition(space-between, center, row); }
     }
 
     &-bottom {
@@ -206,18 +199,14 @@ export default {
       font-size: size(lg);
     }
 
-    &-price {
-      font-size: size(sm);
-    }
+    &-price { font-size: size(sm); }
 
     &:hover {
       color: color(primary);
       box-shadow: 0 .35rem .5rem rgba(0,0,0,.15);
       transform: translateY(-3px);
 
-      .subscribe-choice-header {
-        background-color: color(primary);
-      }
+      .subscribe-choice-header { background-color: color(primary); }
     }
   }
 }

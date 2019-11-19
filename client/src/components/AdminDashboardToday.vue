@@ -91,9 +91,7 @@ $icon-colors: (
   &-item {
     display: flex;
 
-    &-left {
-      @include flexPosition(center, center, row);
-    }
+    &-left { @include flexPosition(center, center, row); }
 
     &-icon {
       @include flexPosition(center, center, row);
@@ -104,9 +102,7 @@ $icon-colors: (
       border-radius: 50%;
     }
 
-    &-right {
-      padding: 0 1rem;
-    }
+    &-right { padding: 0 1rem; }
 
     &-title {
       font-size: size(xs);

@@ -101,9 +101,7 @@ export default {
   @include formControl;
 
   &-control {
-    &[readonly] {
-      background-color: transparent;
-    }
+    &[readonly] { background-color: transparent; }
   }
 }
 
@@ -147,9 +145,7 @@ export default {
 
 /deep/ .mx-panel-date {
   td {
-    &.today {
-      color: color(primary);
-    }
+    &.today { color: color(primary); }
   }
 }
 </style>

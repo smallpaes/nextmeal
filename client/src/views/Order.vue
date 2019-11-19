@@ -225,19 +225,15 @@ export default {
 
 .btn-container {
   width: 100%;
+
   .btn {
     padding: 0;
     margin-left: .8rem;
     font-size: size(xs);
     line-height: 1.8rem;
 
-    &-edit {
-      @include solidButton(80, .3, tertiary);
-    }
-
-    &-cancel {
-      @include solidButton(80, .3, primary);
-    }
+    &-edit { @include solidButton(80, .3, tertiary); }
+    &-cancel { @include solidButton(80, .3, primary); }
 
     @include response(md) {
       min-width: 130px;

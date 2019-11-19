@@ -90,13 +90,10 @@ export default {
   @include positionCenter;
   @include imgOverlay(.9);
 
-  &-container {
-    margin-top: 62px;
-  }
+  &-container { margin-top: 62px; }
 
-  &-img {
-    @include setBackground("https://cdn.pixabay.com/photo/2019/09/23/14/34/nyc-4498752_1280.jpg", 300px);
-  }
+  &-img { @include setBackground("https://cdn.pixabay.com/photo/2019/09/23/14/34/nyc-4498752_1280.jpg", 300px);}
+
   &-content {
     color: color(quaternary);
     text-shadow: 1px 1px 1px #636161;
@@ -104,27 +101,20 @@ export default {
     &-title {
       font-size: size(xl);
       font-weight: weight(bold);
-
-      @include response(sm) {
-        font-size: size(xxl);
-      }
+      @include response(sm) { font-size: size(xxl); }
     }
   }
 }
 
 .dropdown {
-  &-toggle {
-    color: color(quaternary);
-  }
+  &-toggle { color: color(quaternary); }
 
   &-menu {
     position: relative;
     background-color: color(quaternary);
     transform: translate3d(-10px, 32px, 0) !important;
 
-    @include response(sm) {
-      transform: translate3d(25px, 32px, 0) !important;
-    }
+    @include response(sm) { transform: translate3d(25px, 32px, 0) !important;}
 
     &::before {
       position: absolute;
@@ -139,9 +129,7 @@ export default {
       transform: translateX(-50%);
     }
 
-    .disabled {
-      color: color(primary);
-    }
+    .disabled { color: color(primary); }
   }
 
   &-item {

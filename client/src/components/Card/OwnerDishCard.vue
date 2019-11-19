@@ -69,9 +69,7 @@ export default {
   border: none;
   border-bottom: 1px solid lighten(color(secondary), 50%);
 
-  @include response(md) {
-    height: 120px;
-  }
+  @include response(md) { height: 120px; }
 
   &-body {
     @include flexPosition(center, flex-start, column);
@@ -81,10 +79,7 @@ export default {
 
   &-left {
     position: relative;
-
-    .skelenton-box {
-      position: absolute;
-    }
+    .skelenton-box { position: absolute; }
   }
 
   &-img {
@@ -117,9 +112,7 @@ export default {
     color: lighten(color(secondary), 10%);
     cursor: pointer;
 
-    @include response(md) {
-      top: 10%;
-    }
+    @include response(md) { top: 10%; }
   }
 }
 </style>

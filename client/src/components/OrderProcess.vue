@@ -72,14 +72,10 @@ export default {
     font-size: size(xl);
     color: color(tertiary);
 
-    @include response(md) {
-      font-size: size(xxl);
-    }
+    @include response(md) { font-size: size(xxl); }
   }
 
-  &-description {
-    font-size: size(sm);
-  }
+  &-description { font-size: size(sm); }
 
   &:not(:last-child):after {
     position: absolute;
@@ -91,17 +87,10 @@ export default {
     border-bottom: 1px dashed lighten(color(secondary), 30%);
     transform: translateY(-50%);
 
-    @include response(md) {
-      width: 60px;
-    }
-
-    @include response(lg) {
-      width: 90px;
-    }
+    @include response(md) { width: 60px; }
+    @include response(lg) { width: 90px; }
   }
 
-  .btn {
-    @include buttonOutline;
-  }
+  .btn { @include buttonOutline; }
 }
 </style>

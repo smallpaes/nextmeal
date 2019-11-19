@@ -80,9 +80,7 @@ export default {
 .card {
   transition: opacity .2s linear;
 
-  &:hover {
-    opacity: .9;
-  }
+  &:hover { opacity: .9; }
 
   &-img-top {
     width: 100%;
@@ -93,9 +91,7 @@ export default {
   &-body {
     min-height: 125px;
     padding: .8rem;
-    @include response(md) {
-      min-height: 145px;
-    }
+    @include response(md) { min-height: 145px; }
   }
 
   &-title {
@@ -106,9 +102,8 @@ export default {
   &-text {
     font-size: size(xs);
     color: lighten(color(secondary), 10%);
-    .rating {
-      color: color(primary);
-    }
+
+    .rating { color: color(primary); }
   }
 }
 </style>

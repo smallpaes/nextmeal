@@ -180,9 +180,7 @@ export default {
 .form {
   width: 100%;
 
-  &-wrapper {
-    background-color: color(quaternary);
-  }
+  &-wrapper { background-color: color(quaternary); }
 
   &-title {
     font-size: size(md);
@@ -190,9 +188,7 @@ export default {
     color: color(primary);
   }
 
-  &-legend {
-    font-size: size(sm);
-  }
+  &-legend { font-size: size(sm); }
 
   &-check {
     &-label {
@@ -245,10 +241,7 @@ export default {
 
 .btn-container {
   text-align: center;
-
-  @include response(md) {
-    text-align: right;
-  }
+  @include response(md) { text-align: right; }
 
   .btn {
     padding: 0;
@@ -264,13 +257,9 @@ export default {
       font-size: size(sm);
     }
 
-    &:last-child {
-      margin-left: 0;
-    }
+    &:last-child { margin-left: 0; }
   }
 }
 
-.invalid-message {
-  color: color(primary);
-}
+.invalid-message { color: color(primary); }
 </style>

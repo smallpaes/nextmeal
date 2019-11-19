@@ -34,9 +34,7 @@ export default {
   @include positionCenter;
   animation: jumping 1.2s linear infinite;
 
-  &-container {
-    width: 100%;
-  }
+  &-container { width: 100%; }
 
   &-content {
     @include flexPosition(center, center, row);

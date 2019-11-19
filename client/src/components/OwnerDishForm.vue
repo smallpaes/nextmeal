@@ -227,9 +227,7 @@ export default {
 }
 
 .file {
-  &-input {
-    @include hiddenInput;
-  }
+  &-input { @include hiddenInput; }
 
   /* Style label into button */
   &-label {
@@ -258,9 +256,7 @@ export default {
         color: lighten(color(secondary), 15%);
         cursor: pointer;
 
-        &:hover {
-          color: lighten(color(secondary), 30%);
-        }
+        &:hover { color: lighten(color(secondary), 30%); }
       }
     }
   }
@@ -269,10 +265,7 @@ export default {
 .btn {
   &-container {
     text-align: center;
-
-    @include response(md) {
-      text-align: right;
-    }
+    @include response(md) { text-align: right; }
   }
 }
 </style>

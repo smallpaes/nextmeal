@@ -391,11 +391,7 @@ export default {
   background-color: color(quaternary);
 }
 
-.btn {
-  &-container {
-    @include flexPosition(center, center, row);
-  }
-}
+.btn-container { @include flexPosition(center, center, row); }
 
 .alert {
   color: color(quaternary);
