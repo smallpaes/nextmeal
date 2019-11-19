@@ -528,13 +528,13 @@ let ownerController = {
       // adjust user data format for front-end
       users = {
         labels: Object.keys(user_result),
-        data: Object.values(Number(user_result)),
+        data: Object.values(user_result),
         tableName: '客群',
-        total: Object.values(Number(user_result)).reduce((total, current) => total + Number(current), 0)
+        total: Object.values(user_result).reduce((total, current) => total + Number(current), 0)
       }
       // adjust order data format for front-end
       orders = {
-        labels: order_result.map(item => item.date),
+        labels: dateArray,
         data: order_result.map(item => Number(item.count)),
         tableName: '訂單',
         total: Object.values(order_result).reduce((total, current) => total + Number(current.count), 0)
