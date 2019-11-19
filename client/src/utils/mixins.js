@@ -19,9 +19,9 @@ export const dateFormatterFilter = {
   }
 }
 
-export const placeholderImageFilter = {
+export const placeholderAvatarFilter = {
   filters: {
-    placeholderImage (url) {
+    placeholderAvatar (url) {
       if (url) return url
       return 'https://images.pexels.com/photos/1490908/pexels-photo-1490908.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
     }

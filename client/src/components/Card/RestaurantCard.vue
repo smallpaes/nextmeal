@@ -3,17 +3,19 @@
     class="card col p-0"
     :to="{name: 'restaurant', params: {restaurant_id: restaurant.id}}"
   >
-    <SkelentonBox
-      v-if="isLoading"
-      :width="'100%'"
-      :height="'200px'"
-    />
-    <img
-      v-else
-      :src="restaurant.image || '@/assets/placeholder-image/logo/1260x750.png'"
-      alt="photo of the restaurant"
-      class="card-img-top"
-    >
+    <div class="card-img-container">
+      <SkelentonBox
+        class="skelenton-image"
+        :width="'100%'"
+        :height="'200px'"
+      />
+      <img
+        v-if="!isLoading"
+        :src="restaurant.image || '@/assets/placeholder-image/logo/1260x750.png'"
+        alt="photo of the restaurant"
+        class="card-img-top"
+      >
+    </div>
     <div class="card-body">
       <h5 class="card-title m-0">
         <SkelentonBox
@@ -48,8 +50,8 @@
 </template>
 
 <script>
-import SkelentonBox from './Placeholder/SkeletonBox'
-import { padEndFilter, textTruncateFilter } from '../utils/mixins'
+import SkelentonBox from '../Placeholder/SkeletonBox'
+import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
 
 export default {
   components: {
@@ -85,9 +87,15 @@ export default {
   }
 
   &-img-top {
+    position: relative;
     width: 100%;
     height: 200px;
     object-fit: cover;
+  }
+
+  &-img-container {
+    width: 100%;
+    height: 200px;
   }
 
   &-body {
@@ -112,5 +120,9 @@ export default {
       color: color(primary);
     }
   }
+}
+
+.skelenton-image {
+  position: absolute;
 }
 </style>

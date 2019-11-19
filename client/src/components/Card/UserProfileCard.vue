@@ -2,7 +2,7 @@
   <div class="profile-card rounded-sm shadow-sm">
     <div class="profile-card-top">
       <img
-        :src="currentUser.avatar | placeholderImage"
+        :src="currentUser.avatar | placeholderAvatar"
         alt="user avatar"
       >
       <h5 class="mt-3 profile-card-top-name">
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { placeholderImageFilter } from '../../utils/mixins'
+import { placeholderAvatarFilter } from '../../utils/mixins'
 import { mapState } from 'vuex'
 
 export default {
@@ -50,7 +50,7 @@ export default {
       return '未訂閱'
     }
   },
-  mixins: [placeholderImageFilter],
+  mixins: [placeholderAvatarFilter],
   computed: {
     ...mapState(['currentUser'])
   }

@@ -54,21 +54,24 @@ export default {
     @include flexPosition(center, flex-start, column);
     height: 100%;
     width: 100%;
+  }
 
+  &-left {
+    width: 130px;
+    height: 100%;
+    background-image: url('~@/assets/placeholder-image/logo/200x200.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+
+    @include response(sm) { width: 150px; }
+    @include response(md) { width: 170px; }
   }
 
   &-img {
-    width: 130px;
+    width: 100%;
     height: 100%;
     object-fit: cover;
-
-    @include response(sm) {
-      width: 150px;
-    }
-
-    @include response(md) {
-      width: 170px;
-    }
   }
 
   &-title {
