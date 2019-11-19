@@ -487,24 +487,30 @@ let ownerController = {
         if (item.age > 60) user_result[">60歲"]++
       })
 
-      let comments = await Comment.findAndCountAll({
+      let comments = await Comment.findAll({
         where: { RestaurantId: restaurant.id },
-        attributes: ['user_text', 'rating', customQuery.literal.name, 'createdAt'],
-        group: ['rating'],
-        order: [['createdAt', 'DESC'], ['rating', 'DESC']],
+        attributes: ['rating', [sequelize.literal(`COUNT(*)`), 'count']],
+        group: ['rating']
       })
 
       // check if the rating has missing field
-      const original_ratings = comments.count.map(item => item.rating)
+      const original_ratings = comments.map(item => item.dataValues.rating)
       const missing_fields = [1, 2, 3, 4, 5].filter(v => original_ratings.indexOf(v) === -1)
 
+      // create the an end result object for later sorting
+      const rating_result = comments.map(item => ({
+        rating: item.dataValues.rating,
+        count: item.dataValues.count
+      }))
+
       // if missing fields exist,fill in with value 0
-      missing_fields.map(item => {
-        comments.count.push({ rating: item, count: 0 })
+      missing_fields.map(async item => {
+        await rating_result.push({ rating: item, count: 0 })
       })
 
       // sort the result
-      const sorted = comments.count.sort((a, b) => { return b.rating - a.rating })
+      const sorted = rating_result.sort((a, b) => { return b.rating - a.rating })
+
 
       // adjust rating data format for front-end
       const ratings = {
@@ -522,14 +528,14 @@ let ownerController = {
       // adjust user data format for front-end
       users = {
         labels: Object.keys(user_result),
-        data: Object.values(user_result),
+        data: Object.values(Number(user_result)),
         tableName: '客群',
-        total: Object.values(user_result).reduce((total, current) => total + Number(current), 0)
+        total: Object.values(Number(user_result)).reduce((total, current) => total + Number(current), 0)
       }
       // adjust order data format for front-end
       orders = {
         labels: order_result.map(item => item.date),
-        data: order_result.map(item => item.count),
+        data: order_result.map(item => Number(item.count)),
         tableName: '訂單',
         total: Object.values(order_result).reduce((total, current) => total + Number(current.count), 0)
       }
