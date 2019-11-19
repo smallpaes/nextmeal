@@ -3,11 +3,13 @@
     class="card shadow"
     href="#"
   >
-    <img
-      :src="order.meal.image"
-      alt="photo of the restaurant"
-      class="card-img-top"
-    >
+    <div class="card-img-top-container">
+      <img
+        :src="order.meal.image"
+        alt="photo of the restaurant"
+        class="card-img-top"
+      >
+    </div>
     <div class="card-body">
       <h5 class="card-title m-0">
         {{ order.meal.name }}
@@ -29,9 +31,13 @@
 </template>
 
 <script>
+import SkelentonBox from '../Placeholder/SkeletonBox'
 import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
 
 export default {
+  components: {
+    SkelentonBox
+  },
   mixins: [padEndFilter, textTruncateFilter],
   props: {
     order: {
@@ -51,10 +57,13 @@ export default {
     opacity: .9;
   }
 
-  &-img-top {
+  &-img-top-container {
     width: 100%;
     height: 350px;
-    object-fit: cover;
+    background-image: url('~@/assets/placeholder-image/logo/1260x750.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 
     @include response(sm) {
       height: 300px;
@@ -67,6 +76,12 @@ export default {
     @include response(lg) {
       height: 380px;
     }
+  }
+
+  &-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   &-body {

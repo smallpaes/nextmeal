@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import userAPI from './apis/users'
-import { stat } from 'fs'
 
 Vue.use(Vuex)
 
@@ -60,7 +59,6 @@ export default new Vuex.Store({
         // is authenticated
         return true
       } catch (error) {
-        console.log(error)
         // clear state
         commit('revokeAuthentication')
         // is not authenticated
