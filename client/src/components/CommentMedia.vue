@@ -1,5 +1,11 @@
 <template>
   <div class="media">
+    <!--Avatar Placeholder Image-->
+    <SkelentonBox
+      :width="'50px'"
+      :height="'50px'"
+      class="rounded-circle skelenton-box"
+    />
     <img
       :src="comment.User.avatar"
       class="media-avatar mr-3"
@@ -42,11 +48,13 @@
 
 <script>
 import RatingStars from '../components/RatingStars'
+import SkelentonBox from './Placeholder/SkeletonBox'
 import { timeTransformFilter } from '../utils/mixins'
 
 export default {
   components: {
-    RatingStars
+    RatingStars,
+    SkelentonBox
   },
   mixins: [timeTransformFilter],
   props: {
@@ -66,6 +74,7 @@ export default {
 <style lang="scss" scoped>
 .media {
   &-avatar {
+    position: relative;
     height: 50px;
     width: 50px;
     object-fit: cover;
@@ -130,5 +139,9 @@ export default {
       position: absolute;
     }
   }
+}
+
+.skelenton-box {
+  position: absolute;
 }
 </style>

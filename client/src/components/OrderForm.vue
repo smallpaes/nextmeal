@@ -15,9 +15,9 @@
         <legend class="form-legend">
           預定領餐時間
           <span
-            v-if="errorMessage.length > 0"
+            v-if="errorMessage.time"
             class="invalid-message"
-          >({{ errorMessage[0] }})</span>
+          >({{ errorMessage.time }})</span>
         </legend>
         <div
           v-for="timeSlot in orderInfo.timeSlots"
@@ -43,11 +43,15 @@
       <!--Quantity selection-->
       <div class="form-group">
         <label for="quantity">預定數量</label>
+        <span
+          v-if="errorMessage.quantity"
+          class="invalid-message"
+        >({{ errorMessage.quantity }})</span>
         <div class="form-quantity">
           <button
             class="btn btn-minus"
-            :class="{'disable-btn': formData.quantity === 1}"
-            :disabled="isProcessing || formData.quantity === 1"
+            :class="{'disable-btn': formData.quantity <= 1}"
+            :disabled="isProcessing || formData.quantity <= 1"
             @click.stop.prevent="formData.quantity -= 1"
           >
             -
@@ -63,8 +67,8 @@
           >
           <button
             class="btn btn-plus"
-            :class="{'disable-btn': orderInfo.quantity === formData.quantity || formData.quantity === currentUser.subscriptionBalance }"
-            :disabled="isProcessing || orderInfo.quantity === formData.quantity || formData.quantity === currentUser.subscriptionBalance"
+            :class="{'disable-btn': orderInfo.quantity === formData.quantity || formData.quantity === currentUser.subscriptionBalance + initialOrder.quantity }"
+            :disabled="isProcessing || orderInfo.quantity === formData.quantity || formData.quantity === currentUser.subscriptionBalance + initialOrder.quantity"
             @click.stop.prevent="formData.quantity += 1"
           >
             +
@@ -79,7 +83,7 @@
           :v="{}"
           :color="'tertiary'"
           :border-radius="'.3rem'"
-          @after-click="$emit('change-order')"
+          @after-click="$route.name === 'order-new' ? $emit('change-order') : $emit('to-last-page')"
         >
           <template #initial>
             回上一頁
@@ -120,7 +124,7 @@ export default {
       type: Object,
       default: () => ({
         time: '',
-        quantity: 1
+        quantity: 0
       })
     },
     initialProcessing: {
@@ -138,7 +142,10 @@ export default {
         time: '',
         quantity: 1
       },
-      errorMessage: [],
+      errorMessage: {
+        time: null,
+        quantity: null
+      },
       isProcessing: false
     }
   },
@@ -162,8 +169,16 @@ export default {
   },
   methods: {
     handleSubmit (e) {
+      // form validation: time
       if (!this.formData.time) {
-        this.errorMessage.push('請選擇領餐時間')
+        this.errorMessage.time = '請選擇領餐時間'
+        return
+      }
+      this.errorMessage.time = null
+
+      // form validation: quantity
+      if (this.formData.quantity < 1) {
+        this.errorMessage.quantity = '請選擇訂購數量'
         return
       }
       // update processing status
