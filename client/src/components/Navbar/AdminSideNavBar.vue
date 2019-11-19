@@ -90,7 +90,7 @@ export default {
   @include brand(sidenav);
   position: fixed;
   z-index: 3;
-  width: 0;
+  width: 0; // Hide Side Nav On Mobile
   height: 100vh;
   overflow-x: hidden;
   scrollbar-width: none; // Hide scrollbar on Firefox
@@ -98,17 +98,18 @@ export default {
   background-color: color(quaternary);
   transition: width .2s linear;
 
-  @include response(sm) { width: 80px; }
-  @include response(md) { width: 145px; }
+  @include response(sm) { width: 80px; } // Show Narrow Side Nav
+  @include response(md) { width: 145px; } // Show Wide Side Nav
 
   &-brand {
     @include visibleTransition(visible);
-    @include response(sm) { @include visibleTransition(invisible); }
-    @include response(md) { @include visibleTransition(visible); }
+    @include response(sm) { @include visibleTransition(invisible); } // Hide Logo On Mobile
+    @include response(md) { @include visibleTransition(visible); } // Show Logo On Larger Screen
   }
 
   &-nav { list-style-type: none; }
 
+  /* Show Full Size Side Nav On Mobile */
   &.opened {
     @extend .sidenav;
     width: 100%;

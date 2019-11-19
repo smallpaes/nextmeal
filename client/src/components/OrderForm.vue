@@ -202,7 +202,7 @@ export default {
 
       &:hover {
         color: color(quaternary);
-        background: color(tertiary);
+        background-color: color(tertiary);
         border-color: color(tertiary);
       }
     }
@@ -210,7 +210,7 @@ export default {
     &-input {
       &:checked ~ .form-check-label {
         color: color(quaternary);
-        background: color(tertiary);
+        background-color: color(tertiary);
         border-color: color(tertiary);
       }
     }

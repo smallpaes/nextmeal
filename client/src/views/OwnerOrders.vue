@@ -110,5 +110,7 @@ export default {
 @include slideAnimation(false);
 
 .wrapper { background-color: color(quinary); }
+
+/* Right Side Content */
 .order { @include controlPanelLayout; }
 </style>

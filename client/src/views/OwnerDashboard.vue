@@ -214,6 +214,7 @@ export default {
 
 .wrapper { background-color: color(quinary); }
 
+/* Right Side Content */
 .dashboard {
   @include controlPanelLayout;
 

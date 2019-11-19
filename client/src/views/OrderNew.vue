@@ -233,6 +233,7 @@ export default {
 @include slideAnimation;
 @include fadeAnimation;
 
+/* Section to display two mealchoices */
 .meal {
   &-content {
     position: relative;
@@ -248,6 +249,7 @@ export default {
   }
 }
 
+/* Order Form */
 .order {
   &-content {
     position: relative;

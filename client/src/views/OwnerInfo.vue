@@ -170,5 +170,7 @@ export default {
 @include slideAnimation;
 
 .wrapper { background-color: color(quinary); }
+
+/* Right Side Content */
 .info { @include controlPanelLayout; }
 </style>

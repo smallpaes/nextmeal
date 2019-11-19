@@ -138,6 +138,7 @@ export default {
     overflow-y: hidden;
     background-color: color(quaternary);
 
+    /* Display Two Subscription Plans */
     &-top {
       width: 100%;
       padding: 2.7rem;
@@ -153,6 +154,7 @@ export default {
       &-choices { @include flexPosition(space-between, center, row); }
     }
 
+    /* Form Footer */
     &-bottom {
       padding: .8rem 2.7rem;
       font-size: size(xs);
@@ -161,6 +163,7 @@ export default {
     }
   }
 
+  /* Subscription Plan Button */
   &-choice {
     width: 45%;
     padding: 0;

@@ -1,3 +1,4 @@
+/* Create Button Underline Animation */
 @mixin buttonAnimation {
   position: relative;
   text-decoration: none;
@@ -43,6 +44,7 @@
   background-size: cover;
 }
 
+/* Button With Background Color */
 @mixin solidButton($width: 200 ,$radius: 1,$color: primary) {
   min-width: #{$width}px;
   max-width: #{$width}px;
@@ -54,6 +56,7 @@
   &:hover { background-color: darken(color($color), 20%); }
 }
 
+/* Button Without Background Color */
 @mixin buttonOutline($width: 200 ,$height: 38, $color: color(primary), $hoverColor: color(quaternary), $bgColor: color(primary), $radius: 1) {
   width: #{$width}px;
   height: #{$height}px;
@@ -76,6 +79,7 @@
   &:hover { color: darken($color, 10%); }
 }
 
+/* Heading Section */
 @mixin headingStyling {
   &-heading {
     padding: 1.5rem 0;
@@ -90,6 +94,7 @@
   }
 }
 
+/* Create An Arrow */
 @mixin arrowStyling($content) {
   &-icon {
     position: relative;
@@ -128,6 +133,7 @@
   }
 }
 
+/* Logo Styling */
 @mixin brand($name) {
   &-brand {
     font-family: 'Pacifico', cursive;
@@ -174,6 +180,7 @@
     }
 }
 
+/* Style Input Field Upon Having Invalid Data */
 @mixin inputValidation {
   &-group {
     &.invalid {
@@ -212,6 +219,7 @@
   }
 }
 
+/* Media Query */
 @mixin response($breakpoint) {
   @if($breakpoint == sm) {
     @media(min-width: 576px) {
@@ -245,10 +253,12 @@
   }
 }
 
+/* Table Layout For Mobile */
 @mixin tableMobile {
   .table {
     color: color(secondary);
   
+    /* Hide Original Table Header */
     thead {
       position: absolute;
       top: -99999px;
@@ -278,6 +288,7 @@
         }
       }
   
+      /* Each Table Data Behave Like a Row */
       td {
         @extend tbody;
         position: relative;    
@@ -285,6 +296,7 @@
 
         &:not(:last-child) { border-bottom: 1px solid lighten(color(secondary), 55%); }
   
+        /* Create Space To Display Table Header On The Left Hand Side */
         &::before {
           position: absolute;
           top: .75rem;
@@ -293,6 +305,7 @@
           white-space: nowrap;
         }
   
+        /* Insert Table Header Name */
         @for $i from 1 through 6 {
           &:nth-of-type(#{$i}) {
             &:before {
@@ -306,6 +319,7 @@
   }
 }
 
+/* Table Layout For Full Screen */
 @mixin tableFullSize {
   .table {  
     &-wrapper {
@@ -317,7 +331,8 @@
         box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
       }
     }
-  
+    
+    /* Show Original Table Header */
     thead {
       @include response(md) {
         position: unset;
@@ -350,11 +365,13 @@
           }
         }
   
+        /* Change Table Data From Row-like Back To Original Styling */
         td {
           position: relative;
           display: table-cell;
           padding: .75rem;
   
+          /* Remove Table Header For Mobile Size Screen */
           &::before {
             position: unset;
             width: unset;
@@ -363,6 +380,7 @@
 
           &:not(:last-child) { border-bottom: none; }
   
+          /* Set Table Header For Mobile Size Screen To Empty Data  */
           @for $i from 1 through 6 {
             &:nth-of-type(#{$i}) {
               &:before {
@@ -380,7 +398,7 @@
   .file {
     &-input { @include hiddenInput; }
   
-    /* Style label into button */
+    /* Style Label Into Button */
     &-label {
       @include flexPosition;
       @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), .1);
@@ -408,6 +426,7 @@
           & .fa-window-close { opacity: 1; }
         }
 
+        /* Button Displayed On The Image To Delete Image */
         .fa-window-close {
           position: absolute;
           top: 50%;
@@ -434,6 +453,7 @@
   }
 }
 
+/* Layout For Admin And Owner Pages */
 @mixin controlPanelLayout {
   position: relative; 
   max-width: 1000px; //800px

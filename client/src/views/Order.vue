@@ -232,15 +232,15 @@ export default {
     font-size: size(xs);
     line-height: 1.8rem;
 
-    &-edit { @include solidButton(80, .3, tertiary); }
-    &-cancel { @include solidButton(80, .3, primary); }
-
     @include response(md) {
       min-width: 130px;
       padding: .1rem 0;
       margin-left: 1rem;
       font-size: size(sm);
     }
+
+    &-edit { @include solidButton(80, .3, tertiary); }
+    &-cancel { @include solidButton(80, .3, primary); }
   }
 }
 </style>

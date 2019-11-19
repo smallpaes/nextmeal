@@ -120,10 +120,10 @@ export default {
 @include slideAnimation;
 
 .signup {
-    @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
-    max-height: 100vh;
-    padding: 120px 15px 30px 15px;
-    overflow-y: scroll;
+  @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
+  max-height: 100vh;
+  padding: 120px 15px 30px 15px;
+  overflow-y: scroll;
 }
 
 /deep/ .form {
@@ -135,6 +135,7 @@ export default {
     margin-top: 70px;
     background-color: color(quaternary);
 
+    /* Form Fields */
     &-top {
       padding: 2.7rem;
       background-color: color(quaternary);
@@ -147,6 +148,7 @@ export default {
       }
     }
 
+    /* Form Footer */
     &-bottom {
       padding: .8rem 2.7rem;
       font-size: size(xs);

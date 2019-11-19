@@ -10,6 +10,7 @@
         novalidate
         @submit.prevent.stop="handleSubmit"
       >
+        <!--Form Fields-->
         <div class="form-content-top rounded-top">
           <div class="form-content-top-header mb-4">
             <h3>
@@ -71,6 +72,7 @@
             </button>
           </div>
         </div>
+        <!--Form Footer-->
         <div class="form-content-bottom rounded-bottom d-flex">
           <p class="text-left m-0 mr-3">
             現在就前往體驗 NextMeal
@@ -184,6 +186,7 @@ export default {
     overflow-y: hidden;
     background-color: color(quaternary);
 
+    /* Form Fields */
     &-top {
       padding: 2.7rem;
       background-color: color(quaternary);
@@ -195,6 +198,7 @@ export default {
       }
     }
 
+    /* Form Footer */
     &-bottom {
       padding: .8rem 2.7rem;
       font-size: size(xs);

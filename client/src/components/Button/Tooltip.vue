@@ -34,17 +34,19 @@ export default {
   color: lighten(color(secondary), 40%);
   cursor: pointer;
 
+  /* Hide Tooltip Message */
   &-message {
     position: absolute;
     top: -5px;
     left: 160%;
     padding: .2rem .2rem;
-    color: color(secondary);
+    color: color(quaternary);
     text-align: center;
     visibility: hidden;
     background-color: color(secondary);
     border-radius: .2rem;
 
+    /* Create Arrow At The Beginning Of The Message: Left */
     &::before {
       position: absolute;
       top: 50%;
@@ -57,6 +59,7 @@ export default {
     }
   }
 
+  /* Show Tooltip Message When Hover */
   &:hover .tip-message { visibility: visible; }
 }
 </style>

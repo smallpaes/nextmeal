@@ -12,6 +12,7 @@
         <h1 class="banner-content-title">
           {{ currentDistrict }}
         </h1>
+        <!--Dropdown menu for city switch-->
         <div class="dropdown">
           <button
             id="dropdownMenuButton"
@@ -106,6 +107,7 @@ export default {
   }
 }
 
+/* Dropdown menu for city switch */
 .dropdown {
   &-toggle { color: color(quaternary); }
 
@@ -116,6 +118,7 @@ export default {
 
     @include response(sm) { transform: translate3d(25px, 32px, 0) !important;}
 
+    /* Create Arrow On Top Of The Menu: Up */
     &::before {
       position: absolute;
       bottom: 100%;

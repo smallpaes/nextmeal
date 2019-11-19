@@ -196,6 +196,7 @@ export default {
   background-color: color(quinary);
 }
 
+/* Right Side Content */
 .menu {
   @include controlPanelLayout;
 
@@ -204,14 +205,6 @@ export default {
   &-divider {
     width: 100%;
     margin-top: 0;
-  }
-
-  .new-dish {
-    @include linkStyling(color(primary));
-    position: absolute;
-    top: 112px;
-    right: 40px;
-    font-size: size(xs);
   }
 }
 

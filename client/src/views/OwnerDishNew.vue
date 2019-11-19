@@ -94,6 +94,7 @@ export default {
   background-color: color(quinary);
 }
 
+/* Right Side Content */
 .dish {
   @include controlPanelLayout;
   &-divider { margin-top: 0; }
