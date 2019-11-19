@@ -182,8 +182,8 @@ export default {
 .btn-container {
   .btn {
     @include solidButton(80, .3, primary);
-    margin-left: .8rem;
     padding: .1rem;
+    margin-left: .8rem;
     line-height: 1.8rem;
 
     @include response(md) {

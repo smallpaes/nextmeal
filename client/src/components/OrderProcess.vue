@@ -82,14 +82,14 @@ export default {
   }
 
   &:not(:last-child):after {
-    content: '';
     position: absolute;
-    left: 90%;
     top: 50%;
-    transform: translateY(-50%);
-    border-bottom: 1px dashed lighten(color(secondary), 30%);
+    left: 90%;
     width: 35px;
     height: 0;
+    content: '';
+    border-bottom: 1px dashed lighten(color(secondary), 30%);
+    transform: translateY(-50%);
 
     @include response(md) {
       width: 60px;

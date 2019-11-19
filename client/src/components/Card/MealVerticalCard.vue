@@ -44,8 +44,8 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-  transition: opacity .2s linear;
   border: none;
+  transition: opacity .2s linear;
 
   &:hover {
     opacity: .9;
@@ -71,8 +71,8 @@ export default {
 
   &-body {
     position: relative;
-    padding: .8rem;
     min-height: 145px;
+    padding: .8rem;
 
     @include response(md) {
       height: 185px;
@@ -84,16 +84,16 @@ export default {
   }
 
   &-indicator {
-    font-size: size(md);
     position: absolute;
-    border-radius: 50%;
-    display: inline-block;
-    width: 36px;
-    text-align: center;
-    color: color(tertiary);
-    border: 1px dotted color(tertiary);
     top: 1rem;
     right: 1.3rem;
+    display: inline-block;
+    width: 36px;
+    font-size: size(md);
+    color: color(tertiary);
+    text-align: center;
+    border: 1px dotted color(tertiary);
+    border-radius: 50%;
   }
 
   &-title {
@@ -120,7 +120,7 @@ export default {
 .btn {
   @include solidButton(80, .3, primary);
   padding: 0;
-  line-height: 1.8rem;
   font-size: size(xs);
+  line-height: 1.8rem;
 }
 </style>

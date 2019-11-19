@@ -44,8 +44,8 @@ export default {
     font-size: size(sm);
 
     &:not(:first-child):before {
-      content: '\203A';
       color: color(tertiary);
+      content: '\203A';
     }
   }
 

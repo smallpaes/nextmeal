@@ -53,18 +53,18 @@ export default {
 .btn {
   @include solidButton;
   min-width: 100px;
-  margin: 0 .5rem;
   padding: .28rem .7rem;
+  margin: 0 .5rem;
+
+  @include response(md) {
+    min-width: 200px;
+    padding: .375rem .75rem;
+  }
 
   @each $color, $hex in $colors {
     &-#{$color}-color {
       @include solidButton(100, 1, $color);
     }
-  }
-
-  @include response(md) {
-    min-width: 200px;
-    padding: .375rem .75rem;
   }
 }
 </style>

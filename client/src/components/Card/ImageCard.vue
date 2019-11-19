@@ -66,8 +66,8 @@ export default {
   }
 
   &-fluid {
-    height: 180px;
     width: 100%;
+    height: 180px;
     object-fit: cover;
   }
 

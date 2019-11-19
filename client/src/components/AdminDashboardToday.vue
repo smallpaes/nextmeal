@@ -97,11 +97,11 @@ $icon-colors: (
 
     &-icon {
       @include flexPosition(center, center, row);
-      border-radius: 50%;
       width: 46px;
       height: 46px;
       font-size: size(md);
       color: color(quaternary);
+      border-radius: 50%;
     }
 
     &-right {

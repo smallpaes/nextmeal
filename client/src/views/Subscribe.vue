@@ -133,15 +133,15 @@ export default {
 
   &-content {
     max-width: 450px;
-    margin-top: 70px;
     margin: 0 auto;
+    margin-top: 70px;
     overflow-y: hidden;
     background-color: color(quaternary);
 
     &-top {
+      width: 100%;
       padding: 2.7rem;
       margin: 0;
-      width: 100%;
 
       &-header {
         text-align: center;
@@ -174,30 +174,29 @@ export default {
     margin: 0;
     overflow: hidden;
     color: rgba(color(secondary), .7);
-
     background-color: color(quaternary);
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    border: 0;
     border-radius: .2rem;
-    border: 0px;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
     transition: all .2s linear;
 
     &-header {
       position: relative;
-      color: color(quaternary);
-      background-color: rgba(color(primary), .9);
       padding: .3rem 0;
       font-size: size(md);
+      color: color(quaternary);
+      background-color: rgba(color(primary),.9);
       transition: all .2s linear;
 
       &::after {
         position: absolute;
-        content: '';
         top: 100%;
         left: 50%;
-        transform: translateX(-50%);
-        border-top: .5rem solid rgba(color(primary), .9);
-        border-left: .5rem solid transparent;
+        content: '';
+        border-top: .5rem solid rgba(color(primary),.9);
         border-right: .5rem solid transparent;
+        border-left: .5rem solid transparent;
+        transform: translateX(-50%);
       }
     }
 

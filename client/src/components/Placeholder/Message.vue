@@ -13,8 +13,8 @@
   @include flexPosition(center center row);
   h5 {
     font-size: size(sm);
-    color: lighten(color(secondary), 10%);
     font-weight: weight(bold);
+    color: lighten(color(secondary), 10%);
   }
 }
 </style>

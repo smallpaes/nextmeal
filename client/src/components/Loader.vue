@@ -40,16 +40,16 @@ export default {
 
   &-content {
     @include flexPosition(center, center, row);
-    color: color(primary);
     flex-wrap: wrap;
+    color: color(primary);
   }
 
   &-description {
     width: 100%;
-    text-align: center;
     font-size: size(sm);
-    animation: twinkling 1.2s ease-out infinite;
     font-weight: weight(bold);
+    text-align: center;
+    animation: twinkling 1.2s ease-out infinite;
   }
 }
 
@@ -61,16 +61,16 @@ export default {
 
 @keyframes jumping {
   0% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   15% {
     transform: translateY(-15px);
   }
   33% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
   100% {
-    transform: translateY(0px);
+    transform: translateY(0);
   }
 }
 

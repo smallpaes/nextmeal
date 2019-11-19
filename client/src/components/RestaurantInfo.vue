@@ -32,8 +32,8 @@ export default {
 <style lang="scss" scoped>
 .info {
   &-title {
-    font-weight: weight(bold);
     font-size: size(lg);
+    font-weight: weight(bold);
   }
 
   &-sub-title {

@@ -31,30 +31,29 @@ export default {
 .tip {
   position: relative;
   display: inline-block;
-  cursor: pointer;
   color: lighten(color(secondary), 40%);
+  cursor: pointer;
 
   &-message {
     position: absolute;
-    left: 160%;
     top: -5px;
+    left: 160%;
+    padding: .2rem .2rem;
+    color: color(secondary);
+    text-align: center;
     visibility: hidden;
     background-color: color(secondary);
     border-radius: .2rem;
-    color: color(secondary);
-    text-align: center;
-    padding: .2rem .2rem;
-    color: color(quaternary);
 
     &::before {
-      content: '';
       position: absolute;
-      right: 100%;
       top: 50%;
-      transform: translateY(-50%);
-      border-right: .3rem solid color(secondary);
+      right: 100%;
+      content: '';
       border-top: .3rem solid transparent;
+      border-right: .3rem solid color(secondary);
       border-bottom: .3rem solid transparent;
+      transform: translateY(-50%);
     }
   }
 

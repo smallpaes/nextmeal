@@ -66,11 +66,15 @@ export default {
 
   .VueCarousel-navigation-button {
     display: none;
-    border-radius: 50%;
-    background-color: color(quaternary);
     line-height: 8px;
     color: lighten(color(secondary), 30%);
+    background-color: color(quaternary);
+    border-radius: 50%;
     box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+
+    @include response(md) {
+      display: block;
+    }
 
     &:focus {
       outline: none;
@@ -82,10 +86,6 @@ export default {
 
     &.VueCarousel-navigation--disabled {
       display: none;
-    }
-
-    @include response(md) {
-      display: block;
     }
   }
 }

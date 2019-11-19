@@ -15,10 +15,10 @@
 
 .card {
   @include setBackground('https://images.unsplash.com/photo-1549409466-c6449df8e23b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=4000&q=80', 100%);
-  @include imgOverlay(0.5, color(quaternary));
+  @include imgOverlay(.5, color(quaternary));
   position: relative;
-  border: none;
   height: 100%;
+  border: none;
 
   &:hover  {
     .card-title {
@@ -61,7 +61,7 @@
 .btn {
   @include solidButton(80, .3, secondary);
   padding: 0;
-  line-height: 1.8rem;
   font-size: size(xs);
+  line-height: 1.8rem;
 }
 </style>

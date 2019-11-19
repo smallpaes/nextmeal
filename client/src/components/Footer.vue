@@ -38,8 +38,8 @@
   &-nav-link {
     position: relative;
     padding: 0 1rem;
-    color: lighten(color(secondary), 30%);
     font-size: size(xs);
+    color: lighten(color(secondary), 30%);
     transition: color .2s linear;
 
     &:hover {
@@ -49,11 +49,11 @@
     &:not(:last-child):after {
       content: '';
       position: absolute;
-      left: 100%;
       top: 23%;
-      border-left: 1px solid lighten(color(secondary), 30%);
-      height: 70%;
+      left: 100%;
       width: 1px;
+      height: 70%;
+      border-left: 1px solid lighten(color(secondary), 30%);
     }
   }
 }

@@ -127,7 +127,7 @@
   }
 }
 
-@mixin imgOverlay($amount: 0.8, $color: color(secondary)) {
+@mixin imgOverlay($amount: .8, $color: color(secondary)) {
   &-overlay {
     position: absolute;
     top: 0;
@@ -219,7 +219,7 @@
   @if($status == invisible) {
     visibility: hidden;
     opacity: 0;
-    transition: visibility 0s, opacity 0.5s linear;
+    transition: visibility 0s, opacity .5s linear;
   }
 
   @if($status == visible) {
@@ -407,7 +407,7 @@
     /* Style label into button */
     &-label {
       @include flexPosition;
-      @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), 0.1);
+      @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), .1);
       cursor: pointer;
     }
   
@@ -470,6 +470,14 @@
   margin-left: 0;
   transition: margin-left .1s linear;
 
+  @include response(sm) {
+    margin-left: 80px;
+  }
+
+  @include response(md) {
+    margin-left: 145px;
+  }
+
   &-title {
     size: size(lg);
   }
@@ -488,14 +496,6 @@
 
   &-form {
     margin-bottom: 30px;
-  }
-
-  @include response(sm) {
-    margin-left: 80px;
-  }
-
-  @include response(md) {
-    margin-left: 145px;
   }
 }
 
@@ -573,6 +573,67 @@
       &-active {
         opacity: 0;
         transition: opacity .5s linear;
+      }
+    }
+  }
+}
+
+@mixin chartCardStyling {
+  .card {
+    &-header {
+      padding: .6rem 1.25rem;
+      font-size: size(sm);
+      color: color(secondary);
+    }
+  
+    &-statistic {
+      position: relative;
+      padding-left: 1.6rem;
+    }
+  
+    &-title {
+      margin-bottom: .2rem;
+      font-size: size(xs);
+      color: lighten(color(secondary), 30%);
+    }
+  
+    &-text {
+      font-size: size(lg);
+      font-weight: weight(bold);
+      color: color(secondary);
+    }
+  
+    &-subtext {
+      font-size: size(xs);
+      color: rgb(58,196,124);
+    }
+  }
+}
+
+@mixin navPillStyling {
+  .nav {
+    &-link {
+      @include linkStyling(lighten(color(secondary), 20%));
+      padding: 0 1.1rem .7rem 0;
+      font-size: size(sm);
+
+      @include response(sm) {
+        padding: 0 1.5rem .7rem 0;
+      }
+  
+      &.active {
+        @include pseudoStyling(before, tertiary, 2.1, .15);
+        font-weight: weight(bold);
+        color: color(tertiary);
+        background-color: transparent;
+
+        @include response(md) {
+          @include pseudoStyling(before, tertiary, 4.2, .15);
+        }
+  
+        &::before {
+          top: 97%;
+        }
       }
     }
   }

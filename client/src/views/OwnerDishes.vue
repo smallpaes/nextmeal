@@ -168,8 +168,8 @@ export default {
   .new-dish {
     @include linkStyling(color(primary));
     position: absolute;
-    right: 40px;
     top: 112px;
+    right: 40px;
     font-size: size(xs);
   }
 }

@@ -372,8 +372,8 @@ export default {
   @include fileUpload;
   @include formControl;
   @include inputValidation;
-  background-color: color(quaternary);
   color: color(secondary);
+  background-color: color(quaternary);
 }
 
 .btn {
@@ -383,8 +383,8 @@ export default {
 }
 
 .alert {
-  background-color: color(tertiary);
   color: color(quaternary);
+  background-color: color(tertiary);
 }
 
 </style>

@@ -113,8 +113,8 @@ export default {
   &-group {
     &.invalid {
       /deep/ input {
-        border: 1px solid color(primary);
         background-color: lighten(color(primary), 36%);
+        border: 1px solid color(primary);
       }
     }
   }
@@ -134,13 +134,13 @@ export default {
 /deep/ .mx-calendar-content {
   .cell {
     &.actived {
-      background-color: color(primary);
       color: color(quaternary);
+      background-color: color(primary);
     }
 
     &:hover {
-      background-color: lighten(color(primary), 35%);
       color: color(primary);
+      background-color: lighten(color(primary), 35%);
     }
   }
 }

@@ -115,7 +115,6 @@ export default {
   },
   methods: {
     async handleSubmit (e) {
-      console.log('done')
       // prepare form data
       const formData = {
         id: this.id,
@@ -157,8 +156,8 @@ export default {
 .form {
   @include inputValidation;
   @include formControl;
-  background-color: color(quaternary);
   color: color(secondary);
+  background-color: color(quaternary);
 
   &-header {
     font-size: size(md);

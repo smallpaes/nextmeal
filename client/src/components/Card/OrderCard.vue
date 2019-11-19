@@ -115,18 +115,17 @@ export default {
 
   &-body {
     @include flexPosition('flex-start', flex-start, column);
-    height: 100%;
     width: 100%;
+    height: 100%;
   }
 
   &-title {
     font-size: size(sm);
-    color: color(secondary);
     font-weight: weight(bold);
+    color: color(secondary);
   }
 
   &-right {
-
     &-top {
       max-width: 80px;
       overflow: hidden;
@@ -134,10 +133,10 @@ export default {
   }
 
   &-date {
-    font-size: size(xs);
-    background-color: color(primary);
-    color: color(quaternary);
     padding: .15rem 0;
+    font-size: size(xs);
+    color: color(quaternary);
+    background-color: color(primary);
   }
 
   &-time {
@@ -153,7 +152,7 @@ export default {
 
 .btn {
   @include buttonOutline(80, 25, color(secondary), color(quaternary), color(secondary), .2);
-  font-size: size(xs);
   padding: 0;
+  font-size: size(xs);
 }
 </style>

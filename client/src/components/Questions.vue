@@ -103,9 +103,9 @@ export default {
 }
 
 .card {
+  margin-bottom: .6rem;
   border: none;
   border-bottom: 1px solid lighten(color(secondary), 55%);
-  margin-bottom: .6rem;
 
   &:first-of-type {
     border-bottom: 1px solid lighten(color(secondary), 55%);
@@ -116,22 +116,21 @@ export default {
   }
 
   &-header {
-    border-top: none;
-    background-color: white;
-    border-bottom: none;
-    color: color(tertiary);
-    font-weight: weight(bold);
     padding: 20px 20px 20px 0;
-
+    font-weight: weight(bold);
+    color: color(tertiary);
+    background-color: white;
+    border-top: none;
+    border-bottom: none;
     &:hover {
       cursor: pointer;
     }
   }
 
   &-body {
-    color: lighten(color(secondary), 10%);
     padding: 0 20px 20px 0;
     font-size: size(xs);
+    color: lighten(color(secondary), 10%);
   }
 }
 

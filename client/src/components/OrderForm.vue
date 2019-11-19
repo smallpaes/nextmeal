@@ -196,26 +196,26 @@ export default {
 
   &-check {
     &-label {
-      color: lighten(color(secondary), 20%);
       padding: .2rem 1rem;
-      border-radius: .1rem;
       margin-bottom: .75rem;
-      border: 1px solid lighten(color(secondary), 20%);
+      color: lighten(color(secondary), 20%);
       cursor: pointer;
+      border: 1px solid lighten(color(secondary), 20%);
+      border-radius: .1rem;
       transition: all .2s linear;
 
       &:hover {
-        border-color: color(tertiary);
-        background: color(tertiary);
         color: color(quaternary);
+        background: color(tertiary);
+        border-color: color(tertiary);
       }
     }
 
     &-input {
       &:checked ~ .form-check-label {
-        border-color: color(tertiary);
-        background: color(tertiary);
         color: color(quaternary);
+        background: color(tertiary);
+        border-color: color(tertiary);
       }
     }
   }
@@ -229,11 +229,11 @@ export default {
     }
 
     .btn {
-      border: 1px solid lighten(color(secondary), 20%);
-      color: lighten(color(secondary), 20%);
-      border-radius: .1rem;
-      padding: .1rem;
       width: 1.5rem;
+      padding: .1rem;
+      color: lighten(color(secondary), 20%);
+      border: 1px solid lighten(color(secondary), 20%);
+      border-radius: .1rem;
     }
 
     .disable-btn {
@@ -245,27 +245,28 @@ export default {
 
 .btn-container {
   text-align: center;
+
+  @include response(md) {
+    text-align: right;
+  }
+
   .btn {
-    margin-left: .8rem;
     padding: 0;
-    line-height: 1.8rem;
+    margin-left: .8rem;
     min-width: 78px;
     font-size: size(xs);
+    line-height: 1.8rem;
+
+    @include response(md) {
+      min-width: 130px;
+      padding: .1rem 0;
+      margin-left: 1rem;
+      font-size: size(sm);
+    }
 
     &:last-child {
       margin-left: 0;
     }
-
-    @include response(md) {
-      font-size: size(sm);
-      min-width: 130px;
-      padding: .1rem 0;
-      margin-left: 1rem;
-    }
-  }
-
-  @include response(md) {
-    text-align: right;
   }
 }
 

@@ -76,10 +76,8 @@ $headers: (
 }
 
 .card {
-
   &-header {
     background-color: lighten(color(secondary), 10%);
-
   }
 
   &-title {
@@ -87,8 +85,8 @@ $headers: (
   }
 
   &-text {
-    color: lighten(color(secondary), 50%);
     font-size: size(xs);
+    color: lighten(color(secondary), 50%);
   }
 }
 
@@ -107,10 +105,10 @@ $headers: (
       }
 
       &:hover {
-        transform: translateY(0px);
-        cursor: unset;
         color: color(secondary);
+        cursor: unset;
         box-shadow: none;
+        transform: translateY(0);
 
         @include response(md) {
           font-weight: weight(bold);

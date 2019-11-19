@@ -151,7 +151,6 @@ export default {
       required,
       email,
       unique: async function (val) {
-        console.log(!this.$v.email.email)
         if (val === '' || !this.$v.email.email) return true
         try {
           const { data, statusText } = await authorizationAPI.emailcheck({ email: val })

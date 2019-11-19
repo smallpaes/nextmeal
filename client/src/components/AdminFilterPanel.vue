@@ -137,8 +137,8 @@ export default {
   background-color: color(quaternary);
 
   &-select-control {
-    margin: 0 .3rem .6rem .3rem;
     padding: 0;
+    margin: 0 .3rem .6rem .3rem;
 
     @include response(sm) {
       margin: 0;
@@ -148,7 +148,6 @@ export default {
   .input-group-append {
     .btn {
       @include solidButton(40, .1);
-
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }

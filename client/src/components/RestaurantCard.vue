@@ -91,9 +91,8 @@ export default {
   }
 
   &-body {
-    padding: .8rem;
     min-height: 125px;
-
+    padding: .8rem;
     @include response(md) {
       min-height: 145px;
     }
@@ -107,7 +106,6 @@ export default {
   &-text {
     font-size: size(xs);
     color: lighten(color(secondary), 10%);
-
     .rating {
       color: color(primary);
     }

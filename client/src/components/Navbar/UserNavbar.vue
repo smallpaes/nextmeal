@@ -199,8 +199,8 @@ export default {
 .navbar{
   &-brand {
     font-family: 'Pacifico', cursive;
-    color: color(primary);
     font-size: size(md);
+    color: color(primary);
 
     &:hover {
       @extend .navbar-brand;
@@ -215,8 +215,8 @@ export default {
 
 .nav {
   &-link {
-    text-align: center;
     color:lighten(color(secondary), 20%);
+    text-align: center;
     transition: color .2s linear;
 
     &:after {
@@ -224,8 +224,8 @@ export default {
     }
 
     &:hover {
-      color: color(secondary);
       font-weight: weight(bold);
+      color: color(secondary);
     }
 
     @include response(sm) {
@@ -237,8 +237,8 @@ export default {
 .dropdown {
   &-img {
     position: relative;
-    height: 40px;
     width: 40px;
+    height: 40px;
     object-fit: cover;
     border-radius: 50%;
   }
@@ -247,26 +247,26 @@ export default {
     cursor: pointer;
     &::after {
       border-top: none;
-      border-left: none;
       border-right: none;
+      border-left: none;
     }
   }
 
   &-menu {
-    border-radius: .2rem;
-    top: 48.35px;
     position: relative;
-    border: 1px solid lighten(color(secondary), 55%);
+    top: 48.35px;
     background-color: lighten(color(secondary),65%);
+    border: 1px solid lighten(color(secondary), 55%);
+    border-radius: .2rem;
 
     &::before {
       position: absolute;
-      bottom: 100%;
       right: 8%;
+      bottom: 100%;
       content: '';
+      border-right: 10px solid transparent;
       border-bottom: 10px solid lighten(color(secondary), 55%);
       border-left: 10px solid transparent;
-      border-right: 10px solid transparent;
      }
 
      &::after {
@@ -277,8 +277,8 @@ export default {
   }
 
   &-item {
-    text-align: center;
     color: color(secondary);
+    text-align: center;
     cursor: pointer;
 
     &.active {

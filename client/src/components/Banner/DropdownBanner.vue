@@ -88,7 +88,7 @@ export default {
 <style lang="scss" scoped>
 .banner {
   @include positionCenter;
-  @include imgOverlay(0.9);
+  @include imgOverlay(.9);
 
   &-container {
     margin-top: 62px;
@@ -119,28 +119,28 @@ export default {
 
   &-menu {
     position: relative;
-    transform: translate3d(-10px, 32px, 0px) !important;
     background-color: color(quaternary);
+    transform: translate3d(-10px, 32px, 0) !important;
+
+    @include response(sm) {
+      transform: translate3d(25px, 32px, 0) !important;
+    }
 
     &::before {
-      content: '';
       position: absolute;
       bottom: 100%;
       left: 50%;
-      transform: translateX(-50%);
       width: 0;
       height: 0;
+      content: '';
+      border-right: 8px solid transparent;
       border-bottom: 8px solid color(quaternary);
       border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
+      transform: translateX(-50%);
     }
 
     .disabled {
       color: color(primary);
-    }
-
-    @include response(sm) {
-      transform: translate3d(25px, 32px, 0px) !important;
     }
   }
 

@@ -169,19 +169,19 @@ export default {
 
 .comments {
   &-heading {
-    padding-left: .6rem;
     position: relative;
+    padding-left: .6rem;
     font-size: size(lg);
 
     &::before {
-      content: '';
       position: absolute;
-      width: 4px;
-      left: 0;
-      height: 80%;
       top: 50%;
-      transform: translateY(-50%);
+      left: 0;
+      width: 4px;
+      height: 80%;
+      content: '';
       background-color: color(primary);
+      transform: translateY(-50%);
     }
   }
 }
