@@ -2,6 +2,13 @@
   <div class="profile-card rounded-sm shadow-sm">
     <!--User Info-->
     <div class="profile-card-top">
+      <!--Avatar Placeholder Image-->
+      <SkelentonBox
+        :width="'120px'"
+        :height="'120px'"
+        class="rounded-circle skelenton-box"
+      />
+      <!--Avatar-->
       <img
         :src="currentUser.avatar | placeholderAvatar"
         alt="user avatar"
@@ -42,6 +49,7 @@
 </template>
 
 <script>
+import SkelentonBox from '../Placeholder/SkeletonBox'
 import { placeholderAvatarFilter } from '../../utils/mixins'
 import { mapState } from 'vuex'
 
@@ -51,6 +59,9 @@ export default {
       if (status) return '訂閱中'
       return '未訂閱'
     }
+  },
+  components: {
+    SkelentonBox
   },
   mixins: [placeholderAvatarFilter],
   computed: {
@@ -75,6 +86,7 @@ export default {
       }
 
       img {
+        position: relative;
         width: 120px;
         height: 120px;
         object-fit: cover;
@@ -109,4 +121,5 @@ export default {
   width: 25px;
 }
 
+.skelenton-box { position: absolute; }
 </style>
