@@ -23,7 +23,7 @@ let adminController = {
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let restaurants = await Restaurant.findAndCountAll({
         where: {
-          name: { [Op.substring]: name || '' },
+          name: process.env.heroku ? { [Op.iLike]: `%${name}%` || '' } : { [Op.substring]: name || '' },
           CategoryId: category ? { [Op.eq]: category } : { [Op.gt]: 0 },
           location: { [Op.substring]: dist || '' }
         },

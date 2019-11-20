@@ -10,8 +10,8 @@ module.exports = {
   char: {
     date: [sequelize.fn('to_char', sequelize.col('require_date'), 'YYMMDD'), 'date'],
     time: [sequelize.fn('to_char', sequelize.col('require_date'), 'HH24:MI'), 'time'],
-    date_for_dashboard: [sequelize.fn('to_char', sequelize.col('require_date'), '%m/%d'), 'date'],
-    date_for_admin_dashboard: [sequelize.fn('to_char', sequelize.col('createdAt'), '%m/%d'), 'date']
+    date_for_dashboard: [sequelize.fn('to_char', sequelize.col('require_date'), 'MM/DD'), 'date'],
+    date_for_admin_dashboard: [sequelize.fn('to_char', sequelize.col('createdAt'), 'MM/DD'), 'date']
   },
   geo: {
     geometry: 'ST_DistanceSphere',
