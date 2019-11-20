@@ -11,7 +11,7 @@
           aria-label="Previous"
           :to="{name: $route.name, query: { ...query, page: previousPage }}"
         >
-          <i class="fas fa-angle-left" />
+          &#8678;
         </router-link>
       </li>
 
@@ -58,7 +58,7 @@
           :to="{name: $route.name, query: { ...query, page: nextPage }}"
           aria-label="Next"
         >
-          <i class="fas fa-angle-right" />
+          &#8680;
         </router-link>
       </li>
     </ul>
