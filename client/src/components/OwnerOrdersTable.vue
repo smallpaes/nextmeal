@@ -5,7 +5,7 @@
         {{ timeSlot }}
       </h4>
       <p class="card-text">
-        共需準備 {{ orders.length }} 份餐點
+        共需準備 {{ totalMeals }} 份餐點
       </p>
     </div>
     <div class="card-body p-0">
@@ -50,6 +50,12 @@ export default {
     timeSlot: {
       type: String,
       required: true
+    }
+  },
+  computed: {
+    totalMeals () {
+      // Get total meals needed to be prepared
+      return this.orders.reduce((acc, cur) => acc + cur.meals.OrderItem.quantity, 0)
     }
   }
 }
