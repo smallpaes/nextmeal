@@ -47,12 +47,7 @@
       </p>
       <div
         class="form-group"
-        :class="{invalid: !$v.comment.image.hasImage}"
       >
-        <small
-          v-if="!$v.comment.image.hasImage"
-          class="form-text mb-2"
-        >請上傳一張照片&#8595;</small>
         <!--Invisible file upload button-->
         <input
           id="file"
@@ -61,7 +56,6 @@
           name="image"
           accept=".png, .jpg, .jpeg"
           @change="handleFileChange($event, 'comment')"
-          @input="$v.comment.image.$touch()"
         >
         <!--Preview image-->
         <div
@@ -91,7 +85,7 @@
         <ProcessButton
           class="btn"
           :is-processing="isProcessing"
-          :v="$v"
+          :v="{}"
           :color="'primary'"
           :border-radius="'.3rem'"
           @after-click="handleSubmit"
@@ -140,12 +134,6 @@ export default {
         required,
         minLength: minLength(10),
         maxLength: maxLength(100)
-      },
-      image: {
-        hasImage: value => {
-          if (!value) return false
-          return true
-        }
       }
     }
   },
