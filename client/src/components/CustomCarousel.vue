@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import RestaurantCard from '../components/RestaurantCard'
+import RestaurantCard from '../components/Card/RestaurantCard'
 
 import { Carousel, Slide } from 'vue-carousel'
 

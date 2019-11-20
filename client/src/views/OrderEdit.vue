@@ -47,6 +47,7 @@
               :initial-order="order.orderData"
               :initial-processing="isProcessing"
               :current-user="currentUser"
+              @to-last-page="$router.go(-1)"
               @after-submit="handleAfterSubmit"
             >
               <template #submit>

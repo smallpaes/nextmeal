@@ -121,7 +121,6 @@ let ownerController = {
         })
       }
     } catch (error) {
-      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -265,7 +264,7 @@ let ownerController = {
           }
         }]
       })
-      if (!restaurant) return res.status(200).json({ status: 'success',meals: [], options: [], message: 'you do not have your restaurant info filled or a meal yet' })
+      if (!restaurant) return res.status(200).json({ status: 'success', meals: [], options: [], message: 'you do not have your restaurant info filled or a meal yet' })
       let whereQuery = {}
       let message = ''
       if (req.query.ran !== 'thisWeek' && req.query.ran !== 'nextWeek') {
@@ -396,7 +395,7 @@ let ownerController = {
       // query過去一個月內每日的訂單
       let orders = await Order.findAll({
         include: [
-          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: ['id', 'name', 'image'] }
+          { model: Meal, as: 'meals', where: { RestaurantId: restaurant.id }, attributes: [] }
         ],
         where: {
           require_date: {
@@ -405,10 +404,25 @@ let ownerController = {
         },
         attributes: [
           customQuery.char.date_for_dashboard,
-          [sequelize.literal(`COUNT(*)`), 'count']
-        ],
-        group: ['date']
+        ]
       })
+      // 手動加總不同日期的訂單量
+      let results = orders.reduce((obj, item) => {
+        if (item.dataValues.date in obj) {
+          obj[item.dataValues.date] += 1
+        } else {
+          obj[item.dataValues.date] = 1
+        }
+        return obj
+      }, {})
+      // 複寫orders的結果達到與group by相同的輸出
+      orders = []
+      for (i in results) {
+        orders.push({
+          date: i,
+          count: results[i]
+        })
+      }
       // find all dates a month from now
       var dateArray = [];
       var currentDate = moment(pass_one_month);
@@ -419,13 +433,13 @@ let ownerController = {
       };
 
       // check if there's missing dates
-      const currentDates = orders.map(item => item.dataValues.date)
+      const currentDates = orders.map(item => item.date)
       const missing_fields_order_mod = dateArray.filter(v => currentDates.indexOf(v) === -1)
 
       // create the an end result object for later sorting
       const order_result = orders.map(item => ({
-        date: item.dataValues.date,
-        count: item.dataValues.count
+        date: item.date,
+        count: item.count
       }))
 
       // if missing fields exist,fill in with value 0
@@ -472,31 +486,37 @@ let ownerController = {
         if (item.age > 60) user_result[">60歲"]++
       })
 
-      let comments = await Comment.findAndCountAll({
+      let comments = await Comment.findAll({
         where: { RestaurantId: restaurant.id },
-        attributes: ['user_text', 'rating', customQuery.literal.name, 'createdAt'],
-        group: ['rating'],
-        order: [['createdAt', 'DESC'], ['rating', 'DESC']],
+        attributes: ['rating', [sequelize.literal(`COUNT(*)`), 'count']],
+        group: ['rating']
       })
 
       // check if the rating has missing field
-      const original_ratings = comments.count.map(item => item.rating)
+      const original_ratings = comments.map(item => item.dataValues.rating)
       const missing_fields = [1, 2, 3, 4, 5].filter(v => original_ratings.indexOf(v) === -1)
 
+      // create the an end result object for later sorting
+      const rating_result = comments.map(item => ({
+        rating: item.dataValues.rating,
+        count: item.dataValues.count
+      }))
+
       // if missing fields exist,fill in with value 0
-      missing_fields.map(item => {
-        comments.count.push({ rating: item, count: 0 })
+      missing_fields.map(async item => {
+        await rating_result.push({ rating: item, count: 0 })
       })
 
       // sort the result
-      const sorted = comments.count.sort((a, b) => { return b.rating - a.rating })
+      const sorted = rating_result.sort((a, b) => { return b.rating - a.rating })
+
 
       // adjust rating data format for front-end
       const ratings = {
         labels: ['5星', '4星', '3星', '2星', '1星'],
-        data: sorted.map(item => item.count),
+        data: sorted.map(item => Number(item.count)),
         tableName: '滿意度',
-        average: sorted.every(item => item.count === 0) ? 0 : Number.parseFloat(sorted.reduce((total, current) => total + current.rating * current.count, 0) / sorted.reduce((total, current) => total + current.count, 0)).toFixed(1)
+        average: sorted.every(item => Number(item.count) === 0) ? 0 : Number.parseFloat(sorted.reduce((total, current) => total + Number(current.rating) * Number(current.count), 0) / sorted.reduce((total, current) => total + Number(current.count), 0)).toFixed(1)
       }
       // adjust comment data format for front-end
       comments = await Comment.findAll({
@@ -509,14 +529,14 @@ let ownerController = {
         labels: Object.keys(user_result),
         data: Object.values(user_result),
         tableName: '客群',
-        total: Object.values(user_result).reduce((total, current) => total + current)
+        total: Object.values(user_result).reduce((total, current) => total + Number(current), 0)
       }
       // adjust order data format for front-end
       orders = {
-        labels: order_result.map(item => item.date),
-        data: order_result.map(item => item.count),
+        labels: dateArray,
+        data: order_result.map(item => Number(item.count)),
         tableName: '訂單',
-        total: Object.values(order_result).reduce((total, current) => total + current.count, 0)
+        total: Object.values(order_result).reduce((total, current) => total + Number(current.count), 0)
       }
 
       return res.status(200).json({ status: 'success', orders, comments, ratings, users, message: 'Successfully get owner dashboard' })

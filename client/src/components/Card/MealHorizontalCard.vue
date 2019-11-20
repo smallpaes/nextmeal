@@ -59,13 +59,22 @@ export default {
     height: 100%;
   }
 
-  &-img {
+  &-left {
     width: 130px;
     height: 100%;
-    object-fit: cover;
+    background-image: url('~@/assets/placeholder-image/logo/200x200.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 
     @include response(sm) { width: 150px; }
-    @include response(md) { width: 170px;}
+    @include response(md) { width: 170px; }
+  }
+
+  &-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   &-title {

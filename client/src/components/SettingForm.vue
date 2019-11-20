@@ -20,7 +20,7 @@
             設定
           </h3>
           <h5>
-            完成偏好設定以獲得更好體驗
+            偏好設定以獲得更好的體驗
           </h5>
         </div>
         <!--Show alert section-->
@@ -78,7 +78,7 @@
         />
         <div class="btn-container text-center">
           <button
-            class="btn mt-1"
+            class="btn btn-submit mt-1"
             type="submit"
             :disabled="isProcessing || $v.$invalid"
           >
@@ -223,7 +223,10 @@ export default {
 
 .btn {
   @include solidButton(200, 1);
-  min-width: 100px;
+
+  &:not(.btn-submit) {
+    min-width: 100px;
+  }
 
   @include response(sm) { min-width: 150px; }
   @include response(md) { min-width: 170px; }

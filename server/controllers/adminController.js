@@ -98,6 +98,7 @@ let adminController = {
         })
       }
     } catch (error) {
+      console.log(error.message)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -388,8 +389,8 @@ let adminController = {
       var dateArray = [];
       let light_package = []
       let heavy_package = []
-      var currentDate = moment(pass_one_month);
-      var stopDate = moment();
+      var currentDate = moment(pass_one_month).endOf('day').toDate();
+      var stopDate = moment().endOf('day').toDate();
       while (currentDate <= stopDate) {
         let light_subs = await Subscription.count({
           where: {
@@ -415,13 +416,14 @@ let adminController = {
           }
         })
         heavy_package.push(heavy_subs)
+
         dateArray.push(moment(currentDate).format('MM/DD'))
         currentDate = moment(currentDate).add(1, 'days')
       };
 
       // check if there's missing dates
       const currentDates = orders.map(item => item.dataValues.date)
-      const restDates = restaurants.map(item => item.date)
+      const restDates = restaurants.map(item => item.dataValues.date)
       const missing_fields_orders = dateArray.filter(v => currentDates.indexOf(v) === -1)
       const missing_fields_restaurants = dateArray.filter(v => restDates.indexOf(v) === -1)
 
@@ -450,20 +452,20 @@ let adminController = {
 
       // adjust order data format for front-end
       orders = {
-        labels: order_result.map(item => item.date),
+        labels: dateArray,
         data: order_result.map(item => item.count),
         tableName: '訂單',
         total: total_orders,
-        thisMonth: Object.values(order_result).reduce((total, current) => total + current.count, 0)
+        thisMonth: Object.values(order_result).reduce((total, current) => total + Number(current.count), 0)
       }
 
       // adjust restaurant data format for front-end
       restaurants = {
-        labels: rest_result.map(item => item.date),
+        labels: dateArray,
         data: rest_result.map(item => item.count),
         tableName: '餐廳',
         total: total_restaurants,
-        thisMonth: Object.values(rest_result).reduce((total, current) => total + current.count, 0)
+        thisMonth: Object.values(rest_result).reduce((total, current) => total + Number(current.count), 0)
       }
 
       // adjust user data format for front-end
@@ -471,7 +473,7 @@ let adminController = {
         labels: ['訂閱中', '未訂閱'],
         data: [users[0].dataValues.subscribeUsers, users[0].dataValues.nonsubscribeUsers],
         tableName: '會員',
-        total: users[0].dataValues.subscribeUsers + users[0].dataValues.nonsubscribeUsers
+        total: Number(users[0].dataValues.subscribeUsers) + Number(users[0].dataValues.nonsubscribeUsers)
       }
 
       // adjust subscriptions data format for front-end

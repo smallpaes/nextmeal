@@ -30,7 +30,7 @@
           <td>
             <SkelentonBox
               v-if="isLoading"
-              :width="'160px'"
+              :width="'100px'"
             />
             <template v-else>
               {{ restaurant.name | textTruncate(10) }}

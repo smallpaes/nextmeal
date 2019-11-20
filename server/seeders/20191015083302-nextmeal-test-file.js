@@ -21,14 +21,24 @@ function randomPhone(num) {
   return random
 }
 
+const totay = moment().toDate()
+const pass_month = moment().subtract(1, 'months').toDate()
+
 function createUsers(users) {
   let userData = []
   for (let i = 0; i < users.length; i++) {
     let role = 'User'
     let expired_date = moment().add(30, 'days').endOf('day').toDate()
-    if (i === 0) role = 'Admin'
-    if (i > 1 && i < (stores.length + 2)) role = 'Owner'
-    if (i > 3 & i < 319) expired_date = null
+    if (i === 0) {
+      role = 'Admin'
+      expired_date = null
+    }
+    if (i > 1 && i < (stores.length + 2)) {
+      role = 'Owner'
+      expired_date = null
+    }
+
+    if (i > 3 & i < 318) expired_date = null
     const seedUser = {
       name: i === 0 ? 'root' : faker.fake("{{name.firstName}}{{name.lastName}}"),
       email: i === 0 ? 'root@example.com' : `user${i}@example.com`,
@@ -42,7 +52,7 @@ function createUsers(users) {
       lat: users[i].lat,
       lng: users[i].lng,
       geometry: sequelize.fn('ST_GeomFromText', `POINT(${users[i].lng} ${users[i].lat})`),
-      createdAt: new Date(),
+      createdAt: faker.date.between(pass_month, totay),
       updatedAt: new Date(),
       expired_date: expired_date
     }
@@ -69,7 +79,7 @@ function createRest(store) {
       lng: store[i].lng,
       geometry: sequelize.fn('ST_GeomFromText', `POINT(${store[i].lng} ${store[i].lat})`),
       rating: parseFloat(Math.random() * 4 + 1).toFixed(1),
-      createdAt: new Date(),
+      createdAt: faker.date.between(pass_month, totay),
       updatedAt: new Date()
     }
     restData.push(seedRest)
@@ -113,6 +123,14 @@ function pastOrder() {
   return date
 }
 
+function randomOrder() {
+  let randomDate = faker.date.between(pass_month, totay)
+  let tomorrow = moment(randomDate).startOf('day')
+  tomorrow.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30))
+  tomorrow = new Date(tomorrow)
+  return tomorrow
+}
+
 function orderThing(start, end) {
   let usersOrders = []
   let OrdersItem = []
@@ -120,7 +138,7 @@ function orderThing(start, end) {
   for (let i = start; i < end; i++) {
     let past = pastOrder()
     let order_status = '今日'
-    let hasComment = true
+    let hasComment = false
     let userId, orderPast, user_text
     let orderMeal = Math.ceil(Math.random() * (stores.length - 150)) + 2
     const random = Math.floor(Math.random() * 3) + 1
@@ -158,6 +176,13 @@ function orderThing(start, end) {
       userId = Math.ceil(Math.random() * (users.length - stores.length)) + stores.length
       orderMeal = 1
       past = randomTime(0)
+      order_status = '今日'
+      hasComment = false
+    }
+    if (i > 195) {
+      userId = Math.ceil(Math.random() * (users.length - stores.length)) + stores.length
+      orderMeal = 1
+      past = randomOrder()
       order_status = '今日'
       hasComment = false
     }
@@ -229,18 +254,18 @@ module.exports = {
     await queryInterface.bulkInsert("Comments", commentRest, {});
     // add subscriptions
     return queryInterface.bulkInsert("Subscriptions",
-      Array.from({ length: users.length - stores.length + 1 }).map((item, index) => (
+      Array.from({ length: users.length - stores.length - 1 }).map((item, index) => (
         {
-          UserId: index < 3 ? index + 1 : index + stores.length,
-          sub_name: '輕量型',
-          sub_price: 1000,
-          sub_description: '一個月10餐',
-          sub_balance: 10,
-          sub_date: new Date(),
+          UserId: index === 0 ? index + 2 : index + stores.length + 2,
+          sub_name: index > 90 ? '輕量型' : '滿足型',
+          sub_price: index > 90 ? 1000 : 2000,
+          sub_description: index > 90 ? '一個月10餐' : '一個月20餐',
+          sub_balance: index > 90 ? 10 : 20,
+          sub_date: faker.date.between(pass_month, totay),
           sub_expired_date: moment().add(30, 'days').endOf('day').toDate(),
           payment_status: true,
           sn: Date.now() + index,
-          createdAt: new Date(),
+          createdAt: faker.date.between(pass_month, totay),
           updatedAt: new Date()
         }))
       , {});
