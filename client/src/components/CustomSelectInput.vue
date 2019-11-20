@@ -60,6 +60,7 @@ export default {
   @include formSelectControl;
 
   &-control {
+    border: none;
     &:invalid {
       margin-bottom: 0rem;
     }
@@ -78,9 +79,5 @@ export default {
       position: absolute;
     }
   }
-}
-
-.form-control {
-  border: none
 }
 </style>

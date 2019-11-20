@@ -4,7 +4,8 @@
       <i class="fas fa-chart-area mr-2" />今日概況
     </div>
     <div class="card-body row">
-      <div class="col-6 col-lg-3 card-item mb-4 mb-lg-0">
+      <!--Order-->
+      <div class="col-12 col-sm-6 col-lg-3 card-item mb-4 mb-lg-0">
         <div class="card-item-left">
           <div class="card-item-icon">
             <i class="fas fa-clipboard-list" />
@@ -19,7 +20,8 @@
           </div>
         </div>
       </div>
-      <div class="col-6 col-lg-3 card-item mb-4 mb-lg-0">
+      <!--Restaurant-->
+      <div class="col-12 col-sm-6 col-lg-3 card-item mb-4 mb-lg-0">
         <div class="card-item-left">
           <div class="card-item-icon">
             <i class="fas fa-store" />
@@ -34,7 +36,8 @@
           </div>
         </div>
       </div>
-      <div class="col-6 col-lg-3 card-item">
+      <!--User-->
+      <div class="col-12 col-sm-6 col-lg-3 mb-4 mb-md-0 card-item">
         <div class="card-item-left">
           <div class="card-item-icon">
             <i class="fas fa-users" />
@@ -49,7 +52,8 @@
           </div>
         </div>
       </div>
-      <div class="col-6 col-lg-3 card-item">
+      <!--Subscription-->
+      <div class="col-12 col-sm-6 col-lg-3 card-item">
         <div class="card-item-left">
           <div class="card-item-icon">
             <i class="far fa-credit-card" />
