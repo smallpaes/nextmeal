@@ -57,9 +57,7 @@ export default {
 .message {
   @include positionCenter;
 
-  &-container {
-    height: 100%;
-  }
+  &-container { height: 100%; }
 
   &-video-container {
     height: 100%;
@@ -68,16 +66,16 @@ export default {
 
   // make video responsive
   &-video {
-    height: 100%;
     width: 189.62962963vh;
     min-width: 100%;
+    height: 100%;
     min-height: 52.734375vw;
   }
 
   &-content {
+    width: 100%;
     color: color(quaternary);
     text-shadow: 1px 1px 1px lighten(color(secondary), 20%);
-    width: 100%;
 
     &-heading {
       font-family: 'Indie Flower', cursive;
@@ -88,43 +86,31 @@ export default {
       font-size: size(sm);
       font-weight: weight(bold);
 
-      @include response(sm) {
-        font-size: size(md);
-      }
-
-      @include response(md) {
-        font-size: size(lg);
-      }
+      @include response(sm) { font-size: size(md); }
+      @include response(md) { font-size: size(lg); }
     }
 
     &-subdescription {
       font-size: size(xs);
       font-weight: weight(bold);
 
-      @include response(sm) {
-        font-size: size(sm);
-      }
-
-      @include response(md) {
-        font-size: size(md);
-      }
+      @include response(sm) { font-size: size(sm); }
+      @include response(md) { font-size: size(md); }
     }
   }
 }
 
 .home-btn {
   @include solidButton;
-  text-shadow: none;
   min-width: 120px;
   font-size: size(xs);
+  text-shadow: none;
 
   @include response(sm) {
     min-width: 150px;
     font-size: size(sm);
   }
 
-  @include response(md) {
-    min-width: 200px;
-  }
+  @include response(md) { min-width: 200px; }
 }
 </style>

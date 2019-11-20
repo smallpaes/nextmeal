@@ -56,15 +56,15 @@ export default {
   overflow: hidden;
 
   &-header {
+    padding: .6rem 1.25rem;
     font-size: size(sm);
     color: color(secondary);
-    padding: .6rem 1.25rem;
   }
 
   &-body {
     @include flexPosition(center, center, column);
-    color: lighten(color(secondary), 30%);
     font-size: size(xs);
+    color: lighten(color(secondary), 30%);
   }
 }
 

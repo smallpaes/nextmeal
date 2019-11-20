@@ -128,8 +128,8 @@ export default {
   }
 
   &-display {
-    margin: 0 auto;
     max-width: 760px;
+    margin: 0 auto;
   }
 }
 </style>

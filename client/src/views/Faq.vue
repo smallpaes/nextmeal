@@ -201,33 +201,28 @@ export default {
 
 .faq {
   &-title {
-    color: color(primary);
     padding: 0 0 .5rem 1rem;
+    color: color(primary);
 
-    &-wrapper {
-      margin: 1.5rem 0 3rem 0;
-    }
+    &-wrapper { margin: 1.5rem 0 3rem 0; }
   }
 }
 
 .list {
 
   &-group {
-
     &-item {
-      background-color: transparent;
       padding-top: 1.5rem;
+      background-color: transparent;
     }
   }
 
   &-title {
-    font-size: size(sm);
     margin-bottom: 1rem;
+    font-size: size(sm);
     font-weight: weight(bold);
   }
 
-  &-description {
-    font-size: size(xs);
-  }
+  &-description { font-size: size(xs); }
 }
 </style>

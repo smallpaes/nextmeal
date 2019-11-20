@@ -64,9 +64,7 @@ export default {
 .detail {
   width: 100%;
 
-  &-wrapper {
-    background-color: color(quaternary);
-  }
+  &-wrapper { background-color: color(quaternary); }
 
   &-title {
     font-size: size(md);

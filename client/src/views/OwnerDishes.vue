@@ -153,24 +153,24 @@ export default {
   background-color: color(quinary);
 }
 
+/* Right Side Content */
 .dishes {
   @include controlPanelLayout;
 
-  &-card-container {
-    background-color: color(quaternary);
-  }
+  &-card-container { background-color: color(quaternary); }
 
   &-divider {
     width: 100%;
     margin-top: 0;
   }
+}
 
-  .new-dish {
+/* Button to create a new dish */
+.new-dish {
     @include linkStyling(color(primary));
     position: absolute;
-    right: 40px;
     top: 112px;
+    right: 40px;
     font-size: size(xs);
   }
-}
 </style>

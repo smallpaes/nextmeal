@@ -1,5 +1,6 @@
 <template>
   <div class="profile-card rounded-sm shadow-sm">
+    <!--User Info-->
     <div class="profile-card-top">
       <img
         :src="currentUser.avatar | placeholderAvatar"
@@ -13,6 +14,7 @@
       </small>
     </div>
     <hr class="m-0">
+    <!--Nav-->
     <div class="profile-card-bottom">
       <ul class="nav flex-column">
         <li class="nav-item">
@@ -62,6 +64,7 @@ export default {
   &-card {
     background-color: color(quaternary);
 
+    /* User Info */
     &-top {
       padding: 1.5rem;
       text-align: center;
@@ -79,29 +82,20 @@ export default {
       }
     }
 
-    &-bottom {
-      padding: .5rem 0;
-    }
-  }
-
-  &-form {
-    border: 1px solid color(secondary);
+    /* Nav */
+    &-bottom { padding: .5rem 0; }
   }
 }
 
 .nav {
-  &-item {
-    text-align: center;
-  }
+  &-item { text-align: center; }
 
   &-link {
     @include linkStyling(lighten(color(secondary), 10%));
     padding: .5rem 1rem;
     font-size: size(sm);
 
-    &:hover {
-      color: color(primary);
-    }
+    &:hover { color: color(primary); }
 
     &.active {
       @include pseudoStyling(before, primary, .3, 1.6);

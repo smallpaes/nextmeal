@@ -137,11 +137,6 @@ export default {
 @include slideAnimation(false);
 @include fadeAnimation(false);
 
-.wrapper {
-  background-color: color(quinary);
-}
-
-.restaurants {
-  @include controlPanelLayout;
-}
+.wrapper { background-color: color(quinary); }
+.restaurants { @include controlPanelLayout; }
 </style>

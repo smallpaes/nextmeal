@@ -60,7 +60,7 @@
           class="nav-link"
           @click="logout"
         >
-          <span class="icon"><i class="fas fa-cog" /></span>
+          <span class="icon"><i class="fas fa-sign-out-alt" /></span>
           <span class="nav-link-description">登出</span>
         </a>
       </li>
@@ -89,32 +89,25 @@ export default {
 .sidenav {
   @include brand(sidenav);
   position: fixed;
-  height: 100vh;
+  z-index: 3;
   width: 0;
+  height: 100vh;
+  overflow-x: hidden;
+  scrollbar-width: none; // Hide scrollbar on Firefox
   white-space: nowrap;
   background-color: color(quaternary);
   transition: width .2s linear;
-  overflow-x: hidden;
-  z-index: 3;
 
-  // Hide scrollbar on Firefox
-  scrollbar-width: none;
+  @include response(sm) { width: 80px; }
+  @include response(md) { width: 145px; }
 
   &-brand {
     @include visibleTransition(visible);
-
-    @include response(sm) {
-      @include visibleTransition(invisible);
-    }
-
-    @include response(md) {
-      @include visibleTransition(visible);
-    }
+    @include response(sm) { @include visibleTransition(invisible); }
+    @include response(md) { @include visibleTransition(visible); }
   }
 
-  &-nav {
-    list-style-type: none;
-  }
+  &-nav { list-style-type: none; }
 
   &.opened {
     @extend .sidenav;
@@ -122,23 +115,11 @@ export default {
   }
 
   /*Hide scrollbar on Chrome, Opera, Safari*/
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  @include response(sm) {
-    width: 80px;
-  }
-
-  @include response(md) {
-    width: 145px;
-  }
+  &::-webkit-scrollbar { display: none; }
 }
 
 .nav {
-  &-item {
-    padding: .9rem 0;
-  }
+  &-item { padding: .9rem 0; }
 
   &-link {
     @include linkStyling(lighten(color(secondary), 20%));
@@ -147,14 +128,11 @@ export default {
 
     &.active {
       color: color(tertiary);
-      @include pseudoStyling(before, tertiary, 0.4, 2.3);
+      @include pseudoStyling(before, tertiary, .4, 2.3);
 
       &::before {
         background-color: transparent;
-
-        @include response(sm) {
-          background-color: color(tertiary);
-        }
+        @include response(sm) { background-color: color(tertiary); }
       }
     }
 
@@ -162,8 +140,8 @@ export default {
       transition: opacity .1s linear;
 
       @include response(sm) {
-        opacity: 0;
         display: none;
+        opacity: 0;
       }
 
       @include response(md) {
@@ -175,12 +153,10 @@ export default {
 
   &-divider {
     display: none;
-    border: .03rem solid lighten(color(secondary), 55%);
     margin: 0 .6rem;
+    border: .03rem solid lighten(color(secondary), 55%);
 
-    @include response(sm) {
-      display: block;
-    }
+    @include response(sm) { display: block; }
   }
 }
 

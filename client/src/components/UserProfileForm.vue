@@ -372,19 +372,15 @@ export default {
   @include fileUpload;
   @include formControl;
   @include inputValidation;
-  background-color: color(quaternary);
   color: color(secondary);
+  background-color: color(quaternary);
 }
 
-.btn {
-  &-container {
-    @include flexPosition(center, center, row);
-  }
-}
+.btn-container { @include flexPosition(center, center, row); }
 
 .alert {
-  background-color: color(tertiary);
   color: color(quaternary);
+  background-color: color(tertiary);
 }
 
 </style>

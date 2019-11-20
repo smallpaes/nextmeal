@@ -109,11 +109,8 @@ export default {
 <style lang="scss" scoped>
 @include slideAnimation(false);
 
-.wrapper {
-  background-color: color(quinary);
-}
+.wrapper { background-color: color(quinary); }
 
-.order {
-  @include controlPanelLayout;
-}
+/* Right Side Content */
+.order { @include controlPanelLayout; }
 </style>

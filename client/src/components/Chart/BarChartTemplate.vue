@@ -1,5 +1,5 @@
 <script>
-import { Bar, mixins, HorizontalBar } from 'vue-chartjs'
+import { mixins, HorizontalBar } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
 export default {

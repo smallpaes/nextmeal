@@ -30,7 +30,7 @@
           <td>
             <SkelentonBox
               v-if="isLoading"
-              :width="'160px'"
+              :width="'100px'"
             />
             <template v-else>
               {{ restaurant.name | textTruncate(10) }}
@@ -129,11 +129,6 @@ $headers: (
 // table layout for large screen
 @include tableFullSize;
 
-.high-rating {
-  color: color(tertiary);
-}
-
-.low-rating {
-  color: color(primary);
-}
+.high-rating { color: color(tertiary); }
+.low-rating { color: color(primary); }
 </style>

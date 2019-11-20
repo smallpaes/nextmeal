@@ -101,9 +101,7 @@ export default {
   @include formControl;
 
   &-control {
-    &[readonly] {
-      background-color: transparent;
-    }
+    &[readonly] { background-color: transparent; }
   }
 }
 
@@ -113,8 +111,8 @@ export default {
   &-group {
     &.invalid {
       /deep/ input {
-        border: 1px solid color(primary);
         background-color: lighten(color(primary), 36%);
+        border: 1px solid color(primary);
       }
     }
   }
@@ -134,22 +132,20 @@ export default {
 /deep/ .mx-calendar-content {
   .cell {
     &.actived {
-      background-color: color(primary);
       color: color(quaternary);
+      background-color: color(primary);
     }
 
     &:hover {
-      background-color: lighten(color(primary), 35%);
       color: color(primary);
+      background-color: lighten(color(primary), 35%);
     }
   }
 }
 
 /deep/ .mx-panel-date {
   td {
-    &.today {
-      color: color(primary);
-    }
+    &.today { color: color(primary); }
   }
 }
 </style>

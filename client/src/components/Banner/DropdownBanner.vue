@@ -12,6 +12,7 @@
         <h1 class="banner-content-title">
           {{ currentDistrict }}
         </h1>
+        <!--Dropdown menu for city switch-->
         <div class="dropdown">
           <button
             id="dropdownMenuButton"
@@ -88,15 +89,12 @@ export default {
 <style lang="scss" scoped>
 .banner {
   @include positionCenter;
-  @include imgOverlay(0.9);
+  @include imgOverlay(.9);
 
-  &-container {
-    margin-top: 62px;
-  }
+  &-container { margin-top: 62px; }
 
-  &-img {
-    @include setBackground("https://cdn.pixabay.com/photo/2019/09/23/14/34/nyc-4498752_1280.jpg", 300px);
-  }
+  &-img { @include setBackground("https://cdn.pixabay.com/photo/2019/09/23/14/34/nyc-4498752_1280.jpg", 300px);}
+
   &-content {
     color: color(quaternary);
     text-shadow: 1px 1px 1px #636161;
@@ -104,44 +102,37 @@ export default {
     &-title {
       font-size: size(xl);
       font-weight: weight(bold);
-
-      @include response(sm) {
-        font-size: size(xxl);
-      }
+      @include response(sm) { font-size: size(xxl); }
     }
   }
 }
 
+/* Dropdown menu for city switch */
 .dropdown {
-  &-toggle {
-    color: color(quaternary);
-  }
+  &-toggle { color: color(quaternary); }
 
   &-menu {
     position: relative;
-    transform: translate3d(-10px, 32px, 0px) !important;
     background-color: color(quaternary);
+    transform: translate3d(-10px, 32px, 0) !important;
 
+    @include response(sm) { transform: translate3d(25px, 32px, 0) !important;}
+
+    /* Create Arrow On Top Of The Menu: Up */
     &::before {
-      content: '';
       position: absolute;
       bottom: 100%;
       left: 50%;
-      transform: translateX(-50%);
       width: 0;
       height: 0;
+      content: '';
+      border-right: 8px solid transparent;
       border-bottom: 8px solid color(quaternary);
       border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
+      transform: translateX(-50%);
     }
 
-    .disabled {
-      color: color(primary);
-    }
-
-    @include response(sm) {
-      transform: translate3d(25px, 32px, 0px) !important;
-    }
+    .disabled { color: color(primary); }
   }
 
   &-item {

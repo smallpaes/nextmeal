@@ -104,27 +104,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.card {
-  &-header {
-    font-size: size(sm);
-    color: color(secondary);
-    padding: .6rem 1.25rem;
-  }
-
-  &-statistic {
-    padding-left: 1.6rem;
-  }
-
-  &-title {
-    font-size: size(xs);
-    color: lighten(color(secondary), 30%);
-    margin-bottom: .2rem;
-  }
-
-  &-text {
-    font-size: size(lg);
-    font-weight: weight(bold);
-    color: rgb(247,185,36);
-  }
-}
+@include chartCardStyling;
 </style>

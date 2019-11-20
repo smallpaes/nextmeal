@@ -25,49 +25,37 @@ export default {
 .hamburger {
   &-menu {
     position: absolute;
-    right: 37px;
     top: 40px;
+    right: 37px;
+    z-index: 6;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    font-size: size(md);
-    padding: 8px 0;
-    z-index: 6;
     width: 30px;
     height: 48px;
+    padding: 8px 0;
+    font-size: size(md);
     transition: all .2s linear;
+
+    @include response(sm) { display: none; }
 
     &-line {
       width: 30px;
       height: 3px;
       background-color: lighten(color(secondary), 35%);
-      transform-origin: right;
       transition: transform .2s .2s linear, opacity .2s .2s linear, background-color .2s linear;
+      transform-origin: right;
     }
 
     &.opened {
       transform: rotateZ(90deg);
 
-      .hamburger-menu-line-1 {
-        transform: rotateZ(-40deg);
-      }
-
-      .hamburger-menu-line-2 {
-        opacity: 0;
-      }
-
-      .hamburger-menu-line-3 {
-        transform: rotateZ(40deg);
-      }
+      .hamburger-menu-line-1 { transform: rotateZ(-40deg); }
+      .hamburger-menu-line-2 { opacity: 0; }
+      .hamburger-menu-line-3 { transform: rotateZ(40deg); }
     }
 
-    &:hover .hamburger-menu-line {
-      background-color: lighten(color(secondary), 20%);
-    }
-
-    @include response(sm) {
-      display: none;
-    }
+    &:hover .hamburger-menu-line { background-color: lighten(color(secondary), 20%); }
   }
 }
 </style>

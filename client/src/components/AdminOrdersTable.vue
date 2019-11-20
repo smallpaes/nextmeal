@@ -173,15 +173,7 @@ $headers: (
 // table layout for large screen
 @include tableFullSize;
 
-.table tbody tr:hover {
-  cursor: unset;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
-.wait {
-  cursor: wait;
-}
+.table tbody tr:hover { cursor: unset; }
+.pointer { cursor: pointer; }
+.wait { cursor: wait; }
 </style>

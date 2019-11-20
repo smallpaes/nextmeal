@@ -213,31 +213,24 @@ export default {
 
 .order {
   &-content {
-  position: relative;
-  top: -7rem;
+    position: relative;
+    top: -7rem;
   }
 
   &-display {
-  margin: 0 auto;
-  max-width: 760px;
+    max-width: 760px;
+    margin: 0 auto;
   }
 }
 
 .btn-container {
   width: 100%;
+
   .btn {
-    margin-left: .8rem;
     padding: 0;
-    line-height: 1.8rem;
+    margin-left: .8rem;
     font-size: size(xs);
-
-    &-edit {
-      @include solidButton(80, .3, tertiary);
-    }
-
-    &-cancel {
-      @include solidButton(80, .3, primary);
-    }
+    line-height: 1.8rem;
 
     @include response(md) {
       min-width: 130px;
@@ -245,6 +238,9 @@ export default {
       margin-left: 1rem;
       font-size: size(sm);
     }
+
+    &-edit { @include solidButton(80, .3, tertiary); }
+    &-cancel { @include solidButton(80, .3, primary); }
   }
 }
 </style>

@@ -28,12 +28,8 @@ export default {
   @include positionCenter;
   @include imgOverlay(1);
 
-  &-container {
-    margin-top: 62px;
-  }
+  &-container { margin-top: 62px; }
 
-  &-img {
-    @include setBackground("https://via.placeholder.com/800x800/d3d3d3", 480px);
-  }
+  &-img { @include setBackground("https://via.placeholder.com/800x800/d3d3d3", 480px); }
 }
 </style>

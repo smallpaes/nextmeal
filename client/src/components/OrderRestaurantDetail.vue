@@ -69,9 +69,7 @@ export default {
 .detail {
   width: 100%;
 
-  &-wrapper {
-    background-color: color(quaternary);
-  }
+  &-wrapper { background-color: color(quaternary); }
 
   &-title {
     font-size: size(md);
@@ -96,9 +94,6 @@ export default {
   width: 100%;
   height: 200px;
   transition: height .2s linear;
-
-  @include response(md) {
-    height: 300px;
-  }
+  @include response(md) { height: 300px; }
 }
 </style>

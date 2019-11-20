@@ -10,13 +10,14 @@
         novalidate
         @submit.prevent.stop="handleSubmit"
       >
+        <!--Form Fields-->
         <div class="form-content-top rounded-top">
           <div class="form-content-top-header mb-4">
             <h3>
               登入
             </h3>
             <h5>
-              透過您的 NextMeal 帳號登入
+              透過您 NextMeal 帳號登入
             </h5>
           </div>
           <div
@@ -29,6 +30,7 @@
               type="email"
               class="form-control"
               placeholder="電子信箱"
+              :disabled="isProcessing"
               required
               @blur="$v.email.$touch()"
             >
@@ -54,6 +56,7 @@
               minlength="8"
               maxlength="12"
               required
+              :disabled="isProcessing"
               @blur="$v.password.$touch()"
             >
             <small
@@ -71,6 +74,7 @@
             </button>
           </div>
         </div>
+        <!--Form Footer-->
         <div class="form-content-bottom rounded-bottom d-flex">
           <p class="text-left m-0 mr-3">
             現在就前往體驗 NextMeal
@@ -168,9 +172,9 @@ export default {
 
 .login {
   @include setBackground('https://cdn.pixabay.com/photo/2019/03/29/09/26/food-4088832_1280.jpg', 100%);
-  overflow-y: scroll;
   max-height: 100vh;
   padding: 120px 15px 30px 15px;
+  overflow-y: scroll;
 }
 
 .form {
@@ -179,47 +183,39 @@ export default {
 
   &-content {
     max-width: 450px;
-    background-color: color(quaternary);
-    margin-top: 70px;
     margin: 0 auto;
+    margin-top: 70px;
     overflow-y: hidden;
+    background-color: color(quaternary);
 
+    /* Form Fields */
     &-top {
-      background-color: color(quaternary);
       padding: 2.7rem;
+      background-color: color(quaternary);
 
       &-header {
         text-align: center;
-
-        h3 {
-          font-size: size(lg);
-        }
-
-        h5 {
-          font-size: size(sm);
-        }
+        h3 { font-size: size(lg); }
+        h5 { font-size: size(sm); }
       }
     }
 
+    /* Form Footer */
     &-bottom {
-      background-color: color(quinary);
       padding: .8rem 2.7rem;
       font-size: size(xs);
       color:lighten(color(secondary), 10%);
+      background-color: color(quinary);
 
       a {
         color: color(tertiary);
         transition: color .2s linear;
 
-        &:hover {
-          color: darken(color(tertiary), 5%);
-        }
+        &:hover { color: darken(color(tertiary), 5%); }
       }
     }
   }
 }
 
-.btn {
-  @include solidButton(200, 1);
-}
+.btn { @include solidButton(200, 1); }
 </style>

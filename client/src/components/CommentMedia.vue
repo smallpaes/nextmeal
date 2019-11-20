@@ -75,8 +75,8 @@ export default {
 .media {
   &-avatar {
     position: relative;
-    height: 50px;
     width: 50px;
+    height: 50px;
     object-fit: cover;
     border-radius: 50%;
   }
@@ -89,38 +89,36 @@ export default {
   &-title {
     display: flex;
     flex-direction: column;
-    color: darken(color(secondary), 15%);
     font-size: size(sm);
-
-    &-right {
-      font-size: size(xs);
-      color: lighten(color(secondary), 40%);
-    }
+    color: darken(color(secondary), 15%);
 
     @include response(sm) {
       flex-direction: row;
       justify-content: space-between;
     }
+
+    &-right {
+      font-size: size(xs);
+      color: lighten(color(secondary), 40%);
+    }
   }
 
-  &-description {
-    font-size: size(xs);
-  }
+  &-description { font-size: size(xs); }
 
   &-rating {
-    color: color(primary);
     font-size: size(sm);
+    color: color(primary);
   }
 }
 
 .file {
   &-image {
     position: relative;
-    object-fit: cover;
-    border-radius: .3rem;
     width: 80px;
     height: 60px;
     cursor: zoom-in;
+    object-fit: cover;
+    border-radius: .3rem;
     transition: all .2s ease-in;
 
     &.large {
@@ -135,8 +133,8 @@ export default {
     }
 
     &-placeholder {
-      opacity: .9;
       position: absolute;
+      opacity: .9;
     }
   }
 }

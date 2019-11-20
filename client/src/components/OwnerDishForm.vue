@@ -216,8 +216,8 @@ export default {
   @include fileUpload;
   @include inputValidation;
   @include formControl;
-  background-color: color(quaternary);
   color: color(secondary);
+  background-color: color(quaternary);
 
   &-heading {
     margin: 0 0 1.5rem 0;
@@ -227,14 +227,12 @@ export default {
 }
 
 .file {
-  &-input {
-    @include hiddenInput;
-  }
+  &-input { @include hiddenInput; }
 
   /* Style label into button */
   &-label {
     @include flexPosition;
-    @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), 0.1);
+    @include buttonOutline(100, 100, lighten(color(secondary), 50%), color(primary), color(quaternary), .1);
     cursor: pointer;
   }
 
@@ -248,8 +246,8 @@ export default {
       width: 100px;
       height: 100px;
       padding: .2rem;
-      border-radius: .1rem;
       border: 1px solid lighten(color(secondary), 50%);
+      border-radius: .1rem;
 
       .close-btn {
         position: absolute;
@@ -258,9 +256,7 @@ export default {
         color: lighten(color(secondary), 15%);
         cursor: pointer;
 
-        &:hover {
-          color: lighten(color(secondary), 30%);
-        }
+        &:hover { color: lighten(color(secondary), 30%); }
       }
     }
   }
@@ -269,10 +265,7 @@ export default {
 .btn {
   &-container {
     text-align: center;
-
-    @include response(md) {
-      text-align: right;
-    }
+    @include response(md) { text-align: right; }
   }
 }
 </style>

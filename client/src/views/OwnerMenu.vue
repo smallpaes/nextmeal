@@ -196,28 +196,17 @@ export default {
   background-color: color(quinary);
 }
 
+/* Right Side Content */
 .menu {
   @include controlPanelLayout;
 
-  &-card-container {
-    background-color: color(quaternary);
-  }
+  &-card-container { background-color: color(quaternary); }
 
   &-divider {
     width: 100%;
     margin-top: 0;
   }
-
-  .new-dish {
-    @include linkStyling(color(primary));
-    position: absolute;
-    right: 40px;
-    top: 112px;
-    font-size: size(xs);
-  }
 }
 
-.placeholder-message {
-  border-bottom: 1px solid lighten(color(secondary), 50%);
-}
+.placeholder-message { border-bottom: 1px solid lighten(color(secondary), 50%); }
 </style>

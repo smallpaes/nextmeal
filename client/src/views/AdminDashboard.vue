@@ -1,10 +1,10 @@
 <template>
-  <section class="wrapper d-flex vh-100">
+  <section class="wrapper vh-100">
     <!--Left Side Navbar-->
     <AdminSideNavBar :nav-is-open="navIsOpen" />
 
     <!--Right Side Content-->
-    <section class="dashboard flex-fill">
+    <section class="dashboard">
       <!--Navbar toggler-->
       <NavbarToggler
         :nav-is-open="navIsOpen"
@@ -265,9 +265,7 @@ export default {
 <style lang="scss" scoped>
 @include slideAnimation;
 
-.wrapper {
-  background-color: color(quinary);
-}
+.wrapper { background-color: color(quinary); }
 
 .dashboard {
   @include controlPanelLayout;

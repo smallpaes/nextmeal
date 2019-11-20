@@ -79,12 +79,12 @@ export default {
         },
         {
           id: 4,
-          title: 'NextMeal 有推出晚餐時段的訂餐嗎？',
+          title: '有推出晚餐時段訂餐嗎？',
           answer: '很遺憾地，目前NextMeal只開放午餐時段的訂購。不過在不久的將來後便會開放晚餐與其他地區的餐點訂購!敬請期待!'
         },
         {
           id: 5,
-          title: 'NextMeal 有提供外送服務嗎？',
+          title: '有提供外送餐點服務嗎？',
           answer: 'NextMeal 沒有提供外送服務，每份新鮮的餐點都需要您親自到場取餐。與我們合作的有上百家餐廳，相信一定可以在您的附近找到又近又能讓您滿意的餐點!'
         }
       ]
@@ -97,48 +97,37 @@ export default {
 .questions {
   @include headingStyling;
 
-  &-heading {
-    text-align: center;
-  }
+  &-heading { text-align: center; }
 }
 
 .card {
+  margin-bottom: .6rem;
   border: none;
   border-bottom: 1px solid lighten(color(secondary), 55%);
-  margin-bottom: .6rem;
 
-  &:first-of-type {
-    border-bottom: 1px solid lighten(color(secondary), 55%);
-  }
+  &:first-of-type { border-bottom: 1px solid lighten(color(secondary), 55%); }
 
-  &:not(:first-of-type):not(:last-of-type) {
-    @extend .card:first-of-type;
-  }
+  &:not(:first-of-type):not(:last-of-type) { @extend .card:first-of-type; }
 
   &-header {
-    border-top: none;
-    background-color: white;
-    border-bottom: none;
-    color: color(tertiary);
-    font-weight: weight(bold);
     padding: 20px 20px 20px 0;
-
-    &:hover {
-      cursor: pointer;
-    }
+    font-weight: weight(bold);
+    color: color(tertiary);
+    background-color: white;
+    border-top: none;
+    border-bottom: none;
+    &:hover { cursor: pointer; }
   }
 
   &-body {
-    color: lighten(color(secondary), 10%);
     padding: 0 20px 20px 0;
     font-size: size(xs);
+    color: lighten(color(secondary), 10%);
   }
 }
 
 .btn-container {
   text-align: center;
-  .btn {
-    @include solidButton;
-  }
+  .btn { @include solidButton; }
 }
 </style>

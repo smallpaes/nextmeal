@@ -41,17 +41,17 @@ export default {
   @include imgOverlay(.9);
 
   &-container {
+    @include setBackground("../../assets/placeholder-image/logo/1260x750.png");
     margin-top: 62px;
-    @include setBackground("../../assets/placeholder-image/plain/1260x750.png");
   }
 
   &-img {
     @include setBackground("https://via.placeholder.com/800x800/d3d3d3");
   }
   &-content {
+    width: 100%;
     color: color(quaternary);
     text-shadow: 1px 1px 1px #636161;
-    width: 100%;
 
     &-title {
       font-size: size(xl);
@@ -63,14 +63,10 @@ export default {
       font-weight: weight(bold);
     }
 
-    .btn {
-      @include solidButton;
-    }
-
     @include response(lg) {
       &-title {
-      font-size: size(xxl);
-      font-weight: weight(bold);
+        font-size: size(xxl);
+        font-weight: weight(bold);
       }
 
       &-description {
@@ -78,6 +74,8 @@ export default {
         font-weight: weight(bold);
       }
     }
+
+    .btn { @include solidButton; }
   }
 }
 </style>
