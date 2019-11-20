@@ -16,7 +16,7 @@
               登入
             </h3>
             <h5>
-              透過您的 NextMeal 帳號登入
+              透過您 NextMeal 帳號登入
             </h5>
           </div>
           <div
@@ -29,6 +29,7 @@
               type="email"
               class="form-control"
               placeholder="電子信箱"
+              :disabled="isProcessing"
               required
               @blur="$v.email.$touch()"
             >
@@ -54,6 +55,7 @@
               minlength="8"
               maxlength="12"
               required
+              :disabled="isProcessing"
               @blur="$v.password.$touch()"
             >
             <small

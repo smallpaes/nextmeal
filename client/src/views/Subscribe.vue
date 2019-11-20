@@ -12,7 +12,7 @@
               方案選擇
             </h3>
             <h5>
-              根據自己的需求挑選月繳方案
+              根據個人需求挑選月繳方案
             </h5>
           </div>
           <div class="subscribe-content-top-choices col-12">
@@ -36,7 +36,7 @@
         </div>
         <div class="subscribe-content-bottom">
           <p class="text-left m-0 mr-3">
-            計算方式：一個月以 30 天為標準
+            計算方式：一個月以 30 天計算
           </p>
         </div>
         <form
@@ -139,20 +139,16 @@ export default {
     background-color: color(quaternary);
 
     &-top {
-      padding: 2.7rem;
+      padding: 2.7rem .7rem;
       margin: 0;
       width: 100%;
 
+      @include response(xs) { padding: 2.7rem; }
+
       &-header {
         text-align: center;
-
-        h3 {
-          font-size: size(lg);
-        }
-
-        h5 {
-          font-size: size(sm);
-        }
+        h3 { font-size: size(lg); }
+        h5 { font-size: size(sm); }
       }
 
       &-choices {
@@ -174,7 +170,6 @@ export default {
     margin: 0;
     overflow: hidden;
     color: rgba(color(secondary), .7);
-
     background-color: color(quaternary);
     box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
     border-radius: .2rem;
@@ -186,8 +181,9 @@ export default {
       color: color(quaternary);
       background-color: rgba(color(primary), .9);
       padding: .3rem 0;
-      font-size: size(md);
+      font-size: size(sm);
       transition: all .2s linear;
+      @include response(xs) { font-size: size(md); }
 
       &::after {
         position: absolute;
@@ -204,7 +200,8 @@ export default {
     &-description {
       @include flexPosition(center, center, column);
       min-height: 120px;
-      font-size: size(lg);
+      font-size: size(md);
+      @include response(xs) { font-size: size(lg); }
     }
 
     &-price {

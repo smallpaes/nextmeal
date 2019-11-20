@@ -10,7 +10,7 @@
           註冊
         </h3>
         <h5>
-          註冊您的專屬 NextMeal 帳號
+          註冊您專屬 NextMeal 帳號
         </h5>
       </div>
       <!--Name-->
@@ -200,11 +200,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.btn {
-  @include solidButton(200, 1);
-}
+.btn { @include solidButton(200, 1); }
 
-.form {
-  @include inputValidation;
-}
+.form { @include inputValidation; }
 </style>

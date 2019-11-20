@@ -229,6 +229,12 @@
 }
 
 @mixin response($breakpoint) {
+  @if($breakpoint == xs) {
+    @media(min-width: 380px) {
+      @content;
+    }
+  }
+
   @if($breakpoint == sm) {
     @media(min-width: 576px) {
       @content;
