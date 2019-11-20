@@ -83,7 +83,6 @@ export default {
 
 <style lang="scss" scoped>
 .star {
-
   &-wrapper {
     position: relative;
     transform: rotateY(180deg);
@@ -91,51 +90,43 @@ export default {
 
   &-input {
     display: none;
-
-    &:checked ~ label:after {
-      opacity: 1;
-    }
+    &:checked ~ label:after { opacity: 1; }
   }
 
   &-label {
+    position: relative;
     display: block;
-    cursor: pointer;
     width: 25px;
     height: 25px;
-    position: relative;
     margin-right: .4rem;
+    cursor: pointer;
 
     &::before {
-      content: '\f005';
-      color: lighten(color(secondary), 50%);
-      font-weight: weight(bold);
-      font-family: "Font Awesome 5 Free";
       position: relative;
       display: block;
+      font-family: "Font Awesome 5 Free";
       font-size: size(md);
+      font-weight: weight(bold);
+      color: lighten(color(secondary), 50%);
+      content: '\f005';
     }
 
     &::after {
-      content: '\f005';
-      color: color(primary);
-      font-weight: weight(bold);
-      font-family: "Font Awesome 5 Free";
       position: absolute;
-      display: block;
-      font-size: size(md);
       top: 0;
+      display: block;
+      font-family: "Font Awesome 5 Free";
+      font-size: size(md);
+      font-weight: weight(bold);
+      color: color(primary);
+      content: '\f005';
       opacity: 0;
       transition: .3s
     }
 
     &:hover {
-      &::after {
-        opacity: 1;
-      }
-
-      & ~ label::after {
-        opacity: 1;
-      }
+      &::after { opacity: 1; }
+      & ~ label::after { opacity: 1; }
     }
   }
 }

@@ -164,9 +164,7 @@ export default {
   @include formControl;
   width: 100%;
 
-  &-wrapper {
-    background-color: color(quaternary);
-  }
+  &-wrapper { background-color: color(quaternary); }
 
   &-title {
     font-size: size(md);
@@ -174,16 +172,14 @@ export default {
     color: color(primary);
   }
 
-  &-legend {
-    font-size: size(sm);
-  }
+  &-legend { font-size: size(sm); }
 }
 
 .btn-container {
   .btn {
     @include solidButton(80, .3, primary);
-    margin-left: .8rem;
     padding: .1rem;
+    margin-left: .8rem;
     line-height: 1.8rem;
 
     @include response(md) {
@@ -194,7 +190,5 @@ export default {
   }
 }
 
-.invalid-message {
-  color: color(primary);
-}
+.invalid-message { color: color(primary); }
 </style>

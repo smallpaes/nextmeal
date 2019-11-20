@@ -32,22 +32,18 @@ export default {
 <style lang="scss" scoped>
 .info {
   &-title {
-    font-weight: weight(bold);
     font-size: size(lg);
+    font-weight: weight(bold);
   }
 
-  &-sub-title {
-    color: lighten(color(secondary), 20%);
-  }
-
-  .rating {
-    color: color(primary);
-  }
+  &-sub-title { color: lighten(color(secondary), 20%); }
 
   &-description {
     font-size: size(xs);
     line-height: 1.8rem;
   }
+
+  .rating { color: color(primary); }
 }
 
 .divider {

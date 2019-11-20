@@ -61,23 +61,14 @@ export default {
 
   &-control {
     border: none;
-    &:invalid {
-      margin-bottom: 0rem;
-    }
+    &:invalid { margin-bottom: 0rem; }
   }
 
   &-select-control {
     position: relative;
 
-    .form {
-      &-control {
-        border: none;
-      }
-    }
-
-    .invalid-feedback {
-      position: absolute;
-    }
+    .form-control { border: none; }
+    .invalid-feedback { position: absolute; }
   }
 }
 </style>

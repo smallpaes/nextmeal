@@ -60,19 +60,15 @@ export default {
   &-container {
     transition: transform .2s linear;
 
-    &:hover {
-      transform: translateY(-2%);
-    }
+    &:hover { transform: translateY(-2%); }
   }
 
   &-fluid {
-    height: 180px;
     width: 100%;
+    height: 180px;
     object-fit: cover;
   }
 
-  &-content {
-    color: color(quaternary);
-  }
+  &-content { color: color(quaternary); }
 }
 </style>

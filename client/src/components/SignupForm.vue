@@ -201,6 +201,5 @@ export default {
 
 <style lang="scss" scoped>
 .btn { @include solidButton(200, 1); }
-
 .form { @include inputValidation; }
 </style>

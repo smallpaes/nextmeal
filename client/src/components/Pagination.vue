@@ -95,43 +95,32 @@ export default {
 <style lang="scss" scoped>
 .page {
   &-link {
+    padding: 0;
+    line-height: 31px;
+    color: color(tertiary);
     background-color: transparent;
     border: none;
-    color: color(tertiary);
-    line-height: 31px;
-    padding: 0;
   }
 
   &-item {
-    height: 31px;
+    margin: 0rem;
+    overflow: hidden;
     width: 31px;
+    height: 31px;
     text-align: center;
     border-radius: 50%;
-    overflow: hidden;
-    margin: 0rem;
+    @include response(sm) { margin: 0 .4rem; }
 
-    &-control {
-      border: 1px solid color(tertiary);
-    }
+    &-control { border: 1px solid color(tertiary); }
 
     &.active {
-      .page-link {
-        background-color: color(tertiary);
-      }
+      .page-link { background-color: color(tertiary); }
     }
 
-    &:hover {
-      font-weight: weight(bold);
-    }
-
-    @include response(sm) {
-      margin: 0 .4rem;
-    }
+    &:hover { font-weight: weight(bold); }
   }
 
-  &-placeholder {
-    color: lighten(color(secondary), 35%);
-  }
+  &-placeholder { color: lighten(color(secondary), 35%); }
 }
 
 </style>

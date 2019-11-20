@@ -156,9 +156,7 @@ export default {
     height: 100%;
   }
 
-  &-wrapper {
-    margin-top: 62px;
-  }
+  &-wrapper { margin-top: 62px; }
 
   &-display {
     &-wrapper {

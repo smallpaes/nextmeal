@@ -133,11 +133,12 @@ export default {
 
   &-content {
     max-width: 450px;
-    margin-top: 70px;
     margin: 0 auto;
+    margin-top: 70px;
     overflow-y: hidden;
     background-color: color(quaternary);
 
+    /* Display Two Subscription Plans */
     &-top {
       padding: 2.7rem .7rem;
       margin: 0;
@@ -151,11 +152,10 @@ export default {
         h5 { font-size: size(sm); }
       }
 
-      &-choices {
-        @include flexPosition(space-between, center, row);
-      }
+      &-choices { @include flexPosition(space-between, center, row); }
     }
 
+    /* Form Footer */
     &-bottom {
       padding: .8rem 2.7rem;
       font-size: size(xs);
@@ -164,6 +164,7 @@ export default {
     }
   }
 
+  /* Subscription Plan Button */
   &-choice {
     width: 45%;
     padding: 0;
@@ -171,29 +172,29 @@ export default {
     overflow: hidden;
     color: rgba(color(secondary), .7);
     background-color: color(quaternary);
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    border: 0;
     border-radius: .2rem;
-    border: 0px;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
     transition: all .2s linear;
 
     &-header {
       position: relative;
-      color: color(quaternary);
-      background-color: rgba(color(primary), .9);
       padding: .3rem 0;
       font-size: size(sm);
+      color: color(quaternary);
+      background-color: rgba(color(primary),.9);
       transition: all .2s linear;
       @include response(xs) { font-size: size(md); }
 
       &::after {
         position: absolute;
-        content: '';
         top: 100%;
         left: 50%;
-        transform: translateX(-50%);
-        border-top: .5rem solid rgba(color(primary), .9);
-        border-left: .5rem solid transparent;
+        content: '';
+        border-top: .5rem solid rgba(color(primary),.9);
         border-right: .5rem solid transparent;
+        border-left: .5rem solid transparent;
+        transform: translateX(-50%);
       }
     }
 
@@ -204,18 +205,14 @@ export default {
       @include response(xs) { font-size: size(lg); }
     }
 
-    &-price {
-      font-size: size(sm);
-    }
+    &-price { font-size: size(sm); }
 
     &:hover {
       color: color(primary);
       box-shadow: 0 .35rem .5rem rgba(0,0,0,.15);
       transform: translateY(-3px);
 
-      .subscribe-choice-header {
-        background-color: color(primary);
-      }
+      .subscribe-choice-header { background-color: color(primary); }
     }
   }
 }

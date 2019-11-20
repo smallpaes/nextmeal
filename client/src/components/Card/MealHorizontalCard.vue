@@ -50,10 +50,13 @@ export default {
   overflow: hidden;
   border: none;
 
+  @include response(sm) { height: 150px; }
+  @include response(md) { height: 170px; }
+
   &-body {
     @include flexPosition(center, flex-start, column);
-    height: 100%;
     width: 100%;
+    height: 100%;
   }
 
   &-left {
@@ -76,25 +79,15 @@ export default {
 
   &-title {
     font-size: size(sm);
-    color: color(secondary);
     font-weight: weight(bold);
+    color: color(secondary);
   }
 
   &-text {
     font-size: size(xs);
     color: lighten(color(secondary), 10%);
 
-    .rating {
-      color: color(primary);
-    }
-  }
-
-  @include response(sm) {
-    height: 150px;
-  }
-
-  @include response(md) {
-    height: 170px;
+    .rating { color: color(primary); }
   }
 }
 </style>

@@ -136,11 +136,6 @@ export default {
 @include slideAnimation(false);
 @include fadeAnimation(false);
 
-.wrapper {
-  background-color: color(quinary);
-}
-
-.users {
-  @include controlPanelLayout;
-}
+.wrapper { background-color: color(quinary); }
+.users { @include controlPanelLayout; }
 </style>

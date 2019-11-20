@@ -218,13 +218,8 @@ export default {
   height: 400px;
 }
 
-.form {
-  @include inputValidation;
-}
-
-.alert {
-  color: color(primary);
-}
+.form { @include inputValidation; }
+.alert { color: color(primary); }
 
 .btn {
   @include solidButton(200, 1);
@@ -233,20 +228,12 @@ export default {
     min-width: 100px;
   }
 
+  @include response(sm) { min-width: 150px; }
+  @include response(md) { min-width: 170px; }
+
   &-update {
     background-color: color(tertiary);
-
-    &:hover {
-      background-color: darken(color(tertiary), 20%);
-    }
-  }
-
-  @include response(sm) {
-    min-width: 150px;
-  }
-
-  @include response(md) {
-    min-width: 170px;
+    &:hover { background-color: darken(color(tertiary), 20%); }
   }
 }
 </style>

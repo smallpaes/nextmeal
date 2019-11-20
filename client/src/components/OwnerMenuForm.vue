@@ -156,17 +156,11 @@ export default {
 .form {
   @include inputValidation;
   @include formControl;
-  background-color: color(quaternary);
   color: color(secondary);
+  background-color: color(quaternary);
 
-  &-header {
-    font-size: size(md);
-  }
+  &-header { font-size: size(md); }
 }
 
-.btn {
-  &-container {
-    text-align: center;
-  }
-}
+.btn-container { text-align: center; }
 </style>

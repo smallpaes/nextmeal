@@ -38,24 +38,24 @@ export default {
 .skelenton-box {
   position: relative;
   display: inline-block;
+  overflow: hidden;
   vertical-align: middle;
   background-color: lighten(color(secondary), 50%);
-  overflow: hidden;
 
   &::after {
-    content: '';
     position: absolute;
     top: 0;
-    left: 0;
     right: 0;
     bottom: 0;
-    transform: translateX(-100%);
+    left: 0;
+    content: '';
     background-image: linear-gradient(
       90deg,
       transparent,
-      rgba(color(quaternary), 0.2) 20%,
+      rgba(color(quaternary), .2) 20%,
       transparent
     );
+    transform: translateX(-100%);
     animation: loading 1.5s infinite;
   }
 }

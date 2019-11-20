@@ -132,11 +132,6 @@ $headers: (
 // table layout for large screen
 @include tableFullSize;
 
-.isTrue {
-  color: color(tertiary);
-}
-
-.isFalse {
-  color: color(primary);
-}
+.isTrue { color: color(tertiary); }
+.isFalse { color: color(primary); }
 </style>

@@ -69,18 +69,17 @@ export default {
   border: none;
   border-bottom: 1px solid lighten(color(secondary), 50%);
 
+  @include response(md) { height: 120px; }
+
   &-body {
     @include flexPosition(center, flex-start, column);
-    height: 100%;
     width: 100%;
+    height: 100%;
   }
 
   &-left {
     position: relative;
-
-    .skelenton-box {
-      position: absolute;
-    }
+    .skelenton-box { position: absolute; }
   }
 
   &-img {
@@ -92,8 +91,8 @@ export default {
 
   &-title {
     font-size: size(sm);
-    color: color(secondary);
     font-weight: weight(bold);
+    color: color(secondary);
 
     @include response(md) {
       font-size: size(md);
@@ -108,18 +107,12 @@ export default {
 
   .edit-btn {
     position: absolute;
-    right: 2%;
     top: 15%;
-    cursor: pointer;
+    right: 2%;
     color: lighten(color(secondary), 10%);
+    cursor: pointer;
 
-    @include response(md) {
-      top: 10%;
-    }
-  }
-
-  @include response(md) {
-    height: 120px;
+    @include response(md) { top: 10%; }
   }
 }
 </style>
