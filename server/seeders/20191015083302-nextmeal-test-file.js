@@ -175,6 +175,13 @@ function orderThing(start, end) {
     if (i > 190) {
       userId = Math.ceil(Math.random() * (users.length - stores.length)) + stores.length
       orderMeal = 1
+      past = randomTime(0)
+      order_status = '今日'
+      hasComment = false
+    }
+    if (i > 195) {
+      userId = Math.ceil(Math.random() * (users.length - stores.length)) + stores.length
+      orderMeal = 1
       past = randomOrder()
       order_status = '今日'
       hasComment = false
