@@ -32,7 +32,7 @@ module.exports = {
       return [sequelize.literal(`(SELECT COUNT(*) FROM Restaurants WHERE Restaurants.createdAt < '${end}')-(SELECT COUNT(*) FROM Restaurants WHERE Restaurants.createdAt < '${start}')`), 'restIncreased']
     },
     subtIncreased: function (end, start) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM Subscriptions WHERE Subscriptions.createdAt < '${end}')-(SELECT COUNT(*) FROM Subscriptions WHERE Subscriptions.createdAt < '${start}')`), 'subtIncreased']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Subscriptions WHERE Subscriptions.sub_date < '${end}')-(SELECT COUNT(*) FROM Subscriptions WHERE Subscriptions.sub_date < '${start}')`), 'subtIncreased']
     },
     todayOrders: function (start, end) {
       return [sequelize.literal(`(SELECT COUNT(*) FROM Orders WHERE Orders.require_date > '${start}' AND Orders.require_date < '${end}')`), 'todayOrders']
