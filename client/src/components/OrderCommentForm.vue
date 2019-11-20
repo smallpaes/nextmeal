@@ -1,9 +1,9 @@
 <template>
   <section class="form">
     <form
+      ref="form"
       novalidate
       class="form-wrapper rounded-sm shadow-sm p-3"
-      @submit.stop.prevent="handleSubmit"
     >
       <h2 class="form-title mb-4">
         您的評論
@@ -61,7 +61,7 @@
         <div
           v-if="comment.image"
           class="file-image-wrapper"
-          @click="user.image = ''"
+          @click="comment.image = ''"
         >
           <img
             :src="comment.image"
@@ -72,7 +72,7 @@
         </div>
         <!--Visible file upload button-->
         <label
-          v-if="!comment.image || isProcessing"
+          v-else
           for="file"
           class="file-label"
         >
@@ -80,14 +80,22 @@
         </label>
       </div>
       <hr class="form-divider mt-4">
+      <!--Submit Button-->
       <div class="btn-container text-center">
-        <button
+        <ProcessButton
           class="btn"
-          type="submit"
-          :disabled="isProcessing || $v.$invalid"
+          :is-processing="isProcessing"
+          :v="{}"
+          :color="'primary'"
+          :border-radius="'.3rem'"
+          @after-click="handleSubmit"
         >
-          送出評價
-        </button>
+          <template #initial>
+            <slot name="submit">
+              送出評價
+            </slot>
+          </template>
+        </ProcessButton>
       </div>
     </form>
   </section>
@@ -96,13 +104,15 @@
 <script>
 import { handleFileChangeMethod } from '../utils/mixins'
 import CustomRatingInput from '../components/CustomRatingInput'
+import ProcessButton from '../components/Button/ProcessButton'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import orderApi from '../apis/order'
 import { Toast } from '../utils/helpers'
 
 export default {
   components: {
-    CustomRatingInput
+    CustomRatingInput,
+    ProcessButton
   },
   mixins: [handleFileChangeMethod],
   data () {
@@ -131,7 +141,7 @@ export default {
     async handleSubmit (e) {
       try {
         // prepare a FormData
-        const form = e.target
+        const form = this.$refs.form
         const formData = new FormData(form)
         const orderId = this.$route.params.order_id
         // update processing status
