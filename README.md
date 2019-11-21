@@ -361,7 +361,6 @@ $ npm run serve
 
 ## Upcoming features
 
-- Data visualization dashboard for admin and restaurant owner
 - Coupon feature for user
 - Restaurant owner can reply to reviews from users
 - Restaurant owner can serve dinner
