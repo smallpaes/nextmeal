@@ -30,17 +30,17 @@
 
 ### User Interface
 
- ![image](https://drive.google.com/uc?export=view&id=1w0LlT38a5qH5QTUiOsHOANXnNcI6EFn2)
+ ![User interface demo video](guest-demo.gif)
 
 
 ### Restaurant Owner Dashboard
 
- ![image](https://drive.google.com/uc?export=view&id=12wb-8M_XPkJgc8OxtXly1k6yL-Cr3Wi4)
+ ![Restaurant panel demo video](owner-demo.gif)
 
 
 ### Admin Dashboard
 
- ![image](https://drive.google.com/uc?export=view&id=1Rx7hrb2J_qlJAr6hgPlKhsGq47NoBsQh)
+ ![Admin panel demo video](admin-demo.gif)
 
 
 ## About Nextmeal project
