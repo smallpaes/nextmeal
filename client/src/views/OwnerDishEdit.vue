@@ -111,8 +111,10 @@ export default {
         // fire error messages
         Toast.fire({
           type: 'error',
-          title: '無法更新資料，請稍後再試'
+          title: '無法取得餐點資料，請稍後再試'
         })
+        // back to last page
+        this.$router.go(-1)
       }
     },
     async handleAfterSubmit (formData) {
