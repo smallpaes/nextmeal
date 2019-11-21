@@ -30,17 +30,17 @@
 
 ### User Interface
 
- ![image](https://drive.google.com/uc?export=view&id=1w0LlT38a5qH5QTUiOsHOANXnNcI6EFn2)
+ ![User interface demo video](guest-demo.gif)
 
 
 ### Restaurant Owner Dashboard
 
- ![image](https://drive.google.com/uc?export=view&id=12wb-8M_XPkJgc8OxtXly1k6yL-Cr3Wi4)
+ ![Restaurant panel demo video](owner-demo.gif)
 
 
 ### Admin Dashboard
 
- ![image](https://drive.google.com/uc?export=view&id=1Rx7hrb2J_qlJAr6hgPlKhsGq47NoBsQh)
+ ![Admin panel demo video](admin-demo.gif)
 
 
 ## About Nextmeal project
@@ -54,6 +54,7 @@ Online platform for you to readily access to awesome restaurants nearby and orde
 
 - Using [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/tutorial) to customize and display maps with markers and info windows on web pages
 - Using [Google Maps Geocoding API](https://developers.google.com/maps/documentation/geocoding/start) to convert address into geographic coordinates for back-end
+- Using [vue-chartjs](https://github.com/apertureless/vue-chartjs) to visualize restaurant and admin dashboard data
 - Using [Vuelidate](https://github.com/vuelidate/vuelidate) for better form validation(Including the use or asynchronous validation feature for email check)
 - Using [vue-carousel](https://github.com/SSENSE/vue-carousel) to create customized carousel that are responsive and touch-friendly
 - Using [vue2-datepicker](https://github.com/mengxiong10/vue2-datepicker) to customize delicate date picker
@@ -119,6 +120,7 @@ As a restaurant owner, you may:
 - See the meal currently serving
 - Update the meal and amount you would like to serve next week before Saturday
 - Readily check out all the orders of the day
+- Checkout the overall performance in the past 30 days on the analytic chart page
 
 
 ### Admin
@@ -129,6 +131,7 @@ As an admin, you may:
   - password: Nextmeal!
 - Check out the info of all the restaurants, users, and orders on the platform 
 - Edit, cancel, or delete the info of the restaurant, user, and order
+- Checkout the overall performance both today and in the past 30 days on the analytic chart page
 
 
 ## API Document
@@ -153,6 +156,7 @@ dist/
 │   ├── getOrders
 │   ├── putCancel
 │   ├── putUser
+│   ├── dashboard
 └── owner/
 │   ├── getRestaurant
 │   ├── postRestaurant
@@ -172,6 +176,7 @@ dist/
 │   ├── getOrders
 │   ├── putCancel
 │   ├── putUser
+│   ├── dashboard
 └── user/
 │   ├── signup
 │   ├── signin
@@ -356,7 +361,6 @@ $ npm run serve
 
 ## Upcoming features
 
-- Data visualization dashboard for admin and restaurant owner
 - Coupon feature for user
 - Restaurant owner can reply to reviews from users
 - Restaurant owner can serve dinner
@@ -366,10 +370,10 @@ $ npm run serve
 ## Team Members 
 (*In alphabetical order)
 
-### [DannyWang](https://github.com/windate3411)
+### [Danny Wang](https://github.com/windate3411)
 
 - Back-end development
-- Build up a robust RESTful CRUD API: User authentication
+- Build up a robust RESTful CRUD API: User authentication, analytic report panel for restaurants owner and admin
 - Database and model configuration, back-end automation testing and Node.js scheduler integration
 - Cooperate with teammates to come up with better user stories, wireframe, ERD model and RESTful API design
 - Cooperate with teammates to set up database, create seeders, and deploy the app
@@ -382,6 +386,7 @@ $ npm run serve
 - Entire front-end development
   - Project setup, features development, and new technologies implementation(Sass, Google Maps APIs, etc.)
   - Pages for visitors, members, restaurants owner, and admin
+  - Data visualization: Create analytical charts for both restaurant owner and admin panel
 - UX and UI design
 - Github project creation and branch management
 - Cooperate with teammates to come up with better user stories, wireframe, ERD model and RESTful API design
