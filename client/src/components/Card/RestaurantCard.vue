@@ -9,12 +9,15 @@
         :width="'100%'"
         :height="'200px'"
       />
-      <img
-        v-if="!isLoading"
-        :src="restaurant.image || '@/assets/placeholder-image/logo/1260x750.png'"
-        alt="photo of the restaurant"
-        class="card-img-top"
-      >
+      <transition name="fade">
+        <img
+          v-show="!isLoading && imgLoaded"
+          :src="restaurant.image || '@/assets/placeholder-image/logo/1260x750.png'"
+          alt="photo of the restaurant"
+          class="card-img-top"
+          @load="imgLoaded = true"
+        >
+      </transition>
     </div>
     <div class="card-body">
       <h5 class="card-title m-0">
@@ -74,11 +77,18 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  data () {
+    return {
+      imgLoaded: false
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@include fadeAnimation;
+
 .card {
   transition: opacity .2s linear;
 
