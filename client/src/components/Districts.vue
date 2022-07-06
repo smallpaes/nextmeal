@@ -14,6 +14,7 @@
         :key="district.eng_name"
         :district="district"
         :is-loading="isLoading"
+        :default-src="defaultSrc"
       />
     </template>
   </div>
@@ -34,6 +35,11 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    }
+  },
+  data () {
+    return {
+      defaultSrc: 'https://images.pexels.com/photos/5127620/pexels-photo-5127620.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
     }
   }
 }
