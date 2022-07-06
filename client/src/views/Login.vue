@@ -159,7 +159,7 @@ export default {
         // fire error messages
         Toast.fire({
           type: 'error',
-          title: '目前無法登入，請稍後再試'
+          title: '帳號密碼有誤'
         })
       }
     }

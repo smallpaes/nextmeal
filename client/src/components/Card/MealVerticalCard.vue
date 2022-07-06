@@ -4,11 +4,15 @@
     href="#"
   >
     <div class="card-img-top-container">
-      <img
-        :src="order.meal.image"
-        alt="photo of the restaurant"
-        class="card-img-top"
-      >
+      <transition name="fade">
+        <img
+          v-show="imgLoaded"
+          :src="order.meal.image"
+          alt="photo of the restaurant"
+          class="card-img-top"
+          @load="imgLoaded = true"
+        >
+      </transition>
     </div>
     <div class="card-body">
       <h5 class="card-title m-0">
@@ -31,24 +35,27 @@
 </template>
 
 <script>
-import SkelentonBox from '../Placeholder/SkeletonBox'
 import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
 
 export default {
-  components: {
-    SkelentonBox
-  },
   mixins: [padEndFilter, textTruncateFilter],
   props: {
     order: {
       type: Object,
       required: true
     }
+  },
+  data () {
+    return {
+      imgLoaded: false
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@include fadeAnimation;
+
 .card {
   border: none;
   transition: opacity .2s linear;

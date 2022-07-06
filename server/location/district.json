@@ -3,15 +3,15 @@
     "chinese_name": "大安區",
     "eng_name": "Da'an",
     "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Taipei_Daan_Park_-_Ecological_Pool_-_20180805_-_02.jpg/1821px-Taipei_Daan_Park_-_Ecological_Pool_-_20180805_-_02.jpg",
-    "lng": 121.5434446,
-    "lat": 25.02677012
+    "lng": 121.543601,
+    "lat": 25.033331
   },
   {
     "chinese_name": "信義區",
     "eng_name": "Xinyi",
     "image": "https://images.unsplash.com/photo-1571566988511-67a346198378?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=8107&q=80",
-    "lng": 121.5716697,
-    "lat": 25.03062083
+    "lng": 121.566550,
+    "lat": 25.037971
   },
   {
     "chinese_name": "中山區",
@@ -24,7 +24,7 @@
     "chinese_name": "松山區",
     "eng_name": "Songshan",
     "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/TransGlobe_Life_headquarters_at_Ruentex_Songshan_Station_Complex_B_20170812.jpg/768px-TransGlobe_Life_headquarters_at_Ruentex_Songshan_Station_Complex_B_20170812.jpg",
-    "lng": 121.5575876,
-    "lat": 25.05999101
+    "lng": 121.554291,
+    "lat": 25.054676
   }
 ]
