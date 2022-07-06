@@ -173,9 +173,8 @@ let userController = {
         order: [['updatedAt', 'DESC']],
         limit: 1
       })
-
+      const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.sub_description, req.user.email)
       if (!subscription) {
-        const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.sub_description, req.user.email)
         subscription = await createSubscription(req, res, tradeInfo)
         return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
       }
@@ -192,17 +191,10 @@ let userController = {
         }
         // 曾經訂閱
         if (expired || once) {
-          const tradeInfo = getTradeInfo(req.body.sub_price, req.body.sub_name, req.body.sub_description, req.user.email)
           subscription = await createSubscription(req, res, tradeInfo)
           return res.status(200).json({ status: 'success', subscription, tradeInfo, message: 'Successfully create a subscription' })
         }
         // 如果有訂單，但還沒付款，先產生新 trandeInfo 記得傳入 sn，如果選擇的方案不相同，修改方案
-        const tradeInfo = getTradeInfo(
-          subscription.sub_price,
-          subscription.sub_name,
-          req.body.sub_description,
-          req.user.email
-        )
         subscription = await subscription.update({
           sub_name: req.body.sub_name,
           sub_price: req.body.sub_price,

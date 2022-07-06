@@ -1,8 +1,8 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-const baseURL = 'https://nextmeal.herokuapp.com/api'
-// const baseURL = 'http://localhost:3000/api'
+// const baseURL = 'https://nextmeal.herokuapp.com/api'
+const baseURL = 'http://localhost:3000/api'
 
 // config an instance
 const axiosInstance = axios.create({
