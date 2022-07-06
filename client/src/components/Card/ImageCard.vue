@@ -11,9 +11,10 @@
       />
       <img
         v-else
-        :src="district.image || '@/assets/placeholder-image/plain/1260x750.png'"
+        :src="district.image || placeholderImage"
         alt="District image"
         class="img-fluid shadow-sm rounded-sm"
+        @error="handleOnError"
       >
       <div :class="{'img-overlay': !isLoading}" />
       <h3 class="img-content">
@@ -47,6 +48,20 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    },
+    defaultSrc: {
+      type: String,
+      default: require('@/assets/placeholder-image/plain/1260x750.png')
+    }
+  },
+  data () {
+    return {
+      placeholderImage: require('@/assets/placeholder-image/plain/1260x750.png')
+    }
+  },
+  methods: {
+    handleOnError (e) {
+      e.target.src = this.defaultSrc
     }
   }
 }
