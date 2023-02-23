@@ -37,7 +37,7 @@
     "passport-jwt": "^4.0.0",
     "pg": "^7.12.1",
     "rollbar": "^2.14.4",
-    "sequelize": "^5.19.6",
+    "sequelize": "^6.28.2",
     "sequelize-cli": "^5.5.1",
     "sequelize-test-helpers": "^1.1.2",
     "sinon": "^7.5.0",
