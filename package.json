@@ -43,6 +43,6 @@
     "sinon": "^7.5.0",
     "sinon-chai": "^3.3.0",
     "supertest": "^4.0.2",
-    "underscore": "^1.9.1"
+    "underscore": "^1.12.1"
   }
 }
