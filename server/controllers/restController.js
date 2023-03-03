@@ -13,7 +13,6 @@ const commentLimit = 4
 let restController = {
   getRestaurants: async (req, res) => {
     try {
-      if (!req.query.dist) return res.status(200).json({ status: 'error', more_restaurants, message: 'need to query dist some where' })
       // 設定尋找需求
       let page = Number(req.query.page)
       let wherequery = {}
@@ -42,7 +41,7 @@ let restController = {
         return res.status(200).json({ status: 'success', more_restaurants, message: 'Get all restaurants page info' })
       }
 
-      // 第一次進入抓熱門、更多(近來就算第一頁)
+      // 第一次進入抓熱門、更多(進來就算第一頁)
       let popular_restaurants = await Restaurant.findAndCountAll({
         where: wherequery,
         include: [{ model: Category, attributes: ['name', 'image'] }],
@@ -62,7 +61,7 @@ let restController = {
       popular_restaurants = popular_restaurants.rows.slice(0, 6)
 
       // 第一次進入的地圖點
-      const district = districts.find(dist => { return dist.chinese_name === req.query.dist })
+      const district = districts.find(d => d.chinese_name === req.query.dist) ?? districts[0]
       const restaurants = await Restaurant.findAll({
         where: wherequery,
         attributes: ['id', 'name', 'lat', 'lng'],
