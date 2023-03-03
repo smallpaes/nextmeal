@@ -17,7 +17,7 @@ let mainController = {
           [sequelize.literal(customQuery.Comment.RestaurantId), 'commentCount'],
           'CategoryId'
         ],
-        order: [['rating','DESC'], [sequelize.literal('"commentCount" DESC')]], //評分和評論數量排列
+        order: [['rating','DESC'], [sequelize.literal('commentCount DESC')]], //評分和評論數量排列
         limit: pageLimit
       })
       return res.status(200).json({ status: 'success', popular_restaurants, districts, message: 'Get main page information.'})
