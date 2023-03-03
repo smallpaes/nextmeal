@@ -2,10 +2,10 @@ const sequelize = require('sequelize')
 
 module.exports = {
   Comment: {
-    RestaurantId: '(SELECT COUNT(*) FROM "Comments" WHERE "Comments"."RestaurantId" = "Restaurant"."id")'
+    RestaurantId: '(SELECT COUNT(*) FROM Comments WHERE Comments.RestaurantId = Restaurant.id)'
   },
   Order: {
-    UserId: '(SELECT COUNT(*) FROM "Orders" WHERE "Orders"."UserId" = "User"."id")'
+    UserId: '(SELECT COUNT(*) FROM Orders WHERE Orders.UserId = User.id)'
   },
   char: {
     date: [sequelize.fn('to_char', sequelize.col('require_date'), 'YYMMDD'), 'date'],
@@ -18,24 +18,24 @@ module.exports = {
     random: 'random()'
   },
   literal: {
-    name: [sequelize.literal('(SELECT name FROM "Users" WHERE "Users"."id" = "Comment"."UserId")'), 'name'],
+    name: [sequelize.literal('(SELECT name FROM Users WHERE Users.id = Comment.UserId)'), 'name'],
     subscribeUsers: function (now) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM "Users" WHERE "Users"."role" ='User' AND "Users"."expired_date" > '${now}')`), 'subscribeUsers']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.role ='User' AND Users.expired_date > '${now}')`), 'subscribeUsers']
     },
     nonsubscribeUsers: function (now) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM "Users" WHERE "Users"."role" ='User' AND ("Users"."expired_date" < '${now}' OR "Users"."expired_date" IS NULL))`), 'nonsubscribeUsers']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.role ='User' AND (Users.expired_date < '${now}' OR Users.expired_date IS NULL))`), 'nonsubscribeUsers']
     },
     userIncreased: function (end, start) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM "Users" WHERE "Users"."createdAt" < '${end}' AND "Users"."role" ='User')-(SELECT COUNT(*) FROM "Users" WHERE "Users"."createdAt" < '${start}'  AND "Users"."role" ='User')`), 'userIncreased']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.createdAt < '${end}' AND Users.role ='User')-(SELECT COUNT(*) FROM Users WHERE Users.createdAt < '${start}'  AND Users.role ='User')`), 'userIncreased']
     },
     restIncreased: function (end, start) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM "Restaurants" WHERE "Restaurants"."createdAt" < '${end}')-(SELECT COUNT(*) FROM "Restaurants" WHERE "Restaurants"."createdAt" < '${start}')`), 'restIncreased']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Restaurants WHERE Restaurants.createdAt < '${end}')-(SELECT COUNT(*) FROM Restaurants WHERE Restaurants.createdAt < '${start}')`), 'restIncreased']
     },
     subtIncreased: function (end, start) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM "Subscriptions" WHERE "Subscriptions"."sub_date" < '${end}')-(SELECT COUNT(*) FROM "Subscriptions" WHERE "Subscriptions"."sub_date" < '${start}')`), 'subtIncreased']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Subscriptions WHERE Subscriptions.sub_date < '${end}')-(SELECT COUNT(*) FROM Subscriptions WHERE Subscriptions.sub_date < '${start}')`), 'subtIncreased']
     },
     todayOrders: function (start, end) {
-      return [sequelize.literal(`(SELECT COUNT(*) FROM "Orders" WHERE "Orders"."require_date" > '${start}' AND "Orders"."require_date" < '${end}')`), 'todayOrders']
+      return [sequelize.literal(`(SELECT COUNT(*) FROM Orders WHERE Orders.require_date > '${start}' AND Orders.require_date < '${end}')`), 'todayOrders']
     }
   }
 }
