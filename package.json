@@ -18,7 +18,7 @@
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-validator": "^6.2.0",
     "faker": "^4.1.0",
     "imgur-node-api": "^0.1.0",
