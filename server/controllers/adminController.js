@@ -23,7 +23,7 @@ let adminController = {
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       let restaurants = await Restaurant.findAndCountAll({
         where: {
-          name: process.env.heroku ? { [Op.any]: `%${name}%` || '' } : { [Op.substring]: name || '' },
+          ...(name && { name: process.env.heroku ? { [Op.any]: `%${name}%` } : { [Op.substring]: name } }),
           CategoryId: category ? { [Op.eq]: category } : { [Op.gt]: 0 },
           location: { [Op.substring]: dist || '' }
         },
@@ -120,7 +120,10 @@ let adminController = {
       const start = moment().startOf('day').toDate()
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       //if it runs on heroku,use any to fix case sensitive issue
-      let whereQuery = process.env.heroku ? { name: { [Op.any]: `%${name}%` || '' } } : { name: { [Op.substring]: name || '' } };
+      let whereQuery = {}
+      if (name) {
+        whereQuery.name = process.env.heroku ? { [Op.any]: `%${name}%` || '' } : { [Op.substring]: name || '' };
+      }
       if (sub_status === 'inactive') {
         whereQuery['expired_date'] = {
           [Op.or]: {
