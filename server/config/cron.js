@@ -1,10 +1,13 @@
 const cron = require('node-cron')
+const https = require('https')
 const db = require('../models')
 const Order = db.Order
 const Meal = db.Meal
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
+const URL = process.env.URL
+
 //每日訂單更新(明日->今日) 以及庫存數量回復本周的設定值
 cron.schedule('59 23 * * *', async () => {
   try {
@@ -77,4 +80,8 @@ cron.schedule('00 00 * * 0', async () => {
       quantity: item.nextServing_quantity
     })
   })
+})
+
+cron.schedule('*/30 * * * *', () => {
+  https.get(`${URL}/api`)
 })
