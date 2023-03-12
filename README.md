@@ -211,9 +211,10 @@ The following instructions will get you a copy of the project and the setting ne
 ### Prerequisites
 
 - [npm](https://www.npmjs.com/get-npm)
-- [Node.js v10.16.0](https://nodejs.org/en/download/)
+- [Node.js v16.17.0](https://nodejs.org/en/download/)
 - [MySQL v8.0.16](https://dev.mysql.com/downloads/mysql/)
 - [MySQL Workbench v8.0.16](https://dev.mysql.com/downloads/workbench/)
+- [Vue CLI v5.0.8](https://cli.vuejs.org/guide/installation.html/)
 
 
 ### Clone
