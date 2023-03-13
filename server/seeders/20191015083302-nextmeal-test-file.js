@@ -66,7 +66,7 @@ function createRest(store) {
   let restData = []
   for (let i = 0; i < store.length; i++) {
     const seedRest = {
-      id: id + 1,
+      id: i + 1,
       name: store[i].name.length > 30 ? store[i].name.slice(30) : store[i].name,
       description: store[i].description.substring(0, 300),
       tel: `02-${randomPhone(4)}-${randomPhone(4)}`,
@@ -94,7 +94,7 @@ function creatMeal(stores) {
   for (let i = 0; i < stores.length; i++) {
     let random = Math.floor(Math.random() * foodImg.length)
     const seedMeal = {
-      id: id + 1,
+      id: i + 1,
       name: foodImg[random].name.length > 30 ? foodImg[random].name.slice(30) : foodImg[random].name,
       image: foodImg[random].image,
       RestaurantId: i + 1,
@@ -191,7 +191,7 @@ function orderThing(start, end) {
     }
     orderPast = new Date(moment(past).subtract(1, 'days'))
     const seedOrders = {
-      id: id + 1,
+      id: i + 1,
       UserId: userId,
       require_date: past,
       order_date: orderPast,
@@ -202,7 +202,7 @@ function orderThing(start, end) {
       updatedAt: past
     }
     const seedOrderItem = {
-      id: id + 1,
+      id: i + 1,
       OrderId: i + 1,
       MealId: orderMeal,
       quantity: random,
@@ -211,7 +211,7 @@ function orderThing(start, end) {
     }
     if (i < 158) {
       const seedComment = {
-        id: id + 1,
+        id: i + 1,
         UserId: userId,
         user_text: user_text,
         rating: Math.floor(Math.random() * 5 + 1),
