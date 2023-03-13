@@ -22,9 +22,7 @@
         "require": true,
         "rejectUnauthorized": false 
       },
-      "innodb": {
-        "autoIncrementLockMode": 2 
-      }
+      "innodb_autoinc_lock_mode": 2
     }
   }
 }
