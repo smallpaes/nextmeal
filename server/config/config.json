@@ -21,8 +21,7 @@
       "ssl": {
         "require": true,
         "rejectUnauthorized": false 
-      },
-      "innodb_autoinc_lock_mode": 2
+      }
     }
   }
 }

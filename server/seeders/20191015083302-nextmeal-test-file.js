@@ -40,6 +40,7 @@ function createUsers(users) {
 
     if (i > 3 & i < 318) expired_date = null
     const seedUser = {
+      id: i + 1,
       name: i === 0 ? 'root' : faker.fake("{{name.firstName}}{{name.lastName}}"),
       email: i === 0 ? 'root@example.com' : `user${i}@example.com`,
       password: bcrypt.hashSync('Nextmeal!', 10),
