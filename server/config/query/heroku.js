@@ -14,7 +14,7 @@ module.exports = {
     date_for_admin_dashboard: [sequelize.fn('DATE_FORMAT', sequelize.col('createdAt'), '%m/%d'), 'date']
   },
   geo: {
-    geometry: 'ST_DistanceSphere',
+    geometry: 'ST_Distance_Sphere',
     random: 'random()'
   },
   literal: {
