@@ -42,7 +42,7 @@ let orderController = {
           [sequelize.literal('6371 * acos(cos(radians(' + req.user.lat + ')) * cos(radians(`lat`)) * cos(radians(`lng`) - radians(' + req.user.lng + ')) + sin(radians(' + req.user.lat + ')) * sin(radians(`lat`)))'), 'distance'],
         ],
         having: sequelize.literal(`distance < 0.5`),
-        // order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
+        order: sequelize.random(),
         limit: 2
       })
       restaurants = restaurants.map((restaurant, index) => ({
