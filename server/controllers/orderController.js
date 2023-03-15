@@ -42,7 +42,7 @@ let orderController = {
           [sequelize.literal('6371 * acos(cos(radians(' + req.user.lat + ')) * cos(radians(`lat`)) * cos(radians(`lng`) - radians(' + req.user.lng + ')) + sin(radians(' + req.user.lat + ')) * sin(radians(`lat`)))'), 'distance'],
         ],
         having: sequelize.literal(`distance < 0.5`),
-        order: sequelize.random(),
+        order: sequelize.literal('RAND()'),
         limit: 2
       })
       restaurants = restaurants.map((restaurant, index) => ({
