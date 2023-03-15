@@ -15,10 +15,14 @@ module.exports = {
   },
   geo: {
     geometry: 'ST_Distance_Sphere',
-    random: 'random()'
+    random: 'rand()'
   },
   literal: {
     name: [sequelize.literal('(SELECT name FROM Users WHERE Users.id = Comment.UserId)'), 'name'],
+    distance: function (lat, lng) {
+      return [sequelize.literal(`(${helper.haversine(lat, lng,Sequelize.col('lat'),
+      Sequelize.col('lng'))})`),'distance']
+    },
     subscribeUsers: function (now) {
       return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.role ='User' AND Users.expired_date > '${now}')`), 'subscribeUsers']
     },

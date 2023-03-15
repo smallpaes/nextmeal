@@ -21,8 +21,8 @@ module.exports = {
   literal: {
     name: [sequelize.literal('(SELECT name FROM Users WHERE Users.id = Comment.UserId)'), 'name'],
     distance: function (lat, lng) {
-      return [Sequelize.literal(`(${helper.haversine(lat, lng,Sequelize.col('lat'),
-      Sequelize.col('lng'))})`),'distance']
+      console.log(lat, lng)
+      return [sequelize.literal(`(SELECT lat from Restaurants)`),'distance']
     },
     subscribeUsers: function (now) {
       return [sequelize.literal(`(SELECT COUNT(*) FROM Users WHERE Users.role ='User' AND Users.expired_date > '${now}')`), 'subscribeUsers']
