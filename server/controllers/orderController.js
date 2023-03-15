@@ -25,11 +25,10 @@ let orderController = {
         }
       })
       if (order.length > 1) return res.status(400).json({ status: 'error', message: 'you are already ordered today' })
-      const location = sequelize.literal(`ST_GeomFromText('POINT(${req.user.lng} ${req.user.lat})')`)
-      const distance = sequelize.fn(customQuery.geo.geometry, sequelize.literal('geometry'), location)
+      const distance = customQuery.literal.distance(req.user.lat, req.user.lng);
+
       // 取得500公尺內的兩間餐廳，需要 rest's、meals、time slots
       let restaurants = await Restaurant.findAll({
-        where: sequelize.where(distance, { [Op.lte]: 500 }),
         include: [{
           model: Meal,
           where: {
@@ -39,7 +38,8 @@ let orderController = {
           attributes: ['id', 'name', 'image', 'description', 'quantity'],
           required: true
         }],
-        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', [distance, 'distance']], // distance
+        attributes: [ 'id', 'name', 'rating', 'opening_hour', 'closing_hour', distance],
+        having: Sequelize.literal(`distance < 500`),
         order: sequelize.literal(customQuery.geo.random), // 如果資料庫是 Postgres 使用 random()
         limit: 2
       })
