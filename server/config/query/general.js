@@ -1,5 +1,5 @@
 const sequelize = require('sequelize')
-const helper = require('../_helpers')
+const helper = require('../../_helpers')
 
 module.exports = {
   Comment: {
