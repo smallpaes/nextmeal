@@ -1,6 +1,6 @@
-import axios from 'axios'
 import moment from 'moment'
 import 'moment/locale/zh-tw'
+import locationAPI from '../apis/location'
 
 export const timeTransformFilter = {
   filters: {
@@ -61,30 +61,16 @@ export const getGeoMethods = {
     async getLocation (storeLocation) {
       // update processing status
       this.isProcessing = true
-      // Get geocoding location
+      // validate address
       try {
-        const BASE_URL = 'https://maps.googleapis.com/maps/api/geocode'
-        const language = 'zh-TW'
-        const activeDistricts = ['信義區', '大安區', '中山區', '松山區']
+        const address = this[storeLocation].address
+        const { data, statusText } = await locationAPI.locationCheck(address)
+        // error handling
+        if (statusText !== 'OK') throw new Error(data.message)
         const addressGroup = document.querySelector('.form-address-group')
-        const { data } = await axios.get(`${BASE_URL}/json?address=${this[storeLocation].address}&language=${language}&components=country:TW&key=${this.apiKey}`)
-
-        let addressComponents = []
-        let district = []
-
-        // check if it's not zero result
-        if (data.results.length) {
-          // Retrieve district from data
-          addressComponents = data.results[0].address_components
-          district = addressComponents.filter(item => activeDistricts.includes(item.long_name))
-        }
-
-        // validate address
-        if (data.status !== 'OK' || !district.length || addressComponents.length <= 4) {
-          // set address form group to invalid
+        if (data.status !== 'success') {
           addressGroup.classList.add('invalid')
-          // show warning message
-          this.validationMsg.address = '請確認為台北市信義、松山、大安、中山區的完整地址'
+          this.validationMsg.address = data.message
           this.isProcessing = false
           return
         }
@@ -94,10 +80,14 @@ export const getGeoMethods = {
         this.validationMsg.address = ''
 
         // update location data
-        this[storeLocation].lat = data.results[0].geometry.location.lat
-        this[storeLocation].lng = data.results[0].geometry.location.lng
-        this[storeLocation].location = district[0].long_name
-        this[storeLocation].address = data.results[0].formatted_address
+        const { lat, lng, dist, address: formattedAddress } = data.location
+        this[storeLocation] = {
+          ...this[storeLocation],
+          lat,
+          lng,
+          location: dist,
+          address: formattedAddress
+        }
         this.afterReceiveGeo()
       } catch (error) {
         // update processing status
