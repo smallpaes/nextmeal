@@ -429,11 +429,11 @@
         &:hover {
           cursor: pointer;
           & .file-image { opacity: .3; }
-          & .fa-window-close { opacity: 1; }
+          & .fa-rectangle-xmark { opacity: 1; }
         }
 
         /* Button Displayed On The Image To Delete Image */
-        .fa-window-close {
+        .fa-rectangle-xmark {
           position: absolute;
           top: 50%;
           left: 50%;
