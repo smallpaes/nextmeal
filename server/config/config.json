@@ -16,8 +16,7 @@
   },
   "production": {
     "use_env_variable": "CLEARDB_DATABASE_URL",
-    "dialect": "postgres",
-    "protocol": "postgres",
+    "dialect": "mysql",
     "dialectOptions": {
       "ssl": {
         "require": true,
