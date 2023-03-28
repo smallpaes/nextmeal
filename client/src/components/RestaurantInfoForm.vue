@@ -26,6 +26,7 @@
           type="text"
           class="form-control"
           name="name"
+          autocomplete="organization"
           required
           @blur="$v.restaurant.name.$touch()"
         >
@@ -105,6 +106,7 @@
         type="text"
         class="form-control"
         placeholder="台北市大安區..."
+        autocomplete=""
         required
         @blur="$v.restaurant.address.$touch()"
       >
