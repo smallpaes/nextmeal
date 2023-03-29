@@ -14,7 +14,7 @@ axiosInstance.interceptors.request.use(config => {
   // retrieve token from localStorage
   const token = localStorage.getItem('token')
   // set token to header
-  if (token) config.headers['Authorization'] = `Bearer ${token}`
+  if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 }, error => {
   Promise.reject(error)

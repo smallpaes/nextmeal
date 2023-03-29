@@ -363,7 +363,7 @@ export default {
       // prepare formData
       const formData = new FormData(this.$refs.form)
 
-      for (let data in this.restaurant) {
+      for (const data in this.restaurant) {
         formData.append(data, this.restaurant[data])
       }
 

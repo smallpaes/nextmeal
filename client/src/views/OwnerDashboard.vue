@@ -178,7 +178,7 @@ export default {
         // error handling
         if (dashboardData.status !== 'success' || statusText !== 'OK') throw new Error(dashboardData.message)
         // handle orders, rating, users data
-        for (let prop in this.data) {
+        for (const prop in this.data) {
         // retrieve data from response
           const { labels, data, average, total } = dashboardData[prop]
           // store data

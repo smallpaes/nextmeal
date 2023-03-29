@@ -214,7 +214,7 @@ export default {
         this.orderToday = { userIncreased, restIncreased, subtIncreased, orderNum }
 
         // handle orders, restaurats, users data
-        for (let prop in this.data.singleData) {
+        for (const prop in this.data.singleData) {
         // retrieve data from response
           const { labels, data, total, thisMonth, tableName: name } = dashboardData[prop]
           // store data

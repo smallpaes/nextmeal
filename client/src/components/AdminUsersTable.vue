@@ -91,8 +91,8 @@ export default {
   },
   filters: {
     getStatusIcon (status) {
-      if (status === 'active') return `<i class="fas fa-check"></i>`
-      return `<i class="fas fa-times"></i>`
+      if (status === 'active') return '<i class="fas fa-check"></i>'
+      return '<i class="fas fa-times"></i>'
     },
     getAmount (number) {
       if (!number) return '-'
