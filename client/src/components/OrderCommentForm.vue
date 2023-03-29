@@ -68,7 +68,7 @@
             class="file-image"
             alt="評論照片"
           >
-          <i class="far fa-window-close" />
+          <i class="fa-regular fa-rectangle-xmark" />
         </div>
         <!--Visible file upload button-->
         <label

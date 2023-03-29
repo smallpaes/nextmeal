@@ -189,7 +189,7 @@
           class="file-image"
           alt="餐廳照片"
         >
-        <i class="far fa-window-close" />
+        <i class="fa-regular fa-rectangle-xmark" />
       </div>
       <!--Visible file upload button-->
       <label

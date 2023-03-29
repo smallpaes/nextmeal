@@ -26,6 +26,7 @@
           placeholder="名稱"
           minlength="1"
           maxlength="6"
+          autocomplete="name"
           required
           @blur="$v.name.$touch()"
         >
@@ -45,6 +46,7 @@
           type="email"
           class="form-control"
           placeholder="電子信箱"
+          autocomplete="email"
           required
           @blur="$v.email.$touch()"
         >
@@ -74,6 +76,7 @@
           placeholder="密碼"
           minlength="8"
           maxlength="12"
+          autocomplete="new-password"
           required
           @focus="showPasswordHint = true"
           @blur="$v.password.$touch(); showPasswordHint = false"
@@ -96,6 +99,7 @@
           placeholder="再次輸入密碼"
           minlength="8"
           maxlength="12"
+          autocomplete="new-password"
           required
           @blur="$v.passwordCheck.$touch()"
         >

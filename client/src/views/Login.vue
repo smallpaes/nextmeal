@@ -31,6 +31,7 @@
               class="form-control"
               placeholder="電子信箱"
               :disabled="isProcessing"
+              autocomplete="email"
               required
               @blur="$v.email.$touch()"
             >
@@ -55,6 +56,7 @@
               placeholder="密碼"
               minlength="8"
               maxlength="12"
+              autocomplete="current-password"
               required
               :disabled="isProcessing"
               @blur="$v.password.$touch()"
