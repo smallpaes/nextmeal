@@ -27,6 +27,7 @@ require('./config/cron')
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(__dirname + '/public/'))
+  app.use('/robots.txt', (req, res) => res.sendFile(__dirname + '/public/robots.txt'));
   app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'))
 }
 
