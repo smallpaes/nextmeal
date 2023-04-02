@@ -7,7 +7,7 @@ const OrderItem = db.OrderItem
 const Comment = db.Comment
 const Order = db.Order
 const Meal = db.Meal
-const moment = require('moment')
+const moment = require('moment-timezone')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const { getTimeStop, avgRating, sendEmail } = require('../middleware/middleware')
@@ -81,7 +81,7 @@ let orderController = {
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
       tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
-      tomorrow = new Date(tomorrow)
+      tomorrow = tomorrow.toDate()
 
       if (meal.quantity < 1) return res.status(400).json({ status: 'error', message: 'the meal is out of stock.' })
       if ((meal.quantity - quantity) < 0) {
@@ -217,7 +217,7 @@ let orderController = {
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
       tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
-      tomorrow = new Date(tomorrow)
+      tomorrow = tomorrow.toDate()
       // meal 會減少直接當庫存
       let quantity = order.meals[0].dataValues.quantity
       // 修改後的庫存等於剩餘的 quantity + 使用者原訂購數量 - 新訂購數量，不得為負數，否則失敗

@@ -7,7 +7,7 @@ var expect = chai.expect;
 var app = require('../../app')
 var helpers = require('../../_helpers');
 const db = require('../../models')
-const nowTime = new Date()
+const moment = require('moment-timezone')
 const defaultRestaurant1 = {
   name: "Danny的小餐館",
   rating: 4.8,
@@ -30,7 +30,7 @@ describe('# User: request', () => {
         await db.Restaurant.destroy({ where: {}, truncate: true })
         await db.Subscription.destroy({ where: {}, truncate: true })
         await db.Restaurant.create(defaultRestaurant1)
-        await db.Subscription.create({ UserId: 1, payment_status: true, sub_expired_date: (new Date()).setDate(nowTime.getDate(+2)), sub_balance: 10 })
+        await db.Subscription.create({ UserId: 1, payment_status: true, sub_expired_date: moment().add(2, 'days').endOf('day').toDate(), sub_balance: 10 })
       })
 
       it('should see the home page info', (done) => {

@@ -6,11 +6,8 @@ var expect = chai.expect;
 var app = require('../../../app')
 var helpers = require('../../../_helpers');
 const db = require('../../../models')
-const moment = require('moment')
-const nowTime = new Date()
-const tmr = moment(nowTime, "YYYY-M-D H:m").add(1, 'day').set({ hour: 12, minute: 0 }).toDate()
-// tmr.setDate(nowTime.getDate() + 1)
-// tmr.setHours(12, 0, 0, 0)
+const moment = require('moment-timezone')
+const tmr = moment().add(1, 'day').set({ hour: 12, minute: 0 }).toDate()
 const content = encodeURIComponent('大安區')
 const defaultRestaurant1 = {
   name: "Danny的小餐館",

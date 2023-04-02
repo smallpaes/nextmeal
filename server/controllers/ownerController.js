@@ -9,7 +9,7 @@ const Comment = db.Comment
 const Meal = db.Meal
 const Order = db.Order
 const User = db.User
-const moment = require('moment')
+const moment = require('moment-timezone');
 const _ = require('underscore')
 const customQuery = process.env.heroku ? require('../config/query/heroku') : require('../config/query/general')
 
@@ -297,7 +297,7 @@ let ownerController = {
       if (Number(req.body.quantity) < 1) {
         return res.status(400).json({ status: 'error', message: 'the menu\'s quantity not allow 0 or negative for next week' })
       }
-      const today = new Date().getDay()
+      const today = moment().day()
       // 修改 nextServing 為真，而且可以更改數量
       if (today >= 6) {
         return res.status(400).json({ status: 'error', message: 'Today can not edit next week\'s menu.' })

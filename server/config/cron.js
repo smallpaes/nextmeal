@@ -5,7 +5,7 @@ const Order = db.Order
 const Meal = db.Meal
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-const moment = require('moment')
+const moment = require('moment-timezone')
 const URL = process.env.URL
 
 //每日訂單更新(明日->今日) 以及庫存數量回復本周的設定值

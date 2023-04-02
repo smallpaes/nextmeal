@@ -1,5 +1,5 @@
 const { check, validationResult } = require('express-validator')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const crypto = require("crypto"); // 加密
 const nodemailer = require("nodemailer"); // 寄送 mail
 const hbs = require('nodemailer-express-handlebars')

@@ -1,7 +1,7 @@
 'use strict';
 const faker = require('faker')
 const bcrypt = require('bcryptjs')
-const moment = require('moment')
+const moment = require('moment-timezone')
 const opening_hour = '11:00'
 const closing_hour = '14:00'
 const sequelize = require('sequelize')
@@ -21,7 +21,7 @@ function randomPhone(num) {
   return random
 }
 
-const totay = moment().toDate()
+const today = moment().toDate()
 const pass_month = moment().subtract(1, 'months').toDate()
 
 function createUsers(users) {
@@ -53,8 +53,8 @@ function createUsers(users) {
       lat: users[i].lat,
       lng: users[i].lng,
       geometry: sequelize.fn('ST_GeomFromText', `POINT(${users[i].lng} ${users[i].lat})`),
-      createdAt: faker.date.between(pass_month, totay),
-      updatedAt: new Date(),
+      createdAt: faker.date.between(pass_month, today),
+      updatedAt: today,
       expired_date: expired_date
     }
     userData.push(seedUser)
@@ -81,8 +81,8 @@ function createRest(store) {
       lng: store[i].lng,
       geometry: sequelize.fn('ST_GeomFromText', `POINT(${store[i].lng} ${store[i].lat})`),
       rating: parseFloat(Math.random() * 4 + 1).toFixed(1),
-      createdAt: faker.date.between(pass_month, totay),
-      updatedAt: new Date()
+      createdAt: faker.date.between(pass_month, today),
+      updatedAt: today
     }
     restData.push(seedRest)
   }
@@ -103,8 +103,8 @@ function creatMeal(stores) {
       isServing: true,
       nextServing: false,
       isDeleted: false,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: today,
+      updatedAt: today
     }
     mealData.push(seedMeal)
   }
@@ -114,24 +114,21 @@ function creatMeal(stores) {
 function randomTime(num) {
   let tomorrow = moment().add(num, 'days').startOf('day')
   tomorrow.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30))
-  tomorrow = new Date(tomorrow)
-  return tomorrow
+  return tomorrow.toDate()
 }
 
 function pastOrder() {
-  let date = faker.date.past(1, new Date(Date.now()))
+  let date = faker.date.past(1, today)
   date = moment(date).startOf('day')
   date.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30)).toDate()
-  date = new Date(date)
-  return date
+  return date.toDate()
 }
 
 function randomOrder() {
-  let randomDate = faker.date.between(pass_month, totay)
+  let randomDate = faker.date.between(pass_month, today)
   let tomorrow = moment(randomDate).startOf('day')
   tomorrow.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30))
-  tomorrow = new Date(tomorrow)
-  return tomorrow
+  return tomorrow.toDate()
 }
 
 function orderThing(start, end) {
@@ -189,7 +186,7 @@ function orderThing(start, end) {
       order_status = '今日'
       hasComment = false
     }
-    orderPast = new Date(moment(past).subtract(1, 'days'))
+    orderPast = moment(past).subtract(1, 'days').toDate()
     const seedOrders = {
       id: i + 1,
       UserId: userId,
@@ -243,8 +240,8 @@ module.exports = {
         id: index + 1,
         name: item.name,
         image: item.image,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: today,
+        updatedAt: today
       })
     ), {});
 
@@ -268,12 +265,12 @@ module.exports = {
           sub_price: index > 90 ? 1000 : 2000,
           sub_description: index > 90 ? '一個月10餐' : '一個月20餐',
           sub_balance: index > 90 ? 10 : 20,
-          sub_date: faker.date.between(pass_month, totay),
+          sub_date: faker.date.between(pass_month, today),
           sub_expired_date: moment().add(30, 'days').endOf('day').toDate(),
           payment_status: true,
-          sn: Date.now() + index,
-          createdAt: faker.date.between(pass_month, totay),
-          updatedAt: new Date()
+          sn: Date.today() + index,
+          createdAt: faker.date.between(pass_month, today),
+          updatedAt: today
         }))
       , {});
   },

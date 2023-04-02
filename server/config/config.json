@@ -4,10 +4,7 @@
     "password": "password",
     "database": "nextmeal",
     "host": "127.0.0.1",
-    "dialect": "mysql",
-    "dialectOptions": {
-      "timezone": "Asia/Taipei"
-    }
+    "dialect": "mysql"
   },
   "test": {
     "username": "travis",
@@ -24,8 +21,7 @@
       "ssl": {
         "require": true,
         "rejectUnauthorized": false 
-      },
-      "timezone": "Asia/Taipei"
+      }
     }
   }
 }

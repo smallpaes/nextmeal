@@ -22,7 +22,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const pageLimit = 6
 
-const moment = require('moment')
+const moment = require('moment-timezone')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 let userController = {
@@ -77,7 +77,7 @@ let userController = {
       })
 
       // check if the user has valid subscriptions
-      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: new Date() } } })
+      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: moment().toDate() } } })
       const sub_status = validSubscriptions.length >= 1 ? true : false
 
       //generate a token for the user
@@ -235,7 +235,7 @@ let userController = {
           SubscriptionId: subscription.id,
           params: req.body.Status,
           amount: data.Result.Amt,
-          paidAt: new Date(),
+          paidAt: moment().toDate(),
           sn: data.Result.MerchantOrderNo
         })
         if (req.body.Status === 'SUCCESS') {

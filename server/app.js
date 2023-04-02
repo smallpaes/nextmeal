@@ -1,4 +1,5 @@
 const express = require('express')
+const moment = require('moment-timezone')
 const bodyParser = require('body-parser')
 // include and initialize the rollbar library with your access token
 const Rollbar = require('rollbar')
@@ -6,6 +7,9 @@ if (process.env.NODE_ENV !== 'production') { require('dotenv').config() }
 const cors = require('cors')
 const app = express()
 const port = process.env.PORT || 3000
+
+moment.tz.setDefault('Asia/Taipei');
+
 // enable all cors requests
 app.use(cors())
 
@@ -32,5 +36,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.listen(port, () => console.log(`App is listening on port ${port}`))
-
 module.exports = app
