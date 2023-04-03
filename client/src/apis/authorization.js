@@ -14,6 +14,6 @@ export default {
     return apiHelper.post('/users/emailcheck', { email })
   },
   getSignup () {
-    return apiHelper.get(`/users/signup`)
+    return apiHelper.get('/users/signup')
   }
 }

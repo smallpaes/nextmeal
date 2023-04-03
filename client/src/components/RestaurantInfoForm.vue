@@ -241,7 +241,7 @@ import ProcessButton from '../components/Button/ProcessButton'
 import { getGeoMethods, handleFileChangeMethod } from '../utils/mixins'
 import { required, minLength, maxLength } from 'vuelidate/lib/validators'
 import CustomSelect from '../components/CustomSelect'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export default {
   components: {
@@ -363,7 +363,7 @@ export default {
       // prepare formData
       const formData = new FormData(this.$refs.form)
 
-      for (let data in this.restaurant) {
+      for (const data in this.restaurant) {
         formData.append(data, this.restaurant[data])
       }
 

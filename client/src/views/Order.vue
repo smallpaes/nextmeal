@@ -92,7 +92,7 @@ import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import orderAPI from '../apis/order'
 import { Toast } from '../utils/helpers'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export default {
   components: {
@@ -161,8 +161,8 @@ export default {
           meal,
           orderDetail: {
             ...OrderItem,
-            time: moment(new Date(requireDate)).format('HH:mm'),
-            date: moment(new Date(requireDate)).format('YYYY-MM-DD')
+            time: moment(requireDate).format('HH:mm'),
+            date: moment(requireDate).format('YYYY-MM-DD')
           },
           isEditable: orderStatus === '明日'
         }

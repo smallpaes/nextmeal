@@ -74,7 +74,7 @@ import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import orderAPI from '../apis/order'
 import { Toast } from '../utils/helpers'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { mapState } from 'vuex'
 
 export default {
@@ -131,7 +131,7 @@ export default {
         const { order: { meals: { Restaurant: restaurant, ...meal }, amount: quantity, require_date: requireDate }, time_slots: timeSlots } = data
         const orderData = {
           quantity,
-          time: moment(new Date(requireDate)).format('HH:mm')
+          time: moment(requireDate).format('HH:mm')
         }
 
         // save data

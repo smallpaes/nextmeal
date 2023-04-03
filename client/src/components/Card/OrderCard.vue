@@ -80,15 +80,15 @@
 
 <script>
 import SkelentonBox from '../Placeholder/SkeletonBox'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export default {
   filters: {
     dateTransform (timestamp) {
-      return moment(new Date(timestamp)).format('MM/DD')
+      return moment(timestamp).format('MM/DD')
     },
     timeTransform (timestamp) {
-      return moment(new Date(timestamp)).format('HH:mm')
+      return moment(timestamp).format('HH:mm')
     }
   },
   components: {

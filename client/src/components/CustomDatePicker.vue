@@ -38,7 +38,7 @@
 
 <script>
 import DatePicker from 'vue2-datepicker'
-import moment from 'moment'
+import moment from 'moment-timezone'
 export default {
   components: {
     DatePicker
@@ -53,8 +53,8 @@ export default {
       default: true
     },
     lastDate: {
-      type: Object,
-      default: () => moment()
+      type: String,
+      default: () => moment().add(1, 'd').format('YYYY-MM-DD')
     },
     v: {
       type: Object,

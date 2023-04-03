@@ -31,13 +31,9 @@
 </template>
 
 <script>
-import SkelentonBox from '../Placeholder/SkeletonBox'
 import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
 
 export default {
-  components: {
-    SkelentonBox
-  },
   mixins: [padEndFilter, textTruncateFilter],
   props: {
     order: {

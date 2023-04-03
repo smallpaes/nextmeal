@@ -111,7 +111,7 @@ export default {
         if (data.status !== 'success' || statusText !== 'OK') throw new Error(data.message)
         // store data
         this.restaurants = data.restaurants.restaurants
-        this.districts = data.districts.map(district => district['chinese_name'])
+        this.districts = data.districts.map(district => district.chinese_name)
         // update page data
         this.totalPage = data.restaurants.pages
         // update loading status

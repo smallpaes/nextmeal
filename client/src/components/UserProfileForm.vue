@@ -234,7 +234,7 @@ import CustomSelect from '../components/CustomSelect'
 import authorizationAPI from '../apis/authorization'
 import Tooltip from '../components/Button/Tooltip'
 import ProcessButton from '../components/Button/ProcessButton'
-import { getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter } from '../utils/mixins'
+import { getGeoMethods, handleFileChangeMethod, dateTransformFilter } from '../utils/mixins'
 import { required, email, minLength, maxLength } from 'vuelidate/lib/validators'
 
 export default {
@@ -244,7 +244,7 @@ export default {
     Tooltip,
     ProcessButton
   },
-  mixins: [getGeoMethods, handleFileChangeMethod, dateTransformFilter, dateFormatterFilter],
+  mixins: [getGeoMethods, handleFileChangeMethod, dateTransformFilter],
   props: {
     initialUser: {
       type: Object,

@@ -11,7 +11,7 @@ export default {
     return apiHelper.get('/users/orders/tomorrow')
   },
   getOrders ({ status, page }) {
-    const searchParams = new URLSearchParams({ page, 'order_status': status })
+    const searchParams = new URLSearchParams({ page, order_status: status })
     return apiHelper.get(`/users/orders?${searchParams}`)
   },
   getProfile () {

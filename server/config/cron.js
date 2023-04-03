@@ -5,7 +5,7 @@ const Order = db.Order
 const Meal = db.Meal
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-const moment = require('moment')
+const moment = require('moment-timezone')
 const URL = process.env.URL
 
 //每日訂單更新(明日->今日) 以及庫存數量回復本周的設定值
@@ -17,8 +17,8 @@ cron.schedule('59 23 * * *', async () => {
       where: {
         order_status: { [Op.like]: '今日' },
         require_date: {
-          [Op.gte]: moment().subtract(1, 'day').toDate(),
-          [Op.lte]: moment().toDate()
+          [Op.gte]: moment().subtract(1, 'day').utc().format(),
+          [Op.lte]: moment().utc().format()
         }
       }
     })

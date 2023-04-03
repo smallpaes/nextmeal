@@ -1,4 +1,6 @@
 const sequelize = require('sequelize')
+const moment = require('moment-timezone')
+const timeZoneOffset = moment().format('Z')
 
 module.exports = {
   Comment: {
@@ -8,10 +10,10 @@ module.exports = {
     UserId: '(SELECT COUNT(*) FROM Orders WHERE Orders.UserId = User.id)'
   },
   char: {
-    date: [sequelize.fn('DATE_FORMAT', sequelize.col('require_date'), '%y-%m-%d'), 'date'],
-    time: [sequelize.fn('DATE_FORMAT', sequelize.col('require_date'), '%H:%i'), 'time'],
-    date_for_dashboard: [sequelize.fn('DATE_FORMAT', sequelize.col('require_date'), '%m/%d'), 'date'],
-    date_for_admin_dashboard: [sequelize.fn('DATE_FORMAT', sequelize.col('createdAt'), '%m/%d'), 'date']
+    date: [sequelize.fn('date_format', sequelize.fn('convert_tz', sequelize.col('require_date'), '+00:00', timeZoneOffset), '%Y%c%d'), 'date'],
+    time: [sequelize.fn('date_format', sequelize.fn('convert_tz', sequelize.col('require_date'), '+00:00', timeZoneOffset), '%H:%i'), 'time'],
+    date_for_dashboard: [sequelize.fn('date_format', sequelize.fn('convert_tz', sequelize.col('require_date'), '+00:00', timeZoneOffset), '%m/%d'), 'date'],
+    date_for_admin_dashboard: [sequelize.fn('date_format', sequelize.fn('convert_tz', sequelize.col('createdAt'), '+00:00', timeZoneOffset), '%m/%d'), 'date'],
   },
   geo: {
     geometry: 'ST_Distance_Sphere',

@@ -7,7 +7,7 @@ const OrderItem = db.OrderItem
 const Comment = db.Comment
 const Order = db.Order
 const Meal = db.Meal
-const moment = require('moment')
+const moment = require('moment-timezone')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
 const { getTimeStop, avgRating, sendEmail } = require('../middleware/middleware')
@@ -16,7 +16,7 @@ const customQuery = process.env.heroku ? require('../config/query/heroku') : req
 let orderController = {
   getNew: async (req, res) => {
     try {
-      const time = moment().add(1, 'days').startOf('day').toDate()
+      const time = moment().add(1, 'days').startOf('day').utc().format()
       const order = await Order.findAll({
         where: {
           UserId: req.user.id,
@@ -57,7 +57,7 @@ let orderController = {
   },
   postNew: async (req, res) => {
     try {
-      let start = moment().startOf('day').toDate()
+      let start = moment().startOf('day').utc().format()
       let meal = await Meal.findByPk(req.body.meal_id, {
         include: [Restaurant]
       })
@@ -81,7 +81,7 @@ let orderController = {
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
       tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
-      tomorrow = new Date(tomorrow)
+      tomorrow = tomorrow.utc().format()
 
       if (meal.quantity < 1) return res.status(400).json({ status: 'error', message: 'the meal is out of stock.' })
       if ((meal.quantity - quantity) < 0) {
@@ -96,6 +96,7 @@ let orderController = {
         amount: quantity,
         require_date: tomorrow
       })
+      console.log(order)
       await OrderItem.create({ // 紀錄 order_id、meal_id、數量 
         OrderId: order.id,
         MealId: meal.id,
@@ -150,7 +151,7 @@ let orderController = {
 
   getOrderEdit: async (req, res) => {
     try {
-      let start = moment().startOf('day').toDate()
+      let start = moment().startOf('day').utc().format()
       // 找出使用者目前 subscription 是否為有效
       const subscription = await Subscription.findOne({
         where: {
@@ -196,7 +197,7 @@ let orderController = {
 
   putOrder: async (req, res) => {
     try {
-      let start = moment().startOf('day').toDate()
+      let start = moment().startOf('day').utc().format()
       // 找出使用者目前 subscription 是否為有效
       let subscription = await Subscription.findOne({
         where: {
@@ -217,7 +218,7 @@ let orderController = {
       const requireTime = req.body.require_date.split(':')
       let tomorrow = moment().add(1, 'days').startOf('day')
       tomorrow.set('Hour', requireTime[0]).set('minute', requireTime[1])
-      tomorrow = new Date(tomorrow)
+      tomorrow = tomorrow.utc().format()
       // meal 會減少直接當庫存
       let quantity = order.meals[0].dataValues.quantity
       // 修改後的庫存等於剩餘的 quantity + 使用者原訂購數量 - 新訂購數量，不得為負數，否則失敗
@@ -352,7 +353,7 @@ let orderController = {
         include: [Restaurant]
       })
       if (!meal) return res.status(400).json({ status: 'error', message: 'meal does not exist.' })
-      let start = moment().startOf('day').toDate()
+      let start = moment().startOf('day').utc().format()
       let subscription = await Subscription.findOne({
         where: {
           UserId: Number(order.UserId),
