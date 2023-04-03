@@ -169,7 +169,7 @@ describe('# User: request', () => {
         request(app)
           .put('/api/order/2')
           .send('require_date=13:30&quantity=3')
-          .expect(200, done)
+          .expect(200)
           .end(async (err, res) => {
             const order = await db.Order.findByPk(2)
             expect(order.amount).to.be.equal(3)
