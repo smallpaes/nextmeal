@@ -1,5 +1,4 @@
-import moment from 'moment'
-import 'moment/locale/zh-tw'
+import moment from 'moment-timezone'
 import locationAPI from '../apis/location'
 
 export const timeTransformFilter = {
@@ -12,8 +11,9 @@ export const timeTransformFilter = {
 }
 
 export const dateFormatterFilter = {
-  methods: {
+  filters: {
     dateFormatter (date) {
+      if (!date) return '-'
       return moment(date).format('LL')
     }
   }

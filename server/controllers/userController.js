@@ -77,7 +77,7 @@ let userController = {
       })
 
       // check if the user has valid subscriptions
-      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: moment().toDate() } } })
+      const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: moment().utc().format() } } })
       const sub_status = validSubscriptions.length >= 1 ? true : false
 
       //generate a token for the user
@@ -112,9 +112,9 @@ let userController = {
       if (!user) return res.status(401).json({ status: 'error', message: 'User does not exist' })
 
       // check if the user has valid subscriptions
-      const start = moment().startOf('day').toDate()
+      const start = moment().startOf('day').utc().format()
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: start } } })
-      const sub_status = user.expired_date >= start ? true : false
+      const sub_status = moment(user.expired_date).isAfter(start)
       const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
 
@@ -225,8 +225,8 @@ let userController = {
       }
       if (req.query.from === 'ReturnURL') {
         const data = JSON.parse(create_mpg_aes_decrypt(req.body.TradeInfo))
-        let sub_date = moment().toDate()
-        let sub_expired_date = moment().add(30, 'days').endOf('day').toDate()
+        let sub_date = moment().utc().format()
+        let sub_expired_date = moment().add(30, 'days').endOf('day').utc().format()
         let subscription = await Subscription.findOne({
           where: { sn: data['Result']['MerchantOrderNo'] },
           include: [{ model: User, attributes: ['name', 'email', 'id'] }]
@@ -235,7 +235,7 @@ let userController = {
           SubscriptionId: subscription.id,
           params: req.body.Status,
           amount: data.Result.Amt,
-          paidAt: moment().toDate(),
+          paidAt: moment().utc().format(),
           sn: data.Result.MerchantOrderNo
         })
         if (req.body.Status === 'SUCCESS') {
@@ -350,8 +350,8 @@ let userController = {
 
   getTomorrow: async (req, res) => {
     try {
-      let start = moment().add(1, 'days').startOf('day').toDate()
-      let end = moment().add(1, 'days').endOf('day').toDate()
+      let start = moment().add(1, 'days').startOf('day').utc().format()
+      let end = moment().add(1, 'days').endOf('day').utc().format()
       let order = await Order.findAll({
         where: {
           UserId: req.user.id,
@@ -393,18 +393,18 @@ let userController = {
         order_status: { [Op.notLike]: '取消' },
       }
       if (order_status === 'today') {
-        start = moment().startOf('day').toDate()
-        end = moment().endOf('day').toDate()
+        start = moment().startOf('day').utc().format()
+        end = moment().endOf('day').utc().format()
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_status === 'tomorrow') {
-        start = moment().add(1, 'days').startOf('day').toDate()
-        end = moment().add(1, 'days').endOf('day').toDate()
+        start = moment().add(1, 'days').startOf('day').utc().format()
+        end = moment().add(1, 'days').endOf('day').utc().format()
         whereQuery['require_date'] = { [Op.gte]: start, [Op.lte]: end }
       }
       if (order_status === 'cancel') { whereQuery['order_status'] = '取消' }
       if (order_status === 'history') {
-        start = moment().startOf('day').toDate()
+        start = moment().startOf('day').utc().format()
         whereQuery = {
           UserId: req.user.id,
           require_date: { [Op.lt]: start }
@@ -451,9 +451,9 @@ let userController = {
       })
 
       // check if the user has valid subscriptions
-      const start = moment().startOf('day').toDate()
+      const start = moment().startOf('day').utc().format()
       const validSubscriptions = await user.getSubscriptions({ where: { payment_status: true, sub_expired_date: { [Op.gte]: start } } })
-      const sub_status = user.expired_date >= start ? true : false
+      const sub_status = moment(user.expired_date).isAfter(start)
       const sub_balance = validSubscriptions.length >= 1 ? validSubscriptions[0].sub_balance : 0
 
       return res.status(200).json({

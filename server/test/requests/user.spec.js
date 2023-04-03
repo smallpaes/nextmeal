@@ -30,7 +30,7 @@ describe('# User: request', () => {
         await db.Restaurant.destroy({ where: {}, truncate: true })
         await db.Subscription.destroy({ where: {}, truncate: true })
         await db.Restaurant.create(defaultRestaurant1)
-        await db.Subscription.create({ UserId: 1, payment_status: true, sub_expired_date: moment().add(2, 'days').endOf('day').toDate(), sub_balance: 10 })
+        await db.Subscription.create({ UserId: 1, payment_status: true, sub_expired_date: moment().add(2, 'days').endOf('day').utc().format("YYYY-MM-DD HH:mm:ss"), sub_balance: 10 })
       })
 
       it('should see the home page info', (done) => {

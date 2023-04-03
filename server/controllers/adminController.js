@@ -98,7 +98,6 @@ let adminController = {
         })
       }
     } catch (error) {
-      console.log(error.message)
       res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -117,7 +116,7 @@ let adminController = {
   getUsers: async (req, res) => {
     try {
       const { page, name, sub_status } = req.query
-      const start = moment().startOf('day').toDate()
+      const start = moment().startOf('day').utc().format()
       let pageNum = (Number(page) < 1 || page === undefined) ? 1 : Number(page)
       //if it runs on heroku,use any to fix case sensitive issue
       let whereQuery = {}
@@ -164,7 +163,7 @@ let adminController = {
       users = users.rows.map(user => ({
         ...user.dataValues,
         sub_description: (user.Subscriptions[0]) ? user.Subscriptions[0].sub_description : false,
-        sub_status: (user.expired_date) ? (user.expired_date >= start) ? 'active' : 'inactive' : 'inactive'
+        sub_status: (user.expired_date) && (moment(user.expired_date).isAfter(start)) ? 'active' : 'inactive'
       }))
       return res.status(200).json({ status: 'success', users, pages, message: 'Admin get users info.' })
     } catch (error) {
@@ -220,8 +219,8 @@ let adminController = {
   getOrders: async (req, res) => {
     try {
       const { page, order_id, order_status, date } = req.query
-      let start = moment.utc(date).startOf('day').toDate()
-      let end = moment.utc(date).endOf('day').toDate()
+      let start = moment(date).startOf('day').utc().format()
+      let end = moment(date).endOf('day').utc().format()
       // 如果 order_status 不是取消，就顯示非取消的 order, 預設為當日非取消的 order 
       let whereQuery = {
         require_date: { [Op.gte]: start, [Op.lte]: end }
@@ -266,7 +265,6 @@ let adminController = {
       let pages = Math.ceil((count) / pageLimit)
       return res.status(200).json({ status: 'success', orders, pages, message: 'Successfully get Orders.' })
     } catch (error) {
-      console.log(error)
       return res.status(500).json({ status: 'error', message: error })
     }
   },
@@ -290,7 +288,7 @@ let adminController = {
       if (order.meals.length === 0 || order.meals[0] === undefined) {
         return res.status(400).json({ status: 'error', message: 'information is not correct' })
       }
-      let start = moment().startOf('day').toDate()
+      let start = moment().startOf('day').utc().format()
       let subscription = await Subscription.findOne({
         where: {
           UserId: Number(order.UserId),
@@ -330,13 +328,13 @@ let adminController = {
   },
   dashboard: async (req, res) => {
     try {
-      const now = moment().toISOString()
-      const start = moment().startOf('day').toISOString()
-      const end = moment().endOf('day').toISOString()
+      const now = moment().utc().format()
+      const start = moment().startOf('day').utc().format()
+      const end = moment().endOf('day').utc().format()
 
       // 取得一個月前的時間做為區間起點
-      const pass_one_month = moment().subtract(1, 'months').toDate()
-
+      const pass_one_month = moment().subtract(1, 'months').utc().format()
+console.log("111111")
       // get all user relative counts
       let users = await User.findAll({
         attributes: [
@@ -345,7 +343,7 @@ let adminController = {
           customQuery.literal.userIncreased(end, start)
         ]
       })
-
+console.log("222222")
       const userIncreased = users[0].dataValues.userIncreased
 
       // get all restaurant relative counts (for a month period)
@@ -363,6 +361,7 @@ let adminController = {
         ],
         group: ['date']
       })
+      console.log("333333")
       const total_restaurants = await Restaurant.count()
       const restIncreased = restaurants[0].dataValues.restIncreased
       const subtIncreased = restaurants[0].dataValues.subtIncreased
@@ -392,8 +391,8 @@ let adminController = {
       var dateArray = [];
       let light_package = []
       let heavy_package = []
-      var currentDate = moment(pass_one_month).endOf('day').toDate();
-      var stopDate = moment().endOf('day').toDate();
+      var currentDate = moment(pass_one_month).endOf('day').utc().format()
+      var stopDate = moment().endOf('day').utc().format()
       while (currentDate <= stopDate) {
         let light_subs = await Subscription.count({
           where: {
@@ -421,7 +420,7 @@ let adminController = {
         heavy_package.push(heavy_subs)
 
         dateArray.push(moment(currentDate).format('MM/DD'))
-        currentDate = moment(currentDate).add(1, 'days')
+        currentDate = moment(currentDate).add(1, 'days').utc().format()
       };
 
       // check if there's missing dates
@@ -498,6 +497,7 @@ let adminController = {
       res.status(200).json({ status: 'success', userIncreased, restIncreased, subtIncreased, order_num, subscriptions, restaurants, users, orders, message: 'Successfully get admin dashboard info' })
 
     } catch (error) {
+      console.log(error)
       res.status(500).json({ status: 'error', message: error })
     }
   }

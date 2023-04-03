@@ -62,7 +62,7 @@
               :width="'35px'"
             />
             <template v-else>
-              {{ order.date.slice(2, 6) }}
+              {{ order.require_date | dateFormatter }}
             </template>
           </td>
           <td>
@@ -102,14 +102,14 @@
 <script>
 import adminAPI from '../apis/admin'
 import SkelentonBox from './Placeholder/SkeletonBox'
-import { textTruncateFilter } from '../utils/mixins'
+import { textTruncateFilter, dateFormatterFilter } from '../utils/mixins'
 import { Toast } from '../utils/helpers'
 
 export default {
   components: {
     SkelentonBox
   },
-  mixins: [textTruncateFilter],
+  mixins: [textTruncateFilter, dateFormatterFilter],
   props: {
     orders: {
       type: Array,
@@ -164,7 +164,7 @@ $headers: (
   2: '訂餐人',
   3: '餐廳',
   4: '日期',
-  5: '成交量',
+  5: '時段',
   6: '狀態'
 );
 

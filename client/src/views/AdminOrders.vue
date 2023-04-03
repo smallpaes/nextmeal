@@ -73,7 +73,7 @@ import AdminOrdersTable from '../components/AdminOrdersTable.vue'
 import PlaceholderMessage from '../components/Placeholder/Message'
 import Pagination from '../components/Pagination'
 import adminAPI from '../apis/admin'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { Toast } from '../utils/helpers'
 
 export default {

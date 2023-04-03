@@ -17,8 +17,8 @@ cron.schedule('59 23 * * *', async () => {
       where: {
         order_status: { [Op.like]: '今日' },
         require_date: {
-          [Op.gte]: moment().subtract(1, 'day').toDate(),
-          [Op.lte]: moment().toDate()
+          [Op.gte]: moment().subtract(1, 'day').utc().format(),
+          [Op.lte]: moment().utc().format()
         }
       }
     })

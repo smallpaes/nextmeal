@@ -7,7 +7,7 @@ var app = require('../../../app')
 var helpers = require('../../../_helpers');
 const db = require('../../../models')
 const moment = require('moment-timezone')
-const tmr = moment().add(1, 'day').set({ hour: 12, minute: 0 }).toDate()
+const tmr = moment().add(1, 'day').set({ hour: 12, minute: 0 }).utc().format('YYYY-MM-DD HH:mm:ss')
 const content = encodeURIComponent('大安區')
 const defaultRestaurant1 = {
   name: "Danny的小餐館",

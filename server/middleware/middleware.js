@@ -152,7 +152,7 @@ let middleware = {
   },
   validSubsribe: async (req, res, next) => {
     try {
-      let start = moment().startOf('day').toDate()
+      let start = moment().startOf('day').utc().format()
       const subscription = await Subscription.findOne({
         where: {
           UserId: req.user.id,
@@ -283,8 +283,8 @@ let middleware = {
   },
 
   stopOrder: (req, res, next) => {
-    const start = moment({ hour: 23, minute: 58 })
-    const end = moment({ hour: 00, minute: 5 })
+    const start = moment().hour(23).minute(58)
+    const end = moment().hour(0).minute(5)
     if (moment() > start || moment() < end) return res.status(200).json({ status: 'success', message: 'Server is updating the information.' })
     next()
   }

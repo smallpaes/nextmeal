@@ -72,7 +72,7 @@
 
 <script>
 import CustomDatePicker from '../components/CustomDatePicker'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 export default {
   components: {
@@ -124,7 +124,7 @@ export default {
   },
   computed: {
     getTomorrowDate: function () {
-      return moment().add(1, 'd')
+      return moment().add(1, 'd').format('YYYY-MM-DD')
     }
   }
 }

@@ -341,8 +341,8 @@ let ownerController = {
   getOrders: async (req, res) => {
     try {
       //算出今天開始、結束日期
-      const start = moment().startOf('day').toDate()
-      const end = moment().endOf('day').toDate()
+      const start = moment().startOf('day').utc().format()
+      const end = moment().endOf('day').utc().format()
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
       // 處理餐廳資料尚未創建的情況
       if (!restaurant) {
@@ -387,7 +387,7 @@ let ownerController = {
   dashborad: async (req, res) => {
     try {
       // 取得一個月前的時間做為區間起點
-      const pass_one_month = moment().subtract(1, 'months').toDate()
+      const pass_one_month = moment().subtract(1, 'months').utc().format()
 
       // 取得該owner的餐廳資料
       const restaurant = await Restaurant.findOne({ where: { UserId: req.user.id } })
@@ -425,11 +425,11 @@ let ownerController = {
       }
       // find all dates a month from now
       var dateArray = [];
-      var currentDate = moment(pass_one_month);
-      var stopDate = moment();
+      var currentDate = moment(pass_one_month).utc().format();
+      var stopDate = moment().utc().format();
       while (currentDate <= stopDate) {
         dateArray.push(moment(currentDate).format('MM/DD'))
-        currentDate = moment(currentDate).add(1, 'days')
+        currentDate = moment(currentDate).add(1, 'days').utc().format()
       };
 
       // check if there's missing dates
@@ -476,7 +476,7 @@ let ownerController = {
         ">60歲": 0
       }
       users = users.map(item => (
-        { age: moment().diff(item.dob, 'years') }
+        { age: moment().utc().diff(item.dob, 'years') }
       )).map(item => {
         if (item.age < 20) user_result["<20歲"]++
         if (item.age >= 20 && item.age < 30) user_result["20~30歲"]++

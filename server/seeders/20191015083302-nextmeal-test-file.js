@@ -2,6 +2,7 @@
 const faker = require('faker')
 const bcrypt = require('bcryptjs')
 const moment = require('moment-timezone')
+moment.tz.setDefault('Asia/Taipei');
 const opening_hour = '11:00'
 const closing_hour = '14:00'
 const sequelize = require('sequelize')
@@ -21,14 +22,14 @@ function randomPhone(num) {
   return random
 }
 
-const today = moment().toDate()
-const pass_month = moment().subtract(1, 'months').toDate()
+const today = moment().utc().format("YYYY-MM-DD HH:mm:ss")
+const pass_month = moment().subtract(1, 'months').utc().format("YYYY-MM-DD HH:mm:ss")
 
 function createUsers(users) {
   let userData = []
   for (let i = 0; i < users.length; i++) {
     let role = 'User'
-    let expired_date = moment().add(30, 'days').endOf('day').toDate()
+    let expired_date = moment().add(30, 'days').endOf('day').utc().format("YYYY-MM-DD HH:mm:ss")
     if (i === 0) {
       role = 'Admin'
       expired_date = null
@@ -114,21 +115,21 @@ function creatMeal(stores) {
 function randomTime(num) {
   let tomorrow = moment().add(num, 'days').startOf('day')
   tomorrow.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30))
-  return tomorrow.toDate()
+  return tomorrow.utc().format("YYYY-MM-DD HH:mm:ss")
 }
 
 function pastOrder() {
   let date = faker.date.past(1, today)
   date = moment(date).startOf('day')
-  date.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30)).toDate()
-  return date.toDate()
+  date.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30))
+  return date.utc().format("YYYY-MM-DD HH:mm:ss")
 }
 
 function randomOrder() {
   let randomDate = faker.date.between(pass_month, today)
   let tomorrow = moment(randomDate).startOf('day')
   tomorrow.set('Hour', (Math.floor(Math.random() * 3) + 11)).set('minute', ((Math.random() > 0.5) ? 0 : 30))
-  return tomorrow.toDate()
+  return tomorrow.utc().format("YYYY-MM-DD HH:mm:ss")
 }
 
 function orderThing(start, end) {
@@ -186,7 +187,7 @@ function orderThing(start, end) {
       order_status = '今日'
       hasComment = false
     }
-    orderPast = moment(past).subtract(1, 'days').toDate()
+    orderPast = moment(past).subtract(1, 'days').utc().format("YYYY-MM-DD HH:mm:ss")
     const seedOrders = {
       id: i + 1,
       UserId: userId,
@@ -260,15 +261,15 @@ module.exports = {
       Array.from({ length: users.length - stores.length - 1 }).map((item, index) => (
         {
           id: index + 1,
-          UserId: index === 0 ? index + 2 : index + stores.length + 2,
+          UserId: index === 0 ? index + 2 : index + stores.length - 1,
           sub_name: index > 90 ? '輕量型' : '滿足型',
           sub_price: index > 90 ? 1000 : 2000,
           sub_description: index > 90 ? '一個月10餐' : '一個月20餐',
           sub_balance: index > 90 ? 10 : 20,
           sub_date: faker.date.between(pass_month, today),
-          sub_expired_date: moment().add(30, 'days').endOf('day').toDate(),
+          sub_expired_date: moment().add(30, 'days').endOf('day').utc().format('YYYY-MM-DD HH:mm:ss'),
           payment_status: true,
-          sn: Date.today() + index,
+          sn: Date.now() + index,
           createdAt: faker.date.between(pass_month, today),
           updatedAt: today
         }))
