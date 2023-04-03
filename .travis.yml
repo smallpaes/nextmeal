@@ -13,7 +13,7 @@ before_script:
 - cd server
 - sequelize db:migrate
 script:
-- cd client
+- cd ../client
 - npm install
 - npm run build
 - cd ../
