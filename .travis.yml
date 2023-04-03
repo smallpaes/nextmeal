@@ -1,23 +1,24 @@
 language: node_js
 node_js:
-  - "16"
-
+- '16.17.0'
 services:
-  - mysql
-
-# 設定參數(Travis CI 會按照參數分別執行)
+- mysql
 env:
-  - NODE_ENV=test
-
-# 在 install 前執行的指令
+- NODE_ENV=test
 before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS nextMeal_test default character set utf8mb4 collate utf8mb4_unicode_ci;'
-  - npm install sequelize-cli -g
-
-# 在執行測試之前的指令
+- mysql -e 'CREATE DATABASE IF NOT EXISTS nextMeal_test default character set utf8mb4
+  collate utf8mb4_unicode_ci;'
+- npm install sequelize-cli -g
 before_script:
-  - cd server
-  - sequelize db:migrate
-
+- cd server
+- sequelize db:migrate
 script:
-  - npm test
+- cd ../client
+- npm install
+- npm run build
+- cd ../
+- npm test
+deploy:
+  provider: heroku
+  api_key:
+    secure: dib5GOKsjsf9n+PZijGofgWs0G4UGxO/gu/2VHbNNaDJdmopQItKlSS8iMfFVFpO/Kf5DKCDPTaBM8XIT8A3WBFq4RD2xje1ZMnuwA4a7XdJiimyujbHvFOMWYjnTAPhLFoReXHrIHzS9NimBxYdXXLtvhEjVwWFIpAIjGJ3b83MAIrZvW45qU6/R8UOuncJCcHqZfHnVsOTNNAXWjSnp22oZwHfGomvcFTC/XH3XjV1sDYo5U4oG8dUMntPpZtY69E4kvKnk2+JaVyc+NfH8QOxZsloZNBoKo7wEu3pJbB9IXp0xp54XH7bhs+wodMO3keoK75Ql8+PwaJ4CQBb3sGylNkhJzD30aIsBIFlFdMkVs7Y7du+bnybEUObCxeSNQ6v5Zw8vpojMmubDbAeJEHf0LyS8+Xf3GrfvidqjK+7hpLYXCgyDCdqQSOtv84JIlTrC+Pvb1z7GD/nubxY03qvhu20QY8Um7dqcIO8bIaHBi6erbnY2qviDhymMiqJnkN1JbP/ffEpIw6LN11iVRO86Wu4N/pevWzgcA/SlKIju6KmlIC6fGinsBaEDXXKMnbnnbM1Qqxqstvp43YJj6e93vBoabWBN1gHaj864kQu1YqYgG9Cd/QhPA4onWURGYM0cRqa4Zv8yC9kvIZ3ULDcntsz4m9JfvWRbW+mThc=
