@@ -28,7 +28,6 @@ jobs:
     after_success:
     - git add .
     - git commit -m "Travis CI built client for deplotment"
-  - stage: deploy
     deploy:
       provider: heroku
       api_key:
