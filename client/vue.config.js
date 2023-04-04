@@ -1,5 +1,10 @@
 const path = require('path')
 
+const dotenv = require("dotenv");
+const dotenvExpand = require("dotenv-expand");
+const myEnv = dotenv.config({ path: "../.env" });
+dotenvExpand(myEnv);
+
 module.exports = {
   css: {
     loaderOptions: {
