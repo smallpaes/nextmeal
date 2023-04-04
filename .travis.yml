@@ -1,24 +1,35 @@
 language: node_js
 node_js:
-- '16.17.0'
+- 16.17.0
 services:
 - mysql
 env:
-- NODE_ENV=test
-before_install:
-- mysql -e 'CREATE DATABASE IF NOT EXISTS nextMeal_test default character set utf8mb4
-  collate utf8mb4_unicode_ci;'
-- npm install sequelize-cli -g
-before_script:
-- cd server
-- sequelize db:migrate
-script:
-- cd ../client
-- npm install
-- npm run build
-- cd ../
-- npm test
-deploy:
-  provider: heroku
-  api_key:
-    secure: dib5GOKsjsf9n+PZijGofgWs0G4UGxO/gu/2VHbNNaDJdmopQItKlSS8iMfFVFpO/Kf5DKCDPTaBM8XIT8A3WBFq4RD2xje1ZMnuwA4a7XdJiimyujbHvFOMWYjnTAPhLFoReXHrIHzS9NimBxYdXXLtvhEjVwWFIpAIjGJ3b83MAIrZvW45qU6/R8UOuncJCcHqZfHnVsOTNNAXWjSnp22oZwHfGomvcFTC/XH3XjV1sDYo5U4oG8dUMntPpZtY69E4kvKnk2+JaVyc+NfH8QOxZsloZNBoKo7wEu3pJbB9IXp0xp54XH7bhs+wodMO3keoK75Ql8+PwaJ4CQBb3sGylNkhJzD30aIsBIFlFdMkVs7Y7du+bnybEUObCxeSNQ6v5Zw8vpojMmubDbAeJEHf0LyS8+Xf3GrfvidqjK+7hpLYXCgyDCdqQSOtv84JIlTrC+Pvb1z7GD/nubxY03qvhu20QY8Um7dqcIO8bIaHBi6erbnY2qviDhymMiqJnkN1JbP/ffEpIw6LN11iVRO86Wu4N/pevWzgcA/SlKIju6KmlIC6fGinsBaEDXXKMnbnnbM1Qqxqstvp43YJj6e93vBoabWBN1gHaj864kQu1YqYgG9Cd/QhPA4onWURGYM0cRqa4Zv8yC9kvIZ3ULDcntsz4m9JfvWRbW+mThc=
+  global:
+    secure: gM6RebHx7ACtGzKVxMWqaBC857yAj8AqWbWkKgQxNM5I+x04oHwqKAC8171T5+e+MZrcbGSaq6F/NHYM5TM04kMdWvwUbPt6b6/ILwexqfjfvNtx71tQcbdWBBsk5N+d0hlaGOFfKpIfbAHlZw11b/adRac4vOczNRAqzYSjsZMWLoQicOYdqR/F2r86Slkgkq1v3KbpuAk4daukgb1JXC6raQHYM14pRrLJWYZOyrb26T6in3n2SJOiEC4Cm2guzrMaD9+UxHlSC7RzuHdx6vSu1C+9WI0/Jl+BHkj0k/Kuy1L65kYM/heUctoEBs38nZRtGCB5uWSxo0vJWhQImwkkOnbanKgRZuSEL8gAl2oRGHcrgZlY/6jrlrBFOBTRQPTvhodLSEwqSOsH8tIGwa+j5bH42+B11jvKqKPSpksJqdDe4TXNdJmQ6ZGEWczTemkmCxsG/OZcuhf2I9uHSnUXl7vtv56/lGSNDu0hLYVNY0vVEZsEbmTrn5l4IQdKH79XQnEHoAyFaZjP+5GEwpjq/tvTL+5N6gyI1b7MAg/wbeymlrP6Vg0sRJZD/ZyvUwdUsFCidwQRFdk2ey1+wOyCqd2jY3a8+TGZWtMosvYPhU/SgzvWivdVLyRKiOqnzbOoLCQD+Ai5FsoY1z3ui80jCuBOxNiNzf8JA/IJJWs=
+jobs:
+  include:
+  - stage: server
+    env:
+    - NODE_ENV=test
+    before_install:
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS nextMeal_test default character set
+      utf8mb4 collate utf8mb4_unicode_ci;'
+    - npm install sequelize-cli -g
+    before_script:
+    - cd server
+    - sequelize db:migrate
+    script: npm test
+  - stage: client
+    script:
+    - cd ./client
+    - npm install
+    - npm run build
+    - cd ../
+    after_success:
+    - git add .
+    - git commit -m "Travis CI built client for deplotment"
+  - stage: deploy
+    deploy:
+      provider: heroku
+      api_key:
+        secure: dib5GOKsjsf9n+PZijGofgWs0G4UGxO/gu/2VHbNNaDJdmopQItKlSS8iMfFVFpO/Kf5DKCDPTaBM8XIT8A3WBFq4RD2xje1ZMnuwA4a7XdJiimyujbHvFOMWYjnTAPhLFoReXHrIHzS9NimBxYdXXLtvhEjVwWFIpAIjGJ3b83MAIrZvW45qU6/R8UOuncJCcHqZfHnVsOTNNAXWjSnp22oZwHfGomvcFTC/XH3XjV1sDYo5U4oG8dUMntPpZtY69E4kvKnk2+JaVyc+NfH8QOxZsloZNBoKo7wEu3pJbB9IXp0xp54XH7bhs+wodMO3keoK75Ql8+PwaJ4CQBb3sGylNkhJzD30aIsBIFlFdMkVs7Y7du+bnybEUObCxeSNQ6v5Zw8vpojMmubDbAeJEHf0LyS8+Xf3GrfvidqjK+7hpLYXCgyDCdqQSOtv84JIlTrC+Pvb1z7GD/nubxY03qvhu20QY8Um7dqcIO8bIaHBi6erbnY2qviDhymMiqJnkN1JbP/ffEpIw6LN11iVRO86Wu4N/pevWzgcA/SlKIju6KmlIC6fGinsBaEDXXKMnbnnbM1Qqxqstvp43YJj6e93vBoabWBN1gHaj864kQu1YqYgG9Cd/QhPA4onWURGYM0cRqa4Zv8yC9kvIZ3ULDcntsz4m9JfvWRbW+mThc=
