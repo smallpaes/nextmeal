@@ -21,8 +21,7 @@ jobs:
     script: npm test
   - stage: client
     script:
-    - npm test
-    - cd ../client
+    - cd ./client
     - npm install
     - npm run build
     - cd ../
