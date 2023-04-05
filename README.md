@@ -11,6 +11,7 @@
   <br>
   <a href="https://nextmeal.herokuapp.com/#/"><strong>Explore Our Website</strong></a>
   <br>
+  [![Build Status][ci-image]][ci-url]
 </p>
 
 
@@ -403,3 +404,7 @@ $ npm run serve
 - Cooperate with teammates to set up database, create seeders, and deploy the app
 - Cooperate with teammates to connect to third party payment APIs
 - Code review for teammates
+
+
+[ci-url]: https://app.travis-ci.com/smallpaes/nextmeal
+[ci-image]: https://app.travis-ci.com/smallpaes/nextmeal.svg?branch=master
