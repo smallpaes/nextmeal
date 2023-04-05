@@ -6,9 +6,12 @@
       class="banner-container"
       :style="{height: `${bannerHeight}px`}"
     >
-      <div
+      <ik-image
+        :path="backgroundPhoto"
+        :lqip="{active:true, quality: 40, blur: 5}"
+        loading="lazy"
+        alt="Nextmeal banner image"
         class="banner-img"
-        :style="{backgroundImage: `url(${backgroundPhoto})`}"
       />
       <div
         class="banner-overlay"
@@ -41,12 +44,14 @@ export default {
   @include imgOverlay(.9);
 
   &-container {
-    @include setBackground("../../assets/placeholder-image/logo/1260x750.png");
+    @include setBackground("https://ik.imagekit.io/mikank/Nextmeal/tr:n-banner/Placeholder/plain.png");
     margin-top: 62px;
   }
 
   &-img {
-    @include setBackground("https://via.placeholder.com/800x800/d3d3d3");
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   &-content {
     width: 100%;

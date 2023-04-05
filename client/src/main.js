@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Vuelidate from 'vuelidate'
+import ImageKit from 'imagekitio-vue'
+
 import moment from 'moment-timezone'
 import 'moment/locale/zh-tw'
 
@@ -12,6 +14,10 @@ moment.locale('zh-tw')
 Vue.config.productionTip = false
 
 Vue.use(Vuelidate)
+
+Vue.use(ImageKit, {
+  urlEndpoint: 'https://ik.imagekit.io/mikank/Nextmeal'
+})
 
 new Vue({
   router,

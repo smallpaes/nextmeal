@@ -95,7 +95,7 @@ export default {
       popularRestaurants: [],
       districts: [],
       isLoading: true,
-      bannerImage: 'https://images.pexels.com/photos/929192/pexels-photo-929192.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
+      bannerImage: '/Banner/banner.jpeg'
     }
   },
   created () {
