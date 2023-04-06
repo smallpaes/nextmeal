@@ -16,7 +16,7 @@ Vue.config.productionTip = false
 Vue.use(Vuelidate)
 
 Vue.use(ImageKit, {
-  urlEndpoint: 'https://ik.imagekit.io/mikank/Nextmeal'
+  urlEndpoint: process.env.VUE_APP_IMAGEKIT_URL_ENDPOINT
 })
 
 new Vue({

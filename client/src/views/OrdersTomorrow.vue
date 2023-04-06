@@ -62,7 +62,7 @@
               </MealVerticalCard>
               <NewOrderCard
                 v-else
-                :style="{backgroundImage: !meal.isCommingSoon ? `url(${image.order})` : `url(${image.commingSoon})`}"
+                :style="formOrderCardBgStyle(meal)"
               >
                 <template
                   v-if="!meal.isCommingSoon"
@@ -113,6 +113,7 @@ import NewOrderCard from '../components/Card/NewOrderCard'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import usersAPI from '../apis/users'
+import { formFullUrl } from '../utils/image-url'
 import { Toast } from '../utils/helpers'
 import { mapState } from 'vuex'
 
@@ -143,8 +144,8 @@ export default {
         order: {}
       },
       image: {
-        order: 'https://cdn.pixabay.com/photo/2017/06/11/17/03/dumplings-2392893_1280.jpg',
-        commingSoon: 'https://images.unsplash.com/photo-1549409466-c6449df8e23b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=4000&q=80'
+        order: formFullUrl('/Banner/neworder.jpg'),
+        commingSoon: formFullUrl('/Banner/upcoming.jpeg')
       },
       isLoading: true
     }
@@ -178,6 +179,11 @@ export default {
           title: '無法取得餐點資料，請稍後再試'
         })
       }
+    },
+    formOrderCardBgStyle (meal) {
+      const { order, commingSoon } = this.image
+      const imageUrl = !meal.isCommingSoon ? order : commingSoon
+      return { backgroundImage: `url(${imageUrl})` }
     }
   }
 }
