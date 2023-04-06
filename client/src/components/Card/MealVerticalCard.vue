@@ -56,7 +56,7 @@ export default {
   &-img-top-container {
     width: 100%;
     height: 350px;
-    background-image: url('https://ik.imagekit.io/mikank/Nextmeal/tr:n-card/Placeholder/plain.png');
+    background-image: url(image('card'));
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

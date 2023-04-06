@@ -48,7 +48,7 @@ export default {
   @include imgOverlay(.9);
 
   &-container {
-    @include setBackground("https://ik.imagekit.io/mikank/Nextmeal/tr:n-banner/Placeholder/plain.png");
+    @include setBackground(image('card'));
     margin-top: 62px;
   }
 
