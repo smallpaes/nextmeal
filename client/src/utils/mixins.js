@@ -105,6 +105,7 @@ export const handleFileChangeMethod = {
       if (!files.length) return
       const imageURL = window.URL.createObjectURL(files[0])
       this[targetName].image = imageURL
+      this.isNewFileUploaded = true
     }
   }
 }

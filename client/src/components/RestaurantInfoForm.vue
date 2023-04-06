@@ -193,7 +193,14 @@
         class="file-image-wrapper"
         @click="restaurant.image = ''"
       >
+        <img
+          v-if="isNewFileUploaded"
+          :src="restaurant.image"
+          alt="新上傳的餐廳照片"
+          class="file-image"
+        >
         <ik-image
+          v-else
           :path="restaurant.image"
           :lqip="{ active: true }"
           loading="lazy"
@@ -298,7 +305,8 @@ export default {
         address: ''
       },
       formData: {},
-      isProcessing: false
+      isProcessing: false,
+      isNewFileUploaded: false
     }
   },
   validations: {
@@ -348,6 +356,7 @@ export default {
         ...this.restaurant,
         ...restaurant
       }
+      this.isNewFileUploaded = false
     },
     initialProcessing (isProcessing) {
       this.isProcessing = isProcessing
