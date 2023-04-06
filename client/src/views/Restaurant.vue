@@ -2,9 +2,11 @@
   <section class="restaurant-container">
     <header>
       <UserNavbar />
-      <ImageBanner
+      <ImageHeaderBanner
         v-if="!isLoading"
         :background-photo="restaurant.image"
+        :banner-height="480"
+        :image-description="restaurant.name + '餐廳的照片'"
       />
     </header>
     <Loader v-if="isLoading" />
@@ -68,7 +70,7 @@
 <script>
 import UserNavbar from '../components/Navbar/UserNavbar'
 import Footer from '../components/Footer'
-import ImageBanner from '../components/Banner/ImageBanner'
+import ImageHeaderBanner from '../components/Banner/ImageHeaderBanner'
 import Breadcrumb from '../components/Breadcrumb'
 import RestaurantInfo from '../components/RestaurantInfo'
 import CommentMedia from '../components/CommentMedia'
@@ -80,7 +82,7 @@ export default {
   components: {
     UserNavbar,
     Footer,
-    ImageBanner,
+    ImageHeaderBanner,
     Breadcrumb,
     RestaurantInfo,
     CommentMedia,
