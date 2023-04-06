@@ -13,6 +13,7 @@
         <ImageHeaderBanner
           :background-photo="banner.image"
           :banner-height="banner.height"
+          :image-description="banner.description"
         >
           <template v-slot:header>
             <h1 class="banner-content-title">
@@ -127,8 +128,9 @@ export default {
   data () {
     return {
       banner: {
-        image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-        height: 550
+        image: '/Banner/order.jpeg',
+        height: 550,
+        description: '明日餐點頁面水果優格封面照'
       },
       lunch: {
         indicator: '午',

@@ -4,11 +4,13 @@
     href="#"
   >
     <div class="card-img-top-container">
-      <img
-        :src="order.meal.image"
-        alt="photo of the restaurant"
+      <ik-image
+        :path="order.meal.image"
+        :lqip="{ active: true }"
+        loading="lazy"
+        :alt="order.meal.name + '的照片'"
         class="card-img-top"
-      >
+      />
     </div>
     <div class="card-body">
       <h5 class="card-title m-0">
@@ -54,7 +56,7 @@ export default {
   &-img-top-container {
     width: 100%;
     height: 350px;
-    background-image: url('~@/assets/placeholder-image/logo/1260x750.png');
+    background-image: url('https://ik.imagekit.io/mikank/Nextmeal/tr:n-card/Placeholder/plain.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
