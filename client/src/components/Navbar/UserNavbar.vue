@@ -113,10 +113,14 @@
                 class="rounded-circle skelenton-box"
               />
               <!--Avatar-->
-              <img
+              <ik-image
+                :path="currentUser.avatar"
+                :transformation="[{ width: 200 }]"
+                :lqip="{ active: true }"
+                loading="lazy"
                 class="dropdown-img"
-                :src="currentUser.avatar"
-              >
+                alt="使用者大頭貼"
+              />
             </a>
             <!--Dropdown items-->
             <div

@@ -83,10 +83,19 @@
         @click="dish.image = ''"
       >
         <img
+          v-if="isNewFileUploaded"
           :src="dish.image"
           class="file-image"
           alt="餐點照片"
         >
+        <ik-image
+          v-else
+          :path="dish.image"
+          :lqip="{ active: true }"
+          loading="lazy"
+          alt="餐點照片"
+          class="file-image"
+        />
         <i class="fa-regular fa-rectangle-xmark" />
       </div>
       <!--Visible file upload button-->
@@ -157,7 +166,8 @@ export default {
         description: '',
         image: ''
       },
-      isProcessing: false
+      isProcessing: false,
+      isNewFileUploaded: false
     }
   },
   validations: {
@@ -186,6 +196,7 @@ export default {
         ...this.dish,
         ...dish
       }
+      this.isNewFileUploaded = false
     },
     initialProcessing (isProcessing) {
       this.isProcessing = isProcessing
