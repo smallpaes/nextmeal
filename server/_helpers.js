@@ -34,8 +34,8 @@ const imagekit = new ImageKit({
   urlEndpoint : process.env.IMAGEKIT_URL_ENDPOINT
 })
 
-const uploadImage = async (file, fileName, folder) => {
-  return imagekit.upload({ file, fileName, folder });
+const uploadImage = async (file, fileName, folder, isUseUniqueName = true) => {
+  return imagekit.upload({ file, fileName, folder, useUniqueFileName: isUseUniqueName });
 }
 
 const getImageRelativePath = fullPath => {

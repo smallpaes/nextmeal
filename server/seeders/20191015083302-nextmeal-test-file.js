@@ -45,7 +45,7 @@ function createUsers(users) {
       name: i === 0 ? 'root' : faker.fake("{{name.firstName}}{{name.lastName}}"),
       email: i === 0 ? 'root@example.com' : `user${i}@example.com`,
       password: bcrypt.hashSync('Nextmeal!', 10),
-      avatar: `https://i.pravatar.cc/400?img=${Math.floor(Math.random() * 70 + 1)}`,
+      avatar: `/Users/user-${Math.floor(Math.random() * 70 + 1)}`,
       role: role,
       dob: faker.date.past(60, new Date(2001, 0, 1)),
       location: users[i].location,
