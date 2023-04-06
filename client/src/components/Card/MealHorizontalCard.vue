@@ -64,7 +64,7 @@ export default {
   &-left {
     width: 130px;
     height: 100%;
-    background-image: url('~@/assets/placeholder-image/logo/200x200.png');
+    background-image: url(image('card'));
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

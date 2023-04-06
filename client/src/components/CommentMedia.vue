@@ -27,12 +27,14 @@
         {{ comment.user_text }}
       </p>
       <!--Show placeholder review image while loading-->
-      <img
+      <ik-image
         v-if="comment.image"
-        src="../assets/placeholder-image/logo/1260x750.png"
+        :path="placeholderImg"
+        :lqip="{ active: true }"
+        loading="lazy"
         class="file-image file-image-placeholder my-3"
         alt="評論照片"
-      >
+      />
       <!--Show review image after-->
       <img
         v-if="comment.image"
@@ -49,6 +51,7 @@
 <script>
 import RatingStars from '../components/RatingStars'
 import SkelentonBox from './Placeholder/SkeletonBox'
+import { CARD_PLACEHOLDER_RELATIVE_URL } from '../utils/image-url'
 import { timeTransformFilter } from '../utils/mixins'
 
 export default {
@@ -65,7 +68,8 @@ export default {
   },
   data () {
     return {
-      isZoomIn: false
+      isZoomIn: false,
+      placeholderImg: CARD_PLACEHOLDER_RELATIVE_URL
     }
   }
 }
