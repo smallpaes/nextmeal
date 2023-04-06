@@ -1,5 +1,4 @@
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const { uploadImage, getImageRelativePath } = require('../_helpers')
 const db = require('../models')
 const Subscription = db.Subscription
 const Restaurant = db.Restaurant
@@ -315,28 +314,22 @@ let orderController = {
       let restaurant = await Restaurant.findByPk(order.meals[0].RestaurantId)
       if (!restaurant) return res.status(400).json({ status: 'error', message: 'restaurant does not exist' })
       const { file } = req
+      let image = null;
       // 驗證表單
       if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
-          let comment = await Comment.create({
-            user_text: req.body.user_text,
-            rating: req.body.rating,
-            image: await file ? img.data.link : null,
-            UserId: req.user.id,
-            RestaurantId: order.meals[0].RestaurantId
-          })
-          avgRating(res, restaurant, comment, order)
-        })
-      } else {
-        let comment = await Comment.create({
-          user_text: req.body.user_text,
-          rating: req.body.rating,
-          UserId: req.user.id,
-          RestaurantId: order.meals[0].RestaurantId
-        })
-        avgRating(res, restaurant, comment, order)
+        const fileName = `order-${req.params.order_id}`;
+        const folder = '/Nextmeal/Comments';
+        const { url } = await uploadImage(file.buffer, fileName, folder)
+        image = getImageRelativePath(url);
       }
+      let comment = await Comment.create({
+        user_text: req.body.user_text,
+        rating: req.body.rating,
+        image,
+        UserId: req.user.id,
+        RestaurantId: order.meals[0].RestaurantId
+      })
+      avgRating(res, restaurant, comment, order)
     } catch (error) {
       return res.status(500).json({ status: 'error', message: error })
     }

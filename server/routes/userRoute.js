@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { validUserProfile, creatUser, validSubsribe, validMessage } = require('../middleware/middleware')
 const multer = require('multer')
-const upload = multer({ dest: 'temp/' })
+const upload = multer()
 const userController = require('../controllers/userController.js')
 const { ensureAuthenticated, getUser } = require('../config/auth')
 

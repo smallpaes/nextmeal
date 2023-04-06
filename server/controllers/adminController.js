@@ -1,5 +1,4 @@
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const { uploadImage, getImageRelativePath } = require('../_helpers')
 const db = require('../models')
 const sequelize = require('sequelize')
 const moment = require('moment-timezone');
@@ -71,32 +70,30 @@ let adminController = {
         return res.status(400).json({ status: 'error', message: 'The restaurant does not exist.' })
       }
       const { file } = req
+      let image = restaurant.image;
       if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
-          await restaurant.update({
-            name: req.body.name,
-            description: req.body.description,
-            image: file ? img.data.link : restaurant.image,
-            tel: req.body.tel,
-            address: req.body.address,
-            opening_hour: req.body.opening_hour,
-            closing_hour: req.body.closing_hour,
-            lat: req.body.lat,
-            lng: req.body.lng
-          })
-          return res.status(200).json({
-            status: 'success',
-            message: 'Successfully update restaurant information with image.'
-          })
-        })
-      } else {
-        await restaurant.update({ ...req.body })
-        return res.status(200).json({
-          status: 'success',
-          message: 'Successfully update restaurant information.'
-        })
+        const fileName = `restaurant-${req.params.restaurant_id}`;
+        const folder = '/Nextmeal/Restaurant';
+        const { url } = await uploadImage(file.buffer, fileName, folder);
+        image = getImageRelativePath(url);
       }
+      await restaurant.update({ 
+        ...req.body,
+        name: req.body.name,
+        description: req.body.description,
+        image,
+        tel: req.body.tel,
+        address: req.body.address,
+        opening_hour: req.body.opening_hour,
+        closing_hour: req.body.closing_hour,
+        lat: req.body.lat,
+        lng: req.body.lng
+      })
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Successfully update restaurant information.'
+      })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
