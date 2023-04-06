@@ -9,12 +9,15 @@
         :width="'100%'"
         :height="'200px'"
       />
-      <img
+      <ik-image
         v-if="!isLoading"
-        :src="restaurant.image || '@/assets/placeholder-image/logo/1260x750.png'"
-        alt="photo of the restaurant"
+        :path="restaurant.image || placeholderImg"
+        :lqip="{ active: true }"
+        width="500"
+        loading="lazy"
+        :alt="restaurant.name + '的照片'"
         class="card-img-top"
-      >
+      />
     </div>
     <div class="card-body">
       <h5 class="card-title m-0">
@@ -52,6 +55,7 @@
 <script>
 import SkelentonBox from '../Placeholder/SkeletonBox'
 import { padEndFilter, textTruncateFilter } from '../../utils/mixins'
+import { CARD_PLACEHOLDER_RELATIVE_URL } from '../../utils/image-url'
 
 export default {
   components: {
@@ -73,6 +77,11 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    }
+  },
+  data () {
+    return {
+      placeholderImg: CARD_PLACEHOLDER_RELATIVE_URL
     }
   }
 }

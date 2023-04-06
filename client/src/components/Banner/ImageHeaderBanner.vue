@@ -6,9 +6,12 @@
       class="banner-container"
       :style="{height: `${bannerHeight}px`}"
     >
-      <div
+      <ik-image
+        :path="backgroundPhoto"
+        :lqip="{active:true}"
+        loading="lazy"
+        :alt="imageDescription"
         class="banner-img"
-        :style="{backgroundImage: `url(${backgroundPhoto})`}"
       />
       <div
         class="banner-overlay"
@@ -30,6 +33,10 @@ export default {
     bannerHeight: {
       type: Number,
       default: 550
+    },
+    imageDescription: {
+      type: String,
+      default: 'Header image'
     }
   }
 }
@@ -41,12 +48,14 @@ export default {
   @include imgOverlay(.9);
 
   &-container {
-    @include setBackground("../../assets/placeholder-image/logo/1260x750.png");
+    @include setBackground(image('card'));
     margin-top: 62px;
   }
 
   &-img {
-    @include setBackground("https://via.placeholder.com/800x800/d3d3d3");
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   &-content {
     width: 100%;

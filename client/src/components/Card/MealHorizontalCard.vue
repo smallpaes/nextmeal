@@ -3,11 +3,13 @@
     class="card d-flex flex-row rounded-sm w-100 shadow-sm"
   >
     <div class="card-left">
-      <img
-        :src="order.meal.image"
-        alt="photo of the restaurant"
+      <ik-image
+        :path="order.meal.image"
+        :lqip="{ active: true }"
+        loading="lazy"
+        :alt="order.meal.name + '的照片'"
         class="card-img rounded-0 rounded-sm"
-      >
+      />
     </div>
     <div class="card-right">
       <div class="card-body px-3 py-0">
@@ -62,7 +64,7 @@ export default {
   &-left {
     width: 130px;
     height: 100%;
-    background-image: url('~@/assets/placeholder-image/logo/200x200.png');
+    background-image: url(image('card'));
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;

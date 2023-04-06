@@ -32,3 +32,15 @@ $font-weight: (
 @function weight($weight) {
   @return map-get($font-weight, $weight);
 };
+
+@function formFullUrl($relativePath) {
+  @return '#{$BASEURL}#{$relativePath}';
+};
+
+$placeholder-image: (
+  card: formFullUrl('/tr:n-card/Placeholder/plain.png'),
+);
+
+@function image($type) {
+  @return map-get($placeholder-image, $type);
+};

@@ -1,4 +1,5 @@
 const passport = require('./config/passport')
+const ImageKit = require('imagekit')
 
 function ensureAuthenticated() {
   return false;
@@ -27,8 +28,25 @@ function _toRad(value) {
   return (value * Math.PI) / 180;
 }
 
+const imagekit = new ImageKit({
+  publicKey : process.env.IMAGEKIT_PUBLIC_KEY,
+  privateKey : process.env.IMAGEKIT_PRIVATE_KEY,
+  urlEndpoint : process.env.IMAGEKIT_URL_ENDPOINT
+})
+
+const uploadImage = async (file, fileName, folder, isUseUniqueName = true) => {
+  return imagekit.upload({ file, fileName, folder, useUniqueFileName: isUseUniqueName });
+}
+
+const getImageRelativePath = fullPath => {
+  return fullPath.replace(process.env.IMAGEKIT_URL_ENDPOINT, '');
+}
+
 module.exports = {
   ensureAuthenticated,
   getUser,
   haversine,
+  imagekit,
+  uploadImage,
+  getImageRelativePath
 };

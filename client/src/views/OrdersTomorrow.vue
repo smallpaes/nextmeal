@@ -13,6 +13,7 @@
         <ImageHeaderBanner
           :background-photo="banner.image"
           :banner-height="banner.height"
+          :image-description="banner.description"
         >
           <template v-slot:header>
             <h1 class="banner-content-title">
@@ -61,7 +62,7 @@
               </MealVerticalCard>
               <NewOrderCard
                 v-else
-                :style="{backgroundImage: !meal.isCommingSoon ? `url(${image.order})` : `url(${image.commingSoon})`}"
+                :style="formOrderCardBgStyle(meal)"
               >
                 <template
                   v-if="!meal.isCommingSoon"
@@ -112,6 +113,7 @@ import NewOrderCard from '../components/Card/NewOrderCard'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import usersAPI from '../apis/users'
+import { formFullUrl, BANNER_PLACEHOLDER_RELATIVE_URL } from '../utils/image-url'
 import { Toast } from '../utils/helpers'
 import { mapState } from 'vuex'
 
@@ -127,8 +129,9 @@ export default {
   data () {
     return {
       banner: {
-        image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-        height: 550
+        image: BANNER_PLACEHOLDER_RELATIVE_URL,
+        height: 550,
+        description: '明日餐點頁面水果優格封面照'
       },
       lunch: {
         indicator: '午',
@@ -141,8 +144,8 @@ export default {
         order: {}
       },
       image: {
-        order: 'https://cdn.pixabay.com/photo/2017/06/11/17/03/dumplings-2392893_1280.jpg',
-        commingSoon: 'https://images.unsplash.com/photo-1549409466-c6449df8e23b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=4000&q=80'
+        order: formFullUrl('/Banner/neworder.jpg'),
+        commingSoon: formFullUrl('/Banner/upcoming.jpeg')
       },
       isLoading: true
     }
@@ -176,6 +179,11 @@ export default {
           title: '無法取得餐點資料，請稍後再試'
         })
       }
+    },
+    formOrderCardBgStyle (meal) {
+      const { order, commingSoon } = this.image
+      const imageUrl = !meal.isCommingSoon ? order : commingSoon
+      return { backgroundImage: `url(${imageUrl})` }
     }
   }
 }

@@ -1,5 +1,4 @@
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const { uploadImage, getImageRelativePath } = require('../_helpers')
 const URL = process.env.URL
 
 const db = require('../models')
@@ -286,13 +285,11 @@ let userController = {
   },
   putProfile: async (req, res) => {
     try {
-
       // if params exist,it means you access this action as Admin
       const user_id = req.params.user_id || req.user.id
 
       // if params exist,it means you access this action as Admin ,hence you can set roles for users
       const user_role = req.params.user_id ? req.body.role : req.user.role
-
 
       const point = Sequelize.fn('ST_GeomFromText', `POINT(${req.body.lng} ${req.body.lat})`)
       let user = await User.findByPk(user_id)
@@ -304,46 +301,31 @@ let userController = {
       }
 
       const { file } = req
-      // 如果上有照片
+      let avatar = user.avatar;
       if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
-          await user.update({
-            name: req.body.name,
-            email: req.body.email,
-            address: req.body.address,
-            dob: req.body.dob,
-            prefer: req.body.prefer,
-            lat: req.body.lat,
-            lng: req.body.lng,
-            role: user_role,
-            location: req.body.location,
-            avatar: file ? img.data.link : user.avatar,
-            geometry: point
-          })
-          return res.status(200).json({
-            status: 'success',
-            message: 'Successfully update user profile with image.'
-          })
-        })
-      } else {
-        // 如果沒上傳照片
-        await user.update({
-          name: req.body.name,
-          email: req.body.email,
-          address: req.body.address,
-          dob: req.body.dob,
-          prefer: req.body.prefer,
-          lat: req.body.lat,
-          lng: req.body.lng,
-          role: user_role,
-          location: req.body.location,
-          geometry: point,
-        })
-        res.status(200).json({ status: 'success', user, message: 'Successfully update user profile.' })
+        const fileName = `user-${user_id}`;
+        const folder = '/Nextmeal/Users';
+        const { url } = await uploadImage(file.buffer, fileName, folder);
+        avatar = getImageRelativePath(url);
       }
+      await user.update({
+        name: req.body.name,
+        email: req.body.email,
+        address: req.body.address,
+        dob: req.body.dob,
+        prefer: req.body.prefer,
+        lat: req.body.lat,
+        lng: req.body.lng,
+        role: user_role,
+        location: req.body.location,
+        avatar,
+        geometry: point
+      })
+      return res.status(200).json({
+        status: 'success',
+        message: 'Successfully update user profile.'
+      })
     } catch (error) {
-      console.log(error);
       res.status(500).json({ status: 'error', message: error })
     }
   },

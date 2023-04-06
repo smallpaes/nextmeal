@@ -23,7 +23,7 @@ export const placeholderAvatarFilter = {
   filters: {
     placeholderAvatar (url) {
       if (url) return url
-      return 'https://images.pexels.com/photos/1490908/pexels-photo-1490908.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
+      return '/Users/placeholder.jpeg'
     }
   }
 }
@@ -105,6 +105,7 @@ export const handleFileChangeMethod = {
       if (!files.length) return
       const imageURL = window.URL.createObjectURL(files[0])
       this[targetName].image = imageURL
+      this.isNewFileUploaded = true
     }
   }
 }

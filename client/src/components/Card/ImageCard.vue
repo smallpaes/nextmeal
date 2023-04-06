@@ -9,13 +9,16 @@
         :width="'100%'"
         :height="'180px'"
       />
-      <img
+      <ik-image
         v-else
-        :src="district.image || placeholderImage"
-        alt="District image"
+        :path="district.image || placeholderImg"
+        :lqip="{ active: true }"
+        width="500"
+        loading="lazy"
+        :alt="district.chinese_name + '的照片'"
         class="img-fluid shadow-sm rounded-sm"
         @error="handleOnError"
-      >
+      />
       <div :class="{'img-overlay': !isLoading}" />
       <h3 class="img-content">
         <SkelentonBox
@@ -32,6 +35,7 @@
 
 <script>
 import SkelentonBox from '../Placeholder/SkeletonBox'
+import { CARD_PLACEHOLDER_RELATIVE_URL } from '../../utils/image-url'
 
 export default {
   components: {
@@ -51,12 +55,12 @@ export default {
     },
     defaultSrc: {
       type: String,
-      default: require('@/assets/placeholder-image/plain/1260x750.png')
+      default: CARD_PLACEHOLDER_RELATIVE_URL
     }
   },
   data () {
     return {
-      placeholderImage: require('@/assets/placeholder-image/plain/1260x750.png')
+      placeholderImg: CARD_PLACEHOLDER_RELATIVE_URL
     }
   },
   methods: {

@@ -74,7 +74,7 @@ Online platform for you to readily access to awesome restaurants nearby and orde
 - Using [express-validator](https://github.com/express-validator/express-validator) for data validation
 - Using [JSON Web Tokens](https://github.com/auth0/node-jsonwebtoken) to add token based authentication to RESTful API
 - Using [nodemailer](https://github.com/nodemailer/nodemailer) to send email with Node.js after user sign up or place an order
-- Using [Multer](https://github.com/expressjs/multer) 、[imgur-node-api](https://github.com/jamiees2/imgur-node-api) for file upload feature
+- Using [Multer](https://github.com/expressjs/multer) 、[imagekit-nodejs](https://github.com/imagekit-developer/imagekit-nodejs) for file upload feature
 - Using [bcryptjs](https://github.com/dcodeIO/bcrypt.js) to hash and check password
 - Using [dotenv](https://github.com/motdotla/dotenv) to help load the environment variables saved in .env file
 - Using [node-cron](https://github.com/node-cron/node-cron) as the task scheduler to automatically update order and meal data in the database
@@ -258,7 +258,7 @@ $ touch .env
 ```
 
 **4. Sign up for an account / Get the secret key**
-> [Gmail](https://gmail.com/) / [Imgur](https://imgur.com/signin?redirect=https%3A%2F%2Fapi.imgur.com%2Foauth2%2Faddclient) / [Newebpay](https://cwww.newebpay.com/)
+> [Gmail](https://gmail.com/) / [ImageKit](https://imagekit.io/) / [Newebpay](https://cwww.newebpay.com/)
 
 
 **5. Store API Key in .env file and save**
@@ -267,11 +267,18 @@ $ touch .env
 GMAIL_ACCOUNT=
 GMAIL_PASSWORD=
 JWT_SECRET=
-IMGUR_CLIENT_ID=
 URL=
 MERCHANT_ID=
 HASH_KEY=
 HASH_IV=
+VUE_APP_GOOGLE=
+GOOGLE_GEOCODING_API_KEY=
+TIMEZONE=
+VUE_APP_TIMEZONE=
+VUE_APP_IMAGEKIT_URL_ENDPOINT=
+IMAGEKIT_PUBLIC_KEY=
+IMAGEKIT_PRIVATE_KEY=
+IMAGEKIT_URL_ENDPOINT=
 ```
 
 **6. Edit password in config.json file**

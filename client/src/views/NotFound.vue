@@ -10,7 +10,7 @@
           loop
         >
           <source
-            src="../assets/grill.mp4"
+            :src="videoUrl"
             type="video/mp4"
           >
         </video>
@@ -37,11 +37,17 @@
 </template>
 
 <script>
+import { formFullUrl } from '../utils/image-url'
 import TopLogoNavbar from '../components/Navbar/TopLogoNavbar'
 
 export default {
   components: {
     TopLogoNavbar
+  },
+  data () {
+    return {
+      videoUrl: formFullUrl('/Video/grill.mp4')
+    }
   }
 }
 </script>

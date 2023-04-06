@@ -9,10 +9,12 @@
         class="rounded-circle skelenton-box"
       />
       <!--Avatar-->
-      <img
-        :src="currentUser.avatar | placeholderAvatar"
-        alt="user avatar"
-      >
+      <ik-image
+        :path="currentUser.avatar | placeholderAvatar"
+        :lqip="{ active: true }"
+        loading="lazy"
+        alt="使用者大頭照"
+      />
       <h5 class="mt-3 profile-card-top-name">
         {{ currentUser.name }}
       </h5>

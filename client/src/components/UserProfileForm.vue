@@ -185,10 +185,20 @@
         @click="user.image = ''"
       >
         <img
+          v-if="isNewFileUploaded"
           :src="user.image"
+          alt="新上傳的大頭貼"
           class="file-image"
-          alt="餐廳照片"
         >
+        <ik-image
+          v-else
+          :path="user.image"
+          :lqip="{ active: true }"
+          loading="lazy"
+          :alt="user.name + '的大頭貼'"
+          class="file-image"
+          :query-parameters="{}"
+        />
         <i class="fa-regular fa-rectangle-xmark" />
       </div>
       <!--Visible file upload button-->
@@ -282,7 +292,8 @@ export default {
       validationMsg: {
         address: ''
       },
-      isProcessing: false
+      isProcessing: false,
+      isNewFileUploaded: false
     }
   },
   validations: {
@@ -334,6 +345,7 @@ export default {
         ...this.user,
         ...user
       }
+      this.isNewFileUploaded = false
     },
     categories (categories) {
       this.categories = categories

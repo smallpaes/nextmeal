@@ -6,11 +6,14 @@
       :height="'50px'"
       class="rounded-circle skelenton-box"
     />
-    <img
-      :src="comment.User.avatar"
+    <ik-image
+      :path="comment.User.avatar"
+      :transformation="[{ width: 200 }]"
+      :lqip="{ active: true }"
+      loading="lazy"
       class="media-avatar mr-3"
-      alt="user avatar"
-    >
+      alt="使用者大頭貼"
+    />
     <div class="media-body ">
       <div class="m-0 media-title">
         <div class="media-title-left">
@@ -27,21 +30,25 @@
         {{ comment.user_text }}
       </p>
       <!--Show placeholder review image while loading-->
-      <img
+      <ik-image
         v-if="comment.image"
-        src="../assets/placeholder-image/logo/1260x750.png"
+        :path="placeholderImg"
+        :lqip="{ active: true }"
+        loading="lazy"
         class="file-image file-image-placeholder my-3"
-        alt="評論照片"
-      >
+        alt="評論照片的底圖"
+      />
       <!--Show review image after-->
-      <img
+      <ik-image
         v-if="comment.image"
-        :src="comment.image"
+        :path="comment.image"
+        :lqip="{ active: true }"
+        loading="lazy"
         class="file-image file-image-small my-3"
-        :class="{large: isZoomIn}"
+        :class="{ large: isZoomIn }"
         alt="評論照片"
         @click="isZoomIn = !isZoomIn"
-      >
+      />
     </div>
   </div>
 </template>
@@ -49,6 +56,7 @@
 <script>
 import RatingStars from '../components/RatingStars'
 import SkelentonBox from './Placeholder/SkeletonBox'
+import { CARD_PLACEHOLDER_RELATIVE_URL } from '../utils/image-url'
 import { timeTransformFilter } from '../utils/mixins'
 
 export default {
@@ -65,7 +73,8 @@ export default {
   },
   data () {
     return {
-      isZoomIn: false
+      isZoomIn: false,
+      placeholderImg: CARD_PLACEHOLDER_RELATIVE_URL
     }
   }
 }

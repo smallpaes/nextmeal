@@ -3,14 +3,17 @@
     class="“banner"
   >
     <div class="banner-container">
-      <div
+      <ik-image
+        :path="currentDistrict.image"
+        :lqip="{ active: true }"
+        loading="lazy"
+        :alt="currentDistrict.chinese_name + '的照片'"
         class="banner-img"
-        :style="{backgroundImage: `url(${districtImage})`}"
       />
       <div class="banner-overlay" />
       <div class="banner-content">
         <h1 class="banner-content-title">
-          {{ currentDistrict }}
+          {{ currentDistrict.chinese_name }}
         </h1>
         <!--Dropdown menu for city switch-->
         <div class="dropdown">
@@ -34,7 +37,7 @@
               :key="district.eng_name"
               :to="{name: 'restaurants', query: {dist: district.chinese_name}}"
               class="dropdown-item text-center"
-              :class="{disabled: district.chinese_name === currentDistrict}"
+              :class="{disabled: district.chinese_name === currentDistrict.chinese_name}"
             >
               {{ district.chinese_name }}
             </router-link>
@@ -46,6 +49,7 @@
 </template>
 
 <script>
+import { CARD_PLACEHOLDER_ORIGINAL_RELATIVE_URL } from '../../utils/image-url'
 export default {
   props: {
     districts: {
@@ -53,34 +57,16 @@ export default {
       required: true
     },
     currentDistrict: {
-      type: String,
-      required: true
+      type: Object,
+      default: () => ({
+        chinese_name: '',
+        eng_name: '',
+        image: CARD_PLACEHOLDER_ORIGINAL_RELATIVE_URL
+      })
     },
     isLoading: {
       type: Boolean,
       default: false
-    }
-  },
-  data () {
-    return {
-      districtImage: ''
-    }
-  },
-  watch: {
-    districts (value) {
-      this.getDistrictImage()
-    }
-  },
-  created () {
-    this.getDistrictImage()
-  },
-  methods: {
-    getDistrictImage () {
-      if (this.districts.length === 0) {
-        this.districtImage = ''
-        return
-      }
-      this.districtImage = this.districts.filter(district => district.chinese_name === this.currentDistrict)[0].image
     }
   }
 }
@@ -91,9 +77,16 @@ export default {
   @include positionCenter;
   @include imgOverlay(.9);
 
-  &-container { margin-top: 62px; }
+  &-container {
+    margin-top: 62px;
+    height: 300px;
+  }
 
-  &-img { @include setBackground("https://cdn.pixabay.com/photo/2019/09/23/14/34/nyc-4498752_1280.jpg", 300px);}
+  &-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
   &-content {
     color: color(quaternary);
@@ -102,14 +95,26 @@ export default {
     &-title {
       font-size: size(xl);
       font-weight: weight(bold);
-      @include response(sm) { font-size: size(xxl); }
+      line-height: size(xl);
+      height: size(xl);
+      margin-bottom: 1rem;
+
+      @include response(sm) {
+        font-size: size(xxl);
+        line-height: size(xxl);
+        height: size(xxl);
+        margin-bottom: 1.5rem;
+      }
     }
   }
 }
 
 /* Dropdown menu for city switch */
 .dropdown {
-  &-toggle { color: color(quaternary); }
+  &-toggle {
+    @include solidButton(140);
+    color: color(quaternary);
+  }
 
   &-menu {
     position: relative;
@@ -138,6 +143,7 @@ export default {
   &-item {
     color: color(secondary);
     text-shadow: none;
+    &:active { background-color: color(quinary); }
   }
 }
 </style>

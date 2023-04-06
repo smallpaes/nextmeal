@@ -14,7 +14,7 @@
 @include spinAnimation;
 
 .card {
-  @include setBackground('https://images.unsplash.com/photo-1549409466-c6449df8e23b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=4000&q=80', 100%);
+  @include setBackground(image('card'), 100%);
   @include imgOverlay(.5, color(quaternary));
   position: relative;
   height: 100%;

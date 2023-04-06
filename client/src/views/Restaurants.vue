@@ -62,7 +62,7 @@
             v-if="currentPage !== totalPage"
             class="btn mt-3"
             href="#"
-            @click="fetchRestaurants(currentDistrict, currentPage + 1); isFetching = true"
+            @click="fetchRestaurants(currentDistrictName, currentPage + 1); isFetching = true"
           >
             瀏覽更多
           </button>
@@ -73,7 +73,7 @@
       <div class="container pt-3 pb-5">
         <Header>
           <template v-slot:title>
-            {{ currentDistrict }}餐廳
+            {{ currentDistrictName }}餐廳
           </template>
           <template v-slot:description>
             探索最近的美食地圖
@@ -131,16 +131,22 @@ export default {
       },
       map: {},
       districts: [],
-      currentDistrict: '',
+      currentDistrictName: '',
       currentPage: 0,
       totalPage: null,
       isLoading: true,
       isFetching: false
     }
   },
+  computed: {
+    currentDistrict () {
+      if (!this.districts) return {}
+      return this.districts.find(district => district.chinese_name === this.currentDistrictName)
+    }
+  },
   created () {
     const { dist } = this.$route.query
-    this.currentDistrict = dist || '信義區'
+    this.currentDistrictName = dist || '信義區'
     this.fetchRestaurants(dist, this.currentPage + 1)
   },
   mounted () {
@@ -156,7 +162,7 @@ export default {
     this.districts = []
     // Get the district name
     const { dist } = to.query
-    this.currentDistrict = dist || '信義區'
+    this.currentDistrictName = dist || '信義區'
     // update loading status
     this.isLoading = true
     // Refetch the restaurant data

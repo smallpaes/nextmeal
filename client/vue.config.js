@@ -10,6 +10,7 @@ module.exports = {
     loaderOptions: {
       sass: {
         additionalData: `
+          $BASEURL: '${process.env.VUE_APP_IMAGEKIT_URL_ENDPOINT}';
           @import "@/scss/_variables.scss";
           @import "@/scss/_base.scss";
           @import "@/scss/_mixins.scss";

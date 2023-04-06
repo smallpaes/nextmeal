@@ -1,5 +1,4 @@
-const imgur = require('imgur-node-api')
-const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const { uploadImage, getImageRelativePath } = require('../_helpers')
 const db = require('../models')
 const sequelize = require('sequelize')
 const Op = sequelize.Op
@@ -44,41 +43,26 @@ let ownerController = {
       const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
       const { file } = req
       if (!file) return res.status(400).json({ status: 'error', message: 'You need to pick a picture' })
-      if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
-          await Restaurant.create({
-            ...req.body,
-            image: img.data.link,
-            lat: lat,
-            lng: lng,
-            geometry: point,
-            UserId: req.user.id
-          })
-          return res.status(200).json({
-            status: 'success',
-            message: 'Successfully create the restaurant information with image.'
-          })
-        })
-      } else {
-        await Restaurant.create({
-          ...req.body,
-          image: 'https://cdn.pixabay.com/photo/2016/11/18/14/05/brick-wall-1834784_960_720.jpg',
-          lat: lat,
-          lng: lng,
-          geometry: point,
-          UserId: req.user.id
-        })
-        return res.status(200).json({
-          status: 'success',
-          message: 'Successfully create the restaurant information.'
-        })
-      }
+    
+      const fileName = `restaurant-${req.body.name}`;
+      const folder = '/Nextmeal/Restaurant';
+      const { url } = await uploadImage(file.buffer, fileName, folder);
+      await Restaurant.create({
+        ...req.body,
+        image: getImageRelativePath(url),
+        lat: lat,
+        lng: lng,
+        geometry: point,
+        UserId: req.user.id
+      })
+      return res.status(200).json({
+        status: 'success',
+        message: 'Successfully create the restaurant information with image.'
+      })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
   },
-
   putRestaurant: async (req, res) => {
     try {
       const { lat, lng } = req.body
@@ -89,37 +73,30 @@ let ownerController = {
       }
       const point = sequelize.fn('ST_GeomFromText', `POINT(${lng} ${lat})`)
       const { file } = req
+      let image = restaurant.image;
       if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
-          await restaurant.update({
-            name: req.body.name,
-            description: req.body.description,
-            image: file ? img.data.link : restaurant.image,
-            tel: req.body.tel,
-            address: req.body.address,
-            CategoryId: req.body.CategoryId,
-            opening_hour: req.body.opening_hour,
-            closing_hour: req.body.closing_hour,
-            lat: lat,
-            lng: lng,
-            geometry: point,
-          })
-          return res.status(200).json({
-            status: 'success',
-            message: 'Successfully update restaurant information with image.'
-          })
-        })
-      } else {
-        await restaurant.update({
-          ...req.body,
-          geometry: point,
-        })
-        return res.status(200).json({
-          status: 'success',
-          message: 'Successfully update restaurant information.'
-        })
+        const fileName = `restaurant-${req.body.name}`;
+        const folder = '/Nextmeal/Restaurant';
+        const { url } = await uploadImage(file.buffer, fileName, folder);
+        image = getImageRelativePath(url);
       }
+      await restaurant.update({
+        name: req.body.name,
+        description: req.body.description,
+        image,
+        tel: req.body.tel,
+        address: req.body.address,
+        CategoryId: req.body.CategoryId,
+        opening_hour: req.body.opening_hour,
+        closing_hour: req.body.closing_hour,
+        lat: lat,
+        lng: lng,
+        geometry: point,
+      })
+      return res.status(200).json({
+        status: 'success',
+        message: 'Successfully update restaurant information with image.'
+      })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -158,29 +135,27 @@ let ownerController = {
       }
       const { file } = req
       if (!file) return res.status(400).json({ status: 'error', message: 'You need to pick a picture' })
-      if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
-          if (restaurant.Meals.length === 0) {
-            await Meal.create({
-              ...req.body,
-              image: file ? img.data.link : 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
-              RestaurantId: restaurant.id,
-              nextServing: true
-            })
-          } else {
-            await Meal.create({
-              ...req.body,
-              image: file ? img.data.link : 'https://cdn.pixabay.com/photo/2014/10/19/20/59/hamburger-494706_960_720.jpg',
-              RestaurantId: restaurant.id,
-            })
-          }
-          return res.status(200).json({
-            status: 'success',
-            message: 'Successfully create a meal with image.'
-          })
+      const fileName = `dish-${req.body.name}`;
+      const folder = '/Nextmeal/Food';
+      const { url } = await uploadImage(file.buffer, fileName, folder);
+      if (restaurant.Meals.length === 0) {
+        await Meal.create({
+          ...req.body,
+          image: getImageRelativePath(url),
+          RestaurantId: restaurant.id,
+          nextServing: true
+        })
+      } else {
+        await Meal.create({
+          ...req.body,
+          image: getImageRelativePath(url),
+          RestaurantId: restaurant.id,
         })
       }
+      return res.status(200).json({
+        status: 'success',
+        message: 'Successfully create a meal with image.'
+      })
     } catch (error) {
       res.status(500).json({ status: 'error', message: error })
     }
@@ -203,7 +178,6 @@ let ownerController = {
       return res.status(500).json({ status: 'error', message: error })
     }
   },
-
   putDish: async (req, res) => {
     try {
       let meal = await Meal.findOne({
@@ -216,16 +190,16 @@ let ownerController = {
       if (meal.Restaurant.UserId !== req.user.id) return res.status(422).json({ status: 'error', message: 'You are not allow this action.' })
       const { file } = req
       if (file) {
-        imgur.setClientID(IMGUR_CLIENT_ID)
-        imgur.upload(file.path, async (err, img) => {
-          await meal.update({
-            ...req.body,
-            image: file ? img.data.link : meal.image,
-          })
-          return res.status(200).json({
-            status: 'success',
-            message: 'Successfully update a meal with image.'
-          })
+        const fileName = `dish-${req.body.name}`;
+        const folder = '/Nextmeal/Food';
+        const { url } = await uploadImage(file.buffer, fileName, folder);
+        await meal.update({
+          ...req.body,
+          image: getImageRelativePath(url),
+        })
+        return res.status(200).json({
+          status: 'success',
+          message: 'Successfully update a meal with image.'
         })
       } else {
         await meal.update(req.body)

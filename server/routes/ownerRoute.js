@@ -3,7 +3,7 @@ const router = express.Router()
 const ownerController = require('../controllers/ownerController.js')
 const { validRestaurantForm, validMenuForm, validDishForm, validMessage, stopOrder } = require('../middleware/middleware')
 const multer = require('multer')
-const upload = multer({ dest: 'temp/' })
+const upload = multer()
 
 // owner restaurant
 router.get('/', ownerController.getRestaurant)

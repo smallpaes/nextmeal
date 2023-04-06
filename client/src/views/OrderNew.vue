@@ -13,6 +13,7 @@
         <ImageHeaderBanner
           :background-photo="banner.image"
           :banner-height="banner.height"
+          :image-description="banner.description"
         >
           <template v-slot:header>
             <h1 class="banner-content-title">
@@ -138,6 +139,7 @@ import OrderForm from '../components/OrderForm'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import orderAPI from '../apis/order'
+import { formFullUrl, BANNER_PLACEHOLDER_RELATIVE_URL } from '../utils/image-url'
 import { Toast } from '../utils/helpers'
 import { mapState } from 'vuex'
 
@@ -155,15 +157,16 @@ export default {
   data () {
     return {
       banner: {
-        image: 'https://images.pexels.com/photos/775031/pexels-photo-775031.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
-        height: 550
+        image: BANNER_PLACEHOLDER_RELATIVE_URL,
+        height: 550,
+        description: '訂購餐點頁面水果優格封面照'
       },
       meals: [],
       isChoosingMeal: true,
       chosenMeal: null,
       isLoading: true,
       isProcessing: false,
-      image: 'https://cdn.pixabay.com/photo/2017/06/11/17/03/dumplings-2392893_1280.jpg'
+      image: formFullUrl('/Banner/neworder.jpg')
     }
   },
   computed: {

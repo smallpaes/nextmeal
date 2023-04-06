@@ -6,7 +6,7 @@ const { validRestaurantForm, validMessage, stopOrder } = require('../middleware/
 const adminController = require('../controllers/adminController.js')
 const userController = require('../controllers/userController')
 const multer = require('multer')
-const upload = multer({ dest: 'temp/' })
+const upload = multer()
 
 router.get('/restaurants', adminController.getRestaurants)
 router.get('/restaurants/:restaurant_id', adminController.getRestaurant)

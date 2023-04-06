@@ -194,10 +194,19 @@
         @click="restaurant.image = ''"
       >
         <img
+          v-if="isNewFileUploaded"
           :src="restaurant.image"
+          alt="新上傳的餐廳照片"
           class="file-image"
-          alt="餐廳照片"
         >
+        <ik-image
+          v-else
+          :path="restaurant.image"
+          :lqip="{ active: true }"
+          loading="lazy"
+          :alt="restaurant.name + '餐廳照片'"
+          class="file-image"
+        />
         <i class="fa-regular fa-rectangle-xmark" />
       </div>
       <!--Visible file upload button-->
@@ -296,7 +305,8 @@ export default {
         address: ''
       },
       formData: {},
-      isProcessing: false
+      isProcessing: false,
+      isNewFileUploaded: false
     }
   },
   validations: {
@@ -346,6 +356,7 @@ export default {
         ...this.restaurant,
         ...restaurant
       }
+      this.isNewFileUploaded = false
     },
     initialProcessing (isProcessing) {
       this.isProcessing = isProcessing
