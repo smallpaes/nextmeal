@@ -31,7 +31,7 @@
       </p>
       <!--Show placeholder review image while loading-->
       <ik-image
-        v-if="!comment.image"
+        v-if="comment.image"
         :path="placeholderImg"
         :lqip="{ active: true }"
         loading="lazy"
