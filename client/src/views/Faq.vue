@@ -12,6 +12,7 @@
         <ImageHeaderBanner
           :background-photo="bannerImage"
           :banner-height="300"
+          :image-description="bannerImageDescription"
         >
           <template v-slot:header>
             <h1 class="banner-content-title">
@@ -83,7 +84,8 @@ export default {
   },
   data () {
     return {
-      bannerImage: 'https://images.unsplash.com/photo-1543198432-a20fa3055570?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3150&q=80',
+      bannerImage: '/Banner/faq.jpeg',
+      bannerImageDescription: '常見問題封面圖',
       questionsCollection: {
         platform: {
           title: '平台與方案問題',

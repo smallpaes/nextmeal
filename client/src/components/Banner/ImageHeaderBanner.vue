@@ -8,9 +8,9 @@
     >
       <ik-image
         :path="backgroundPhoto"
-        :lqip="{active:true, quality: 40, blur: 5}"
+        :lqip="{active:true}"
         loading="lazy"
-        alt="Nextmeal banner image"
+        :alt="imageDescription"
         class="banner-img"
       />
       <div
@@ -33,6 +33,10 @@ export default {
     bannerHeight: {
       type: Number,
       default: 550
+    },
+    imageDescription: {
+      type: String,
+      default: 'Header image'
     }
   }
 }
