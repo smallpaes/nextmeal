@@ -9,11 +9,13 @@
         :width="'120px'"
         :height="'111px'"
       />
-      <img
-        :src="image || '@/assets/placeholder-image/logo/200x200.png'"
+      <ik-image
+        :path="image"
+        :lqip="{ active: true }"
+        loading="lazy"
+        alt="菜單餐點照片"
         class="card-img rounded-0 rounded-sm"
-        alt="Dish image"
-      >
+      />
     </div>
     <div class="card-right">
       <div class="card-body px-3 py-0">
