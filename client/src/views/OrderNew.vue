@@ -139,7 +139,7 @@ import OrderForm from '../components/OrderForm'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import orderAPI from '../apis/order'
-import { formFullUrl } from '../utils/image-url'
+import { formFullUrl, BANNER_PLACEHOLDER_RELATIVE_URL } from '../utils/image-url'
 import { Toast } from '../utils/helpers'
 import { mapState } from 'vuex'
 
@@ -157,7 +157,7 @@ export default {
   data () {
     return {
       banner: {
-        image: '/Banner/order.jpeg',
+        image: BANNER_PLACEHOLDER_RELATIVE_URL,
         height: 550,
         description: '訂購餐點頁面水果優格封面照'
       },

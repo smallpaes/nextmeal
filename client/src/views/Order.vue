@@ -92,6 +92,7 @@ import OrderRestaurantDetail from '../components/OrderRestaurantDetail'
 import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import orderAPI from '../apis/order'
+import { BANNER_PLACEHOLDER_RELATIVE_URL } from '../utils/image-url'
 import { Toast } from '../utils/helpers'
 import moment from 'moment-timezone'
 
@@ -108,7 +109,7 @@ export default {
   data () {
     return {
       banner: {
-        image: '/Banner/order.jpeg',
+        image: BANNER_PLACEHOLDER_RELATIVE_URL,
         height: 550,
         description: '訂單頁面水果優格封面照'
       },
