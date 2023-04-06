@@ -11,8 +11,8 @@
   <br>
   <a href="https://nextmeal.herokuapp.com/#/"><strong>Explore Our Website</strong></a>
   <br>
+  <a href="https://app.travis-ci.com/smallpaes/nextmeal" rel="Travis CI link"><img src="https://app.travis-ci.com/smallpaes/nextmeal.svg?branch=master" alt="Travis CI status"></a>
 </p>
-
 
 ## Table of contents
 
