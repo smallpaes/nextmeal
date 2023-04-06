@@ -9,7 +9,10 @@
         appear
       >
         <!--Banner-->
-        <ImageHeaderBanner :background-photo="bannerImage">
+        <ImageHeaderBanner
+          :background-photo="bannerImage"
+          :image-description="bannerImageDescription"
+        >
           <template v-slot:header>
             <h1 class="banner-content-title">
               吃飯免煩惱
@@ -95,7 +98,8 @@ export default {
       popularRestaurants: [],
       districts: [],
       isLoading: true,
-      bannerImage: '/Banner/banner.jpeg'
+      bannerImage: '/Banner/banner.jpeg',
+      bannerImageDescription: 'Nextmeal 首頁美食封面照'
     }
   },
   created () {
