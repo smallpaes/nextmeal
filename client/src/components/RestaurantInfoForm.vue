@@ -193,11 +193,13 @@
         class="file-image-wrapper"
         @click="restaurant.image = ''"
       >
-        <img
-          :src="restaurant.image"
+        <ik-image
+          :path="restaurant.image"
+          :lqip="{ active: true }"
+          loading="lazy"
+          :alt="restaurant.name + '餐廳照片'"
           class="file-image"
-          alt="餐廳照片"
-        >
+        />
         <i class="fa-regular fa-rectangle-xmark" />
       </div>
       <!--Visible file upload button-->

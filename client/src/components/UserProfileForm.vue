@@ -184,11 +184,13 @@
         class="file-image-wrapper"
         @click="user.image = ''"
       >
-        <img
-          :src="user.image"
+        <ik-image
+          :path="user.image"
+          :lqip="{ active: true }"
+          loading="lazy"
+          :alt="user.name + '的大頭貼'"
           class="file-image"
-          alt="餐廳照片"
-        >
+        />
         <i class="fa-regular fa-rectangle-xmark" />
       </div>
       <!--Visible file upload button-->
